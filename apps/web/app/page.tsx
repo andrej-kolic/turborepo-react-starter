@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Card } from "ui";
+import { init, a, AppCore } from "app-core";
 import styles from "./page.module.css";
 
 function Gradient({
@@ -24,6 +25,12 @@ function Gradient({
     />
   );
 }
+
+init();
+const c = Card;
+c;
+const b = a;
+b;
 
 const LINKS = [
   {
@@ -126,9 +133,9 @@ export default function Page(): JSX.Element {
 
       <div className={styles.grid}>
         {LINKS.map(({ title, href, description }) => (
-          <Card className={styles.card} href={href} key={title} title={title}>
+          <AppCore className={styles.card} href={href} key={title} title={title}>
             {description}
-          </Card>
+          </AppCore>
         ))}
       </div>
     </main>

@@ -1,5 +1,7 @@
 {
   "extends": "tsconfig/react.json",
+  // "extends": "tsconfig/nextjs.json",
+  
   "compilerOptions": {
     "outDir": "build",
     // "plugins": [{ "name": "next" }]

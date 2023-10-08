@@ -1,4 +1,8 @@
-const tst: number = "asd";
+import { init } from 'app-core';
+// import { Card } from "ui";
+
+// const tst: number = "asd";
+
 export const testFn = (name: string = "world") => {
   return `Hello ${name}`;
 };
@@ -11,4 +15,8 @@ function component() {
   return element;
 }
 
-document.body.appendChild(component());
+export function init2() {
+    document.body.appendChild(component());
+}
+
+init();
