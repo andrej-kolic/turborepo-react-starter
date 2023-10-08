@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Card } from "ui";
+import { Card, add } from "ui";
 import styles from "./page.module.css";
 
 function Gradient({
@@ -27,7 +27,7 @@ function Gradient({
 
 const LINKS = [
   {
-    title: "Docs",
+    title: `Docs: ${add(1, 2)}`,
     href: "https://turbo.build/repo/docs",
     description: "Find in-depth information about Turborepo features and API.",
   },
