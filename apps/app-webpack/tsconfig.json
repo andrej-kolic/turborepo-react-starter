@@ -1,0 +1,9 @@
+{
+  "extends": "tsconfig/react.json",
+  "compilerOptions": {
+    "outDir": "build",
+    // "plugins": [{ "name": "next" }]
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "build"]
+}
