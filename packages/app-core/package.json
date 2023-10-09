@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "./index.tsx",
   "types": "./index.tsx",
-  "private": "true",
+  "private": true,
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",

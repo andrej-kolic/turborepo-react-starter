@@ -5,7 +5,7 @@ const path = require("path");
 const pathResolve = pathEntry => path.resolve(__dirname, pathEntry);
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "output.js",
