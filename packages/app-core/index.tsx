@@ -1,5 +1,7 @@
-import React from "react";import { Card } from "ui";
-import './styles.css';
+import React from "react";
+import { Card } from "ui";
+import "./styles.css";
+import TurboRepoImg from "./assets/turborepo.svg";
 
 export function AppCore(props: {
   className?: string;
@@ -7,5 +9,10 @@ export function AppCore(props: {
   children: React.ReactNode;
   href: string;
 }): JSX.Element {
-  return <div className="AppCore"><Card {...props} /></div>
+  return (
+    <div className="AppCore">
+      <img alt="Turborepo" src={TurboRepoImg} />
+      <Card {...props} />
+    </div>
+  );
 }
