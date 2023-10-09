@@ -1,4 +1,3 @@
 module.exports = {
-  // extends: ["custom/react-internal"],
-  extends: ["custom/next"],
+  extends: ["custom/react-internal"],
 };
