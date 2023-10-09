@@ -7,7 +7,9 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "generate:component": "turbo gen react-component"
+    "generate:component": "turbo gen react-component",
+    "compile": "tsc",
+    "test:type": "tsc --noEmit"
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.12",

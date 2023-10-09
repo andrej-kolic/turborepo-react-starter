@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "compile": "tsc",
+    "test:type": "tsc --noEmit"
   },
   "dependencies": {
     "next": "^13.4.19",
