@@ -1,17 +1,23 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const path = require("path");
+import path from "node:path";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 
-const pathResolve = pathEntry => path.resolve(__dirname, pathEntry);
+const __dirname = process.cwd();
+const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
 
-module.exports = {
+const appCorePublic = pathResolve("../../packages/app-core/public");
+const distPath = pathResolve("./dist");
+
+export default {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "output.js",
+    clean: true,
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
     // alias: {
     //   'ui': pathResolve('../../packages/ui'),
     // },
@@ -22,7 +28,15 @@ module.exports = {
       template: `./src/index.html`,
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].css',
+      filename: "static/css/[name].css",
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: appCorePublic,
+          to: distPath,
+        },
+      ],
     }),
   ],
   module: {
@@ -40,12 +54,30 @@ module.exports = {
       {
         test: /\.css$/i,
         // use: ['style-loader', 'css-loader'],
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: { url: false },
+          },
+        ],
       },
       {
-        test: /\.(svg|png|jpe?g|gif|jp2|webp)$/,
-        type: 'asset/resource'
-      },           
+        test: /\.(?:ico|gif|png|jpg|jpeg|jp2|svg|webp)$/i,
+        type: "asset/resource",
+        generator: {
+          filename: "static/assets/images/[name][hash][ext]",
+        },
+      },
     ],
+  },
+
+  devServer: {
+    historyApiFallback: true, // proxy requests through a specified index page (enable reload without 404)
+    hot: true,
+    open: false,
+    client: {
+      overlay: false,
+    },
   },
 };

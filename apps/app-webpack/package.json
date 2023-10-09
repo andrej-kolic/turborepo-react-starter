@@ -2,11 +2,12 @@
   "name": "app-webpack",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "webpack serve --config webpack.config.js",
     "build": "webpack --config webpack.config.js",
     "test": "echo 'Add test script here'",
-    "lint": "echo 'Add lint script here'",
+    "lint": "eslint .",
     "compile": "tsc",
     "test:type": "tsc --noEmit"
   },
@@ -20,14 +21,15 @@
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
+    "app-core": "workspace:*",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint-config-custom": "workspace:*",
     "html-webpack-plugin": "^5.5.3",
     "ts-loader": "^9.5.0",
     "tsconfig": "workspace:*",
     "typescript": "^4.5.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1",
-    "app-core": "workspace:*",
-    "eslint-config-custom": "workspace:*"
+    "webpack-dev-server": "^4.15.1"
   }
 }

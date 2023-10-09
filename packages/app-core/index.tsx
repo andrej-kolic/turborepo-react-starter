@@ -13,6 +13,7 @@ export function AppCore(props: {
     <div className="AppCore">
       <img alt="Turborepo" src={TurboRepoImg} />
       <Card {...props} />
+      <a href="readme.txt" target="_blank">Readme</a>
     </div>
   );
 }
