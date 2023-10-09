@@ -1,4 +1,5 @@
 import * as React from "react";
+import { toUppercase } from 'commons';
 
 export function Card({
   className,
@@ -19,7 +20,7 @@ export function Card({
       target="_blank"
     >
       <h2>
-        {title} <span>-&gt;</span>
+        {toUppercase(title)} <span>-&gt;</span>
       </h2>
       <p>{children}</p>
     </a>
