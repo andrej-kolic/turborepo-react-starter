@@ -1,5 +1,6 @@
 import * as React from "react";
 import { toUppercase } from 'commons';
+import SupportIcon from './assets/support.svg';
 
 export function Card({
   className,
@@ -19,6 +20,7 @@ export function Card({
       rel="noopener noreferrer"
       target="_blank"
     >
+      <img alt="icon" src={SupportIcon} width={100} />
       <h2>
         {toUppercase(title)} <span>-&gt;</span>
       </h2>
