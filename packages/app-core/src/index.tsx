@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "ui";
+import { Header } from "~/Header";
 import "./styles.css";
-import TurboRepoImg from "./assets/turborepo.svg"; // TODO: report for bad path
 
 export function AppCore(props: {
   className?: string;
@@ -11,9 +11,11 @@ export function AppCore(props: {
 }): JSX.Element {
   return (
     <div className="AppCore">
-      <img alt="Turborepo" src={TurboRepoImg} />
+      <Header />
       <Card {...props} />
-      <a href="readme.txt" target="_blank">Readme</a>
+      <a href="readme.txt" target="_blank">
+        Readme
+      </a>
     </div>
   );
 }

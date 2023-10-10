@@ -2,6 +2,9 @@
   "extends": "tsconfig/react-library",
   "compilerOptions": {
     "outDir": "build",
+    "paths": {
+      "~/*": ["./src/*", "../ui/src/*"]
+    },
   },
   "include": ["src/**/*", "../../@types"],
   "exclude": ["node_modules", "src/**/*/assets"]

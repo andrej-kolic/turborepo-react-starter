@@ -8,6 +8,9 @@ const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
 
 const appCorePublic = pathResolve("./node_modules/app-core/public");
 const distPath = pathResolve("./dist");
+const sourceDir = pathResolve("./src");
+const appCoreSourceDir = pathResolve("../../packages/app-core/src");
+const appUiSourceDir = pathResolve("../../packages/ui/src");
 
 export default {
   entry: "./src/index.tsx",
@@ -18,9 +21,9 @@ export default {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
-    // alias: {
-    //   'ui': pathResolve('../../packages/ui'),
-    // },
+    alias: {
+      "~": [sourceDir, appCoreSourceDir, appUiSourceDir],
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
