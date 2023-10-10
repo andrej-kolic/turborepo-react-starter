@@ -6,7 +6,7 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 const __dirname = process.cwd();
 const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
 
-const appCorePublic = pathResolve("../../packages/app-core/public");
+const appCorePublic = pathResolve("./node_modules/app-core/public");
 const distPath = pathResolve("./dist");
 
 export default {
@@ -44,12 +44,7 @@ export default {
       {
         test: /\.tsx?$/,
         use: "ts-loader",
-        // exclude: /node_modules/,
-      },
-      {
-        test: /\.ts?$/,
-        use: "ts-loader",
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/i,

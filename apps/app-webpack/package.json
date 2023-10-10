@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "webpack serve --config webpack.config.js",
-    "build": "webpack --config webpack.config.js",
+    "dev": "webpack serve --config config/webpack.config.js",
+    "build": "webpack --config config/webpack.config.js",
     "test": "echo 'Add test script here'",
     "lint": "eslint .",
     "compile": "tsc",
