@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "ui";
 import "./styles.css";
-import TurboRepoImg from "./assets/turborepo.svg";
+import TurboRepoImg from "./assets/turborepo.svg"; // TODO: report for bad path
 
 export function AppCore(props: {
   className?: string;
