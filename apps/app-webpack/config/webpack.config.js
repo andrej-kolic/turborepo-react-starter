@@ -2,15 +2,16 @@ import path from "node:path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 const __dirname = process.cwd();
 const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
 
 const appCorePublic = pathResolve("./node_modules/app-core/public");
 const distPath = pathResolve("./dist");
-const sourceDir = pathResolve("./src");
-const appCoreSourceDir = pathResolve("../../packages/app-core/src");
-const appUiSourceDir = pathResolve("../../packages/ui/src");
+// const sourceDir = pathResolve("./src");
+// const appCoreSourceDir = pathResolve("../../packages/app-core/src");
+// const appUiSourceDir = pathResolve("../../packages/ui/src");
 
 export default {
   entry: "./src/index.tsx",
@@ -21,9 +22,10 @@ export default {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
-    alias: {
-      "~": [sourceDir, appCoreSourceDir, appUiSourceDir],
-    },
+    // alias: {
+    //   "~": [sourceDir, appCoreSourceDir, appUiSourceDir],
+    // },
+    plugins: [new TsconfigPathsPlugin({})]
   },
   plugins: [
     new HtmlWebpackPlugin({
