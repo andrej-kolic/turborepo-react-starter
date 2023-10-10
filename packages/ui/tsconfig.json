@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "build",
   },
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
+  "include": ["src/**/*", "../../@types"],
+  "exclude": ["dist", "build", "node_modules", "src/**/*/assets"]
 }
