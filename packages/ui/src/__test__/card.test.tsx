@@ -1,8 +1,17 @@
+import React from "react";
+import { screen, render } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { Card } from "..";
 
 describe("Card", () => {
-  it("should say hello", () => {
-    // eslint-disable-next-line no-console -- tmp
-    console.log("Hello", Card);
+  it("should render", () => {
+    render(
+      <Card href="example.com" title="Cool title">
+        Cool content
+      </Card>
+    );
+
+    expect(screen.getByText(/Cool title/i)).toBeInTheDocument();
+    expect(screen.getByText(/Cool content/i)).toBeInTheDocument();
   });
 });
