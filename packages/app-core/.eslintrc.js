@@ -3,8 +3,17 @@ module.exports = {
   ignorePatterns: ["node_modules/", "dist/", "build/", "turbo/"],
   rules: {
     "import/no-extraneous-dependencies": [
-        "error",
-        { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }
+      "error",
+      {
+        devDependencies: true,
+        optionalDependencies: false,
+        peerDependencies: false,
+      },
     ],
+  },
+  env: {
+    browser: true,
+    // amd: true,
+    node: true,
   },
 };
