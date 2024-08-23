@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import TurboRepoImg from "../assets/turborepo.svg"; // TODO: report for bad path
 import "./styles.css";
 

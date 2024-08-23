@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "ui";
-import { Header } from "~/Header";
+import { Header } from "~app-core/Header";
 import "./styles.css";
 
 export function AppCore(props: {

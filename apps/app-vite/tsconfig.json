@@ -6,6 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    "paths": {
+      // "~/*": ["./src/*", "../../packages/app-core/src/*", "../../packages/ui/src/*"],
+      "~app-core/*": ["../../packages/app-core/src/*"],
+      "~ui/*": ["../../packages/ui/src/*"],
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

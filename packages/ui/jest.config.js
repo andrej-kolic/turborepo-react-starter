@@ -94,7 +94,7 @@ const config = {
     //   '\\.(css|scss)$': '<rootDir>/test/mockResource.ts',
     // },
     moduleNameMapper: {
-      '^~/(.*)$': '<rootDir>/src/$1',
+      '^~ui/(.*)$': '<rootDir>/src/$1', // TODO: read from tsconfig
       '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/mock-resource.ts',
       '\\.(css|scss)$': '<rootDir>/test/mock-resource.ts',
       // '\\.css$': 'identity-obj-proxy',

@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "build",
     "paths": {
-      "~/*": ["./src/*", "../ui/src/*"]
+      // "~/*": ["./src/*", "../ui/src/*"],
+      "~app-core/*": ["./src/*"],
+      "~ui/*": ["../ui/src/*"]
+
     },
   },
   "include": ["src/**/*", "test", "../../@types"],
