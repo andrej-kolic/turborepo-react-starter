@@ -1,0 +1,40 @@
+{
+  "name": "app-esbuild",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "build": "node ./config/build.js",
+    "dev": "mkdir -p dev && cp ./src/index.html ./dev && node ./config/dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "app-core": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.23.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  },
+
+  "_devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-tsconfig-paths": "^5.0.1"
+  }
+
+}

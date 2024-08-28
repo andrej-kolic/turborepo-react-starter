@@ -58,7 +58,7 @@ export default {
           MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
-            options: { url: false },
+            options: { url: true },
           },
         ],
       },

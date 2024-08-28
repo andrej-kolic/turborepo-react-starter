@@ -1,5 +1,5 @@
 {
-  // TODO: extends, like for webpack
+  // TODO: extends, like for webpack. refine.
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -8,7 +8,6 @@
     "skipLibCheck": true,
 
     "paths": {
-      // "~/*": ["./src/*", "../../packages/app-core/src/*", "../../packages/ui/src/*"],
       "~app-core/*": ["../../packages/app-core/src/*"],
       "~ui/*": ["../../packages/ui/src/*"],
     },
@@ -28,5 +27,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  // "references": [{ "path": "./tsconfig.node.json" }]
 }
