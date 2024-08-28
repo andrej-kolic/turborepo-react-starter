@@ -6,6 +6,7 @@ let ctx = await esbuild.context({
   entryPoints: ["./src/app.tsx"],
   bundle: true,
   outdir: DEV_DIR,
+  metafile: true,
   //   minify: true,
   //   sourcemap: true,
   loader: {
