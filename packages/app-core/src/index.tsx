@@ -1,7 +1,12 @@
 import React from "react";
 import { Card } from "ui";
+import type { CustomType } from "commons"; // import type is enforced with "verbatimModuleSyntax": true in base tsconfig
 import { Header } from "~app-core/Header";
+
 import "./styles.css";
+
+const ct: CustomType = { _type: "test" };
+ct;
 
 export function AppCore(props: {
   className?: string;
