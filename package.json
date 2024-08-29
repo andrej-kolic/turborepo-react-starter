@@ -8,7 +8,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:type": "turbo run test:type",
-    "clear:cache": "rm -rf node_modules **/node_modules** pnpm-lock.yaml"
+    "clear:cache": "rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
   },
   "devDependencies": {
     "eslint": "8.57.0",
