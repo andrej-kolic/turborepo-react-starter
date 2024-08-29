@@ -7,7 +7,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "test:type": "turbo run test:type"
+    "test:type": "turbo run test:type",
+    "clear:cache": "rm -rf node_modules **/node_modules** pnpm-lock.yaml"
   },
   "devDependencies": {
     "eslint": "8.57.0",

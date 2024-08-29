@@ -15,9 +15,7 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true,
-
-    "verbatimModuleSyntax": true
+    "strictNullChecks": true
   },
   "exclude": ["node_modules"]
 }

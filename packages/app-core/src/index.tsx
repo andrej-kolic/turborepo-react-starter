@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "ui";
-import type { CustomType } from "commons"; // import type is enforced with "verbatimModuleSyntax": true in base tsconfig
+import type { CustomType } from "commons";
 import { Header } from "~app-core/Header";
 
 import "./styles.css";
