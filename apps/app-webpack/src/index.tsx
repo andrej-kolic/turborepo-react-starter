@@ -7,7 +7,7 @@ const rootNode = document.getElementById("app");
 if (rootNode) {
   createRoot(rootNode).render(
     <AppCore href="#" title="app-webpack">
-      Content
+      Content!
     </AppCore>
   );
 }

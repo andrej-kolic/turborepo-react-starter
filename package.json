@@ -10,10 +10,10 @@
     "test:type": "turbo run test:type"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
-    "prettier": "^3.0.3",
+    "eslint": "8.57.0",
+    "prettier": "^3.3.3",
     "tsconfig": "workspace:*",
-    "turbo": "latest",
+    "turbo": "2.1.0",
     "typescript": "5.5.4"
   },
   "packageManager": "pnpm@8.6.10",
