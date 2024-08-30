@@ -1,6 +1,5 @@
 {
-  "extends": "tsconfig/webpack.json",
-
+  "extends": "@repo/typescript-config/webpack.json",
   "compilerOptions": {
     "outDir": "build",
     "paths": {

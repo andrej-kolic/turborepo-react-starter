@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/react-library",
+  "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "build",
     "paths": {

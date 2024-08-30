@@ -32,6 +32,6 @@
     "eslint-config-custom": "workspace:*",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "tsconfig": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
   }
 }

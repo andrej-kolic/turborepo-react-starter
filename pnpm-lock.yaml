@@ -8,15 +8,15 @@ importers:
 
   .:
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:packages/typescript-config
       eslint:
         specifier: 8.57.0
         version: 8.57.0
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
-      tsconfig:
-        specifier: workspace:*
-        version: link:packages/tsconfig
       turbo:
         specifier: 2.1.0
         version: 2.1.0
@@ -104,6 +104,9 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@types/node':
         specifier: ^17.0.12
         version: 17.0.45
@@ -128,9 +131,6 @@ importers:
       ts-loader:
         specifier: ^9.5.0
         version: 9.5.1(typescript@5.5.4)(webpack@5.94.0(webpack-cli@5.1.4))
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       tsconfig-paths-webpack-plugin:
         specifier: ^4.1.0
         version: 4.1.0
@@ -159,6 +159,9 @@ importers:
         specifier: workspace:*
         version: link:../ui
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@testing-library/dom':
         specifier: ^9.3.3
         version: 9.3.4
@@ -195,12 +198,12 @@ importers:
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
 
   packages/commons:
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@turbo/gen':
         specifier: ^1.10.12
         version: 1.13.4(@types/node@20.16.2)(typescript@5.5.4)
@@ -225,9 +228,6 @@ importers:
       ts-jest:
         specifier: ^29.1.1
         version: 29.2.5(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.16.2)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4)))(typescript@5.5.4)
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
 
   packages/eslint-config-custom:
     devDependencies:
@@ -235,10 +235,13 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0(eslint@8.57.0)(jest@29.7.0(@types/node@20.16.2)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4)))(prettier@3.3.3)(typescript@5.5.4)
 
-  packages/tsconfig: {}
+  packages/typescript-config: {}
 
   packages/ui:
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@testing-library/dom':
         specifier: ^9.3.3
         version: 9.3.4
@@ -284,9 +287,6 @@ importers:
       ts-jest:
         specifier: ^29.1.1
         version: 29.2.5(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.16.2)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4)))(typescript@5.5.4)
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
 
 packages:
 

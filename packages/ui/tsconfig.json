@@ -1,11 +1,11 @@
 {
-  "extends": "tsconfig/react-library.json",
+  "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "build",
     "paths": {
       "~ui/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "test", "../../@types"],
+  "include": ["src/**/*", "test", "../../@types"], // TODO: @types as package?
   "exclude": ["dist", "build", "node_modules", "src/**/*/assets"]
 }

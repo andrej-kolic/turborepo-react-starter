@@ -1,3 +1,4 @@
 {
-  "extends": "tsconfig/base.json"
+  // TODO: remove?
+  "extends": "@repo/typescript-config/base.json",
 }
