@@ -7,7 +7,7 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 const __dirname = process.cwd();
 const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
 
-const appCorePublic = pathResolve("./node_modules/app-core/public");
+const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
 const distPath = pathResolve("./dist");
 // const sourceDir = pathResolve("./src");
 // const appCoreSourceDir = pathResolve("../../packages/app-core/src");

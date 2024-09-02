@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { AppCore } from "app-core";
+import { AppCore } from "@repo/app-core";
 import "./index.css";
 
 const rootNode = document.getElementById("app");

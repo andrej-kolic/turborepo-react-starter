@@ -12,6 +12,7 @@
     "test:type": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/app-core": "workspace:*",
     "css-loader": "^6.8.1",
     "mini-css-extract-plugin": "^2.7.6",
     "react": "^18.2.0",
@@ -21,7 +22,6 @@
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "app-core": "workspace:*",
     "copy-webpack-plugin": "^11.0.0",
     "@repo/eslint-config": "workspace:*",
     "html-webpack-plugin": "^5.5.3",

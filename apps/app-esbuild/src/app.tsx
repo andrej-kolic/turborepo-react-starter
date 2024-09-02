@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppCore } from "app-core";
+import { AppCore } from "@repo/app-core";
 import "./app.css";
 // import './index.html';
 

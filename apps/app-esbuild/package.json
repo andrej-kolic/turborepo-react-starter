@@ -9,10 +9,11 @@
   "main": "index.js",
   "scripts": {
     "build": "node ./config/build.js",
-    "dev": "mkdir -p dev && cp ./src/index.html ./dev && node ./config/dev.js"
+    "dev": "mkdir -p dev && cp ./src/index.html ./dev && node ./config/dev.js",
+    "__test:type": "tsc --noEmit"
   },
   "dependencies": {
-    "app-core": "workspace:*",
+    "@repo/app-core": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
