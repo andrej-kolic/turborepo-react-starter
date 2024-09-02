@@ -7,10 +7,11 @@ Monorepo starter project for FE projects
 ### Apps and Packages
 
 - ...
-- `app-core`: React app developed as library ('light package)
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `app-core`: React app developed as library ('light package')
+- `@repo/ui`: a stub React component library shared by applications
+- `@repo/ui`: a stub library shared by other packages
+- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
