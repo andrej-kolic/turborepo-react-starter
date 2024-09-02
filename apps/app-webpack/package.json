@@ -23,7 +23,7 @@
     "@types/react-dom": "^18.2.0",
     "app-core": "workspace:*",
     "copy-webpack-plugin": "^11.0.0",
-    "eslint-config-custom": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
     "html-webpack-plugin": "^5.5.3",
     "ts-loader": "^9.5.0",
     "@repo/typescript-config": "workspace:*",

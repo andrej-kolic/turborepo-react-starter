@@ -1,8 +1,8 @@
-// import React from "react";
+import React from "react";
 import TurboRepoImg from "../assets/turborepo.svg"; // TODO: report for bad path
 import "./styles.css";
 
-export function Header() {
+export function Header(): React.ReactNode {
   return (
     <div className="Header">
       <img alt="Turborepo" src={TurboRepoImg} />
