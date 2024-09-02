@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "ui";
+import { Card } from "@repo/ui";
 import type { CustomType } from "@repo/commons";
 import { Header } from "~app-core/Header";
 
