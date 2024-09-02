@@ -1,5 +1,5 @@
 import * as React from "react";
-import { toUppercase } from 'commons';
+import { toUppercase } from '@repo/commons';
 import SupportIcon from './assets/support.svg';
 
 export function Card({

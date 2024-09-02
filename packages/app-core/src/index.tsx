@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "ui";
-import type { CustomType } from "commons";
+import type { CustomType } from "@repo/commons";
 import { Header } from "~app-core/Header";
 
 import "./styles.css";
