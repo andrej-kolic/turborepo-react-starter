@@ -16,14 +16,14 @@ module.exports = {
     require.resolve("@vercel/style-guide/eslint/node"),
     require.resolve("@vercel/style-guide/eslint/browser"),
     require.resolve("@vercel/style-guide/eslint/react"),
-],
+  ],
   plugins: ["only-warn"],
   globals: {
     React: true,
     JSX: true,
   },
   parserOptions: {
-    "sourceType": "module",
+    sourceType: "module",
   },
   env: {
     browser: true,
@@ -41,7 +41,8 @@ module.exports = {
     ".*.js", // Ignore dotfiles
     "node_modules/",
     "dist/",
-    "turbo"
+    "build",
+    "turbo",
   ],
   rules: {
     "import/no-default-export": "off",

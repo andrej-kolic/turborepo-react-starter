@@ -17,6 +17,9 @@ module.exports = {
     "turbo",
   ],
   plugins: ["only-warn"],
+  parserOptions: {
+    sourceType: "module",
+  },
   globals: {
     React: true,
     JSX: true,
@@ -37,6 +40,7 @@ module.exports = {
     ".*.js", // Ignore dotfiles
     "node_modules/",
     "dist/",
+    "build",
     "turbo",
   ],
   overrides: [
