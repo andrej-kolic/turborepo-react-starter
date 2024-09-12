@@ -13,8 +13,8 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "prettier",
-    // require.resolve("@vercel/style-guide/eslint/react"),
     "turbo",
+    // require.resolve("@vercel/style-guide/eslint/react"),
   ],
   plugins: ["only-warn"],
   parserOptions: {
@@ -57,11 +57,12 @@ module.exports = {
       // instead of extending them outside the `overrides`.
       // If you don't want to extend any rules, you don't need an `extends` attribute.
       extends: [
-        // "plugin:@typescript-eslint/recommended",
-        // "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        // 'plugin:@typescript-eslint/recommended-type-checked',
-        "@vercel/style-guide/eslint/typescript",
-      ].map(require.resolve),
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/stylistic-type-checked",
+        // require.resolve("@vercel/style-guide/eslint/typescript"),
+      ],
 
       parser: "@typescript-eslint/parser",
       parserOptions: {
