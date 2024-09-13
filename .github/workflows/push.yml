@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build, Test and Lint
+    name: Lint, Build and Test
     timeout-minutes: 15
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -35,11 +35,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Lint
+        run: pnpm lint
+
       - name: Build
         run: pnpm build
 
       - name: Test
         run: pnpm test
-
-      - name: Lint
-        run: pnpm lint
