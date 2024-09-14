@@ -2,6 +2,8 @@
 
 /** @type {import("syncpack").RcFile} */
 const config = {
+  lintFormatting: false,
+
   dependencyTypes: ["prod", "dev"],
 
   // semverGroups: [
