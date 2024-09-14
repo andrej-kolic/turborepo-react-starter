@@ -15,12 +15,14 @@
     "test:type": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@repo/commons": "workspace:*"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",
@@ -30,9 +32,7 @@
     "@types/node": "^20.5.2",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@repo/eslint-config": "workspace:*",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "@repo/typescript-config": "workspace:*"
+    "jest-environment-jsdom": "^29.7.0"
   }
 }

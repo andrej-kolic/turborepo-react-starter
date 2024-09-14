@@ -18,11 +18,10 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "esbuild": "0.23.1",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0"
+    "@types/react-dom": "^18.2.0",
+    "esbuild": "0.23.1"
   },
-
   "_devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -34,5 +33,4 @@
     "vite": "^4.4.5",
     "vite-tsconfig-paths": "^5.0.1"
   }
-
 }
