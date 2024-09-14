@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "depchk": "SYNCPACK_VERBOSE=true syncpack lint",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
@@ -11,9 +12,10 @@
     "clear:cache": "rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
   },
   "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
     "eslint": "8.57.0",
     "prettier": "^3.3.3",
-    "@repo/typescript-config": "workspace:*",
+    "syncpack": "13.0.0",
     "turbo": "2.1.0",
     "typescript": "5.5.4"
   },
