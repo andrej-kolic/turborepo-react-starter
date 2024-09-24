@@ -5,6 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "test:type": "tsc --noEmit",
     "dev": "storybook dev -p 6006",
     "storybook-docs": "storybook dev --docs",
     "build-storybook": "storybook build",
