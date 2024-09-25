@@ -34,8 +34,8 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
-      # - name: Install dependencies
-      #   run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
       # - name: Check dependencies
       #   run: pnpm depchk
