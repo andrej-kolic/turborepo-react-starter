@@ -3,6 +3,11 @@ name: Publish Storybook to GitHub Pages
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   publish:
     # name: Lint, Test type and Build Storybook
@@ -46,10 +51,11 @@ jobs:
       # - name: Test Type
       #   run: pnpm test:type
 
-      - name: Build Storybook
-        run: cd apps/ui-storybook && pnpm build-storybook
+      # - name: Build Storybook
+      #   run: cd apps/ui-storybook && pnpm build-storybook
 
       - id: build-publish
+        name: Build and Publish
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
           install_command: pnpm install
