@@ -17,10 +17,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LoggedIn: Story = {
+export const Default: Story = {
   args: {
     title: "Card Title",
     href: "#",
+    children: "Children",
+  },
+};
+
+export const ExternalLink: Story = {
+  args: {
+    title: "Card Title",
+    href: "http://example.com",
     children: "Children",
   },
 };
