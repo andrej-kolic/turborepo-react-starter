@@ -1,0 +1,45 @@
+name: Build and Publish Storybook to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    # name: Lint, Test type and Build Storybook
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # - name: Check dependencies
+      #   run: pnpm depchk
+
+      # - name: Lint
+      #   run: pnpm lint
+
+      # - name: Test Type
+      #   run: pnpm test:type
+
+      - name: Build Storybook
+        run: cd apps/ui-storybook && pnpm build-storybook
