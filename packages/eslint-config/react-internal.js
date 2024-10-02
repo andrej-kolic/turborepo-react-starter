@@ -8,6 +8,8 @@ const project = resolve(process.cwd(), "tsconfig.json");
  * that utilize React.
  */
 
+// TODO: add react extends, like 'plugin:react-hooks/recommended'
+
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: [

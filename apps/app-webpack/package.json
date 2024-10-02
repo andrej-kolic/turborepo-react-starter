@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
-    "css-loader": "^6.8.1",
-    "mini-css-extract-plugin": "^2.7.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -25,7 +23,9 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
     "ts-loader": "^9.5.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "webpack": "^5.88.2",
