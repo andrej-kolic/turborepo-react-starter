@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "depchk": "SYNCPACK_VERBOSE=true syncpack lint",
+    "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
+    "depchk": "syncpack lint",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
@@ -9,7 +10,8 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:type": "turbo run test:type",
-    "clear:cache": "rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+    "clear:cache": "rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "check-all": "pnpm depchk && pnpm test:type && pnpm lint && pnpm test"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
