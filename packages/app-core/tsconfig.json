@@ -1,14 +1,22 @@
 {
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
-    "outDir": "build",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "outDir": "lib",
+
+    "sourceMap": true,
+    "types": ["jest", "node"],
+
+    "module": "ESNext",
+    // "moduleResolution": "NodeNext",
+
     "paths": {
       // "~/*": ["./src/*", "../ui/src/*"],
       "~app-core/*": ["./src/*"],
-      "~ui/*": ["../ui/src/*"]
-
+      // "~ui/*": ["../ui/src/*"]
     },
   },
-  "include": ["src/**/*", "test", "../../@types"],
-  "exclude": ["node_modules", "src/**/*/assets"]
+  "include": ["src/**/*", "test", "../../@types", "tsup.config.ts"],
+  "exclude": ["node_modules", "src/**/*/assets", "build", "dist", "lib"]
 }

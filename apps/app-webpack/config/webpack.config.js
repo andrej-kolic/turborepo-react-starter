@@ -14,10 +14,11 @@ const distPath = pathResolve("./dist");
 // const appUiSourceDir = pathResolve("../../packages/ui/src");
 
 export default {
+  mode: 'production',
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "output.js",
+    filename: "index.js",
     clean: true,
   },
   resolve: {

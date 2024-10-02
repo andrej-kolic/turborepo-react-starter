@@ -2,11 +2,11 @@
   "extends": "@repo/typescript-config/webpack.json",
   "compilerOptions": {
     "outDir": "build",
-    "paths": {
-      // "~/*": ["./src/*", "../../packages/app-core/src/*", "../../packages/ui/src/*"]
-      "~app-core/*": ["../../packages/app-core/src/*"],
-      "~ui/*": ["../../packages/ui/src/*"]
-    }
+    // "paths": {
+    //   // "~/*": ["./src/*", "../../packages/app-core/src/*", "../../packages/ui/src/*"]
+    //   "~app-core/*": ["../../packages/app-core/src/*"],
+    //   "~ui/*": ["../../packages/ui/src/*"]
+    // }
   },
   "include": ["**/*.ts", "**/*.tsx", "../../@types"],
   "exclude": ["node_modules", "dist", "build"]

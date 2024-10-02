@@ -1,8 +1,9 @@
 body {
     /* image should be in src/assets folder, but this is to test css url transform */
-    background-image: url('../public/images/bg-pattern.webp');
+    background-image: url('./assets/bg-pattern.webp');
 }
 
 .AppCore {
     border: 2px orange dashed;
+    background-image: url('./assets/bg-pattern.webp');
 }
