@@ -1,3 +1,5 @@
 .Header {
     display: flex;
+    border: 1px solid cyan;
+    background-image: url('./assets/turborepo.svg');
 }

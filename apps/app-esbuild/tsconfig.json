@@ -7,10 +7,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    "paths": {
-      "~app-core/*": ["../../packages/app-core/src/*"],
-      "~ui/*": ["../../packages/ui/src/*"],
-    },
+    // "paths": {
+    //   "~app-core/*": ["../../packages/app-core/src/*"],
+    //   "~ui/*": ["../../packages/ui/src/*"],
+    // },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
