@@ -26,9 +26,11 @@ module.exports = {
   },
   ignorePatterns: [
     ".*.js", // Ignore dotfiles
+    "*.config.ts", // Ignore config files
     "node_modules/",
     "dist/",
     "build/",
+    "compile/",
   ],
   overrides: [
     {

@@ -13,7 +13,7 @@ export function AppCore(props: {
   title: string;
   children: React.ReactNode;
   href: string;
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <div className="AppCore">
       <Header />

@@ -12,4 +12,7 @@ await esbuild.build({
     ".webp": "file",
     ".svg": "file",
   },
+  format: 'esm',
+
+  // external: ['react', 'react-dom'],
 });

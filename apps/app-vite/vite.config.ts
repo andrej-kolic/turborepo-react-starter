@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import tsconfigPaths from 'vite-tsconfig-paths'; // set up aliases from tsconfig
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import tsconfigPaths from "vite-tsconfig-paths"; // set up aliases from tsconfig
 
 // TODO: move to common? it's also used by webpack
 const __dirname = process.cwd();
@@ -12,12 +12,21 @@ const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   // resolve: {
-    // preserveSymlinks: true,
-    // alias: {
-    //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
-    //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
-    // },
+  // preserveSymlinks: true,
+  // alias: {
+  //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
+  //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
+  // },
   // },
 
-  publicDir: appCorePublic
-})
+  publicDir: appCorePublic,
+
+  // TODO: remove, added for readable output
+  build: {
+    minify: false,
+    rollupOptions: {
+      // external: ["react", "react-dom", "react/jsx-runtime"],
+      treeshake: false,
+    },
+  },
+});

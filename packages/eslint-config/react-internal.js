@@ -40,10 +40,12 @@ module.exports = {
   },
   ignorePatterns: [
     ".*.js", // Ignore dotfiles
+    "*.config.ts", // Ignore config files
     "node_modules/",
     "dist/",
-    "build",
-    "turbo",
+    "build/",
+    "compile/",
+    "turbo/",
   ],
   overrides: [
     // Force ESLint to detect .tsx files
