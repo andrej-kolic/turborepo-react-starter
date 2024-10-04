@@ -10,7 +10,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:type": "turbo run test:type",
-    "clear:cache": "rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "clear:cache": "pnpm cache delete && rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "check-all": "pnpm depchk && pnpm test:type && pnpm lint && pnpm test"
   },
   "devDependencies": {
@@ -19,8 +19,8 @@
     "prettier": "^3.3.3",
     "syncpack": "13.0.0",
     "turbo": "2.1.3",
-    "typescript": "5.6.2"
+    "typescript": "5.5.4"
   },
-  "packageManager": "pnpm@8.6.10",
+  "packageManager": "pnpm@9.12.0",
   "name": "turborepo-react-starter"
 }

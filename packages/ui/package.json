@@ -12,7 +12,8 @@
     "compile": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:type": "tsc --noEmit"
+    "test:type": "tsc --noEmit",
+    "clear:cache": "jest --clearCache"
   },
   "devDependencies": {
     "@repo/commons": "workspace:*",
@@ -31,5 +32,8 @@
     "jest-environment-jsdom": "^29.7.0",
     "react": "^18.3.1",
     "ts-jest": "^29.2.5"
+  },
+  "dependencies": {
+    "trim-lines": "^3.0.1"
   }
 }

@@ -3,8 +3,11 @@
   "compilerOptions": {
     "outDir": "build",
     "paths": {
-      "~ui/*": ["./src/*"]
-    }
+      "~ui/*": ["./src/*"],
+    },
+
+    /** needed for Jest 'ts-jest/presets/js-with-ts' preset to transform ESM files */
+    "allowJs": true,
   },
   "include": ["src/**/*", "test", "../../@types"], // TODO: @types as package?
   "exclude": ["dist", "build", "node_modules", "src/**/*/assets"]

@@ -3,11 +3,14 @@
  * https://jestjs.io/docs/configuration
  */
 
+/** list of ESM packages to be transformed by Babel */
+const esModules = ['trim-lines'].join('|');
+
 /** @type {import('jest').Config} */
 const config = {
     // All imported modules in your tests should be mocked automatically
     // automock: false,
-  
+
     // Stop running tests after `n` failures
     // bail: 0,
   
@@ -112,11 +115,14 @@ const config = {
     // notifyMode: "failure-change",
   
     // A preset that is used as a base for Jest's configuration
-    preset: 'ts-jest',
+    // preset: 'ts-jest', <== uncomment to use babel for js files
+
+    /** this preset is needed for @repo/commons ES modules (and ESM in general) to work, along with 'allowJs: true' in tsconfig */
+    preset: 'ts-jest/presets/js-with-ts',
   
     // Run tests from one or more projects
     // projects: undefined,
-  
+
     // Use this configuration option to add custom reporters to Jest
     // reporters: undefined,
   
@@ -137,7 +143,8 @@ const config = {
   
     // A list of paths to directories that Jest should use to search for files in
     roots: [
-      "<rootDir>/src"
+      // "<rootDir>/src"
+      "<rootDir>"
     ],
   
     // Allows you to use a custom runner instead of Jest's default test runner
@@ -188,13 +195,32 @@ const config = {
     // transform: {
     //   "^.+\\.(ts|tsx)$": "ts-jest"
     // },
-  
+
+    transform: {
+      // '^.+\\.jsx?$': ['babel-jest', { configFile: './babel.test.config.cjs' }], //   <== uncomment to use babel for js files
+      '^.+\\.tsx?$': 'ts-jest',
+    },
+
+    verbose: true,
+
     // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
     // transformIgnorePatterns: [
     //   "/node_modules/",
     //   "\\.pnp\\.[^\\/]+$"
     // ],
-  
+
+    /**
+     * Enable to transform ESM packages from node modules.
+     * Also use "preset: 'ts-jest/presets/js-with-ts'" and "allowJs: true" in tsconfig.jsom
+     *
+     * Alternative is to use babel for js files, with babel.config.cjs file
+     *
+     * NOTE: this will not work starting typescript 5.6, see https://github.com/kulshekhar/ts-jest/issues/4561
+     */
+    transformIgnorePatterns: [
+      `node_modules/(?!(?:.pnpm/)?(${esModules}))`,
+    ],
+
     // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
     // unmockedModulePathPatterns: undefined,
   
