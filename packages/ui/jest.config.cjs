@@ -4,7 +4,7 @@
  */
 
 /** list of ESM packages to be transformed by Babel */
-const esModules = ['trim-lines'].join('|');
+// const esModules = ['trim-lines'].join('|');
 
 /** @type {import('jest').Config} */
 const config = {
@@ -115,10 +115,10 @@ const config = {
     // notifyMode: "failure-change",
   
     // A preset that is used as a base for Jest's configuration
-    // preset: 'ts-jest', <== uncomment to use babel for js files
+    // preset: 'ts-jest',
 
     /** this preset is needed for @repo/commons ES modules (and ESM in general) to work, along with 'allowJs: true' in tsconfig */
-    preset: 'ts-jest/presets/js-with-ts',
+    preset: 'ts-jest/presets/js-with-ts', // <== uncomment to use ts-jest for js files
   
     // Run tests from one or more projects
     // projects: undefined,
@@ -210,16 +210,16 @@ const config = {
     // ],
 
     /**
-     * Enable to transform ESM packages from node modules.
+     * Enable to transform ESM packages from node_modules.
      * Also use "preset: 'ts-jest/presets/js-with-ts'" and "allowJs: true" in tsconfig.jsom
      *
      * Alternative is to use babel for js files, with babel.config.cjs file
      *
      * NOTE: this will not work starting typescript 5.6, see https://github.com/kulshekhar/ts-jest/issues/4561
      */
-    transformIgnorePatterns: [
-      `node_modules/(?!(?:.pnpm/)?(${esModules}))`,
-    ],
+    // transformIgnorePatterns: [
+    //   `node_modules/(?!(?:.pnpm/)?(${esModules}))`,
+    // ],
 
     // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
     // unmockedModulePathPatterns: undefined,

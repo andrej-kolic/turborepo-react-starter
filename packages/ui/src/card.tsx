@@ -1,9 +1,6 @@
 import * as React from "react";
 import { toUppercase } from '@repo/commons';
 import SupportIcon from './assets/support.svg';
-import * as TR from 'trim-lines';  // TODO: remove
-
-console.log('* TR:', TR); // TODO: remove
 
 export function Card({
   className,
