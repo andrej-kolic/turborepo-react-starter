@@ -13,6 +13,10 @@ export function Card({
   children: React.ReactNode;
   href: string;
 }): JSX.Element {
+  const handleClick: React.MouseEventHandler<HTMLHeadingElement> = (event) => {
+    console.log("* Card click:", event, href);
+  };
+
   return (
     <a
       className={className}
@@ -21,7 +25,7 @@ export function Card({
       target="_blank"
     >
       <img alt="icon" src={SupportIcon} width={100} />
-      <h2>
+      <h2 onClick={handleClick}>
         {toUppercase(title)} <span>-&gt;</span>
       </h2>
       <p>{children}</p>

@@ -3,10 +3,14 @@ import TurboRepoImg from "../assets/turborepo.svg"; // TODO: report for bad path
 import "./styles.css";
 
 export function Header(): React.ReactNode {
+  const handleClick: React.MouseEventHandler<HTMLHeadingElement> = (event) => {
+    console.log("* Header click:", event);
+  };
+
   return (
     <div className="Header">
       <img alt="Turborepo" src={TurboRepoImg} />
-      <h1>Starter app</h1>
+      <h1 onClick={handleClick}>Starter app</h1>
     </div>
   );
 }

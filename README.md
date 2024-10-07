@@ -36,3 +36,13 @@ To develop all apps and packages, run the following command:
 ```
 pnpm dev
 ```
+
+### Debug
+
+https://code.visualstudio.com/docs/nodejs/reactjs-tutorial#_debugging-react
+
+To open chrome in debug mode run:
+```
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=remote-debug-profile
+```
+(lot's of data will be saved to 'remote-debug-profile' dir)
