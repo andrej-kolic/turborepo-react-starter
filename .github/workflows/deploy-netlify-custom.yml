@@ -38,7 +38,8 @@ jobs:
         run: |
           netlify deploy \
             --dir apps/app-vite/dist \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --filter app-vite
 
       - name: DEBUG=WILL BE REMOVED
         run: echo ${{ steps.publish.NETLIFY_PREVIEW_URL }}
