@@ -1,0 +1,45 @@
+on:
+    workflow_dispatch:
+    # push
+
+name: Publish on Netlify (Custom)
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install Netlify
+        run: npm install netlify-cli@17.36.4 -g
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build --filter app-vite
+
+        # --site ${{ secrets.NETLIFY_SITE_ID }} \
+      - name: Deploy to Netlify
+        id: netlify_deploy
+        run: |
+          netlify deploy \
+            --dir apps/app-vite/dist \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      - name: DEBUG=WILL BE REMOVED
+        run: echo ${{ steps.publish.NETLIFY_PREVIEW_URL }}
+
