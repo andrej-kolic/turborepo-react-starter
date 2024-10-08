@@ -45,4 +45,4 @@ jobs:
             --filter app-vite
 
       - name: DEBUG=WILL BE REMOVED
-        run: echo ${{ steps.publish.NETLIFY_PREVIEW_URL }}
+        run: echo ${{ steps.netlify_deploy.outputs.NETLIFY_PREVIEW_URL }}
