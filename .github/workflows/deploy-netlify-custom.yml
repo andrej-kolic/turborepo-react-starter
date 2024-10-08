@@ -32,6 +32,9 @@ jobs:
       - name: Build
         run: pnpm build --filter app-vite
 
+      - name: Log Build output
+        run: ls apps/app-vite/dist
+
       - name: Deploy to Netlify
         id: netlify_deploy
         run: |
