@@ -1,0 +1,16 @@
+{
+  "name": "@repo/infra-netlify",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "envprint": "printenv",
+    "test": "dotenvx run -- pnpm envprint",
+    "_deploy:netlify": "dotenvx run -- ./tools/deploy-netlify.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "netlify-cli": "^17.36.4"
+  }
+}
