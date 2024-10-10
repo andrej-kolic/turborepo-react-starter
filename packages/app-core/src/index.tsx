@@ -5,8 +5,9 @@ import { Header } from "~app-core/Header";
 
 import "./styles.css";
 
+// TODO remove
 const ct: CustomType = { _type: "test" };
-ct;
+console.log('* custom type:', ct);
 
 export function AppCore(props: {
   className?: string;

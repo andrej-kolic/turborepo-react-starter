@@ -1,14 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": ["**/.env.*local", "tsconfig.json"],
 
-  "globalEnv": ["GLOBAL_VARIABLE"],
-  "globalPassThroughEnv": ["NON-HASHED_GLOBAL_VARIABLE"],
+  "globalEnv": ["GITHUB_TOKEN", "NODE_ENV"],
+  "globalPassThroughEnv": ["AWS_SECRET_KEY", "GITHUB_TOKEN"],
 
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": ["dist/**"]
     },
     "lint": {},
     "dev": {
