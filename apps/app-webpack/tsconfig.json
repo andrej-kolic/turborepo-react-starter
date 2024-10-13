@@ -3,11 +3,11 @@
   "compilerOptions": {
     "outDir": "build",
     "paths": {
-      // "~/*": ["./src/*", "../../packages/app-core/src/*", "../../packages/ui/src/*"]
       "~app-core/*": ["../../packages/app-core/src/*"],
       "~ui/*": ["../../packages/ui/src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "../../@types"],
-  "exclude": ["node_modules", "dist", "build"]
+  "include": ["src", "../../@types"],
+  "exclude": ["node_modules", "dist", "build"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

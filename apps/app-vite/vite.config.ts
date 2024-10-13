@@ -12,6 +12,8 @@ const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
 // const appCoreEnv = pathResolve("./node_modules/@repo/app-core/.env");
 const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 
+console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
+
 // const de = dotenvx.config({
 //   path: appCoreEnv
 // });
@@ -34,7 +36,7 @@ const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: appCoreEnvDir,
-  envPrefix: 'APP_REACT',
+  envPrefix: "APP_REACT",
 
   // define: Object.fromEntries(dotEnvMap),
 
