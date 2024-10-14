@@ -1,5 +1,15 @@
 on:
   workflow_dispatch:
+    inputs:
+      bundler:
+        type: choice
+        description: "Bundler"
+        required: true
+        options:
+          - app-vite
+          - app-webpack
+          - app-esbuild
+
   # push
 
 name: Publish on Netlify (Custom)
@@ -30,19 +40,19 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm build --filter app-vite
+        run: pnpm build --filter ${{ github.event.inputs.bundler }}
 
       - name: Log Build output
-        run: ls apps/app-vite/dist
+        run: ls apps/${{ github.event.inputs.bundler }}/dist
 
       - name: Deploy to Netlify
         id: netlify_deploy
         run: |
           netlify deploy \
-            --dir apps/app-vite/dist \
+            --dir apps/${{ github.event.inputs.bundler }}/dist \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --filter app-vite
+            --filter ${{ github.event.inputs.bundler }}
 
       - name: DEBUG=WILL BE REMOVED
         run: echo ${{ steps.netlify_deploy.outputs.NETLIFY_PREVIEW_URL }}
