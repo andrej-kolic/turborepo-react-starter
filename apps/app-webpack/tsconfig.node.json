@@ -4,8 +4,10 @@
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+
+    "strictNullChecks": true,
   },
 
-  "include": ["config/webpack.config.ts"]
+  "include": ["config/**/*.ts"]
 }

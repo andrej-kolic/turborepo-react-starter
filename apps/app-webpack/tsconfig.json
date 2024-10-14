@@ -1,12 +1,19 @@
 {
   "extends": "@repo/typescript-config/webpack.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "build",
     "paths": {
       "~app-core/*": ["../../packages/app-core/src/*"],
       "~ui/*": ["../../packages/ui/src/*"]
     }
   },
+
+  // needed for ts-node to resolve imports without file extension
+  "ts-node": {
+    "experimentalSpecifierResolution": "node",
+  },
+
   "include": ["src", "../../@types"],
   "exclude": ["node_modules", "dist", "build"],
   "references": [{ "path": "./tsconfig.node.json" }]
