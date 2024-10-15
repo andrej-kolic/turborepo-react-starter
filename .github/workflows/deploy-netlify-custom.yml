@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Print environment variables
-        run: echo printenv
+        run: printenv
 
       - name: Check out code
         uses: actions/checkout@v4
