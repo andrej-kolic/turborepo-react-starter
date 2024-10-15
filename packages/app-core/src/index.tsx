@@ -26,6 +26,8 @@ export function AppCore(props: {
   console.log("* import.meta.env.APP_REACT_ENV_FILE:", import.meta.env.APP_REACT_ENV_FILE);
 
   // @ts-ignore - external
+  console.log("* import.meta.env.BUNDLER:", import.meta.env.BUNDLER);
+  // @ts-ignore - external
   console.log("* import.meta.env.APP_REACT_HOME:", import.meta.env?.APP_REACT_HOME);
   // @ts-ignore - excluded
   console.log("* import.meta.env.HOME:", import.meta.env?.HOME);

@@ -50,7 +50,10 @@ const webpackConfig = (
     },
 
     plugins: [
-      new webpack.DefinePlugin(envMap),
+      new webpack.DefinePlugin({
+        ...envMap,
+        "import.meta.env.BUNDLER": JSON.stringify("webpack"),
+      }),
 
       new HtmlWebpackPlugin({
         title: "ReactTs starter",

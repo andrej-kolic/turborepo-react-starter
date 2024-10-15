@@ -9,5 +9,5 @@
     "strictNullChecks": true,
   },
 
-  "include": ["config/**/*.ts"]
+  "include": ["config/**/*.ts", "../../@types"]
 }

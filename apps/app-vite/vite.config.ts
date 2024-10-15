@@ -3,8 +3,6 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths"; // set up aliases from tsconfig
 
-// import dotenvx from '@dotenvx/dotenvx';
-
 // TODO: move to common? it's also used by webpack
 const __dirname = process.cwd();
 const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
@@ -44,6 +42,10 @@ export default defineConfig({
   //   'process.env.API_URL': JSON.stringify(process.env.API_URL),
   //   'process.env.TEST': JSON.stringify('abc'),
   // },
+
+  define: {
+    'import.meta.env.BUNDLER': JSON.stringify('vite'),
+  },
 
   plugins: [react(), tsconfigPaths()],
 

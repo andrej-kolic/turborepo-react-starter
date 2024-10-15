@@ -6,6 +6,7 @@
 
 /** can be extended in package to contain specific keys */
 interface ImportMetaEnv {
+  readonly BUNDLER: string;
   readonly APP_REACT_TITLE: string;
   readonly APP_REACT_ENV_FILE: string;
   [string]: string;

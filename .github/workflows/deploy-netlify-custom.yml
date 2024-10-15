@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print environment variables
+        run: echo printenv
+
       - name: Check out code
         uses: actions/checkout@v4
         with:
