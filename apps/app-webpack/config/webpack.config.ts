@@ -55,8 +55,11 @@ const webpackConfig = (
       }),
 
       new HtmlWebpackPlugin({
-        title: "ReactTs starter",
+        // title: "ReactTs starter",
         template: `./src/index.html`,
+        templateParameters: {
+          title: process.env.APP_REACT_TITLE,
+        },
       }),
 
       new MiniCssExtractPlugin({
