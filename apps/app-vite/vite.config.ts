@@ -44,7 +44,7 @@ export default defineConfig({
   // },
 
   define: {
-    'import.meta.env.BUNDLER': JSON.stringify('vite'),
+    "import.meta.env.BUNDLER": JSON.stringify("vite"),
   },
 
   plugins: [react(), tsconfigPaths()],

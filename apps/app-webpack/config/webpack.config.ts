@@ -51,8 +51,7 @@ const webpackConfig = (
 
     plugins: [
       new webpack.DefinePlugin({
-        ...envMap,
-        "import.meta.env.BUNDLER": JSON.stringify("webpack"),
+        "import.meta.env": JSON.stringify(envMap),
       }),
 
       new HtmlWebpackPlugin({

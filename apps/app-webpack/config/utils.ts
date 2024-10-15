@@ -1,35 +1,45 @@
 import dotenvFlow from "dotenv-flow";
+// import dotenvExpand from "dotenv-expand"
 
+/**
+ * import only variables with this prefix to import.meta.env
+ */
 const PREFIX = "APP_REACT";
 
 export function getEnvVariables(appCoreEnvDir: string) {
   const variables = dotenvFlow.config({
-    default_node_env: 'development',
+    default_node_env: "development",
     path: appCoreEnvDir,
     debug: false,
   });
   console.log("* variables", typeof variables, variables.parsed);
 
-  const dotEnvMap = new Map<string, string>();
+  // const expandedVariables = dotenvExpand.expand(variables.parsed);
+  // console.log('* expanded variables:', expandedVariables);
+
+  /*
+  const dotEnvMap: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(variables.parsed ?? {})) {
     // console.log(`Key: ${key}, Value: ${value}`);
     if (key.startsWith(PREFIX)) {
-      dotEnvMap.set(`import.meta.env.${key}`, JSON.stringify(value));
+      dotEnvMap[key] = value;
     }
   }
-  console.log("* dotenv map:", Object.fromEntries(dotEnvMap));
+  console.log("* dotenv map:", dotEnvMap);
+  */
 
-  const processEnvMap = new Map<string, string>();
+  const processEnvMap: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(process.env)) {
     // console.log(`Key: ${key}, Value: ${value}`);
     if (key.startsWith(PREFIX)) {
-      processEnvMap.set(`import.meta.env.${key}`, JSON.stringify(value));
+      processEnvMap[key] = value;
     }
   }
-  console.log("* process map:", Object.fromEntries(processEnvMap));
+  console.log("* process map:", processEnvMap);
 
   return {
-    ...Object.fromEntries(dotEnvMap),
-    ...Object.fromEntries(processEnvMap),
+    // ...dotEnvMap,
+    ...processEnvMap,
+    BUNDLER: "webpack",
   };
 }

@@ -2,7 +2,8 @@
     "extends": ["//"],
     "tasks": {
       "build": {
-        "env": ["APP_REACT_*"]
+        "env": ["APP_REACT_*"],
+        "passThroughEnv": ["BUNDLER"]
       }
     }
   }
