@@ -32,39 +32,46 @@ console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
 // console.log('* map:', Object.fromEntries(dotEnvMap));
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  envDir: appCoreEnvDir,
-  envPrefix: "APP_REACT",
+// export default defineConfig({
+export default defineConfig((configEnv) => {
+  console.log("* configEnv:", configEnv);
 
-  // define: Object.fromEntries(dotEnvMap),
+  // const { command, mode, isSsrBuild, isPreview } = configEnv;
 
-  // define: {
-  //   'process.env.API_URL': JSON.stringify(process.env.API_URL),
-  //   'process.env.TEST': JSON.stringify('abc'),
-  // },
+  return {
+    envDir: appCoreEnvDir,
+    envPrefix: "APP_REACT",
 
-  define: {
-    "import.meta.env.BUNDLER": JSON.stringify("vite"),
-  },
+    // define: Object.fromEntries(dotEnvMap),
 
-  plugins: [react(), tsconfigPaths()],
+    // define: {
+    //   'process.env.API_URL': JSON.stringify(process.env.API_URL),
+    //   'process.env.TEST': JSON.stringify('abc'),
+    // },
 
-  // resolve: {
-  // preserveSymlinks: true,
-  // alias: {
-  //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
-  //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
-  // },
-  // },
+    define: {
+      "import.meta.env.BUNDLER": JSON.stringify("vite"),
+    },
 
-  publicDir: appCorePublic,
+    plugins: [react(), tsconfigPaths()],
 
-  // TODO: remove, added for readable output
-  // build: {
-  //   minify: false,
-  //   rollupOptions: {
-  //     // external: ["react", "react-dom", "react/jsx-runtime"],
-  //     treeshake: false,
-  //   },
-  // },
+    // resolve: {
+    // preserveSymlinks: true,
+    // alias: {
+    //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
+    //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
+    // },
+    // },
+
+    publicDir: appCorePublic,
+
+    // TODO: remove, added for readable output
+    // build: {
+    //   minify: false,
+    //   rollupOptions: {
+    //     // external: ["react", "react-dom", "react/jsx-runtime"],
+    //     treeshake: false,
+    //   },
+    // },
+  };
 });

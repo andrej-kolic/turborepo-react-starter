@@ -18,7 +18,12 @@ const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 // const webpackMode = 'production';
 // const nodeEnv = process.env.NODE_ENV ?? "";
 
-const envMap = getEnvVariables(appCoreEnvDir);
+console.log("");
+console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
+console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
+console.log("");
+
+const envMap = getEnvVariables(appCoreEnvDir, process.env.BUILD_ENVIRONMENT ?? 'production');
 
 //
 
@@ -32,8 +37,10 @@ const webpackConfig = (
   env: Record<string, string>,
   options: WebpackConfigOptions,
 ): webpack.Configuration => {
+  console.log("");
   console.log("* options:", options);
-  console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
+  console.log("* env:", env);
+  console.log("");
 
   return {
     // mode: 'production',

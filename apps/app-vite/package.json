@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:staging": "vite --mode staging",
+    "dev:production": "vite --mode production",
     "__dev:test": "NODE_ENV=development vite",
     "build": "tsc && vite build",
+    "build:staging": "tsc && vite build --mode staging",
     "__build:test": "NODE_ENV=development tsc && NODE_ENV=development vite build",
     "build-verbose": "tsc && DEBUG=vite-tsconfig-paths vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
