@@ -3,7 +3,7 @@
     "tasks": {
       "build": {
         "env": ["APP_REACT_*"],
-        "passThroughEnv": ["BUNDLER"]
+        "passThroughEnv": ["BUNDLER", "MODE"]
       }
     }
   }

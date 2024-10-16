@@ -26,6 +26,7 @@ export function AppCore(props: {
   console.log("* getEnvironmentVariables():", getEnvironmentVariables());
 
   console.log("* import.meta.env.BUNDLER:", import.meta.env.BUNDLER);
+  console.log("* import.meta.env.MODE:", import.meta.env.MODE);
   console.log("* import.meta.env.APP_REACT_TITLE:", import.meta.env.APP_REACT_TITLE);
   console.log("* import.meta.env.APP_REACT_ENV_FILE:", import.meta.env.APP_REACT_ENV_FILE);
 
