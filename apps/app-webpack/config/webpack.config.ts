@@ -24,13 +24,16 @@ const envMap = getEnvVariables(appCoreEnvDir);
 
 interface WebpackConfigOptions {
   mode: "development" | "production";
-  entry: string;
+  config: string;
+  env: Record<string, string>
 }
 
 const webpackConfig = (
-  options: WebpackConfigOptions
+  env: Record<string, string>,
+  options: WebpackConfigOptions,
 ): webpack.Configuration => {
   console.log("* options:", options);
+  console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
 
   return {
     // mode: 'production',

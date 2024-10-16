@@ -12,7 +12,7 @@ export function getEnvVariables(appCoreEnvDir: string) {
     path: appCoreEnvDir,
     debug: false,
   });
-  console.log("* variables", typeof variables, variables.parsed);
+  console.log("* parsed variables from .env files", typeof variables, variables.parsed);
 
   // const expandedVariables = dotenvExpand.expand(variables.parsed);
   // console.log('* expanded variables:', expandedVariables);
@@ -37,9 +37,12 @@ export function getEnvVariables(appCoreEnvDir: string) {
   }
   console.log("* process map:", processEnvMap);
 
+  const BUNDLER = "webpack";
+  // const MODE
+
   return {
     // ...dotEnvMap,
     ...processEnvMap,
-    BUNDLER: "webpack",
+    BUNDLER,
   };
 }
