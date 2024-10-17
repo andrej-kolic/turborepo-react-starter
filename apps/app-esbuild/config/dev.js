@@ -1,9 +1,22 @@
 import * as esbuild from "esbuild";
+import { getEnvVariables } from './utils.js';
+import path from "path";
 
 const DEV_DIR = "dev";
 
+console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
+console.log("* process.env.BUILD_ENVIRONMENT: ", process.env.BUILD_ENVIRONMENT);
+
+const __dirname = process.cwd();
+const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
+// const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
+// const appCoreEnv = pathResolve("./node_modules/@repo/app-core/.env");
+const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
+
+const environmentVariables = getEnvVariables(appCoreEnvDir, process.env.BUILD_ENVIRONMENT);
+
 let ctx = await esbuild.context({
-  entryPoints: ["./src/app.tsx"],
+  entryPoints: ["src/app.tsx"],
   bundle: true,
   outdir: DEV_DIR,
   metafile: true,
@@ -13,7 +26,12 @@ let ctx = await esbuild.context({
     ".webp": "file",
     ".svg": "file",
   },
+  format: 'esm',
   logLevel: "info",
+
+  define: {
+    "import.meta.env": JSON.stringify(environmentVariables),
+  },
 });
 
 await ctx.watch();
