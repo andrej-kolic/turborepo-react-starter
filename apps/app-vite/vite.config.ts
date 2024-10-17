@@ -11,6 +11,7 @@ const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
 const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 
 console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
+console.log("* process.env.BUILD_ENVIRONMENT: ", process.env.BUILD_ENVIRONMENT);
 
 // const de = dotenvx.config({
 //   path: appCoreEnv
