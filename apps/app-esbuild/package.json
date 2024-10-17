@@ -8,8 +8,14 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "build": "node ./config/build.js",
-    "dev": "mkdir -p dev && cp ./src/index.html ./dev && node ./config/dev.js",
+    "copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
+    "copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
+    "build": "pnpm copy-html-build && BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-production} node ./config/build.js",
+    "build:staging": "BUILD_ENVIRONMENT=staging pnpm build",
+    "dev": "pnpm copy-html-dev && BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-development} node ./config/dev.js",
+    "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
+    "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
+    "preview": "serve ./dist",
     "__test:type": "tsc --noEmit"
   },
   "dependencies": {
@@ -20,7 +26,9 @@
   "devDependencies": {
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "esbuild": "0.24.0"
+    "dotenv-flow": "^4.1.0",
+    "esbuild": "0.24.0",
+    "serve": "^14.2.4"
   },
   "_devDependencies": {
     "@types/react": "^18.2.0",
