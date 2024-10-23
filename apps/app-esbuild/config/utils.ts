@@ -39,7 +39,7 @@ export function getEnvVariables(appCoreEnvDir: string, buildEnvironment: string)
   }
   console.log("* process map:", processEnvMap);
 
-  const BUNDLER = "webpack";
+  const BUNDLER = "esbuild";
   const MODE = buildEnvironment;
 
   return {
