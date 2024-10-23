@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ES2022",
+    "moduleResolution": "node",
+
+    "allowSyntheticDefaultImports": true, // needed for ts-node
+
+    "strictNullChecks": true
+  },
+
+  // needed for ts-node to work
+  // NOTE: if ts-node make too many issues (after updates etc.) replace it with tsx
+  "ts-node": {
+    // needed for imports without extension on node 20 and ts-next
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+
+    // needed for descriptive error output since node 20
+    "logError": true,
+    "pretty": true,
+  },
+
+  "include": ["config/**/*.ts", "../../@types"]
+}

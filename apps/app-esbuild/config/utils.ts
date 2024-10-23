@@ -7,7 +7,7 @@ import dotenvFlow from "dotenv-flow";
  */
 const PREFIX = "APP_REACT";
 
-export function getEnvVariables(appCoreEnvDir, buildEnvironment) {
+export function getEnvVariables(appCoreEnvDir: string, buildEnvironment: string) {
   const variables = dotenvFlow.config({
     node_env: buildEnvironment,
     default_node_env: "development",
@@ -30,7 +30,7 @@ export function getEnvVariables(appCoreEnvDir, buildEnvironment) {
   console.log("* dotenv map:", dotEnvMap);
   */
 
-  const processEnvMap = {};
+  const processEnvMap: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(process.env)) {
     // console.log(`Key: ${key}, Value: ${value}`);
     if (key.startsWith(PREFIX)) {
@@ -39,7 +39,7 @@ export function getEnvVariables(appCoreEnvDir, buildEnvironment) {
   }
   console.log("* process map:", processEnvMap);
 
-  const BUNDLER = "esbuild";
+  const BUNDLER = "webpack";
   const MODE = buildEnvironment;
 
   return {
