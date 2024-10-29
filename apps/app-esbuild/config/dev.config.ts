@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { getEnvVariables } from "./utils";
+import { getEnvVariables } from "@repo/dev-tools/config/environment";
 import path from "path";
 
 const DEV_DIR = "dev";
@@ -10,14 +10,15 @@ console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
 console.log("");
 
 const __dirname = process.cwd();
-const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
+const pathResolve = (pathEntry: string) => path.resolve(__dirname, pathEntry);
 // const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
 // const appCoreEnv = pathResolve("./node_modules/@repo/app-core/.env");
 const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 
 const environmentVariables = getEnvVariables(
   appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? 'production'
+  process.env.BUILD_ENVIRONMENT ?? 'production',
+  "esbuild",
 );
 
 async function dev() {
@@ -26,8 +27,7 @@ async function dev() {
     bundle: true,
     outdir: DEV_DIR,
     metafile: true,
-    //   minify: true,
-    //   sourcemap: true,
+    sourcemap: true,
     loader: {
       ".webp": "file",
       ".svg": "file",

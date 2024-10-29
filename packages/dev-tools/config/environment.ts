@@ -1,17 +1,17 @@
 import dotenvFlow from "dotenv-flow";
-
 // import dotenvExpand from "dotenv-expand"
 
+// TODO: add as options parameter in getEnvVariables()
 /**
- * import only variables with this prefix to import.meta.env
+ * add only variables with this prefix to import.meta.env
  */
 const PREFIX = "APP_REACT";
 
-export function getEnvVariables(appCoreEnvDir: string, buildEnvironment: string) {
+export function getEnvVariables(envDir: string, buildEnvironment: string, bundler: string) {
   const variables = dotenvFlow.config({
     node_env: buildEnvironment,
     default_node_env: "development",
-    path: appCoreEnvDir,
+    path: envDir,
     debug: false,
   });
   console.log("* parsed variables from .env files", typeof variables, variables.parsed);
@@ -39,7 +39,7 @@ export function getEnvVariables(appCoreEnvDir: string, buildEnvironment: string)
   }
   console.log("* process map:", processEnvMap);
 
-  const BUNDLER = "esbuild";
+  const BUNDLER = bundler;
   const MODE = buildEnvironment;
 
   return {

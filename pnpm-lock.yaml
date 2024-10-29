@@ -42,6 +42,9 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
       '@types/node':
         specifier: ^22.7.4
         version: 22.7.4
@@ -51,9 +54,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
       esbuild:
         specifier: 0.24.0
         version: 0.24.0
@@ -119,6 +119,9 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -143,9 +146,6 @@ importers:
       css-loader:
         specifier: ^7.1.2
         version: 7.1.2(webpack@5.95.0)
-      dotenv-flow:
-        specifier: ^4.1.0
-        version: 4.1.0
       html-webpack-plugin:
         specifier: ^5.6.0
         version: 5.6.0(webpack@5.95.0)
@@ -331,6 +331,15 @@ importers:
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(jiti@2.3.3)(postcss@8.4.47)(typescript@5.5.4)(yaml@2.5.1)
+
+  packages/dev-tools:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.7.4
+        version: 22.7.4
+      dotenv-flow:
+        specifier: ^4.1.0
+        version: 4.1.0
 
   packages/eslint-config:
     devDependencies:

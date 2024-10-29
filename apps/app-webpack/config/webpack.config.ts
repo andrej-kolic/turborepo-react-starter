@@ -4,9 +4,10 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import webpack from "webpack";
-import { getEnvVariables } from "./utils";
+import { getEnvVariables } from "@repo/dev-tools/config/environment";
 
 import "webpack-dev-server";
+
 
 const __dirname = process.cwd();
 const pathResolve = (pathEntry: string) => path.resolve(__dirname, pathEntry);
@@ -23,19 +24,23 @@ console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
 console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
 console.log("");
 
-const envMap = getEnvVariables(appCoreEnvDir, process.env.BUILD_ENVIRONMENT ?? 'production');
+const envMap = getEnvVariables(
+  appCoreEnvDir,
+  process.env.BUILD_ENVIRONMENT ?? "production",
+  "webpack"
+);
 
 //
 
 interface WebpackConfigOptions {
   mode: "development" | "production";
   config: string;
-  env: Record<string, string>
+  env: Record<string, string>;
 }
 
 const webpackConfig = (
   env: Record<string, string>,
-  options: WebpackConfigOptions,
+  options: WebpackConfigOptions
 ): webpack.Configuration => {
   console.log("");
   console.log("* options:", options);

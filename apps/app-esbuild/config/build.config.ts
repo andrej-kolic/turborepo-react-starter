@@ -1,9 +1,8 @@
 import * as esbuild from "esbuild";
-import { getEnvVariables } from "./utils";
+import { getEnvVariables } from "@repo/dev-tools/config/environment";
 import path from "path";
 
 import tsNodeLoader from 'ts-node';
-// import tsNodeLoader from 'ts-node/esm';
 
 tsNodeLoader.register({
   esm: true
@@ -24,14 +23,13 @@ const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 
 const environmentVariables = getEnvVariables(
   appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? 'production'
+  process.env.BUILD_ENVIRONMENT ?? 'production',
+  "esbuild",
 );
 
-// const buildResult = await
 async function bundle() {
   try {
     const buildResult = await esbuild.build({
-      // entryPoints: 3,
       entryPoints: ["src/app.tsx"],
       bundle: true,
       outdir: BUILD_DIR,
