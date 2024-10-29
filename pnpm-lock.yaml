@@ -76,6 +76,9 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
       '@types/node':
         specifier: ^22.7.4
         version: 22.7.4

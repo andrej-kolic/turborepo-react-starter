@@ -1,15 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths"; // set up aliases from tsconfig
 
-// TODO: move to common? it's also used by webpack
-const __dirname = process.cwd();
-const pathResolve = (pathEntry) => path.resolve(__dirname, pathEntry);
-const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
-// const appCoreEnv = pathResolve("./node_modules/@repo/app-core/.env");
-const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
+// TODO: fix import when fix is available
+// must be local path, or vite complains (for now). See https://github.com/vitejs/vite/issues/5370
+import {
+  appCorePublic,
+  appCoreEnvDir,
+}
+from "./node_modules/@repo/dev-tools/config/paths";
 
+// TODO: add printEnv() to dev-tools?
 console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
 console.log("* process.env.BUILD_ENVIRONMENT: ", process.env.BUILD_ENVIRONMENT);
 

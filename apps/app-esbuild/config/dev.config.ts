@@ -1,19 +1,8 @@
 import * as esbuild from "esbuild";
 import { getEnvVariables } from "@repo/dev-tools/config/environment";
-import path from "path";
+import { appCoreEnvDir } from "@repo/dev-tools/config/paths";
 
 const DEV_DIR = "dev";
-
-console.log("");
-console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
-console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
-console.log("");
-
-const __dirname = process.cwd();
-const pathResolve = (pathEntry: string) => path.resolve(__dirname, pathEntry);
-// const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
-// const appCoreEnv = pathResolve("./node_modules/@repo/app-core/.env");
-const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
 
 const environmentVariables = getEnvVariables(
   appCoreEnvDir,

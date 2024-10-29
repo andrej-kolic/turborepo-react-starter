@@ -8,6 +8,13 @@ import dotenvFlow from "dotenv-flow";
 const PREFIX = "APP_REACT";
 
 export function getEnvVariables(envDir: string, buildEnvironment: string, bundler: string) {
+
+  // TODO: use debug
+  console.log("");
+  console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
+  console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
+  console.log("");
+
   const variables = dotenvFlow.config({
     node_env: buildEnvironment,
     default_node_env: "development",

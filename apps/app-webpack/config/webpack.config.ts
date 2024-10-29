@@ -1,28 +1,19 @@
-import path from "node:path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import webpack from "webpack";
 import { getEnvVariables } from "@repo/dev-tools/config/environment";
+import {
+  appCorePublic,
+  appCoreEnvDir,
+  distPath,
+} from "@repo/dev-tools/config/paths";
 
 import "webpack-dev-server";
 
-
-const __dirname = process.cwd();
-const pathResolve = (pathEntry: string) => path.resolve(__dirname, pathEntry);
-
-const appCorePublic = pathResolve("./node_modules/@repo/app-core/public");
-const distPath = pathResolve("./dist");
-const appCoreEnvDir = pathResolve("./node_modules/@repo/app-core/");
-
 // const webpackMode = 'production';
 // const nodeEnv = process.env.NODE_ENV ?? "";
-
-console.log("");
-console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
-console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
-console.log("");
 
 const envMap = getEnvVariables(
   appCoreEnvDir,
@@ -54,7 +45,7 @@ const webpackConfig = (
     entry: "./src/index.tsx",
 
     output: {
-      path: path.resolve(__dirname, "dist"),
+      path: distPath,
       filename: "output.js",
       clean: true,
     },
