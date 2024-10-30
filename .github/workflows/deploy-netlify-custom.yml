@@ -1,3 +1,5 @@
+name: Publish on Netlify (Custom)
+
 on:
   workflow_dispatch:
     inputs:
@@ -10,14 +12,22 @@ on:
           - app-webpack
           - app-esbuild
 
-  # push
+      environment:
+        type: choice
+        description: "Environment"
+        required: true
+        options:
+          - production
+          - staging
 
-name: Publish on Netlify (Custom)
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print environment variables
+        run: printenv
+
       - name: Check out code
         uses: actions/checkout@v4
         with:
@@ -40,7 +50,7 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm build --filter ${{ github.event.inputs.bundler }}
+        run: BUILD_ENVIRONMENT=${{ github.event.inputs.environment }} pnpm build --filter ${{ github.event.inputs.bundler }}
 
       - name: Log Build output
         run: ls apps/${{ github.event.inputs.bundler }}/dist

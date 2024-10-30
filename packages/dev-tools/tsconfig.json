@@ -1,0 +1,16 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "noEmit": true,
+
+    "skipLibCheck": true,
+    "module": "ES2022",
+    "moduleResolution": "node",
+
+    "strictNullChecks": true,
+  },
+
+  "include": ["config/**/*.ts", "../../@types"],
+  "exclude": ["build", "node_modules"]
+}

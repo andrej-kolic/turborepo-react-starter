@@ -8,9 +8,17 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "build": "node ./config/build.js",
-    "dev": "mkdir -p dev && cp ./src/index.html ./dev && node ./config/dev.js",
-    "__test:type": "tsc --noEmit"
+    "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
+    "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
+    "_bundle": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-production} TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/build.config.ts",
+    "_bundle_dev": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-development} TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/dev.config.ts",
+    "build": "pnpm _copy-html-build && pnpm _bundle",
+    "build:staging": "BUILD_ENVIRONMENT=staging pnpm build",
+    "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
+    "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
+    "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
+    "preview": "serve ./dist",
+    "test:type": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
@@ -18,9 +26,13 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@repo/dev-tools": "workspace:*",
+    "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "esbuild": "0.24.0"
+    "esbuild": "0.24.0",
+    "serve": "^14.2.4",
+    "ts-node": "^10.9.2"
   },
   "_devDependencies": {
     "@types/react": "^18.2.0",
