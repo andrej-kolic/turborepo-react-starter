@@ -81,4 +81,4 @@ jobs:
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
       - name: DEBUG=WILL BE REMOVED
-        run: echo ${{ steps.netlify_deploy.outputs.NETLIFY_PREVIEW_URL }}
+        run: echo ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
