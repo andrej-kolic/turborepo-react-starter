@@ -76,9 +76,10 @@ jobs:
 
       - name: Generate URL Preview
         id: url_preview
-        run: |
-          NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
-          echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+        # run: |
+        #   NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
+        #   echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
+        run: jq . deploy_output.json
 
       - name: DEBUG=WILL BE REMOVED
         run: echo ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
