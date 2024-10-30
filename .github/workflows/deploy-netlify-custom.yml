@@ -21,6 +21,7 @@ on:
           - staging
 
 env:
+  # SELECTED_ENVIRONMENT: ${{ github.ref_name }}
   BRANCH_NAME: ${{ github.ref_name }}
 
 jobs:
@@ -62,7 +63,7 @@ jobs:
         id: netlify_deploy
         run: |
           prod_flag=""
-          if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
+          if [ ${{ github.event.inputs.environment }} = "production" ]; then prod_flag="--prod"; fi
           netlify deploy \
             --dir apps/${{ github.event.inputs.bundler }}/dist \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
