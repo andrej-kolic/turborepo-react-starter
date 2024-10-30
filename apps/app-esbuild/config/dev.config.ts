@@ -6,7 +6,7 @@ const DEV_DIR = "dev";
 
 const environmentVariables = getEnvVariables(
   appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? 'production',
+  process.env.BUILD_ENVIRONMENT ?? 'development',
   "esbuild",
 );
 
