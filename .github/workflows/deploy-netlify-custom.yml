@@ -20,13 +20,16 @@ on:
           - production
           - staging
 
+env:
+  BRANCH_NAME: ${{ github.ref_name }}
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print environment variables
-        run: printenv
+      - name: Print environment
+        run: echo "Environment=${{ github.event.inputs.environment }} - Bundler=${{github.event.inputs.bundler}}, BRANCH_NAME=$BRANCH_NAME"
 
       - name: Check out code
         uses: actions/checkout@v4
@@ -58,11 +61,14 @@ jobs:
       - name: Deploy to Netlify
         id: netlify_deploy
         run: |
+          prod_flag=""
+          if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
           netlify deploy \
             --dir apps/${{ github.event.inputs.bundler }}/dist \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --filter ${{ github.event.inputs.bundler }}
+            --filter ${{ github.event.inputs.bundler }} \
+            $prod_flag
 
       - name: DEBUG=WILL BE REMOVED
         run: echo ${{ steps.netlify_deploy.outputs.NETLIFY_PREVIEW_URL }}
