@@ -28,7 +28,7 @@ export function Card({
       <h2 onClick={handleClick}>
         {toUppercase(title)} <span>-&gt;</span>
       </h2>
-      <p>{children}</p>
+      <div>{children}</div>
     </a>
   );
 }
