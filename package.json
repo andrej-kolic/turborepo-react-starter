@@ -14,7 +14,6 @@
     "check-all": "pnpm depchk && pnpm test:type && pnpm lint && pnpm test"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.16.1",
     "@repo/typescript-config": "workspace:*",
     "eslint": "8.57.0",
     "prettier": "^3.3.3",

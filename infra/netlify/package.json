@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "envprint": "printenv",
     "envtest": "dotenvx run -- pnpm envprint",
-    "_deploy:netlify": "dotenvx run -- ./tools/deploy-netlify.sh"
+    "deploy": "dotenvx run -- ./tools/deploy-netlify.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.16.1",
     "netlify-cli": "^17.36.4"
   }
 }

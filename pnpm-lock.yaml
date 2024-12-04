@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: ^1.16.1
-        version: 1.16.1
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
@@ -237,6 +234,9 @@ importers:
 
   infra/netlify:
     devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: ^1.16.1
+        version: 1.16.1
       netlify-cli:
         specifier: ^17.36.4
         version: 17.36.4(@types/express@4.17.21)(@types/node@22.7.4)(picomatch@4.0.2)
