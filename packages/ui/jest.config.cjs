@@ -35,7 +35,7 @@ const config = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -97,10 +97,10 @@ const config = {
   //   '\\.(css|scss)$': '<rootDir>/test/mockResource.ts',
   // },
   moduleNameMapper: {
-    "^~ui/(.*)$": "<rootDir>/src/$1", // TODO: read from tsconfig
-    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-      "<rootDir>/test/mock-resource.ts",
-    "\\.(css|scss)$": "<rootDir>/test/mock-resource.ts",
+    '^~ui/(.*)$': '<rootDir>/src/$1', // TODO: read from tsconfig
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/test/mock-resource.ts',
+    '\\.(css|scss)$': '<rootDir>/test/mock-resource.ts',
     // '\\.css$': 'identity-obj-proxy',
     // '\\.esm$': `${rootDirectory}/test/mocks/esm.js`,
     // './assets/*': `${rootDirectory}/test/mocks/asset.js`,
@@ -119,7 +119,7 @@ const config = {
   // preset: 'ts-jest',
 
   /** this preset is needed for @repo/commons ES modules (and ESM in general) to work, along with 'allowJs: true' in tsconfig */
-  preset: "ts-jest/presets/js-with-ts", // <== uncomment to use ts-jest for js files
+  preset: 'ts-jest/presets/js-with-ts', // <== uncomment to use ts-jest for js files
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -145,7 +145,7 @@ const config = {
   // A list of paths to directories that Jest should use to search for files in
   roots: [
     // "<rootDir>/src"
-    "<rootDir>",
+    '<rootDir>',
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner
@@ -164,7 +164,7 @@ const config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -199,7 +199,7 @@ const config = {
 
   transform: {
     // '^.+\\.jsx?$': ['babel-jest', { configFile: './babel.test.config.cjs' }], //   <== uncomment to use babel for js files
-    "^.+\\.tsx?$": "ts-jest",
+    '^.+\\.tsx?$': 'ts-jest',
   },
 
   verbose: true,

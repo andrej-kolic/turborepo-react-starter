@@ -1,7 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["@repo/eslint-config/library.js"],
+  extends: ['@repo/eslint-config/library.js'],
   // env: {
   //   node: true,
   //   es6: true,

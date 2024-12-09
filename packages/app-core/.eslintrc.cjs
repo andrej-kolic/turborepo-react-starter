@@ -1,6 +1,6 @@
 module.exports = {
-  extends: ["@repo/eslint-config/react-internal.js"],
-  ignorePatterns: ["node_modules/", "dist/", "build/", "turbo/"],
+  extends: ['@repo/eslint-config/react-internal.js'],
+  ignorePatterns: ['node_modules/', 'dist/', 'build/', 'turbo/'],
   // rules: {
   //   "import/no-extraneous-dependencies": [
   //     "error",

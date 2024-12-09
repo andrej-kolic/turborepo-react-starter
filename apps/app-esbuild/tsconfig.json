@@ -9,7 +9,7 @@
 
     "paths": {
       "~app-core/*": ["../../packages/app-core/src/*"],
-      "~ui/*": ["../../packages/ui/src/*"],
+      "~ui/*": ["../../packages/ui/src/*"]
     },
 
     /* Bundler mode */

@@ -4,7 +4,7 @@
 const config = {
   lintFormatting: false,
 
-  dependencyTypes: ["prod", "dev"],
+  dependencyTypes: ['prod', 'dev'],
 
   // semverGroups: [
   //   {

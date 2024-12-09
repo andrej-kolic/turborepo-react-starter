@@ -6,7 +6,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
 
-    "strictNullChecks": true,
+    "strictNullChecks": true
   },
 
   "include": ["config/**/*.ts", "../../@types"]

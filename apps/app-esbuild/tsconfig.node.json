@@ -19,7 +19,7 @@
 
     // needed for descriptive error output since node 20
     "logError": true,
-    "pretty": true,
+    "pretty": true
   },
 
   "include": ["config/**/*.ts", "../../@types"]

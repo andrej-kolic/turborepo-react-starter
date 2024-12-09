@@ -1,10 +1,10 @@
-const path = require("path");
+const path = require('path');
 
-console.log("*", path.join(__dirname, "./src")); // TODO: remove
+console.log('*', path.join(__dirname, './src')); // TODO: remove
 
 module.exports = {
   root: true,
-  extends: ["@repo/eslint-config/react-internal.js"],
+  extends: ['@repo/eslint-config/react-internal.js'],
   // extends: ["@repo/eslint-config/library.js"],
   // parser: "@typescript-eslint/parser",
   // parserOptions: {

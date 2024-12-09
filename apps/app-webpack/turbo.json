@@ -1,13 +1,13 @@
 {
-    "extends": ["//"],
-    "tasks": {
-      "build": {
-        "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
-        "passThroughEnv": ["BUNDLER", "MODE"]
-      },
-      "dev": {
-        "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
-        "passThroughEnv": ["BUNDLER", "MODE"]
-      }
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
+      "passThroughEnv": ["BUNDLER", "MODE"]
+    },
+    "dev": {
+      "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
+      "passThroughEnv": ["BUNDLER", "MODE"]
     }
   }
+}

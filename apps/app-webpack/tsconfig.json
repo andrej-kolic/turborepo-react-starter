@@ -11,7 +11,7 @@
 
   // needed for ts-node to resolve imports without file extension
   "ts-node": {
-    "experimentalSpecifierResolution": "node",
+    "experimentalSpecifierResolution": "node"
   },
 
   "include": ["src", "../../@types"],

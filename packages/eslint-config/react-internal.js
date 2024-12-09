@@ -1,6 +1,6 @@
-const { resolve } = require("node:path");
+const { resolve } = require('node:path');
 
-const project = resolve(process.cwd(), "tsconfig.json");
+const project = resolve(process.cwd(), 'tsconfig.json');
 
 /*
  * This is a custom ESLint configuration for use with
@@ -13,14 +13,14 @@ const project = resolve(process.cwd(), "tsconfig.json");
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: [
-    "eslint:recommended",
-    "prettier",
-    "turbo",
+    'eslint:recommended',
+    'prettier',
+    'turbo',
     // require.resolve("@vercel/style-guide/eslint/react"),
   ],
-  plugins: ["only-warn"],
+  plugins: ['only-warn'],
   parserOptions: {
-    sourceType: "module",
+    sourceType: 'module',
   },
   globals: {
     React: true,
@@ -32,43 +32,43 @@ module.exports = {
     es6: true,
   },
   settings: {
-    "import/resolver": {
+    'import/resolver': {
       typescript: {
         project,
       },
     },
   },
   ignorePatterns: [
-    ".*.js", // Ignore dotfiles
-    "*.config.ts", // Ignore config files
-    "node_modules/",
-    "dist/",
-    "build/",
-    "compile/",
-    "turbo/",
+    '.*.js', // Ignore dotfiles
+    '*.config.ts', // Ignore config files
+    'node_modules/',
+    'dist/',
+    'build/',
+    'compile/',
+    'turbo/',
   ],
   overrides: [
     // Force ESLint to detect .tsx files
-    { files: ["*.js?(x)", "*.ts?(x)"] },
+    { files: ['*.js?(x)', '*.ts?(x)'] },
   ],
 
   // typescript specific rules
   overrides: [
     {
-      files: ["*.ts?(x)"], // Your TypeScript files extension
+      files: ['*.ts?(x)'], // Your TypeScript files extension
 
       // As mentioned in the comments, you should extend TypeScript plugins here,
       // instead of extending them outside the `overrides`.
       // If you don't want to extend any rules, you don't need an `extends` attribute.
       extends: [
-        "plugin:@typescript-eslint/recommended-type-checked",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:@typescript-eslint/strict-type-checked",
-        "plugin:@typescript-eslint/stylistic-type-checked",
+        'plugin:@typescript-eslint/recommended-type-checked',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:@typescript-eslint/strict-type-checked',
+        'plugin:@typescript-eslint/stylistic-type-checked',
         // require.resolve("@vercel/style-guide/eslint/typescript"),
       ],
 
-      parser: "@typescript-eslint/parser",
+      parser: '@typescript-eslint/parser',
       parserOptions: {
         project,
         projectService: true,
@@ -76,13 +76,13 @@ module.exports = {
       },
 
       rules: {
-        "@typescript-eslint/consistent-type-imports": [
-          "error",
+        '@typescript-eslint/consistent-type-imports': [
+          'error',
           {
-            fixStyle: "inline-type-imports",
+            fixStyle: 'inline-type-imports',
           },
         ],
-        "@typescript-eslint/no-import-type-side-effects": "error",
+        '@typescript-eslint/no-import-type-side-effects': 'error',
       },
     },
   ],

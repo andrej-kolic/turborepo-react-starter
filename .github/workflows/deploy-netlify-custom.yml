@@ -5,7 +5,7 @@ on:
     inputs:
       bundler:
         type: choice
-        description: "Bundler"
+        description: Bundler
         required: true
         options:
           - app-vite
@@ -14,7 +14,7 @@ on:
 
       environment:
         type: choice
-        description: "Environment"
+        description: Environment
         required: true
         options:
           - production
@@ -45,7 +45,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install Netlify
         run: npm install netlify-cli@17.36.4 -g
@@ -94,4 +94,3 @@ jobs:
         run: |
           echo NETLIFY_DEPLOY_URL:${{ steps.generate_urls.outputs.NETLIFY_DEPLOY_URL }}
           echo NETLIFY_URL:${{ steps.generate_urls.outputs.NETLIFY_URL }}
-
