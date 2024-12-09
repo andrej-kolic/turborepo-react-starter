@@ -6,7 +6,10 @@
 dist/
 dev/
 build/
+
+# tools and frameworks
 storybook-static/
+turbo/
 
 # cache
 .eslintcache
