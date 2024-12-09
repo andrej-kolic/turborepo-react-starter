@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
     "depchk": "syncpack lint",
