@@ -1,63 +1,63 @@
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import CopyWebpackPlugin from "copy-webpack-plugin";
-import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import webpack from "webpack";
-import { getEnvVariables } from "@repo/dev-tools/config/environment";
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import webpack from 'webpack';
+import { getEnvVariables } from '@repo/dev-tools/config/environment';
 import {
   appCorePublic,
   appCoreEnvDir,
   distPath,
-} from "@repo/dev-tools/config/paths";
+} from '@repo/dev-tools/config/paths';
 
-import "webpack-dev-server";
+import 'webpack-dev-server';
 
 // const webpackMode = 'production';
 // const nodeEnv = process.env.NODE_ENV ?? "";
 
 const envMap = getEnvVariables(
   appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? "production",
-  "webpack"
+  process.env.BUILD_ENVIRONMENT ?? 'production',
+  'webpack',
 );
 
 //
 
 interface WebpackConfigOptions {
-  mode: "development" | "production";
+  mode: 'development' | 'production';
   config: string;
   env: Record<string, string>;
 }
 
 const webpackConfig = (
   env: Record<string, string>,
-  options: WebpackConfigOptions
+  options: WebpackConfigOptions,
 ): webpack.Configuration => {
-  console.log("");
-  console.log("* options:", options);
-  console.log("* env:", env);
-  console.log("");
+  console.log('');
+  console.log('* options:', options);
+  console.log('* env:', env);
+  console.log('');
 
   return {
     // mode: 'production',
     // mode: webpackMode,
 
-    entry: "./src/index.tsx",
+    entry: './src/index.tsx',
 
     output: {
       path: distPath,
-      filename: "output.js",
+      filename: 'output.js',
       clean: true,
     },
 
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
       plugins: [new TsconfigPathsPlugin({})],
     },
 
     plugins: [
       new webpack.DefinePlugin({
-        "import.meta.env": JSON.stringify(envMap),
+        'import.meta.env': JSON.stringify(envMap),
       }),
 
       new HtmlWebpackPlugin({
@@ -69,7 +69,7 @@ const webpackConfig = (
       }),
 
       new MiniCssExtractPlugin({
-        filename: "static/css/[name].css",
+        filename: 'static/css/[name].css',
       }),
 
       new CopyWebpackPlugin({
@@ -86,7 +86,7 @@ const webpackConfig = (
       rules: [
         {
           test: /\.tsx?$/,
-          use: "ts-loader",
+          use: 'ts-loader',
           exclude: /node_modules/,
         },
         {
@@ -95,16 +95,16 @@ const webpackConfig = (
           use: [
             MiniCssExtractPlugin.loader,
             {
-              loader: "css-loader",
+              loader: 'css-loader',
               options: { url: true },
             },
           ],
         },
         {
           test: /\.(?:ico|gif|png|jpg|jpeg|jp2|svg|webp)$/i,
-          type: "asset/resource",
+          type: 'asset/resource',
           generator: {
-            filename: "static/assets/images/[name][hash][ext]",
+            filename: 'static/assets/images/[name][hash][ext]',
           },
         },
       ],

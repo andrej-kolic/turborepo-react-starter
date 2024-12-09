@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import { toUppercase } from '@repo/commons';
 import SupportIcon from './assets/support.svg';
 
@@ -14,7 +14,7 @@ export function Card({
   href: string;
 }): JSX.Element {
   const handleClick: React.MouseEventHandler<HTMLHeadingElement> = (event) => {
-    console.log("* Card click:", event, href);
+    console.log('* Card click:', event, href);
   };
 
   return (

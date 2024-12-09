@@ -1,18 +1,17 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths"; // set up aliases from tsconfig
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tsconfigPaths from 'vite-tsconfig-paths'; // set up aliases from tsconfig
 
 // TODO: fix import when fix is available
 // must be local path, or vite complains (for now). See https://github.com/vitejs/vite/issues/5370
 import {
   appCorePublic,
   appCoreEnvDir,
-}
-from "./node_modules/@repo/dev-tools/config/paths";
+} from './node_modules/@repo/dev-tools/config/paths';
 
 // TODO: add printEnv() to dev-tools?
-console.log("* process.env.NODE_ENV: ", process.env.NODE_ENV);
-console.log("* process.env.BUILD_ENVIRONMENT: ", process.env.BUILD_ENVIRONMENT);
+console.log('* process.env.NODE_ENV: ', process.env.NODE_ENV);
+console.log('* process.env.BUILD_ENVIRONMENT: ', process.env.BUILD_ENVIRONMENT);
 
 // const de = dotenvx.config({
 //   path: appCoreEnv
@@ -36,13 +35,13 @@ console.log("* process.env.BUILD_ENVIRONMENT: ", process.env.BUILD_ENVIRONMENT);
 // https://vitejs.dev/config/
 // export default defineConfig({
 export default defineConfig((configEnv) => {
-  console.log("* configEnv:", configEnv);
+  console.log('* configEnv:', configEnv);
 
   // const { command, mode, isSsrBuild, isPreview } = configEnv;
 
   return {
     envDir: appCoreEnvDir,
-    envPrefix: "APP_REACT",
+    envPrefix: 'APP_REACT',
 
     // define: Object.fromEntries(dotEnvMap),
 
@@ -52,7 +51,7 @@ export default defineConfig((configEnv) => {
     // },
 
     define: {
-      "import.meta.env.BUNDLER": JSON.stringify("vite"),
+      'import.meta.env.BUNDLER': JSON.stringify('vite'),
     },
 
     plugins: [react(), tsconfigPaths()],

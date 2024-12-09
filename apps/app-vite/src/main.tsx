@@ -1,7 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { AppCore } from "@repo/app-core";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { AppCore } from '@repo/app-core';
+import './index.css';
 
 // TODO: // remove
 export const Wrapper = () => {
@@ -15,11 +15,11 @@ export const Wrapper = () => {
     <AppCore title="app-vite" href="#">
       <div>trt</div>
     </AppCore>
-  )
-}
+  );
+};
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Wrapper />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

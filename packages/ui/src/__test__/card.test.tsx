@@ -1,14 +1,14 @@
-import React from "react";
-import { screen, render } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import { Card } from "~ui/card";
+import React from 'react';
+import { screen, render } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { Card } from '~ui/card';
 
-describe("Card", () => {
-  it("should render", () => {
+describe('Card', () => {
+  it('should render', () => {
     render(
       <Card href="example.com" title="Cool title">
         Cool content
-      </Card>
+      </Card>,
     );
 
     expect(screen.getByText(/Cool title/i)).toBeInTheDocument();

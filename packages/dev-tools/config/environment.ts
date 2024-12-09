@@ -1,27 +1,34 @@
-import dotenvFlow from "dotenv-flow";
+import dotenvFlow from 'dotenv-flow';
 // import dotenvExpand from "dotenv-expand"
 
 // TODO: add as options parameter in getEnvVariables()
 /**
  * add only variables with this prefix to import.meta.env
  */
-const PREFIX = "APP_REACT";
+const PREFIX = 'APP_REACT';
 
-export function getEnvVariables(envDir: string, buildEnvironment: string, bundler: string) {
-
+export function getEnvVariables(
+  envDir: string,
+  buildEnvironment: string,
+  bundler: string,
+) {
   // TODO: use debug
-  console.log("");
-  console.log("* process.env.NODE_ENV:", process.env.NODE_ENV);
-  console.log("* process.env.BUILD_ENVIRONMENT", process.env.BUILD_ENVIRONMENT);
-  console.log("");
+  console.log('');
+  console.log('* process.env.NODE_ENV:', process.env.NODE_ENV);
+  console.log('* process.env.BUILD_ENVIRONMENT', process.env.BUILD_ENVIRONMENT);
+  console.log('');
 
   const variables = dotenvFlow.config({
     node_env: buildEnvironment,
-    default_node_env: "development",
+    default_node_env: 'development',
     path: envDir,
     debug: false,
   });
-  console.log("* parsed variables from .env files", typeof variables, variables.parsed);
+  console.log(
+    '* parsed variables from .env files',
+    typeof variables,
+    variables.parsed,
+  );
 
   // const expandedVariables = dotenvExpand.expand(variables.parsed);
   // console.log('* expanded variables:', expandedVariables);
@@ -44,7 +51,7 @@ export function getEnvVariables(envDir: string, buildEnvironment: string, bundle
       processEnvMap[key] = value;
     }
   }
-  console.log("* process map:", processEnvMap);
+  console.log('* process map:', processEnvMap);
 
   const BUNDLER = bundler;
   const MODE = buildEnvironment;

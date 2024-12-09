@@ -1,2 +1,2 @@
 // component exports
-export { Card, add } from "~ui/card";
+export { Card, add } from '~ui/card';

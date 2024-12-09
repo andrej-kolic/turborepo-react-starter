@@ -1,10 +1,10 @@
-import React from "react";
-import TurboRepoImg from "../assets/turborepo.svg"; // TODO: report for bad path
-import "./styles.css";
+import React from 'react';
+import TurboRepoImg from '../assets/turborepo.svg'; // TODO: report for bad path
+import './styles.css';
 
 export function Header(): React.ReactNode {
   const handleClick: React.MouseEventHandler<HTMLHeadingElement> = (event) => {
-    console.log("* Header click:", event);
+    console.log('* Header click:', event);
   };
 
   return (

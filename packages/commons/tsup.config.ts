@@ -1,9 +1,9 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["esm"],
-  target: "es2022",
+  entry: ['src/index.ts'],
+  format: ['esm'],
+  target: 'es2022',
 
   /**
    * clean: true mess with watch mode because it empty folder, but type definitions are not recreated

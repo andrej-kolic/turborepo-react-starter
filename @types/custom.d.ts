@@ -30,12 +30,12 @@ interface ImportMeta {
  * TODO: check vite/client types
  */
 
-declare module "*.module.css" {
+declare module '*.module.css' {
   const selectors: Record<string, string>;
   export default selectors;
 }
 
-declare module "*.css" {
+declare module '*.css' {
   const content: string;
   export default content;
 }
@@ -48,17 +48,17 @@ declare module "*.css" {
 // }
 
 // NOTE: asset JavaScript files have to be referenced with an additional specifier end such as '?'
-declare module "~/assets/*" {
+declare module '~/assets/*' {
   const reference: string;
   export default reference;
 }
 
-declare module "*.png" {
+declare module '*.png' {
   const reference: string;
   export default reference;
 }
 
-declare module "*.svg" {
+declare module '*.svg' {
   const reference: string;
 
   // _eslint-disable-next-line import/no-default-export
