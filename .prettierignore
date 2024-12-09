@@ -1,6 +1,16 @@
-pnpm-lock.yaml
+# project
+# src/**/assets/**
+# public/**
 
+# output
 dist/
 dev/
 build/
 storybook-static/
+
+# cache
+.eslintcache
+# .babelcache
+
+# usual suspects
+pnpm-lock.yaml
