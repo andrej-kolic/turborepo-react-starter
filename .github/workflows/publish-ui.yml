@@ -8,6 +8,9 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  HUSKY: 0
+
 jobs:
   publish:
     # name: Build and Publish Storybook

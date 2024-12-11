@@ -1,8 +1,12 @@
+name: Publish on Netlify
+
 on:
   workflow_dispatch:
   # push
 
-name: Publish on Netlify
+env:
+  HUSKY: 0
+
 jobs:
   publish:
     runs-on: ubuntu-latest

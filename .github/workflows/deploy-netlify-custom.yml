@@ -21,6 +21,7 @@ on:
           - staging
 
 env:
+  HUSKY: 0
   # SELECTED_ENVIRONMENT: ${{ github.ref_name }}
   BRANCH_NAME: ${{ github.ref_name }}
 
