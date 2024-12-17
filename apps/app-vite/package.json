@@ -29,7 +29,6 @@
     "vite-tsconfig-paths": "^5.0.1"
   },
   "_devDependencies": {
-    "@typescript-eslint/parser": "^8.8.0",
     "eslint-plugin-react-refresh": "^0.4.12"
   }
 }
