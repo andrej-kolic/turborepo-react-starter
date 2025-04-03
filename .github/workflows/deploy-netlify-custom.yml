@@ -48,9 +48,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # REMOVE
-      # - name: Install Netlify
-      #   run: npm install netlify-cli@19.1.5 -g
+      - name: Install Netlify
+        run: npm install netlify-cli@19.1.5 -g
 
       - name: Install dependencies
         run: pnpm install
@@ -63,11 +62,10 @@ jobs:
 
       - name: Deploy to Netlify
         id: netlify_deploy
-        # run: npx netlify deploy --build --prod # REMOVE
         run: |
           prod_flag=""
           if [ ${{ github.event.inputs.environment }} = "production" ]; then prod_flag="--prod"; fi
-          pnpx netlify deploy \
+          netlify deploy \
             --dir apps/${{ github.event.inputs.bundler }}/dist \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
