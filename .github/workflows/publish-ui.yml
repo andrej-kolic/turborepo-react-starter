@@ -59,7 +59,7 @@ jobs:
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
           # install_command: pnpm install
-          # install_command: echo Skipping install, dependencies installed manually
+          install_command: echo Skipping install, dependencies installed manually
           build_command: cd apps/ui-storybook && pnpm build-storybook
           path: apps/ui-storybook/storybook-static
           checkout: false
