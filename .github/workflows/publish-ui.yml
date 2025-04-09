@@ -2,6 +2,11 @@ name: Publish Storybook to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      documentation:
+        type: boolean
+        description: Documentation only
+        required: true
 
 permissions:
   contents: read
@@ -17,10 +22,11 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.build-publish.outputs.page_url }}
+      url: ${{ steps.publish-storybook.outputs.page_url }}
 
     timeout-minutes: 15
     runs-on: ubuntu-latest
+
     # To use Remote Caching, uncomment the next lines and follow the steps below.
     # env:
     #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -34,7 +40,7 @@ jobs:
 
       - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 10
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -42,24 +48,26 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # - name: Install dependencies
-      #   run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-      # - name: Check dependencies
-      #   run: pnpm depchk
+      - name: Check dependencies
+        run: pnpm depchk
 
-      # - name: Lint
-      #   run: pnpm lint
-
-      # - name: Test Type
-      #   run: pnpm test:type
-
-      - id: build-publish
-        name: Build and Publish
+      - id: publish-storybook
+        name: Publish Storybook
         uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
         with:
-          install_command: pnpm install
-          # install_command: echo Skipping install, dependencies installed manually
-          build_command: cd apps/ui-storybook && pnpm build-storybook
+          # install_command: pnpm install
+          install_command: echo Skipping install, dependencies installed manually
+
+          # build_command: cd apps/ui-storybook && pnpm build-storybook
+          build_command: |
+            if ${{ inputs.documentation }}; then
+              pnpm build-storybook-docs
+              else
+              pnpm build-storybook
+            fi
+
           path: apps/ui-storybook/storybook-static
           checkout: false

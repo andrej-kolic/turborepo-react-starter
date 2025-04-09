@@ -5,6 +5,8 @@
     "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
     "depchk": "syncpack lint",
     "build": "turbo run build",
+    "build-storybook": "turbo run build-storybook",
+    "build-storybook-docs": "turbo run build-storybook-docs",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier . --write",
@@ -19,12 +21,12 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.11",
-    "prettier": "^3.3.3",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.3",
     "syncpack": "13.0.0",
     "turbo": "2.1.3",
     "typescript": "5.5.4"
   },
-  "packageManager": "pnpm@9.12.0",
+  "packageManager": "pnpm@10.8.0",
   "name": "turborepo-react-starter"
 }
