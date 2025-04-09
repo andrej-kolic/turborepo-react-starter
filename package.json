@@ -5,6 +5,8 @@
     "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
     "depchk": "syncpack lint",
     "build": "turbo run build",
+    "build-storybook": "turbo run build-storybook",
+    "build-storybook-docs": "turbo run build-storybook-docs",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier . --write",
