@@ -4,6 +4,7 @@
   "scripts": {
     "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
     "depchk": "syncpack lint",
+    "dep:sort": "pnpm dlx sherif@latest -f",
     "build": "turbo run build",
     "build-storybook": "turbo run build-storybook",
     "build-storybook-docs": "turbo run build-storybook-docs",
