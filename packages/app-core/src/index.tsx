@@ -13,6 +13,8 @@ import { getEnvironmentVariables } from './utils/environment';
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
 
+// tst 1
+
 export function AppCore(props: {
   className?: string;
   title: string;

@@ -1,5 +1,5 @@
 import js from '@eslint/js';
-import { globalIgnores } from "eslint/config";
+import { globalIgnores } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
@@ -16,7 +16,7 @@ export const config = [
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
 
-  globalIgnores(["turbo/"]),
+  globalIgnores(['turbo/']),
 
   {
     plugins: {
@@ -26,6 +26,7 @@ export const config = [
       'turbo/no-undeclared-env-vars': 'warn',
     },
   },
+
   // {
   //   plugins: {
   //     onlyWarn,
@@ -39,8 +40,8 @@ export const config = [
     files: ['**/*.cjs'], // Target CommonJS files
     languageOptions: {
       globals: {
-        ...globals.node
-      }
-    }
+        ...globals.node,
+      },
+    },
   },
 ];

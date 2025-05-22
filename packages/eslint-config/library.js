@@ -29,10 +29,6 @@ export const config = [
   //   ],
   // },
 
-
-
-
-
   // pluginReact.configs.flat.recommended,
 
   // {
