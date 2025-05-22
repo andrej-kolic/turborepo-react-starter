@@ -4,6 +4,7 @@
   "scripts": {
     "depchk-debug": "SYNCPACK_VERBOSE=true syncpack lint",
     "depchk": "syncpack lint",
+    "dep:sort": "pnpm dlx sherif@latest -f",
     "build": "turbo run build",
     "build-storybook": "turbo run build-storybook",
     "build-storybook-docs": "turbo run build-storybook-docs",
@@ -20,9 +21,9 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "eslint": "8.57.0",
+    "eslint": "^9.24.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.0",
+    "lint-staged": "16.0.0",
     "prettier": "^3.5.3",
     "syncpack": "13.0.0",
     "turbo": "2.1.3",
