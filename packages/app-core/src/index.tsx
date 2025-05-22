@@ -7,6 +7,9 @@ import './styles.css';
 import { getEnvironmentVariables } from './utils/environment';
 
 // TODO remove
+/* _eslint no-console: "error" */
+
+// TODO remove
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
 
