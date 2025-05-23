@@ -12,7 +12,7 @@ export function Card({
   title: string;
   children: React.ReactNode;
   href: string;
-}): JSX.Element {
+}): React.JSX.Element {
   const handleClick: React.MouseEventHandler<HTMLHeadingElement> = (event) => {
     console.log('* Card click:', event, href);
   };
