@@ -13,14 +13,6 @@ import { config as baseConfig } from './base.js';
 export const nextJsConfig = [
   ...baseConfig,
 
-  // {
-  //   ignores: [
-  //     // Ignore dotfiles
-  //     '.*.js',
-  //     'node_modules/',
-  //   ],
-  // },
-
   {
     ...pluginReact.configs.flat.recommended,
     languageOptions: {

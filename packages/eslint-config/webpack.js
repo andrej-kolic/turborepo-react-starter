@@ -34,14 +34,4 @@ export const config = [
       'react/react-in-jsx-scope': 'off',
     },
   },
-
-  // {
-  //   ignores: [
-  //     '.*.js', // Ignore dotfiles
-  //     'node_modules/',
-  //     'dist/',
-  //     'build',
-  //     'turbo',
-  //   ],
-  // },
 ];

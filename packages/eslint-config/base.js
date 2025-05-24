@@ -110,5 +110,12 @@ export const config = tseslint.config(
     },
   },
 
-  globalIgnores(['turbo/', '**/build/**', '**/dist/**']),
+  globalIgnores([
+    // '.*.js', // Ignore dotfiles
+    // '*.config.ts', // Ignore config files
+    // 'compile/',
+    'turbo/',
+    '**/build/**',
+    '**/dist/**',
+  ]),
 );
