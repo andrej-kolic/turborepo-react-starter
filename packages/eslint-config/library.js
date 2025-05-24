@@ -1,5 +1,7 @@
 import { config as baseConfig } from './base.js';
 
+export { disableTypeCheck } from './base.js';
+
 /**
  * A custom ESLint configuration for vanilla js / ts libraries.
  *

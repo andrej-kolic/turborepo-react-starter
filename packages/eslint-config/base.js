@@ -7,10 +7,21 @@ import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
 /**
+ * Utility function to disable typed linting on provided files.
+ * To be used in combination with type-checked linting (tseslint.configs.recommendedTypeChecked etc.)
+ */
+export function disableTypeCheck(files) {
+  return tseslint.config({
+    files,
+    extends: [tseslint.configs.disableTypeChecked],
+  })[0];
+}
+
+/**
  * A shared ESLint configuration for the repository.
  *
  * @type {import("eslint").Linter.Config}
- * */
+ */
 export const config = tseslint.config(
   js.configs.recommended,
   eslintConfigPrettier,
@@ -99,6 +110,5 @@ export const config = tseslint.config(
     },
   },
 
-  // ignores: ['**/build/**', '**/dist/**', 'src/some/file/to/ignore.ts'],
-  globalIgnores(['turbo/']),
+  globalIgnores(['turbo/', '**/build/**', '**/dist/**']),
 );

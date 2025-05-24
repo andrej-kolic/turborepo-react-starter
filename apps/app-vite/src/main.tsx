@@ -18,7 +18,13 @@ export const Wrapper = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('no root element');
+}
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <Wrapper />
   </React.StrictMode>,
