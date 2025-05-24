@@ -11,6 +11,6 @@
   "license": "ISC",
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.16.1",
-    "netlify-cli": "^17.36.4"
+    "netlify-cli": "21.5.0"
   }
 }
