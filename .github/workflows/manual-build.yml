@@ -41,14 +41,14 @@ jobs:
       - name: Check dependencies
         run: pnpm depchk
 
-      - name: Lint
-        run: pnpm lint
-
       - name: Check format
         run: pnpm check:format
 
       - name: Build
         run: pnpm build
+
+      - name: Lint
+        run: pnpm lint
 
       - name: Test
         run: pnpm test
