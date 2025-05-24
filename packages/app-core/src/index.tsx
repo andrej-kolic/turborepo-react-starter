@@ -59,3 +59,8 @@ export function AppCore(props: {
     </div>
   );
 }
+
+// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+export const foo = () => {
+  //
+};

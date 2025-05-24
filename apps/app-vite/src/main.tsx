@@ -29,3 +29,8 @@ ReactDOM.createRoot(root).render(
     <Wrapper />
   </React.StrictMode>,
 );
+
+// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+export const foo = () => {
+  //
+};
