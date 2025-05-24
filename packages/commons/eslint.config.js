@@ -7,12 +7,7 @@ import {
 export default [
   ...libraryConfig,
 
-  disableTypeCheck(['tsup.config.ts']),
+  //
 
-  {
-    rules: {
-      'no-useless-concat': 'error',
-      'no-else-return': 'error',
-    },
-  },
+  disableTypeCheck(['tsup.config.ts']),
 ];

@@ -110,6 +110,13 @@ export const config = tseslint.config(
     },
   },
 
+  {
+    rules: {
+      'no-useless-concat': 'error',
+      'no-else-return': 'error',
+    },
+  },
+
   globalIgnores([
     // '.*.js', // Ignore dotfiles
     // '*.config.ts', // Ignore config files

@@ -1,29 +1,15 @@
 import {
-  config as libraryConfig,
+  config as baseConfig,
   disableTypeCheck,
 } from '@repo/eslint-config/base';
 
 /** @type {import("eslint").Linter.Config} */
 export default [
-  ...libraryConfig,
+  ...baseConfig,
 
   disableTypeCheck(['.storybook/*']),
 
   {
-    rules: {
-      'no-useless-concat': 'error',
-      'no-else-return': 'error',
-    },
-  },
-
-  {
-    ignores: [
-      'eslintrc.config.js',
-      'node_modules/',
-      'dist/',
-      'build/',
-      'turbo/',
-      'storybook-static/',
-    ],
+    ignores: ['storybook-static/'],
   },
 ];
