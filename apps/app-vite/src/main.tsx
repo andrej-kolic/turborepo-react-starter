@@ -18,8 +18,19 @@ export const Wrapper = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('no root element');
+}
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <Wrapper />
   </React.StrictMode>,
 );
+
+// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+export const foo = () => {
+  //
+};

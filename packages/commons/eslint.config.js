@@ -1,13 +1,13 @@
-import { config as libraryConfig } from '@repo/eslint-config/library';
+import {
+  config as libraryConfig,
+  disableTypeCheck,
+} from '@repo/eslint-config/library';
 
 /** @type {import("eslint").Linter.Config} */
 export default [
   ...libraryConfig,
 
-  {
-    rules: {
-      'no-useless-concat': 'error',
-      'no-else-return': 'error',
-    },
-  },
+  //
+
+  disableTypeCheck(['tsup.config.ts']),
 ];

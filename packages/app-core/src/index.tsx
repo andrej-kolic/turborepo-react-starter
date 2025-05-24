@@ -13,6 +13,8 @@ import { getEnvironmentVariables } from './utils/environment';
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
 
+const _orphan = 1;
+
 export function AppCore(props: {
   className?: string;
   title: string;
@@ -57,3 +59,8 @@ export function AppCore(props: {
     </div>
   );
 }
+
+// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+export const foo = () => {
+  //
+};
