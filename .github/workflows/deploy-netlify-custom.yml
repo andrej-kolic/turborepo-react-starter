@@ -80,7 +80,7 @@ jobs:
         run: ls infra/netlify
 
       - name: print 3
-        run: cat infra/netlify
+        run: cat infra/netlify/deploy_output.json
 
       # - name: Deploy to Netlify
       #   id: netlify_deploy
