@@ -48,8 +48,10 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # - name: Install Netlify
-      #   run: npm install netlify-cli@21.5.0 -g
+      # IMPORTANT: make sure to update netlify-cli version to match one from infra/netlify/package.json
+      # (so that local and CI deploy are using same version)
+      - name: Install Netlify
+        run: npm install netlify-cli@21.5.0 -g
 
       - name: Install dependencies
         run: pnpm install

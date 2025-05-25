@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
+    "envprint": "printenv",
     "envtest": "dotenvx run -- pnpm envprint",
-    "deploy": "dotenvx run -- ./tools/deploy-netlify.sh"
+    "deploy:netlify": "dotenvx run -- ./tools/deploy-netlify.sh"
   },
   "keywords": [],
   "author": "",
