@@ -70,8 +70,7 @@ jobs:
         id: netlify_deploy
         run: |
           cd infra/netlify && \
-          pnpm deploy:netlify:ci \
-          > deploy_output.json
+          pnpm deploy:netlify:ci
 
       - name: print 1
         run: pwd

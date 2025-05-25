@@ -9,4 +9,5 @@ pnpm netlify deploy \
 --auth ${NETLIFY_AUTH_TOKEN} \
 --filter ${BUNDLER} \
 $prod_flag \
---json
+--json \
+> deploy_output.json

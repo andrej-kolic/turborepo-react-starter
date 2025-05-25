@@ -1,2 +1,4 @@
 # ignored because it contains sensitive data such as auth keys
 .env
+
+deploy_output.json
