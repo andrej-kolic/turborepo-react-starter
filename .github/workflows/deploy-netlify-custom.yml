@@ -73,8 +73,11 @@ jobs:
           pnpm deploy:netlify:ci \
           > deploy_output.json
 
-      - name: print dir
+      - name: print 1
         run: pwd
+
+      - name: print 2
+        run: ls infra/netlify
 
       # - name: Deploy to Netlify
       #   id: netlify_deploy
