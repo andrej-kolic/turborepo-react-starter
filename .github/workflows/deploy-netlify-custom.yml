@@ -48,8 +48,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Install Netlify
-        run: npm install netlify-cli@19.1.5 -g
+      # - name: Install Netlify
+      #   run: npm install netlify-cli@21.5.0 -g
 
       - name: Install dependencies
         run: pnpm install
