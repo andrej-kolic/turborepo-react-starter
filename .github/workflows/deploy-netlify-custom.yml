@@ -52,11 +52,6 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # # IMPORTANT: make sure to update netlify-cli version to match one from infra/netlify/package.json
-      # # (so that local and CI deploy are using same version)
-      # - name: Install Netlify
-      #   run: npm install netlify-cli@21.5.0 -g
-
       - name: Install dependencies
         run: pnpm install
 
@@ -71,37 +66,14 @@ jobs:
         run: |
           cd infra/netlify
           pnpm deploy:netlify:ci
-
-      - name: print 1
-        run: pwd
-
-      - name: print 2
-        run: ls infra/netlify
-
-      - name: print 3
-        run: cat infra/netlify/deploy_output.json
-
-      # - name: Deploy to Netlify
-      #   id: netlify_deploy
-      #   run: |
-      #     prod_flag=""
-      #     if [ ${{ github.event.inputs.environment }} = "production" ]; then prod_flag="--prod"; fi
-      #     netlify deploy \
-      #       --dir apps/${{ github.event.inputs.bundler }}/dist \
-      #       --site ${{ secrets.NETLIFY_SITE_ID }} \
-      #       --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-      #       --filter ${{ github.event.inputs.bundler }} \
-      #       $prod_flag \
-      #       --json \
-      #       > deploy_output.json
-      #   # output saved in a file we can read (deploy_output.json):
-      #   # {
-      #   #   "site_name": "turborepo-react-starter",
-      #   #   "deploy_id": "672197a700d5efd972e83103",
-      #   #   "deploy_url": "https://672197a700d5efd972e83103--turborepo-react-starter.netlify.app",
-      #   #   "logs": "https://app.netlify.com/sites/turborepo-react-starter/deploys/672197a700d5efd972e83103",
-      #   #   "url": "https://turborepo-react-starter.netlify.app"
-      #   # }
+        # output saved in a file we can read (deploy_output.json):
+        # {
+        #   "site_name": "turborepo-react-starter",
+        #   "deploy_id": "672197a700d5efd972e83103",
+        #   "deploy_url": "https://672197a700d5efd972e83103--turborepo-react-starter.netlify.app",
+        #   "logs": "https://app.netlify.com/sites/turborepo-react-starter/deploys/672197a700d5efd972e83103",
+        #   "url": "https://turborepo-react-starter.netlify.app"
+        # }
 
       - name: Generate URLs
         id: generate_urls
