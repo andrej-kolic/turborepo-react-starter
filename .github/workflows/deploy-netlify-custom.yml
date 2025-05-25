@@ -106,10 +106,11 @@ jobs:
       - name: Generate URLs
         id: generate_urls
         run: |
-          jq . infra/netlify/deploy_output.json
-          NETLIFY_DEPLOY_URL=$(jq -r '.deploy_url' infra/netlify/deploy_output.json)
+          cd infra/netlify
+          jq . deploy_output.json
+          NETLIFY_DEPLOY_URL=$(jq -r '.deploy_url' deploy_output.json)
           echo "NETLIFY_DEPLOY_URL=$NETLIFY_DEPLOY_URL" >> "$GITHUB_OUTPUT"
-          NETLIFY_URL=$(jq -r '.url' infra/netlify/deploy_output.json)
+          NETLIFY_URL=$(jq -r '.url' deploy_output.json)
           echo "NETLIFY_URL=$NETLIFY_URL" >> "$GITHUB_OUTPUT"
 
       - name: Log URLs
