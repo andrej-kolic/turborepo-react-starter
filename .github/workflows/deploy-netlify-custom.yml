@@ -69,7 +69,7 @@ jobs:
       - name: Deploy to Netlify
         id: netlify_deploy
         run: |
-          cd infra/netlify && \
+          cd infra/netlify
           pnpm deploy:netlify:ci
 
       - name: print 1
