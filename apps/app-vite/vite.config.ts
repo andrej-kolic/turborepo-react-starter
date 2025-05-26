@@ -43,6 +43,8 @@ export default defineConfig((configEnv) => {
     envDir: appCoreEnvDir,
     envPrefix: 'APP_REACT',
 
+    base: '', // generate relative paths
+
     // define: Object.fromEntries(dotEnvMap),
 
     // define: {
