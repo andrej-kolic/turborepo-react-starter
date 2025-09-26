@@ -23,6 +23,8 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+
+    "noFallthroughCasesInSwitch": true
   }
 }
