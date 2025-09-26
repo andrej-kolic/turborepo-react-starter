@@ -6,7 +6,13 @@ import './app.css';
 
 console.log('* in app'); // TODO: remove
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('no root element');
+}
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <AppCore title="app-vite" href="#">
       <div>trt</div>

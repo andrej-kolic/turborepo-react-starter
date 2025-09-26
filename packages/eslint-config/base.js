@@ -61,7 +61,7 @@ export const config = tseslint.config(
       // Add new rules or override recommended ones
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
 
       // '@typescript-eslint/explicit-function-return-type': 'error',

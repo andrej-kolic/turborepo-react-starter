@@ -40,4 +40,4 @@ async function bundle() {
   }
 }
 
-bundle();
+void bundle();

@@ -48,6 +48,9 @@ importers:
       '@repo/dev-tools':
         specifier: workspace:*
         version: link:../../packages/dev-tools
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^22.7.4
         version: 22.15.21

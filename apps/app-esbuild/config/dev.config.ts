@@ -11,7 +11,7 @@ const environmentVariables = getEnvVariables(
 );
 
 async function dev() {
-  let ctx = await esbuild.context({
+  const ctx = await esbuild.context({
     entryPoints: ['src/app.tsx'],
     bundle: true,
     outdir: DEV_DIR,
@@ -31,9 +31,9 @@ async function dev() {
 
   await ctx.watch();
 
-  let { host, port } = await ctx.serve({
+  const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
   });
 }
 
-dev();
+void dev();

@@ -17,6 +17,7 @@
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
     "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
     "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
+    "lint": "eslint .",
     "preview": "serve ./dist",
     "test:type": "tsc --noEmit"
   },
@@ -26,6 +27,7 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@types/node": "^22.7.4",
     "@types/react": "19.1.5",
