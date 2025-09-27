@@ -59,7 +59,7 @@ runs:
     - name: Deploy to ${{ inputs.environment }}
       shell: bash
       run: |
-        ./infra/aws-deployscripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
+        ./infra/aws-deploy/scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
 
     - name: Get deployment outputs
       id: get-outputs
