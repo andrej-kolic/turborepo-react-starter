@@ -42,18 +42,20 @@ runs:
   using: 'composite'
 
   steps:
-    - name: Debug
+    - name: Validate input
       shell: bash
       run: |
+        echo " "
+        echo " "
+        echo "Validate input"
+        echo "──────────────────────────────────────"
+        echo " "
         if ! [ -n "${{ inputs.build-filter }}" ]; then
           echo "No build filter provided."
+          exit 1
         else
-          echo "Build filter provided: ${{ inputs.build-filter }}"
+          echo "Input is valid."
         fi
-
-    - name: Print environment
-      shell: bash
-      run: |
         echo " "
         echo " "
         echo "Print environment"
@@ -67,6 +69,23 @@ runs:
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo " "
+
+    # - name: Print environment
+    #   shell: bash
+    #   run: |
+    #     echo " "
+    #     echo " "
+    #     echo "Print environment"
+    #     echo "──────────────────────────────────────"
+    #     echo " "
+    #     echo "Node.js version: ${{ inputs.node-version }}"
+    #     echo "pnpm version: ${{ inputs.pnpm-version }}"
+    #     echo "Check dependencies: ${{ inputs.check-dependencies }}"
+    #     echo "Check format: ${{ inputs.check-format }}"
+    #     echo "Run lint: ${{ inputs.run-lint }}"
+    #     echo "Run tests: ${{ inputs.run-tests }}"
+    #     echo "Build filter: ${{ inputs.build-filter }}"
+    #     echo " "
 
     - shell: bash
       run: |
