@@ -53,7 +53,13 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: pnpm install
+      run: |
+        echo " "
+        echo " "
+        echo "Install dependencies"
+        echo "──────────────────────────────────────"
+        echo " "
+        pnpm install
 
     - name: Check dependencies
       if: inputs.check-dependencies == 'true'
@@ -71,15 +77,20 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "***"
-        echo "*** Check formatting"
-        echo "***"
+        echo " "
+        echo "Check formatting"
+        echo "──────────────────────────────────────"
         echo " "
         pnpm check:format
 
     - name: Build
       shell: bash
       run: |
+        echo " "
+        echo " "
+        echo "Build (filter: ${{ inputs.build-filter }})"
+        echo "──────────────────────────────────────"
+        echo " "
         if [ -n "${{ inputs.build-filter }}" ]; then
           pnpm build ${{ inputs.build-filter }}
         else
@@ -89,9 +100,21 @@ runs:
     - name: Lint
       if: inputs.run-lint == 'true'
       shell: bash
-      run: pnpm lint
+      run: |
+        echo " "
+        echo " "
+        echo "Lint"
+        echo "──────────────────────────────────────"
+        echo " "
+        pnpm lint
 
     - name: Test
       if: inputs.run-tests == 'true'
       shell: bash
-      run: pnpm test
+      run: |
+        echo " "
+        echo " "
+        echo "Test"
+        echo "──────────────────────────────────────"
+        echo " "
+        pnpm test
