@@ -70,11 +70,11 @@ runs:
       if: inputs.check-format == 'true'
       shell: bash
       run: |
-        echo ""
+        echo " "
         echo "***"
         echo "*** Checking formatting..."
         echo "***"
-        echo ""
+        echo " "
         pnpm check:format
 
     - name: Build
