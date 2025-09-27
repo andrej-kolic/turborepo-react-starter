@@ -14,7 +14,7 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <AppCore title="app-vite" href="#">
+    <AppCore title="app-esbuild" href="#">
       <div>trt</div>
     </AppCore>
   </React.StrictMode>,
