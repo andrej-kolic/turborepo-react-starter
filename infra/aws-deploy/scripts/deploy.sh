@@ -148,6 +148,10 @@ sync_site_content() {
     print_debug "PWD (deploy.sh): $PWD"
     SITE_DIR="${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist"
     print_debug "Distribution dir: $SITE_DIR"
+    if [ ! -d "$SITE_DIR" ]; then
+        print_error "Site directory '$SITE_DIR' does not exist or is not a directory."
+        exit 1
+    fi
 
     # exit 0
 
