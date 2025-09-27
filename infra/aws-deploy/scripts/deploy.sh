@@ -146,7 +146,7 @@ sync_site_content() {
     # SITE_DIR="../../apps/app-vite/dist"
     # SITE_DIR="../../apps/app-webpack/dist"
     print_debug "PWD (deploy.sh): $PWD"
-    SITE_DIR="${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist"
+    SITE_DIR="$(realpath "${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist")"
     print_debug "Distribution dir: $SITE_DIR"
     if [ ! -d "$SITE_DIR" ]; then
         print_error "Site directory '$SITE_DIR' does not exist or is not a directory."
