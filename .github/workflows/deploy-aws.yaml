@@ -107,6 +107,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build and check project
+        uses: ./.github/actions/build
+        with:
+          build-filter: --filter ${BUNDLER}
+          check-dependencies: 'false'
+          check-format: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
+
       - name: Deploy to staging
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
@@ -124,6 +133,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Build and check project
+        uses: ./.github/actions/build
+        with:
+          build-filter: --filter ${BUNDLER}
+          check-dependencies: 'false'
+          check-format: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
 
       - name: Deploy to production
         uses: ./infra/aws-deploy/.github/actions/deploy
