@@ -57,9 +57,11 @@ runs:
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo " "
-        run: printenv
+        printenv
         echo " "
-    - uses: pnpm/action-setup@v3
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v3
       with:
         version: ${{ inputs.pnpm-version }}
 
@@ -96,7 +98,7 @@ runs:
       run: |
         echo " "
         echo " "
-        echo "Check formatting"
+        echo "Check format"
         echo "──────────────────────────────────────"
         echo " "
         pnpm check:format
