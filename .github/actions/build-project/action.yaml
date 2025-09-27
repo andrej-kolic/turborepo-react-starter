@@ -33,10 +33,10 @@ inputs:
     default: 'true'
 
   build-filter:
-    description: 'Optional build filter for specific packages/apps (e.g., --filter app-vite)'
-    required: false
+    description: 'Build filter for specific packages/apps (e.g., app-vite)'
+    required: true
     # TODO: figure out how to set default bundler
-    default: ''
+    # default: ''
 
 runs:
   using: 'composite'
