@@ -1,0 +1,113 @@
+name: Deploy Static Website
+
+on:
+  # schedule:
+  #   - cron: '*/2 * * * *'
+  #   # - cron: '10 15 11 7 *'
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      action:
+        description: 'Deployment action'
+        required: true
+        default: content
+        type: choice
+        options:
+          - infra
+          - content
+
+concurrency:
+  # Unique group for each workflow + branch + environment + action
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment }}-${{ github.event.inputs.action}}
+  cancel-in-progress: true # Cancel any in-progress runs for this group
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  DEFAULT_ACTION: content # Default action for triggers other than workflow_dispatch
+  DEFAULT_ENVIRONMENT: dev # Default environment for triggers other than workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Deploy to development environment
+  deploy-dev:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'develop') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to development
+        uses: ./.github/actions/deploy
+        with:
+          environment: dev
+          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          comment-pr: ${{ github.event_name == 'pull_request' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Deploy to staging environment
+  deploy-staging:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging
+        uses: ./.github/actions/deploy
+        with:
+          environment: staging
+          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+  # Deploy to production environment
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to production
+        uses: ./.github/actions/deploy
+        with:
+          environment: prod
+          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          create-release: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
