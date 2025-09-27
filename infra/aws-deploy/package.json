@@ -1,0 +1,10 @@
+{
+  "name": "@repo/infra-aws-deploy",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {}
+}

@@ -16,7 +16,6 @@ s-headers.zip
 # dependencies
 **/node_modules
 **/coverage
-**/package.json
 
 # e2e
 **/e2e/*.js

@@ -20,3 +20,7 @@ turbo/
 
 # usual suspects
 pnpm-lock.yaml
+*.code-workspace
+
+# netlify
+infra/netlify/deploy_output.json
