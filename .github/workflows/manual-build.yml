@@ -38,7 +38,7 @@ jobs:
       - name: Build and check project
         uses: ./.github/actions/build-project
         with:
-          build-filter: --filter ${BUNDLER}
+          build-filter: ${BUNDLER}
           check-dependencies: 'true'
           check-format: 'true'
           run-lint: 'true'

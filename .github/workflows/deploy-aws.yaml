@@ -80,7 +80,7 @@ jobs:
       - name: Build and check project
         uses: ./.github/actions/build-project
         with:
-          build-filter: --filter ${BUNDLER}
+          build-filter: ${BUNDLER}
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'
@@ -110,7 +110,7 @@ jobs:
       - name: Build and check project
         uses: ./.github/actions/build-project
         with:
-          build-filter: --filter ${BUNDLER}
+          build-filter: ${BUNDLER}
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'
@@ -137,7 +137,7 @@ jobs:
       - name: Build and check project
         uses: ./.github/actions/build-project
         with:
-          build-filter: --filter ${BUNDLER}
+          build-filter: ${BUNDLER}
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'

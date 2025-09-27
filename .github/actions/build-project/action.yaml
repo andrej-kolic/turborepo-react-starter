@@ -41,6 +41,24 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Print environment
+      shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Print environment"
+        echo "──────────────────────────────────────"
+        echo " "
+        echo "Node.js version: ${{ inputs.node-version }}"
+        echo "pnpm version: ${{ inputs.pnpm-version }}"
+        echo "Check dependencies: ${{ inputs.check-dependencies }}"
+        echo "Check format: ${{ inputs.check-format }}"
+        echo "Run lint: ${{ inputs.run-lint }}"
+        echo "Run tests: ${{ inputs.run-tests }}"
+        echo "Build filter: ${{ inputs.build-filter }}"
+        echo " "
+        run: printenv
+        echo " "
     - uses: pnpm/action-setup@v3
       with:
         version: ${{ inputs.pnpm-version }}
@@ -54,8 +72,11 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        echo -e "\n\nInstall dependencies"
-        echo -e "──────────────────────────────────────\n"
+        echo " "
+        echo " "
+        echo "Install dependencies"
+        echo "──────────────────────────────────────"
+        echo " "
         pnpm install
 
     - name: Check dependencies
@@ -89,7 +110,7 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
         if [ -n "${{ inputs.build-filter }}" ]; then
-          pnpm build ${{ inputs.build-filter }}
+          pnpm build --filter ${{ inputs.build-filter }}
         else
           pnpm build
         fi
