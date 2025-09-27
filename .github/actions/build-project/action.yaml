@@ -59,22 +59,22 @@ runs:
       if: inputs.check-dependencies == 'true'
       shell: bash
       run: |
-        echo "\n"
+        echo " "
         echo "**"
         echo "**** Checking for unused dependencies..."
         echo "**"
-        echo "\n"
+        echo " "
         pnpm depchk
 
     - name: Check format
       if: inputs.check-format == 'true'
       shell: bash
       run: |
-        echo "\n"
+        echo ""
         echo "***"
         echo "*** Checking formatting..."
         echo "***"
-        echo "\n"
+        echo ""
         pnpm check:format
 
     - name: Build
