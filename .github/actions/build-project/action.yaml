@@ -53,13 +53,9 @@ runs:
         if ! [ -n "${{ inputs.build-filter }}" ]; then
           echo "No build filter provided."
           exit 1
-        else
-          echo "Input is valid."
         fi
-        echo " "
-        echo " "
-        echo "Print environment"
-        echo "──────────────────────────────────────"
+
+        echo "Input is valid:"
         echo " "
         echo "Node.js version: ${{ inputs.node-version }}"
         echo "pnpm version: ${{ inputs.pnpm-version }}"

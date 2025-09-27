@@ -56,7 +56,8 @@ env:
   DEFAULT_ENVIRONMENT: dev # Default environment for triggers other than workflow_dispatch
   HUSKY: 0
   # TODO: figure out how to set default bundler
-  BUNDLER: ${{ github.event.inputs.bundler }}
+  # BUNDLER: ${{ github.event.inputs.bundler }}
+  BUNDLER: ${{ github.event.inputs.bundler || vars.DEFAULT_BUNDLER }}
 
 permissions:
   id-token: write
