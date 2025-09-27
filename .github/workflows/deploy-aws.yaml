@@ -1,4 +1,4 @@
-name: Deploy Static Website
+name: 'AWS: Deploy'
 
 on:
   # schedule:
@@ -22,6 +22,7 @@ on:
         type: choice
         description: Bundler
         required: true
+        # TODO: figure out how to set default bundler
         options:
           - app-vite
           - app-webpack
@@ -54,6 +55,7 @@ env:
   DEFAULT_ACTION: content # Default action for triggers other than workflow_dispatch
   DEFAULT_ENVIRONMENT: dev # Default environment for triggers other than workflow_dispatch
   HUSKY: 0
+  # TODO: figure out how to set default bundler
   BUNDLER: ${{ github.event.inputs.bundler }}
 
 permissions:
@@ -75,27 +77,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
+      - name: Build and check project
+        uses: ./.github/actions/build
         with:
-          version: 10
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      # - name: Check dependencies
-      #   run: pnpm depchk
-
-      # - name: Check format
-      #   run: pnpm check:format
-
-      - name: Build
-        run: pnpm build --filter ${BUNDLER}
+          build-filter: --filter ${BUNDLER}
+          check-dependencies: 'false'
+          check-format: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
 
       - name: Deploy to development
         uses: ./infra/aws-deploy/.github/actions/deploy

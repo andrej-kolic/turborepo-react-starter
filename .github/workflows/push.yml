@@ -20,40 +20,18 @@ jobs:
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - name: Print environment variables
-        run: printenv
+      # - name: Print environment variables
+      #   run: printenv
 
       - name: Check out code
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v3
+      - name: Build and check project
+        uses: ./.github/actions/build
         with:
-          version: 10
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Check dependencies
-        run: pnpm depchk
-
-      - name: Check format
-        run: pnpm check:format
-
-      - name: Build
-        run: pnpm build
-
-      # for typed linting lint step must come after build
-      # see https://typescript-eslint.io/getting-started/typed-linting
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm test
+          check-dependencies: 'true'
+          check-format: 'true'
+          run-lint: 'true'
+          run-tests: 'true'
