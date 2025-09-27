@@ -1,0 +1,85 @@
+name: 'Build Project'
+description: 'Setup Node.js environment, install dependencies, and run build pipeline with optional checks'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+
+  pnpm-version:
+    description: 'pnpm version to use'
+    required: false
+    default: '10'
+
+  check-dependencies:
+    description: 'Run dependency check (pnpm depchk)'
+    required: false
+    default: 'true'
+
+  check-format:
+    description: 'Run format check (pnpm check:format)'
+    required: false
+    default: 'true'
+
+  run-lint:
+    description: 'Run linting (pnpm lint)'
+    required: false
+    default: 'true'
+
+  run-tests:
+    description: 'Run tests (pnpm test)'
+    required: false
+    default: 'true'
+
+  build-filter:
+    description: 'Optional build filter for specific packages/apps (e.g., --filter app-vite)'
+    required: false
+    # TODO: figure out how to set default bundler
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: pnpm/action-setup@v3
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - name: Check dependencies
+      if: inputs.check-dependencies == 'true'
+      shell: bash
+      run: pnpm depchk
+
+    - name: Check format
+      if: inputs.check-format == 'true'
+      shell: bash
+      run: pnpm check:format
+
+    - name: Build
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.build-filter }}" ]; then
+          pnpm build ${{ inputs.build-filter }}
+        else
+          pnpm build
+        fi
+
+    - name: Lint
+      if: inputs.run-lint == 'true'
+      shell: bash
+      run: pnpm lint
+
+    - name: Test
+      if: inputs.run-tests == 'true'
+      shell: bash
+      run: pnpm test
