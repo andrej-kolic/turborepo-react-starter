@@ -20,8 +20,8 @@ jobs:
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      # - name: Print environment variables
-      #   run: printenv
+      - name: Print environment variables
+        run: printenv
 
       - name: Check out code
         uses: actions/checkout@v4
@@ -31,6 +31,8 @@ jobs:
       - name: Build and check project
         uses: ./.github/actions/build
         with:
+          node-version: 20
+          pnpm-version: 10
           check-dependencies: 'true'
           check-format: 'true'
           run-lint: 'true'
