@@ -42,11 +42,14 @@ runs:
   using: 'composite'
 
   steps:
-    # - name: Debug
-    #   shell: bash
-    #   run: |
-    #     echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
-    #     echo "DEFAULT_BUNDLER: ${{ variables.DEFAULT_BUNDLER }}"
+    - name: Debug
+      shell: bash
+      run: |
+        if ! [ -n "${{ inputs.build-filter }}" ]; then
+          echo "No build filter provided."
+        else
+          echo "Build filter provided: ${{ inputs.build-filter }}"
+        fi
 
     - name: Print environment
       shell: bash
