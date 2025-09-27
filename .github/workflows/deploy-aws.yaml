@@ -75,6 +75,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # - name: Check dependencies
+      #   run: pnpm depchk
+
+      # - name: Check format
+      #   run: pnpm check:format
+
+      - name: Build
+        run: pnpm build --filter ${BUNDLER}
+
       - name: Deploy to development
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
