@@ -1,0 +1,57 @@
+{
+	"folders": [
+		{
+			"name": "✨ turborepo-react-starter",
+			"path": "."
+		},
+		{
+			"name": "🚀 app-esbuild",
+			"path": "apps/app-esbuild"
+		},
+		{
+			"name": "🚀 app-vite",
+			"path": "apps/app-vite"
+		},
+		{
+			"name": "🚀 app-webpack",
+			"path": "apps/app-webpack"
+		},
+		{
+			"name": "🚀 ui-storybook",
+			"path": "apps/ui-storybook"
+		},
+		{
+			"name": "@repo/infra-aws-deploy",
+			"path": "infra/aws-deploy"
+		},
+		{
+			"name": "@repo/infra-netlify",
+			"path": "infra/netlify"
+		},
+		{
+			"name": "📦 @repo/app-core",
+			"path": "packages/app-core"
+		},
+		{
+			"name": "📦 @repo/commons",
+			"path": "packages/commons"
+		},
+		{
+			"name": "📦 @repo/dev-tools",
+			"path": "packages/dev-tools"
+		},
+		{
+			"name": "📦 @repo/eslint-config",
+			"path": "packages/eslint-config"
+		},
+		{
+			"name": "📦 @repo/typescript-config",
+			"path": "packages/typescript-config"
+		},
+		{
+			"name": "📦 @repo/ui",
+			"path": "packages/ui"
+		}
+	],
+	"settings": {}
+}
