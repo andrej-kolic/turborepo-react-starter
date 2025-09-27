@@ -60,9 +60,9 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "**"
-        echo "**** Checking for unused dependencies..."
-        echo "**"
+        echo " "
+        echo "Check dependencies"
+        echo "──────────────────────────────────────"
         echo " "
         pnpm depchk
 
@@ -72,7 +72,7 @@ runs:
       run: |
         echo " "
         echo "***"
-        echo "*** Checking formatting..."
+        echo "*** Check formatting"
         echo "***"
         echo " "
         pnpm check:format
