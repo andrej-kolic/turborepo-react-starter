@@ -32,7 +32,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Build and check project
+      - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}

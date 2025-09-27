@@ -53,7 +53,6 @@ concurrency:
 env:
   AWS_DEFAULT_REGION: us-east-1
   DEFAULT_ACTION: content # Default action for triggers other than workflow_dispatch
-  DEFAULT_ENVIRONMENT: dev # Default environment for triggers other than workflow_dispatch
   HUSKY: 0
   BUNDLER: ${{ github.event.inputs.bundler || vars.DEFAULT_BUNDLER }}
 
@@ -76,7 +75,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and check project
+      - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}
@@ -106,7 +105,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and check project
+      - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}
@@ -133,7 +132,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and check project
+      - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}

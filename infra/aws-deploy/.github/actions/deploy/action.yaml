@@ -67,29 +67,25 @@ runs:
         role-session-name: github-actions-${{ inputs.environment }}
         aws-region: ${{ inputs.aws-region }}
 
-    - shell: bash
+    - name: Deploy to ${{ inputs.environment }}
+      shell: bash
       run: |
         echo " "
         echo " "
         echo "Deploy to ${{ inputs.environment }}"
         echo "──────────────────────────────────────"
         echo " "
-    - name: Deploy to ${{ inputs.environment }}
-      shell: bash
-      run: |
         ./infra/aws-deploy/scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
 
-    - shell: bash
+    - name: Get deployment outputs
+      id: get-outputs
+      shell: bash
       run: |
         echo " "
         echo " "
         echo "Get deployment outputs"
         echo "──────────────────────────────────────"
         echo " "
-    - name: Get deployment outputs
-      id: get-outputs
-      shell: bash
-      run: |
         output=$(./infra/aws-deploy/scripts/deploy.sh outputs ${{ inputs.environment }})
         echo "Raw output: $output"
 
@@ -107,8 +103,34 @@ runs:
           echo "Distribution ID found: $distribution_id"
         fi
 
+    # echo "SKIP_SLOW_CHECKS=${{ inputs.run-tests == 'false' && inputs.run-lint == 'false' }}" >> $GITHUB_ENV
+
+    - name: Calculate variables
+      id: calculate-vars
+      shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Calculate variables"
+        echo "──────────────────────────────────────"
+        echo " "
+
+        COMMENT_PR=false
+        if [[ "${{ inputs.comment-pr }}" == "true" && "${{ steps.get-outputs.outputs.website-url }}" != "" && "${{ inputs.action }}" == "content" ]]; then
+          COMMENT_PR=true
+        fi
+        echo "COMMENT_PR=$COMMENT_PR"
+        echo "comment-pr=$COMMENT_PR" >> $GITHUB_OUTPUT  
+
+        CREATE_RELEASE=false
+        if [[ "${{ inputs.create-release }}" == "true" && "${{ inputs.environment }}" == "prod" && "${{ inputs.action }}" == "content" ]]; then
+          CREATE_RELEASE=true
+        fi
+        echo "CREATE_RELEASE=$CREATE_RELEASE"
+        echo "create-release=$CREATE_RELEASE" >> $GITHUB_OUTPUT
+
     - shell: bash
-      if: inputs.comment-pr == 'true' && steps.get-outputs.outputs.website-url != ''
+      if: env.COMMENT_PR == 'true'
       run: |
         echo " "
         echo " "
@@ -116,7 +138,7 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
     - name: Comment PR with deployment info
-      if: inputs.comment-pr == 'true' && steps.get-outputs.outputs.website-url != ''
+      if: env.COMMENT_PR == 'true'
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
@@ -131,7 +153,7 @@ runs:
           });
 
     - shell: bash
-      if: inputs.comment-pr == 'true' && steps.get-outputs.outputs.website-url != ''
+      if: env.CREATE_RELEASE == 'true'
       run: |
         echo " "
         echo " "
@@ -139,7 +161,7 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
     - name: Create GitHub release
-      if: inputs.create-release == 'true' && inputs.environment == 'prod'
+      if: env.CREATE_RELEASE == 'true'
       uses: softprops/action-gh-release@v2
       with:
         tag_name: release-${{ github.run_number }}
