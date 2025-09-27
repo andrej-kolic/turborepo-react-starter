@@ -59,13 +59,13 @@ runs:
     - name: Deploy to ${{ inputs.environment }}
       shell: bash
       run: |
-        ./scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
+        ./infra/aws-deployscripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
 
     - name: Get deployment outputs
       id: get-outputs
       shell: bash
       run: |
-        output=$(./scripts/deploy.sh outputs ${{ inputs.environment }})
+        output=$(./infra/aws-deploy/scripts/deploy.sh outputs ${{ inputs.environment }})
         echo "Raw output: $output"
 
         # Extract website URL
