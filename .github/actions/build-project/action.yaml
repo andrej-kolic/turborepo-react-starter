@@ -60,19 +60,26 @@ runs:
         printenv
         echo " "
 
-    - name: Setup pnpm
+    - name: Print pnpm setup info
+      shell: bash
       run: |
         echo " "
         echo " "
         echo "Setup pnpm"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm --version
-        echo " "
-      uses: pnpm/action-setup@v3
+    - uses: pnpm/action-setup@v3
       with:
         version: ${{ inputs.pnpm-version }}
 
+    - name: Print setup Node.js
+      shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Setup Node.js"
+        echo "──────────────────────────────────────"
+        echo " "
     - name: Setup Node.js environment
       uses: actions/setup-node@v4
       with:
