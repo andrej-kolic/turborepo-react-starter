@@ -42,11 +42,11 @@ runs:
   using: 'composite'
 
   steps:
-    - name: Debug
-      shell: bash
-      run: |
-        echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
-        echo "DEFAULT_BUNDLER: ${{ variables.DEFAULT_BUNDLER }}"
+    # - name: Debug
+    #   shell: bash
+    #   run: |
+    #     echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
+    #     echo "DEFAULT_BUNDLER: ${{ variables.DEFAULT_BUNDLER }}"
 
     - name: Print environment
       shell: bash
