@@ -35,8 +35,6 @@ inputs:
   build-filter:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
     required: true
-    # TODO: figure out how to set default bundler
-    # default: ''
 
 runs:
   using: 'composite'
@@ -65,23 +63,6 @@ runs:
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo " "
-
-    # - name: Print environment
-    #   shell: bash
-    #   run: |
-    #     echo " "
-    #     echo " "
-    #     echo "Print environment"
-    #     echo "──────────────────────────────────────"
-    #     echo " "
-    #     echo "Node.js version: ${{ inputs.node-version }}"
-    #     echo "pnpm version: ${{ inputs.pnpm-version }}"
-    #     echo "Check dependencies: ${{ inputs.check-dependencies }}"
-    #     echo "Check format: ${{ inputs.check-format }}"
-    #     echo "Run lint: ${{ inputs.run-lint }}"
-    #     echo "Run tests: ${{ inputs.run-tests }}"
-    #     echo "Build filter: ${{ inputs.build-filter }}"
-    #     echo " "
 
     - shell: bash
       run: |
@@ -145,7 +126,7 @@ runs:
       run: |
         echo " "
         echo " "
-        echo "Build (filter: ${{ inputs.build-filter }})"
+        echo "Build (${{ inputs.build-filter }})"
         echo "──────────────────────────────────────"
         echo " "
         if [ -n "${{ inputs.build-filter }}" ]; then
