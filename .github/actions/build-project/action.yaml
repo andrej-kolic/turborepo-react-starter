@@ -54,11 +54,8 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        echo " "
-        echo " "
-        echo "Install dependencies"
-        echo "──────────────────────────────────────"
-        echo " "
+        echo -e "\n\nInstall dependencies"
+        echo -e "──────────────────────────────────────\n"
         pnpm install
 
     - name: Check dependencies
