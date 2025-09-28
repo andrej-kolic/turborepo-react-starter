@@ -4,7 +4,7 @@
   "oidc": {
     "oidc_arn": "",
     "github_org": "andrej-kolic",
-    "github_repo": "playground-amazon-cloudfront-secure-static-site"
+    "github_repo": "turborepo-react-starter"
   },
   "environments": {
     "dev": {
