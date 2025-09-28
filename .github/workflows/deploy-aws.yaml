@@ -19,9 +19,10 @@ on:
       bundler:
         type: choice
         description: Bundler
-        required: true
-        # TODO: figure out how to set default bundler
+        required: false
+        default: 'default'
         options:
+          - 'default'
           - app-vite
           - app-webpack
           - app-esbuild
@@ -43,7 +44,13 @@ concurrency:
 env:
   AWS_DEFAULT_REGION: us-east-1
   HUSKY: 0
-  BUNDLER: ${{ github.event.inputs.bundler || vars.DEFAULT_BUNDLER }}
+  BUNDLER: >-
+    ${{
+      (github.event.inputs.bundler == 'default' || github.event.inputs.bundler == '')
+      && vars.DEFAULT_BUNDLER
+      || github.event.inputs.bundler
+      || vars.DEFAULT_BUNDLER
+    }}
 
 permissions:
   id-token: write
