@@ -19,10 +19,10 @@ on:
       bundler:
         type: choice
         description: Bundler
-        required: false
-        default: 'default'
+        required: true
+        default: default
         options:
-          - 'default'
+          - default
           - app-vite
           - app-webpack
           - app-esbuild
@@ -46,8 +46,7 @@ env:
   HUSKY: 0
   BUNDLER: >-
     ${{
-      (github.event.inputs.bundler == 'default' || github.event.inputs.bundler == '')
-      && vars.DEFAULT_BUNDLER
+      (github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER)
       || github.event.inputs.bundler
       || vars.DEFAULT_BUNDLER
     }}
