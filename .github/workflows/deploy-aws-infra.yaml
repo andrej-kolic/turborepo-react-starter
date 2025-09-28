@@ -28,53 +28,25 @@ permissions:
   pull-requests: write
 
 jobs:
-  # Deploy infrastructure to development environment
-  deploy-infra-dev:
+  deploy-infra:
     runs-on: ubuntu-latest
-    if: github.event.inputs.environment == 'dev'
-    environment: development
+
+    # map input environment to GitHub environment
+    environment: >-
+      ${{
+        github.event.inputs.environment == 'dev' && 'development' ||
+        github.event.inputs.environment == 'staging' && 'staging' ||
+        'production'
+      }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy infrastructure to development
+      - name: Deploy infrastructure to ${{ github.event.inputs.environment }}
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
-          environment: dev
-          action: infra
-          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-
-  # Deploy infrastructure to staging environment
-  deploy-infra-staging:
-    runs-on: ubuntu-latest
-    if: github.event.inputs.environment == 'staging'
-    environment: staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy infrastructure to staging
-        uses: ./infra/aws-deploy/.github/actions/deploy
-        with:
-          environment: staging
-          action: infra
-          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-
-  # Deploy infrastructure to production environment
-  deploy-infra-prod:
-    runs-on: ubuntu-latest
-    if: github.event.inputs.environment == 'prod'
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy infrastructure to production
-        uses: ./infra/aws-deploy/.github/actions/deploy
-        with:
-          environment: prod
+          environment: ${{ github.event.inputs.environment }}
           action: infra
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
