@@ -20,7 +20,9 @@ This solution is an enhanced version of the [AWS CloudFront Secure Static Site s
 
 ### 🔧 **Flexible Deployment Options**
 
-- **GitHub Actions with OIDC**: Secure automated deployments without long-lived credentials
+- **GitHub Actions with OIDC**: Separate workflows for infrastructure and content deployments
+  - **Infrastructure Workflow**: Manual deployment of CloudFormation stacks only
+  - **Content Workflow**: Automated content deployment with build process
 - **Local Shell Scripts**: Command-line deployment with helper scripts
 - **AWS Console**: Traditional CloudFormation console deployment
 
@@ -28,7 +30,7 @@ This solution is an enhanced version of the [AWS CloudFront Secure Static Site s
 
 - JSON-based configuration system (`deploy-config.json`)
 - Environment-specific parameter management
-- Automated infrastructure and content deployment workflows
+- Separate automated workflows for infrastructure and content deployments
 
 For more information about each of these components, see the **Solution details** section on this page.
 
@@ -158,9 +160,20 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
    ```
 
 3. **Deploy via GitHub Actions**:
-   - Use the "Deploy Static Website" workflow
-   - Select environment (dev/staging/prod) and action (infra/content)
-   - Or push to trigger automatic deployment
+
+   **For Infrastructure Deployment:**
+
+   - Use the "AWS: Deploy: Infrastructure" workflow
+   - This is manual-only (workflow_dispatch) and does not require building
+   - Select environment (dev/staging/prod)
+   - Only deploys CloudFormation stacks without content
+
+   **For Content Deployment:**
+
+   - Use the "AWS: Deploy: Content" workflow
+   - Automatically triggered on branch pushes or manual workflow_dispatch
+   - Builds the project and deploys website content
+   - Select bundler (app-vite/app-webpack/app-esbuild) and environment when running manually
 
 For detailed OIDC setup instructions, see [docs/OIDC_SETUP.md](docs/OIDC_SETUP.md).
 

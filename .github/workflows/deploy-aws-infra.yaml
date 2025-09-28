@@ -1,0 +1,80 @@
+name: 'AWS: Deploy: Infrastructure'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+concurrency:
+  # Unique group for each workflow + branch + environment + infra action
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment }}-infra
+  cancel-in-progress: true # Cancel any in-progress runs for this group
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Deploy infrastructure to development environment
+  deploy-infra-dev:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'dev'
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy infrastructure to development
+        uses: ./infra/aws-deploy/.github/actions/deploy
+        with:
+          environment: dev
+          action: infra
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+  # Deploy infrastructure to staging environment
+  deploy-infra-staging:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'staging'
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy infrastructure to staging
+        uses: ./infra/aws-deploy/.github/actions/deploy
+        with:
+          environment: staging
+          action: infra
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+  # Deploy infrastructure to production environment
+  deploy-infra-prod:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'prod'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy infrastructure to production
+        uses: ./infra/aws-deploy/.github/actions/deploy
+        with:
+          environment: prod
+          action: infra
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}

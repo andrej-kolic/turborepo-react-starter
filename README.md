@@ -27,7 +27,8 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 #### Infra
 
-- `netlify`: tools and scripts used to deploy to Netleafy, both locally and from CI
+- `aws-deploy`: CloudFormation-based AWS deployment with CloudFront, S3, and ACM certificates
+- `netlify`: tools and scripts used to deploy to Netlify, both locally and from CI
 
 ### Utilities
 

@@ -1,4 +1,4 @@
-name: 'AWS: Deploy'
+name: 'AWS: Deploy: Content'
 
 on:
   # schedule:
@@ -8,12 +8,10 @@ on:
   push:
     branches:
       - main
-      - master
       - develop
   pull_request:
     branches:
       - main
-      - master
     types: [opened]
 
   workflow_dispatch:
@@ -36,23 +34,14 @@ on:
           - dev
           - staging
           - prod
-      action:
-        description: 'Deployment action'
-        required: true
-        default: content
-        type: choice
-        options:
-          - infra
-          - content
 
 concurrency:
-  # Unique group for each workflow + branch + environment + action
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment }}-${{ github.event.inputs.action}}
+  # Unique group for each workflow + branch + environment + content action
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment }}-content
   cancel-in-progress: true # Cancel any in-progress runs for this group
 
 env:
   AWS_DEFAULT_REGION: us-east-1
-  DEFAULT_ACTION: content # Default action for triggers other than workflow_dispatch
   HUSKY: 0
   BUNDLER: ${{ github.event.inputs.bundler || vars.DEFAULT_BUNDLER }}
 
@@ -88,7 +77,7 @@ jobs:
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
           environment: dev
-          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
           comment-pr: ${{ github.event_name == 'pull_request' }}
@@ -118,7 +107,7 @@ jobs:
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
           environment: staging
-          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
@@ -145,7 +134,7 @@ jobs:
         uses: ./infra/aws-deploy/.github/actions/deploy
         with:
           environment: prod
-          action: ${{ github.event.inputs.action || env.DEFAULT_ACTION }}
+          action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
           create-release: 'true'
