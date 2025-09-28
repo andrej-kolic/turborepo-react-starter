@@ -120,14 +120,14 @@ runs:
           COMMENT_PR=true
         fi
         echo "COMMENT_PR=$COMMENT_PR"
-        echo "comment-pr=$COMMENT_PR" >> $GITHUB_OUTPUT  
+        echo "COMMENT_PR=$COMMENT_PR" >> $GITHUB_ENV
 
         CREATE_RELEASE=false
         if [[ "${{ inputs.create-release }}" == "true" && "${{ inputs.environment }}" == "prod" && "${{ inputs.action }}" == "content" ]]; then
           CREATE_RELEASE=true
         fi
         echo "CREATE_RELEASE=$CREATE_RELEASE"
-        echo "create-release=$CREATE_RELEASE" >> $GITHUB_OUTPUT
+        echo "CREATE_RELEASE=$CREATE_RELEASE" >> $GITHUB_ENV
 
     - shell: bash
       if: env.COMMENT_PR == 'true'
