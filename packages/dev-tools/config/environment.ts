@@ -1,12 +1,14 @@
 import dotenvFlow from 'dotenv-flow';
-// import dotenvExpand from "dotenv-expand"
 
-// TODO: add as options parameter in getEnvVariables()
+// TODO: add prefix as part of 'options' argument in getEnvVariables()
 /**
  * add only variables with this prefix to import.meta.env
  */
 const PREFIX = 'APP_REACT';
 
+// TODO: rename to loadEnvVariables()
+// TODO: object arguments
+// TODO: provided env var map to merge with
 export function getEnvVariables(
   envDir: string,
   buildEnvironment: string,
@@ -30,20 +32,6 @@ export function getEnvVariables(
     variables.parsed,
   );
 
-  // const expandedVariables = dotenvExpand.expand(variables.parsed);
-  // console.log('* expanded variables:', expandedVariables);
-
-  /*
-  const dotEnvMap: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(variables.parsed ?? {})) {
-    // console.log(`Key: ${key}, Value: ${value}`);
-    if (key.startsWith(PREFIX)) {
-      dotEnvMap[key] = value;
-    }
-  }
-  console.log("* dotenv map:", dotEnvMap);
-  */
-
   const processEnvMap: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(process.env)) {
     // console.log(`Key: ${key}, Value: ${value}`);
@@ -57,7 +45,6 @@ export function getEnvVariables(
   const MODE = buildEnvironment;
 
   return {
-    // ...dotEnvMap,
     ...processEnvMap,
     BUNDLER,
     MODE,
