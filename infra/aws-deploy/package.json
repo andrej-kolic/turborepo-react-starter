@@ -1,7 +1,7 @@
 {
   "name": "@repo/infra-aws-deploy",
   "version": "0.0.0",
-  "description": "",
+  "description": "AWS deployment infra scripts",
   "scripts": {},
   "keywords": [],
   "author": "",
