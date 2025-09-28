@@ -1,4 +1,4 @@
-name: 'Repo: Build: Manual'
+name: 'Build: Manual'
 
 on:
   workflow_dispatch:

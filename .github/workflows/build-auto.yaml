@@ -1,4 +1,4 @@
-name: 'Repo: Buiild: Auto'
+name: 'Build: Auto'
 
 on:
   push:
