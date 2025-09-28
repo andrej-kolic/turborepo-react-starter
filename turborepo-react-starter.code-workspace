@@ -21,11 +21,11 @@
 			"path": "apps/ui-storybook"
 		},
 		{
-			"name": "@repo/infra-aws-deploy",
+			"name": "🛠️ @repo/infra-aws-deploy",
 			"path": "infra/aws-deploy"
 		},
 		{
-			"name": "@repo/infra-netlify",
+			"name": "🛠️ @repo/infra-netlify",
 			"path": "infra/netlify"
 		},
 		{
