@@ -1,17 +1,24 @@
-name: 'Repo: Push'
+name: 'Repo: Build: Manual'
 
 on:
-  push:
-    branches: ['main']
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      bundler:
+        type: choice
+        description: Bundler
+        required: true
+        options:
+          - app-vite
+          - app-webpack
+          - app-esbuild
 
 env:
   HUSKY: 0
+  BUNDLER: ${{ github.event.inputs.bundler }}
 
 jobs:
   build:
-    name: Lint, Build and Test
+    name: Manual - Lint, Build and Test
     timeout-minutes: 15
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -28,7 +35,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${{ vars.DEFAULT_BUNDLER }}
+          build-filter: ${BUNDLER}
           check-dependencies: 'true'
           check-format: 'true'
           run-lint: 'true'
