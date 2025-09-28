@@ -23,9 +23,7 @@ env:
 
 permissions:
   id-token: write
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
 
 jobs:
   deploy-infra:
