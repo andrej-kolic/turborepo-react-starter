@@ -22,7 +22,9 @@
       "persistent": true
     },
     "test": {},
-    "test:type": {},
+    "test:type": {
+      "dependsOn": ["^build"]
+    },
     "test:watch": {
       "cache": false
     }
