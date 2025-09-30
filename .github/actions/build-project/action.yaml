@@ -113,7 +113,7 @@ runs:
         echo "Check dependencies"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm depchk
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
 
     - name: Check format
       if: inputs.check-format == 'true'
@@ -124,7 +124,7 @@ runs:
         echo "Check format"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm check:format
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
     - name: Build
       shell: bash
@@ -135,9 +135,9 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
         if [ -n "${{ inputs.build-filter }}" ]; then
-          BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} dotenv -- sh -c 'turbo run build --filter "${{ inputs.build-filter }}"'
+          BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} sh -c 'turbo run build --filter "${{ inputs.build-filter }}"'
         else
-          BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm build
+          BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm build
         fi
 
     - name: Lint
@@ -149,7 +149,7 @@ runs:
         echo "Lint"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm lint
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm lint
 
     - name: Test
       if: inputs.run-tests == 'true'
@@ -160,4 +160,4 @@ runs:
         echo "Test"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm test
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm test
