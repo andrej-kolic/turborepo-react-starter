@@ -74,6 +74,7 @@ jobs:
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}
+          build-environment: development
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'
@@ -104,6 +105,7 @@ jobs:
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}
+          build-environment: staging
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'
@@ -131,6 +133,7 @@ jobs:
         uses: ./.github/actions/build-project
         with:
           build-filter: ${BUNDLER}
+          build-environment: production
           check-dependencies: 'false'
           check-format: 'false'
           run-lint: 'false'

@@ -25,10 +25,21 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Determine build environment
+        id: build-env
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+          echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+          echo "Build environment set to: $(echo "${{ github.ref_name }}" | sed 's/main/staging/; s/develop/development/; /^staging$/!{/^development$/!s/.*/development/}')"
+
       - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${{ vars.DEFAULT_BUNDLER }}
+          build-environment: ${{ steps.build-env.outputs.environment }}
           check-dependencies: 'true'
           check-format: 'true'
           run-lint: 'true'

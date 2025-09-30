@@ -36,6 +36,10 @@ inputs:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
     required: true
 
+  build-environment:
+    description: 'Build environment (development, staging, production)'
+    required: true
+
 runs:
   using: 'composite'
 
@@ -62,6 +66,7 @@ runs:
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Build filter: ${{ inputs.build-filter }}"
+        echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
 
     - shell: bash
@@ -108,7 +113,7 @@ runs:
         echo "Check dependencies"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm depchk
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm depchk
 
     - name: Check format
       if: inputs.check-format == 'true'
@@ -119,7 +124,7 @@ runs:
         echo "Check format"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm check:format
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm check:format
 
     - name: Build
       shell: bash
@@ -130,9 +135,9 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
         if [ -n "${{ inputs.build-filter }}" ]; then
-          pnpm build --filter ${{ inputs.build-filter }}
+          BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} dotenv -- sh -c 'turbo run build --filter "${{ inputs.build-filter }}"'
         else
-          pnpm build
+          BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm build
         fi
 
     - name: Lint
@@ -144,7 +149,7 @@ runs:
         echo "Lint"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm lint
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm lint
 
     - name: Test
       if: inputs.run-tests == 'true'
@@ -155,4 +160,4 @@ runs:
         echo "Test"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm test
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} dotenv -- pnpm test
