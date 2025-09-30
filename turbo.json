@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", "tsconfig.json"],
 
-  "globalEnv": ["GITHUB_TOKEN", "NODE_ENV"],
+  "globalEnv": ["BUNDLER", "BUILD_ENVIRONMENT", "NODE_ENV"],
   "globalPassThroughEnv": ["AWS_SECRET_KEY", "GITHUB_TOKEN"],
 
   "tasks": {
