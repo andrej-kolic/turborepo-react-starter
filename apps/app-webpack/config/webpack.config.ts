@@ -12,22 +12,37 @@ import {
 
 import 'webpack-dev-server';
 
+// NOTE on environments: Webpack's mode should be set to 'development' or 'production'
+
+if (!process.env.BUILD_ENVIRONMENT) {
+  const errorMsg =
+    'BUILD_ENVIRONMENT environment variable is not set. ' +
+    'If you are running locally, edit .env file and run task from project root. ' +
+    'IF on CI/CD, set the variable in your pipeline.';
+  throw new Error(errorMsg);
+}
+
+console.log('* process.env.HELLO: ', process.env.HELLO);
+console.log('* process.env.NODE_ENV: ', process.env.NODE_ENV);
+console.log('* process.env.BUILD_ENVIRONMENT: ', process.env.BUILD_ENVIRONMENT);
+
 // const webpackMode = 'production';
 // const nodeEnv = process.env.NODE_ENV ?? "";
 
 const envMap = getEnvVariables(
   appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? 'production',
+  // process.env.BUILD_ENVIRONMENT ?? 'production',
+  process.env.BUILD_ENVIRONMENT,
   'webpack',
 );
 
 //
 
-interface WebpackConfigOptions {
+type WebpackConfigOptions = {
   mode: 'development' | 'production';
   config: string;
   env: Record<string, string>;
-}
+};
 
 const webpackConfig = (
   env: Record<string, string>,

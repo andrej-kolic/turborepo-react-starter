@@ -9,62 +9,37 @@ import {
   appCoreEnvDir,
 } from './node_modules/@repo/dev-tools/config/paths';
 
+// NOTE on environments: Vite's mode should be set to the same as BUILD_ENVIRONMENT
+
+if (!process.env.BUILD_ENVIRONMENT) {
+  const errorMsg =
+    'BUILD_ENVIRONMENT environment variable is not set. ' +
+    'If you are running locally, edit .env file and run task from project root. ' +
+    'IF on CI/CD, set the variable in your pipeline.';
+  throw new Error(errorMsg);
+}
+
 // TODO: add printEnv() to dev-tools?
-console.log('* process.env.NODE_ENV: ', process.env.NODE_ENV);
-console.log('* process.env.BUILD_ENVIRONMENT: ', process.env.BUILD_ENVIRONMENT);
+// console.log('- process.env.HELLO: ', process.env.HELLO);
+// console.log('- process.env.NODE_ENV: ', process.env.NODE_ENV);
+// console.log('- process.env.BUILD_ENVIRONMENT: ', process.env.BUILD_ENVIRONMENT);
 
-// const de = dotenvx.config({
-//   path: appCoreEnv
-// });
-
-// // const de = dotenvx.config();
-// console.log('*** dotenvx:', de);
-
-// const dotEnvMap = new Map<string, unknown>();
-// for (const [key, value] of Object.entries(de.parsed)) {
-//   console.log(`Key: ${key}, Value: ${value}`);
-//   /**
-//    * add logic to filter variables, for ex. only if prefixed with REACT_APP prefix.
-//    * also add variables from process.env if necessary
-//    */
-//   dotEnvMap.set(`process.env.${key}`, JSON.stringify(value));
-// }
-
-// console.log('* map:', Object.fromEntries(dotEnvMap));
-
-// https://vitejs.dev/config/
-// export default defineConfig({
 export default defineConfig((configEnv) => {
   console.log('* configEnv:', configEnv);
 
-  // const { command, mode, isSsrBuild, isPreview } = configEnv;
-
   return {
+    // do not getEnvVariables from '@repo/dev-tools/config/environment', but Vite's native mechanism
+    // behavior is same as in getEnvVariables()
     envDir: appCoreEnvDir,
     envPrefix: 'APP_REACT',
 
     base: '', // generate relative paths
-
-    // define: Object.fromEntries(dotEnvMap),
-
-    // define: {
-    //   'process.env.API_URL': JSON.stringify(process.env.API_URL),
-    //   'process.env.TEST': JSON.stringify('abc'),
-    // },
 
     define: {
       'import.meta.env.BUNDLER': JSON.stringify('vite'),
     },
 
     plugins: [react(), tsconfigPaths()],
-
-    // resolve: {
-    // preserveSymlinks: true,
-    // alias: {
-    //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
-    //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
-    // },
-    // },
 
     publicDir: appCorePublic,
 

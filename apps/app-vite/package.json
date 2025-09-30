@@ -4,12 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-development} vite --mode ${BUILD_ENVIRONMENT:-development}",
-    "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
-    "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
-    "build": "tsc && BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-production} vite build --mode ${BUILD_ENVIRONMENT:-production}",
-    "build:staging": "BUILD_ENVIRONMENT=staging pnpm build",
-    "build-verbose": "tsc && DEBUG=vite-tsconfig-paths vite build",
+    "dev": "vite --mode ${BUILD_ENVIRONMENT}",
+    "build": "tsc && vite build --mode ${BUILD_ENVIRONMENT}",
     "lint": "eslint .",
     "preview": "vite preview",
     "test:type": "tsc --noEmit"
