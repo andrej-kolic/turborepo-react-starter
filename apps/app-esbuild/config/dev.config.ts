@@ -1,8 +1,9 @@
 import * as esbuild from 'esbuild';
-import { getEnvVariables } from '@repo/dev-tools/config/environment';
+import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { appCoreEnvDir } from '@repo/dev-tools/config/paths';
+import util from 'util';
 
-// NOTE on environments: esbuild does not have modes like vite/webpack,
+const debuglog = util.debuglog('app-esbuild');
 
 if (!process.env.BUILD_ENVIRONMENT) {
   const errorMsg =
@@ -14,12 +15,16 @@ if (!process.env.BUILD_ENVIRONMENT) {
 
 const DEV_DIR = 'dev';
 
-const environmentVariables = getEnvVariables(
-  appCoreEnvDir,
-  // process.env.BUILD_ENVIRONMENT ?? 'development',
-  process.env.BUILD_ENVIRONMENT,
-  'esbuild',
-);
+const environmentVariables = loadEnvironmentVariables({
+  envDir: appCoreEnvDir,
+  buildEnvironment: process.env.BUILD_ENVIRONMENT,
+  customEnvVars: {
+    BUNDLER: 'esbuild',
+    MODE: 'N/A', // esbuild does not have modes like vite/webpack,
+  },
+});
+
+debuglog('Runtime environment Variables:', environmentVariables);
 
 async function dev() {
   const ctx = await esbuild.context({
@@ -45,6 +50,8 @@ async function dev() {
   const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
   });
+
+  debuglog(`Dev server running at: http://${hosts[0]}:${String(port)}`);
 }
 
 void dev();

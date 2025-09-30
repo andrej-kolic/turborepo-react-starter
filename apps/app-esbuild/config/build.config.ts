@@ -1,9 +1,9 @@
-import * as esbuild from 'esbuild';
-import { getEnvVariables } from '@repo/dev-tools/config/environment';
-import '@repo/dev-tools/config/paths';
+import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { appCoreEnvDir } from '@repo/dev-tools/config/paths';
+import * as esbuild from 'esbuild';
+import util from 'util';
 
-// NOTE on environments: esbuild does not have modes like vite/webpack,
+const debuglog = util.debuglog('app-esbuild');
 
 if (!process.env.BUILD_ENVIRONMENT) {
   const errorMsg =
@@ -15,12 +15,16 @@ if (!process.env.BUILD_ENVIRONMENT) {
 
 const BUILD_DIR = 'dist';
 
-const environmentVariables = getEnvVariables(
-  appCoreEnvDir,
-  // process.env.BUILD_ENVIRONMENT ?? 'production',
-  process.env.BUILD_ENVIRONMENT,
-  'esbuild',
-);
+const environmentVariables = loadEnvironmentVariables({
+  envDir: appCoreEnvDir,
+  buildEnvironment: process.env.BUILD_ENVIRONMENT,
+  customEnvVars: {
+    BUNDLER: 'esbuild',
+    MODE: 'N/A', // esbuild does not have modes like vite/webpack,
+  },
+});
+
+debuglog('Runtime environment Variables:', environmentVariables);
 
 async function bundle() {
   try {
@@ -44,10 +48,9 @@ async function bundle() {
       // external: ['react', 'react-dom'],
     });
 
-    console.log('Build successfull');
-    // console.log(buildResult);
+    debuglog('Build successful:', buildResult);
   } catch (err) {
-    console.log('Error during build:', err);
+    debuglog('Error during build:', err);
   }
 }
 
