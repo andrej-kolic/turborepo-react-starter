@@ -73,7 +73,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${BUNDLER}
+          build-filter: ${{ env.BUNDLER }}
           build-environment: development
           check-dependencies: 'false'
           check-format: 'false'
@@ -104,7 +104,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${BUNDLER}
+          build-filter: ${{ env.BUNDLER }}
           build-environment: staging
           check-dependencies: 'false'
           check-format: 'false'
@@ -132,7 +132,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${BUNDLER}
+          build-filter: ${{ env.BUNDLER }}
           build-environment: production
           check-dependencies: 'false'
           check-format: 'false'

@@ -7,7 +7,9 @@ on:
         type: choice
         description: Bundler
         required: true
+        default: default
         options:
+          - default
           - app-vite
           - app-webpack
           - app-esbuild
@@ -22,6 +24,12 @@ on:
 
 env:
   HUSKY: 0
+  BUNDLER: >-
+    ${{
+      (github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER)
+      || github.event.inputs.bundler
+      || vars.DEFAULT_BUNDLER
+    }}
 
 jobs:
   build:
@@ -42,7 +50,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${{ github.event.inputs.bundler }}
+          build-filter: ${{ env.BUNDLER }}
           build-environment: ${{ github.event.inputs.build_environment }}
           check-dependencies: 'true'
           check-format: 'true'
