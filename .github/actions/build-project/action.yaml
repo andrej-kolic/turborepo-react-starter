@@ -134,11 +134,7 @@ runs:
         echo "Build (${{ inputs.build-filter }})"
         echo "──────────────────────────────────────"
         echo " "
-        if [ -n "${{ inputs.build-filter }}" ]; then
-          BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} sh -c 'turbo run build --filter "${{ inputs.build-filter }}"'
-        else
-          BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm build
-        fi
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm build
 
     - name: Lint
       if: inputs.run-lint == 'true'
