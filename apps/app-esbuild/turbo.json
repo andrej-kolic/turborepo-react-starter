@@ -9,6 +9,9 @@
       "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
       "passThroughEnv": ["BUNDLER", "MODE"],
       "with": ["@repo/commons#dev"]
+    },
+    "preview": {
+      "dependsOn": ["build"]
     }
   }
 }

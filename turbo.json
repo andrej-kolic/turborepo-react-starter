@@ -16,6 +16,10 @@
     "build-storybook-docs": {
       "dependsOn": ["^build"]
     },
+    "preview": {
+      "cache": false,
+      "persistent": true
+    },
     "lint": {},
     "dev": {
       "cache": false,

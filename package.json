@@ -11,6 +11,8 @@
     "build-storybook-docs": "dotenv -- turbo run build-storybook-docs",
     "dev": "dotenv -- sh -c 'turbo run dev --filter \"$BUNDLER\"'",
     "dev:all": "dotenv -- turbo run dev",
+    "preview": "dotenv -- sh -c 'turbo run preview --filter \"$BUNDLER\"'",
+    "preview:all": "dotenv -- turbo run preview",
     "lint": "dotenv -- turbo run lint",
     "format": "dotenv -- prettier . --write",
     "check:format": "dotenv -- prettier . --check",

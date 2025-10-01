@@ -27,15 +27,20 @@ export default defineConfig((configEnv) => {
   debuglog('configEnv:', configEnv);
 
   return {
-    // do not getEnvVariables from '@repo/dev-tools/config/environment', but Vite's native mechanism
-    // behavior is same as in getEnvVariables()
-    envDir: appCoreEnvDir,
-    envPrefix: 'APP_REACT',
-
     base: '', // generate relative paths
 
+    // do not use loadEnvironmentVariables from '@repo/dev-tools/config/environment', but Vite's native mechanism
+    // behavior is same as in getEnvVariables()
+    // NOTE: alternatively use loadEnvironmentVariables for consistency across all apps
+    envDir: appCoreEnvDir,
+    envPrefix: 'APP_REACT',
     define: {
-      'import.meta.env.BUNDLER': JSON.stringify('vite'),
+      'import.meta.env.BUNDLER': JSON.stringify(
+        process.env.BUNDLER ?? 'app-vite',
+      ),
+      'import.meta.env.BUILD_ENVIRONMENT': JSON.stringify(
+        process.env.BUILD_ENVIRONMENT,
+      ),
     },
 
     plugins: [react(), tsconfigPaths()],
