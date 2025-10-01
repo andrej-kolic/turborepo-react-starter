@@ -15,6 +15,7 @@ permissions:
 
 env:
   HUSKY: 0
+  STORYBOOK_OPTIONS: ${{ inputs.documentation && '--docs' || '' }}
 
 jobs:
   publish:
@@ -61,13 +62,7 @@ jobs:
           # install_command: pnpm install
           install_command: echo Skipping install, dependencies installed manually
 
-          # build_command: cd apps/ui-storybook && pnpm build-storybook
-          build_command: |
-            if ${{ inputs.documentation }}; then
-              pnpm build-storybook-docs
-              else
-              pnpm build-storybook
-            fi
+          build_command: STORYBOOK_OPTIONS=${{ env.STORYBOOK_OPTIONS }} pnpm build:ui
 
           path: apps/ui-storybook/storybook-static
           checkout: false

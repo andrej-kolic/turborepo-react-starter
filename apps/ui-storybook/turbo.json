@@ -2,7 +2,12 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
-      "with": ["@repo/commons#dev"]
+      "with": ["@repo/commons#dev"],
+      "env": ["STORYBOOK_OPTIONS"]
+    },
+    "build": {
+      "outputs": ["storybook-static/**"],
+      "env": ["STORYBOOK_OPTIONS"]
     }
   }
 }

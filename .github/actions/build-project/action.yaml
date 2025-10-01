@@ -134,7 +134,7 @@ runs:
         echo "Build (${{ inputs.build-filter }})"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm build
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm build:app
 
     - name: Lint
       if: inputs.run-lint == 'true'

@@ -7,10 +7,9 @@
   "scripts": {
     "lint": "eslint .",
     "test:type": "tsc --noEmit",
-    "dev": "storybook dev -p 6006",
-    "dev-docs": "storybook dev --docs",
-    "build-storybook": "storybook build",
-    "build-storybook-docs": "storybook build --docs"
+    "dev": "storybook dev -p 6006 ${STORYBOOK_OPTIONS}",
+    "build": "storybook build ${STORYBOOK_OPTIONS}",
+    "preview": "serve storybook-static -p 6007"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +34,7 @@
     "@types/react": "19.1.5",
     "@types/react-dom": "19.1.5",
     "prop-types": "^15.8.1",
+    "serve": "^14.2.4",
     "storybook": "^8.6.12",
     "vite": "6.3.5",
     "vite-tsconfig-paths": "^5.0.1"
