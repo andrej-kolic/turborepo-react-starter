@@ -35,9 +35,7 @@ export default defineConfig((configEnv) => {
     envDir: appCoreEnvDir,
     envPrefix: 'APP_REACT',
     define: {
-      'import.meta.env.BUNDLER': JSON.stringify(
-        process.env.BUNDLER ?? 'app-vite',
-      ),
+      'import.meta.env.BUNDLER': JSON.stringify('app-vite'),
       'import.meta.env.BUILD_ENVIRONMENT': JSON.stringify(
         process.env.BUILD_ENVIRONMENT,
       ),

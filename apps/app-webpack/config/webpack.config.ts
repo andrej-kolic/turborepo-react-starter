@@ -41,7 +41,7 @@ const webpackConfig = (
     envDir: appCoreEnvDir,
     buildEnvironment: process.env.BUILD_ENVIRONMENT,
     customEnvVars: {
-      BUNDLER: process.env.BUNDLER ?? 'app-webpack',
+      BUNDLER: 'app-webpack',
       MODE: options.mode, // should be set to 'development' or 'production'
     },
   });
