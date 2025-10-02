@@ -38,7 +38,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${{ vars.DEFAULT_BUNDLER }}
+          # build-filter: ${{ vars.DEFAULT_BUNDLER }}
           build-environment: ${{ steps.build-env.outputs.environment }}
           check-dependencies: 'true'
           check-format: 'true'
