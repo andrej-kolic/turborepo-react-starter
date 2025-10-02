@@ -21,7 +21,9 @@
       "cache": false,
       "persistent": true
     },
-    "test": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "test:type": {
       "dependsOn": ["^build", "^test:type"]
     },
