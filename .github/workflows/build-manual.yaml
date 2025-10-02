@@ -27,12 +27,10 @@ env:
   HUSKY: 0
   BUNDLER: >-
     ${{
-      format('{0}',
-        github.event.inputs.bundler == 'all' && ''
-        || github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER
-        || github.event.inputs.bundler
-        || vars.DEFAULT_BUNDLER
-      )
+      github.event.inputs.bundler == 'all' && ''
+      || github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER
+      || (github.event.inputs.bundler != 'all' && github.event.inputs.bundler != 'default') && github.event.inputs.bundler
+      || vars.DEFAULT_BUNDLER
     }}
 
 jobs:
