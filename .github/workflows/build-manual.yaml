@@ -7,7 +7,7 @@ on:
         type: choice
         description: Bundler
         required: false
-        # default: default
+        default: default
         options:
           - all
           - default
@@ -38,22 +38,22 @@ jobs:
 
     steps:
       - name: Set BUNDLER environment variable
+        id: set-bundler
         run: |
           if [ "${{ github.event.inputs.bundler }}" == "all" ]; then
-            echo "BUNDLER=" >> $GITHUB_ENV
+            echo "bundler=" >> $GITHUB_OUTPUT
           elif [ "${{ github.event.inputs.bundler }}" == "default" ]; then
-            echo "BUNDLER=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_ENV
+            echo "bundler=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_OUTPUT
           elif [ -n "${{ github.event.inputs.bundler }}" ]; then
-            echo "BUNDLER=${{ github.event.inputs.bundler }}" >> $GITHUB_ENV
+            echo "bundler=${{ github.event.inputs.bundler }}" >> $GITHUB_OUTPUT
           else
-            echo "BUNDLER=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_ENV
+            echo "bundler=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_OUTPUT
           fi
 
       - name: DEBUG
         run: |
-          echo "BUNDLER: $BUNDLER"
+          echo "BUNDLER: ${{ steps.set-bundler.outputs.bundler }}"
           echo "inputs.bundler: ${{ github.event.inputs.bundler }}"
-          echo "github.event.inputs.bundler == 'all': ${{ github.event.inputs.bundler == 'all' }}"
 
       - name: Check DEFAULT_BUNDLER
         if: ${{ !vars.DEFAULT_BUNDLER }}
@@ -68,7 +68,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${{ env.BUNDLER }}
+          build-filter: ${{ steps.set-bundler.outputs.bundler }}
           build-environment: ${{ github.event.inputs.build_environment }}
           check-dependencies: 'true'
           check-format: 'true'
