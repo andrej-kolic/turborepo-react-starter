@@ -44,21 +44,14 @@ runs:
   using: 'composite'
 
   steps:
-    - name: Validate input
+    - name: Log input
       shell: bash
       run: |
         echo " "
         echo " "
-        echo "Validate input"
+        echo "Log input"
         echo "──────────────────────────────────────"
         echo " "
-        # if ! [ -n "${{ inputs.build-filter }}" ]; then
-        #   echo "No build filter provided."
-        #   exit 1
-        # fi
-
-        # echo "Input is valid:"
-        # echo " "
         echo "Node.js version: ${{ inputs.node-version }}"
         echo "pnpm version: ${{ inputs.pnpm-version }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
@@ -126,12 +119,12 @@ runs:
         echo " "
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
-    - name: Build and run quality checks in parallel
+    - name: Build and run quality checks
       shell: bash
       run: |
         echo " "
         echo " "
-        echo "Build and run quality checks in parallel"
+        echo "Build and run quality checks"
         echo "──────────────────────────────────────"
         echo " "
 
@@ -153,7 +146,7 @@ runs:
         echo "Running tasks in parallel: $TASKS"
         echo " "
 
-        # TODO: conditional FILTER!
+        # Add conditional filter
         FILTER=""
         if [ -n "${{ inputs.build-filter }}" ]; then
           FILTER="--filter ${{ inputs.build-filter }}..."

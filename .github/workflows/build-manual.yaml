@@ -50,11 +50,6 @@ jobs:
             echo "bundler=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: DEBUG
-        run: |
-          echo "BUNDLER: ${{ steps.set-bundler.outputs.bundler }}"
-          echo "inputs.bundler: ${{ github.event.inputs.bundler }}"
-
       - name: Check DEFAULT_BUNDLER
         if: ${{ !vars.DEFAULT_BUNDLER }}
         run: |
