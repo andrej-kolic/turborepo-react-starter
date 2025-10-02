@@ -1,5 +1,6 @@
 export type EnvironmentVariables = {
   // set by bundler
+  readonly BUILD_ENVIRONMENT: string;
   readonly BUNDLER: string;
   readonly MODE: string;
 
@@ -9,6 +10,7 @@ export type EnvironmentVariables = {
 };
 
 const environmentVariables: EnvironmentVariables = {
+  BUILD_ENVIRONMENT: import.meta.env.BUILD_ENVIRONMENT,
   BUNDLER: import.meta.env.BUNDLER,
   MODE: import.meta.env.MODE,
 
