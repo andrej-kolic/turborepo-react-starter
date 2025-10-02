@@ -2,7 +2,7 @@ name: 'Deploy CloudFront Site'
 description: 'Deploy static website to AWS CloudFront with S3 backend'
 inputs:
   environment:
-    description: 'Deployment environment (dev, staging, prod)'
+    description: 'Deployment environment (development, staging, production)'
     required: true
   action:
     description: 'Deployment action (infra, content)'
@@ -15,7 +15,7 @@ inputs:
     required: false
     default: 'us-east-1'
   create-release:
-    description: 'Whether to create a GitHub release (prod only)'
+    description: 'Whether to create a GitHub release (production only)'
     required: false
     default: 'false'
   comment-pr:
@@ -123,7 +123,7 @@ runs:
         echo "COMMENT_PR=$COMMENT_PR" >> $GITHUB_ENV
 
         CREATE_RELEASE=false
-        if [[ "${{ inputs.create-release }}" == "true" && "${{ inputs.environment }}" == "prod" && "${{ inputs.action }}" == "content" ]]; then
+        if [[ "${{ inputs.create-release }}" == "true" && "${{ inputs.environment }}" == "production" && "${{ inputs.action }}" == "content" ]]; then
           CREATE_RELEASE=true
         fi
         echo "CREATE_RELEASE=$CREATE_RELEASE"

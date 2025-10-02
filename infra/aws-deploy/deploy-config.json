@@ -1,5 +1,5 @@
 {
-  "project_name": "aw1",
+  "project_name": "trs",
   "region": "us-east-1",
   "oidc": {
     "oidc_arn": "",
@@ -7,10 +7,10 @@
     "github_repo": "turborepo-react-starter"
   },
   "environments": {
-    "dev": {
+    "development": {
       "parameters": {
         "DomainName": "andrejkolic.com",
-        "SubDomain": "aw1-dev",
+        "SubDomain": "trs-dev",
         "HostedZoneId": "Z00295123IDZ7CVMX671W",
         "CreateApex": "no"
       }
@@ -18,15 +18,15 @@
     "staging": {
       "parameters": {
         "DomainName": "andrejkolic.com",
-        "SubDomain": "aw1-staging",
+        "SubDomain": "trs-staging",
         "HostedZoneId": "Z00295123IDZ7CVMX671W",
         "CreateApex": "no"
       }
     },
-    "prod": {
+    "production": {
       "parameters": {
         "DomainName": "andrejkolic.com",
-        "SubDomain": "aw1",
+        "SubDomain": "trs",
         "HostedZoneId": "Z00295123IDZ7CVMX671W",
         "CreateApex": "yes"
       }

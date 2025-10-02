@@ -18,9 +18,9 @@ Parameters:
     Type: String
     Description: 'Environment name'
     AllowedValues:
-      - dev
+      - development
       - staging
-      - prod
+      - production
 
 Conditions:
   CreateApexConfig: !Equals
