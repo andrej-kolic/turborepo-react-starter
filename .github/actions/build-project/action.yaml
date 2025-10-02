@@ -44,14 +44,18 @@ runs:
   using: 'composite'
 
   steps:
-    - name: Log input
-      shell: bash
+    # Log input
+
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Log input"
         echo "──────────────────────────────────────"
         echo " "
+    - name: Log input
+      shell: bash
+      run: |
         echo "Node.js version: ${{ inputs.node-version }}"
         echo "pnpm version: ${{ inputs.pnpm-version }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
@@ -61,6 +65,8 @@ runs:
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
+
+    # Setup pnpm
 
     - shell: bash
       run: |
@@ -73,6 +79,8 @@ runs:
       uses: pnpm/action-setup@v3
       with:
         version: ${{ inputs.pnpm-version }}
+
+    # Setup Setup Node.js
 
     - shell: bash
       run: |
@@ -87,18 +95,22 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: 'pnpm'
 
-    - name: Install dependencies
-      shell: bash
+    # Install dependencies
+
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Install dependencies"
         echo "──────────────────────────────────────"
         echo " "
-        pnpm install
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
 
-    - name: Check dependencies
-      if: inputs.check-dependencies == 'true'
+    # Check dependencies
+
+    - if: inputs.check-dependencies == 'true'
       shell: bash
       run: |
         echo " "
@@ -106,10 +118,14 @@ runs:
         echo "Check dependencies"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
+    - name: Check dependencies
+      if: inputs.check-dependencies == 'true'
+      shell: bash
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
 
-    - name: Check format
-      if: inputs.check-format == 'true'
+    # Check format
+
+    - if: inputs.check-format == 'true'
       shell: bash
       run: |
         echo " "
@@ -117,17 +133,23 @@ runs:
         echo "Check format"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
-
-    - name: Build and run quality checks
+    - name: Check format
+      if: inputs.check-format == 'true'
       shell: bash
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
+
+    # Build and run quality checks
+
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Build and run quality checks"
         echo "──────────────────────────────────────"
         echo " "
-
+    - name: Build and run quality checks
+      shell: bash
+      run: |
         # Build tasks list based on inputs
         TASKS=""
 
@@ -152,6 +174,7 @@ runs:
           FILTER="--filter ${{ inputs.build-filter }}..."
         else
           echo "No build filter provided, running tasks ($TASKS) across the entire monorepo."
+          echo " "
         fi
 
         # Run turbo with all tasks, filtered to the specific build target
