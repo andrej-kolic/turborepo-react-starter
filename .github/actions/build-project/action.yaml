@@ -1,5 +1,5 @@
 name: 'Build Project'
-description: 'Setup Node.js environment, install dependencies, and run build pipeline with optional checks'
+description: 'Setup Node.js environment, install dependencies, and run build pipeline with optional checks using Turborepo parallel execution'
 
 inputs:
   node-version:
@@ -31,6 +31,12 @@ inputs:
     description: 'Run tests (pnpm test)'
     required: false
     default: 'true'
+
+  # TODO: not needed because of build?
+  # run-type-check:
+  #   description: 'Run TypeScript type checking (pnpm test:type)'
+  #   required: false
+  #   default: 'true'
 
   build-filter:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
@@ -65,6 +71,7 @@ runs:
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
+        echo "Run type check: ${{ inputs.run-type-check }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
@@ -115,45 +122,49 @@ runs:
         echo " "
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
 
-    - name: Check format
-      if: inputs.check-format == 'true'
+    - name: Build and run quality checks in parallel
       shell: bash
       run: |
         echo " "
         echo " "
-        echo "Check format"
+        echo "Build and run quality checks in parallel"
         echo "──────────────────────────────────────"
         echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
-    - name: Build
-      shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Build (${{ inputs.build-filter }})"
-        echo "──────────────────────────────────────"
-        echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm build:app
+        # Build tasks list based on inputs
+        TASKS=""
 
-    - name: Lint
-      if: inputs.run-lint == 'true'
-      shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Lint"
-        echo "──────────────────────────────────────"
-        echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm lint
+        # Always include build for the specific filter
+        TASKS="build"
 
-    - name: Test
-      if: inputs.run-tests == 'true'
-      shell: bash
-      run: |
+        # Add conditional tasks
+        if [ "${{ inputs.check-format }}" = "true" ]; then
+          TASKS="$TASKS check:format"
+        fi
+
+        if [ "${{ inputs.run-lint }}" = "true" ]; then
+          TASKS="$TASKS lint"
+        fi
+
+        if [ "${{ inputs.run-tests }}" = "true" ]; then
+          TASKS="$TASKS test"
+        fi
+
+        # if [ "${{ inputs.run-type-check }}" = "true" ]; then
+        #   TASKS="$TASKS test:type"
+        # fi
+
+        echo "Running tasks in parallel: $TASKS"
         echo " "
-        echo " "
-        echo "Test"
-        echo "──────────────────────────────────────"
-        echo " "
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm test
+
+        # Run turbo with all tasks, filtered to the specific build target
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo $TASKS --filter "${{ inputs.build-filter }}"
+
+# # Run checks across entire monorepo, but build only the filtered app
+# if [ -n "$TASKS" ]; then
+#   echo "Running global checks and filtered build..."
+#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo check:format lint test test:type
+#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo build --filter "${{ inputs.build-filter }}"
+# else
+#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo build --filter "${{ inputs.build-filter }}"
+# fi
