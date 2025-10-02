@@ -4,16 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-development} NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=development webpack serve --mode development --config config/webpack.config.ts",
-    "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
-    "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
-    "build": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-production} NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack --mode production --config config/webpack.config.ts",
-    "build:staging": "BUILD_ENVIRONMENT=staging pnpm build",
+    "dev": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=development webpack serve --mode development --config config/webpack.config.ts",
+    "build": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack --mode production --config config/webpack.config.ts",
     "preview": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack serve --mode production --config config/webpack.config.ts",
-    "test": "echo 'Add test script here'",
     "lint": "eslint .",
     "compile": "tsc",
-    "test:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",

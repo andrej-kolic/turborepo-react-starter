@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   // set by bundler:
   readonly MODE: string;
   readonly BUNDLER: string;
+  readonly BUILD_ENVIRONMENT: string;
 
   // client:
   readonly APP_REACT_TITLE: string;

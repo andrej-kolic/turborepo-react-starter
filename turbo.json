@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", "tsconfig.json"],
 
-  "globalEnv": ["GITHUB_TOKEN", "NODE_ENV"],
+  "globalEnv": ["BUNDLER", "BUILD_ENVIRONMENT", "NODE_ENV", "NODE_DEBUG"],
   "globalPassThroughEnv": ["AWS_SECRET_KEY", "GITHUB_TOKEN"],
 
   "tasks": {
@@ -10,20 +10,27 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "build-storybook": {
+    "preview": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
       "dependsOn": ["^build"]
     },
-    "build-storybook-docs": {
-      "dependsOn": ["^build"]
-    },
-    "lint": {},
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": {},
-    "test:type": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "check:type": {
+      "dependsOn": ["^build", "^check:type"]
+    },
     "test:watch": {
+      "cache": false
+    },
+    "clear:output": {
       "cache": false
     }
   }

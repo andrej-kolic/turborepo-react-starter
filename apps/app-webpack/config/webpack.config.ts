@@ -3,7 +3,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import webpack from 'webpack';
-import { getEnvVariables } from '@repo/dev-tools/config/environment';
+import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import {
   appCorePublic,
   appCoreEnvDir,
@@ -11,37 +11,44 @@ import {
 } from '@repo/dev-tools/config/paths';
 
 import 'webpack-dev-server';
+import util from 'util';
 
-// const webpackMode = 'production';
-// const nodeEnv = process.env.NODE_ENV ?? "";
-
-const envMap = getEnvVariables(
-  appCoreEnvDir,
-  process.env.BUILD_ENVIRONMENT ?? 'production',
-  'webpack',
-);
+const debuglog = util.debuglog('app-webpack');
 
 //
 
-interface WebpackConfigOptions {
+type WebpackConfigOptions = {
   mode: 'development' | 'production';
   config: string;
   env: Record<string, string>;
-}
+};
 
 const webpackConfig = (
   env: Record<string, string>,
   options: WebpackConfigOptions,
 ): webpack.Configuration => {
-  console.log('');
-  console.log('* options:', options);
-  console.log('* env:', env);
-  console.log('');
+  debuglog('WebpackConfigOptions:', options);
+
+  if (!process.env.BUILD_ENVIRONMENT) {
+    const errorMsg =
+      'BUILD_ENVIRONMENT environment variable is not set. ' +
+      'If you are running locally, edit .env file and run task from project root. ' +
+      'IF on CI/CD, set the variable in your pipeline.';
+    throw new Error(errorMsg);
+  }
+
+  const environmentVariables = loadEnvironmentVariables({
+    envDir: appCoreEnvDir,
+    buildEnvironment: process.env.BUILD_ENVIRONMENT,
+    customEnvVars: {
+      BUNDLER: 'app-webpack',
+      MODE: options.mode, // should be set to 'development' or 'production'
+    },
+  });
+
+  debuglog('Runtime environment Variables:', environmentVariables);
 
   return {
-    // mode: 'production',
-    // mode: webpackMode,
-
     entry: './src/index.tsx',
 
     output: {
@@ -57,11 +64,10 @@ const webpackConfig = (
 
     plugins: [
       new webpack.DefinePlugin({
-        'import.meta.env': JSON.stringify(envMap),
+        'import.meta.env': JSON.stringify(environmentVariables),
       }),
 
       new HtmlWebpackPlugin({
-        // title: "ReactTs starter",
         template: `./src/index.html`,
         templateParameters: {
           title: process.env.APP_REACT_TITLE,
