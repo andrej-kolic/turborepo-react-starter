@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: Lint, Build and Test
+    name: Build project
     timeout-minutes: 15
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -29,16 +29,20 @@ jobs:
         id: build-env
         run: |
           if [[ "${{ github.ref_name }}" == "main" ]]; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            BUILD_ENVIRONMENT="staging"
+            # echo "environment=staging" >> $GITHUB_OUTPUT
           else
-          echo "environment=development" >> $GITHUB_OUTPUT
+            BUILD_ENVIRONMENT="development"
           fi
-          echo "Build environment set to: $(echo "${{ github.ref_name }}" | sed 's/main/staging/; s/develop/development/; /^staging$/!{/^development$/!s/.*/development/}')"
+          echo "environment=$BUILD_ENVIRONMENT" >> $GITHUB_OUTPUT
+
+          echo "Build environment set to: ${BUILD_ENVIRONMENT}"
+          # echo "Build environment set to: $(echo "${{ github.ref_name }}" | sed 's/main/staging/; s/develop/development/; /^staging$/!{/^development$/!s/.*/development/}')"
 
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          # build-filter: ${{ vars.DEFAULT_BUNDLER }}
+          # build-filter: ${{ vars.DEFAULT_BUNDLER }} # uncomment to enable build filtering based on DEFAULT_BUNDLER variable
           build-environment: ${{ steps.build-env.outputs.environment }}
           check-dependencies: 'true'
           check-format: 'true'
