@@ -63,7 +63,7 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${{ steps.set-bundler.outputs.bundler }}
+          # build-filter: ${{ steps.set-bundler.outputs.bundler }}
           build-environment: ${{ github.event.inputs.build_environment }}
           check-dependencies: 'true'
           check-format: 'true'
