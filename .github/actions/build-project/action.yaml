@@ -32,15 +32,9 @@ inputs:
     required: false
     default: 'true'
 
-  # TODO: not needed because of build?
-  # run-type-check:
-  #   description: 'Run TypeScript type checking (pnpm test:type)'
-  #   required: false
-  #   default: 'true'
-
   build-filter:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
-    required: true
+    required: false
 
   build-environment:
     description: 'Build environment (development, staging, production)'
@@ -71,7 +65,6 @@ runs:
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
-        # echo "Run type check: ${{ inputs.run-type-check }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
@@ -149,10 +142,6 @@ runs:
         TASKS="build"
 
         # Add conditional tasks
-        # if [ "${{ inputs.check-format }}" = "true" ]; then
-        #   TASKS="$TASKS check:format"
-        # fi
-
         if [ "${{ inputs.run-lint }}" = "true" ]; then
           TASKS="$TASKS lint"
         fi
@@ -161,23 +150,16 @@ runs:
           TASKS="$TASKS test"
         fi
 
-        # if [ "${{ inputs.run-type-check }}" = "true" ]; then
-        #   TASKS="$TASKS test:type"
-        # fi
-
         echo "Running tasks in parallel: $TASKS"
         echo " "
 
-        # TODO: confitional FILTER
+        # TODO: conditional FILTER!
+        FILTER=""
+        if [ -n "${{ inputs.build-filter }}" ]; then
+          FILTER="--filter ${{ inputs.build-filter }}..."
+        else
+          echo "No build filter provided, running tasks ($TASKS) across the entire monorepo."
+        fi
 
         # Run turbo with all tasks, filtered to the specific build target
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS --filter "${{ inputs.build-filter }}"...
-
-# # Run checks across entire monorepo, but build only the filtered app
-# if [ -n "$TASKS" ]; then
-#   echo "Running global checks and filtered build..."
-#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo check:format lint test test:type
-#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo build --filter "${{ inputs.build-filter }}"
-# else
-#   BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=${{ inputs.build-filter }} pnpm turbo build --filter "${{ inputs.build-filter }}"
-# fi
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS $FILTER

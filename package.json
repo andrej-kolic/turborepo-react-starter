@@ -22,7 +22,7 @@
     "test:watch": "dotenv -- turbo run test:watch",
     "test:type": "dotenv -- turbo run test:type",
     "clear:cache": "pnpm cache delete && rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
-    "check-all": "dotenv -- pnpm depchk && pnpm turbo test:type lint test",
+    "quality-checks": "dotenv -- pnpm depchk && pnpm turbo test:type lint test",
     "prepare": "husky"
   },
   "devDependencies": {

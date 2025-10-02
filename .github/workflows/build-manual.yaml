@@ -6,9 +6,10 @@ on:
       bundler:
         type: choice
         description: Bundler
-        required: true
-        default: default
+        required: false
+        # default: default
         options:
+          - all
           - default
           - app-vite
           - app-webpack
@@ -26,7 +27,8 @@ env:
   HUSKY: 0
   BUNDLER: >-
     ${{
-      (github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER)
+      (github.event.inputs.bundler == 'all' && '')
+      || (github.event.inputs.bundler == 'default' && vars.DEFAULT_BUNDLER)
       || github.event.inputs.bundler
       || vars.DEFAULT_BUNDLER
     }}
@@ -42,6 +44,11 @@ jobs:
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
+      - name: Check DEFAULT_BUNDLER
+        if: ${{ !vars.DEFAULT_BUNDLER }}
+        run: |
+          echo "::warning::DEFAULT_BUNDLER variable is not set."
+
       - name: Check out code
         uses: actions/checkout@v4
         with:
