@@ -1,14 +1,16 @@
-export interface EnvironmentVariables {
+export type EnvironmentVariables = {
   // set by bundler
+  readonly BUILD_ENVIRONMENT: string;
   readonly BUNDLER: string;
   readonly MODE: string;
 
   // client
   readonly APP_REACT_ENV_FILE: string;
   readonly APP_REACT_TITLE: string;
-}
+};
 
 const environmentVariables: EnvironmentVariables = {
+  BUILD_ENVIRONMENT: import.meta.env.BUILD_ENVIRONMENT,
   BUNDLER: import.meta.env.BUNDLER,
   MODE: import.meta.env.MODE,
 
@@ -16,14 +18,7 @@ const environmentVariables: EnvironmentVariables = {
   APP_REACT_TITLE: import.meta.env.APP_REACT_TITLE,
 };
 
+// TODO: rename to getRuntimeEnvVariables()
 export function getEnvironmentVariables() {
   return environmentVariables;
 }
-
-// export const BUNDLER = import.meta.env.BUNDLER;
-// export const MODE = import.meta.env.MODE;
-
-// export const APP_REACT_ENV_FILE = import.meta.env.APP_REACT_ENV_FILE;
-// export const APP_REACT_TITLE = import.meta.env.APP_REACT_TITLE;
-
-// TODO: include additional processing or validation if needed

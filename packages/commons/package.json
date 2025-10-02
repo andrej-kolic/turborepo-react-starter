@@ -18,13 +18,13 @@
     "bundle:watch": "tsup-node --watch",
     "type:gen": "tsc --emitDeclarationOnly",
     "type:gen:watch": "tsc --emitDeclarationOnly --watch",
-    "clean": "rm -rf dist tsconfig.tsbuildinfo",
-    "build": "pnpm clean && run-p bundle type:gen",
+    "clear:output": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "pnpm clear:output && run-p bundle type:gen",
     "dev": "run-p bundle:watch type:gen:watch",
     "lint": "eslint .",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

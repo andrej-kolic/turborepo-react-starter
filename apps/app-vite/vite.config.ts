@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths'; // set up aliases from tsconfig
+import util from 'util';
+
+const debuglog = util.debuglog('app-vite');
 
 // TODO: fix import when fix is available
 // must be local path, or vite complains (for now). See https://github.com/vitejs/vite/issues/5370
@@ -9,62 +12,36 @@ import {
   appCoreEnvDir,
 } from './node_modules/@repo/dev-tools/config/paths';
 
-// TODO: add printEnv() to dev-tools?
-console.log('* process.env.NODE_ENV: ', process.env.NODE_ENV);
-console.log('* process.env.BUILD_ENVIRONMENT: ', process.env.BUILD_ENVIRONMENT);
+// NOTE on environments: Vite's mode should be set to the same as BUILD_ENVIRONMENT
 
-// const de = dotenvx.config({
-//   path: appCoreEnv
-// });
+if (!process.env.BUILD_ENVIRONMENT) {
+  const errorMsg =
+    'BUILD_ENVIRONMENT environment variable is not set. ' +
+    'If you are running locally, edit .env file and run task from project root. ' +
+    'IF on CI/CD, set the variable in your pipeline.';
+  throw new Error(errorMsg);
+}
 
-// // const de = dotenvx.config();
-// console.log('*** dotenvx:', de);
-
-// const dotEnvMap = new Map<string, unknown>();
-// for (const [key, value] of Object.entries(de.parsed)) {
-//   console.log(`Key: ${key}, Value: ${value}`);
-//   /**
-//    * add logic to filter variables, for ex. only if prefixed with REACT_APP prefix.
-//    * also add variables from process.env if necessary
-//    */
-//   dotEnvMap.set(`process.env.${key}`, JSON.stringify(value));
-// }
-
-// console.log('* map:', Object.fromEntries(dotEnvMap));
-
-// https://vitejs.dev/config/
-// export default defineConfig({
 export default defineConfig((configEnv) => {
-  console.log('* configEnv:', configEnv);
-
-  // const { command, mode, isSsrBuild, isPreview } = configEnv;
+  // Vite's configEnv.mode should be set to the same as BUILD_ENVIRONMENT
+  debuglog('configEnv:', configEnv);
 
   return {
-    envDir: appCoreEnvDir,
-    envPrefix: 'APP_REACT',
-
     base: '', // generate relative paths
 
-    // define: Object.fromEntries(dotEnvMap),
-
-    // define: {
-    //   'process.env.API_URL': JSON.stringify(process.env.API_URL),
-    //   'process.env.TEST': JSON.stringify('abc'),
-    // },
-
+    // do not use loadEnvironmentVariables from '@repo/dev-tools/config/environment', but Vite's native mechanism
+    // behavior is same as in getEnvVariables()
+    // NOTE: alternatively use loadEnvironmentVariables for consistency across all apps
+    envDir: appCoreEnvDir,
+    envPrefix: 'APP_REACT',
     define: {
-      'import.meta.env.BUNDLER': JSON.stringify('vite'),
+      'import.meta.env.BUNDLER': JSON.stringify('app-vite'),
+      'import.meta.env.BUILD_ENVIRONMENT': JSON.stringify(
+        process.env.BUILD_ENVIRONMENT,
+      ),
     },
 
     plugins: [react(), tsconfigPaths()],
-
-    // resolve: {
-    // preserveSymlinks: true,
-    // alias: {
-    //   '~app-core': path.resolve(__dirname, '../../packages/app-core/src'),
-    //   '~ui': path.resolve(__dirname, '../../packages/ui/src'),
-    // },
-    // },
 
     publicDir: appCorePublic,
 

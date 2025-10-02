@@ -10,16 +10,14 @@
   "scripts": {
     "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
     "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
-    "_bundle": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-production} TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/build.config.ts",
-    "_bundle_dev": "BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT:-development} TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/dev.config.ts",
-    "build": "pnpm _copy-html-build && pnpm _bundle",
-    "build:staging": "BUILD_ENVIRONMENT=staging pnpm build",
+    "_bundle_build": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/build.config.ts",
+    "_bundle_dev": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/dev.config.ts",
+    "build": "pnpm _copy-html-build && pnpm _bundle_build",
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
-    "dev:staging": "BUILD_ENVIRONMENT=staging pnpm dev",
-    "dev:production": "BUILD_ENVIRONMENT=production pnpm dev",
     "lint": "eslint .",
     "preview": "serve ./dist",
-    "test:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",

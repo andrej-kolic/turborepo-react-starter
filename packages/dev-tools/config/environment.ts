@@ -1,65 +1,65 @@
 import dotenvFlow from 'dotenv-flow';
-// import dotenvExpand from "dotenv-expand"
+import util from 'util';
 
-// TODO: add as options parameter in getEnvVariables()
+const debuglog = util.debuglog('dev-tools');
+
+const DEFAULT_PREFIX = 'APP_REACT';
+
 /**
- * add only variables with this prefix to import.meta.env
+ * Load variables from .env files and process.env. Meant to be used in bundlers.
+ * 1. Load .env files from envDir, based on buildEnvironment
+ * 2. Merge with process.env (process.env has precedence)
+ * 3. Filter only variables with PREFIX
+ * 4. Enhance with BUILD_ENVIRONMENT and customEnvVars
+ *
+ * @param envDir directory where .env files are located
+ * @param buildEnvironment environment name, e.g. 'development', 'production', 'staging'
+ * @param bundler bundler name, e.g. 'vite', 'webpack', 'esbuild'
+ *
+ * @returns object with environment variables to be used in the app
  */
-const PREFIX = 'APP_REACT';
-
-export function getEnvVariables(
-  envDir: string,
-  buildEnvironment: string,
-  bundler: string,
-) {
-  // TODO: use debug
-  console.log('');
-  console.log('* process.env.NODE_ENV:', process.env.NODE_ENV);
-  console.log('* process.env.BUILD_ENVIRONMENT', process.env.BUILD_ENVIRONMENT);
-  console.log('');
-
+export function loadEnvironmentVariables({
+  envDir,
+  buildEnvironment,
+  customEnvVars,
+  PREFIX = DEFAULT_PREFIX,
+}: {
+  envDir: string;
+  buildEnvironment: string;
+  customEnvVars?: Record<string, string>;
+  PREFIX?: string;
+}) {
+  // load .env files
   const variables = dotenvFlow.config({
     node_env: buildEnvironment,
     default_node_env: 'development',
     path: envDir,
     debug: false,
   });
-  console.log(
-    '* parsed variables from .env files',
-    typeof variables,
-    variables.parsed,
+  debuglog('loaded variables from .env files:', variables.parsed);
+
+  // filter only variables with PREFIX
+  const filteredEnvMap: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    // debuglog(`Key: ${key}, Value: ${value}`);
+    if (key.startsWith(PREFIX)) {
+      filteredEnvMap[key] = value;
+    }
+  }
+  debuglog(
+    `filtered variables from process.env (using prefix: ${PREFIX}):`,
+    filteredEnvMap,
   );
 
-  // const expandedVariables = dotenvExpand.expand(variables.parsed);
-  // console.log('* expanded variables:', expandedVariables);
+  debuglog('custom variables:', customEnvVars);
 
-  /*
-  const dotEnvMap: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(variables.parsed ?? {})) {
-    // console.log(`Key: ${key}, Value: ${value}`);
-    if (key.startsWith(PREFIX)) {
-      dotEnvMap[key] = value;
-    }
-  }
-  console.log("* dotenv map:", dotEnvMap);
-  */
-
-  const processEnvMap: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(process.env)) {
-    // console.log(`Key: ${key}, Value: ${value}`);
-    if (key.startsWith(PREFIX)) {
-      processEnvMap[key] = value;
-    }
-  }
-  console.log('* process map:', processEnvMap);
-
-  const BUNDLER = bundler;
-  const MODE = buildEnvironment;
-
-  return {
-    // ...dotEnvMap,
-    ...processEnvMap,
-    BUNDLER,
-    MODE,
+  // enhance with BUILD_ENVIRONMENT and customEnvVars
+  const finalEnvMap = {
+    ...filteredEnvMap,
+    BUILD_ENVIRONMENT: buildEnvironment,
+    ...customEnvVars,
   };
+  debuglog('final variable map:', finalEnvMap);
+
+  return finalEnvMap;
 }

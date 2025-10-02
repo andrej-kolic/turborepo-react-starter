@@ -6,19 +6,29 @@ on:
       bundler:
         type: choice
         description: Bundler
-        required: true
+        required: false
+        default: default
         options:
+          - all
+          - default
           - app-vite
           - app-webpack
           - app-esbuild
+      build_environment:
+        type: choice
+        description: Build Environment
+        required: true
+        options:
+          - development
+          - staging
+          - production
 
 env:
   HUSKY: 0
-  BUNDLER: ${{ github.event.inputs.bundler }}
 
 jobs:
   build:
-    name: Manual - Lint, Build and Test
+    name: Build project
     timeout-minutes: 15
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
@@ -27,6 +37,24 @@ jobs:
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
+      - name: Set BUNDLER environment variable
+        id: set-bundler
+        run: |
+          if [ "${{ github.event.inputs.bundler }}" == "all" ]; then
+            echo "bundler=" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.bundler }}" == "default" ]; then
+            echo "bundler=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.event.inputs.bundler }}" ]; then
+            echo "bundler=${{ github.event.inputs.bundler }}" >> $GITHUB_OUTPUT
+          else
+            echo "bundler=${{ vars.DEFAULT_BUNDLER }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check DEFAULT_BUNDLER
+        if: ${{ !vars.DEFAULT_BUNDLER }}
+        run: |
+          echo "::warning::DEFAULT_BUNDLER variable is not set."
+
       - name: Check out code
         uses: actions/checkout@v4
         with:
@@ -35,7 +63,8 @@ jobs:
       - name: Build project
         uses: ./.github/actions/build-project
         with:
-          build-filter: ${BUNDLER}
+          build-filter: ${{ steps.set-bundler.outputs.bundler }}
+          build-environment: ${{ github.event.inputs.build_environment }}
           check-dependencies: 'true'
           check-format: 'true'
           run-lint: 'true'
