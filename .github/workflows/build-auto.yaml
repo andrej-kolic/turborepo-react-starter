@@ -2,7 +2,7 @@ name: 'Build: Auto'
 
 on:
   push:
-    # branches: ['main']
+    branches: ['main']
   pull_request:
     types: [opened, synchronize]
 
@@ -30,14 +30,11 @@ jobs:
         run: |
           if [[ "${{ github.ref_name }}" == "main" ]]; then
             BUILD_ENVIRONMENT="staging"
-            # echo "environment=staging" >> $GITHUB_OUTPUT
           else
             BUILD_ENVIRONMENT="development"
           fi
           echo "environment=$BUILD_ENVIRONMENT" >> $GITHUB_OUTPUT
-
           echo "Build environment set to: ${BUILD_ENVIRONMENT}"
-          # echo "Build environment set to: $(echo "${{ github.ref_name }}" | sed 's/main/staging/; s/develop/development/; /^staging$/!{/^development$/!s/.*/development/}')"
 
       - name: Build project
         uses: ./.github/actions/build-project
