@@ -71,7 +71,7 @@ runs:
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
-        echo "Run type check: ${{ inputs.run-type-check }}"
+        # echo "Run type check: ${{ inputs.run-type-check }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
@@ -122,6 +122,17 @@ runs:
         echo " "
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
 
+    - name: Check format
+      if: inputs.check-format == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Check format"
+        echo "──────────────────────────────────────"
+        echo " "
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
+
     - name: Build and run quality checks in parallel
       shell: bash
       run: |
@@ -138,9 +149,9 @@ runs:
         TASKS="build"
 
         # Add conditional tasks
-        if [ "${{ inputs.check-format }}" = "true" ]; then
-          TASKS="$TASKS check:format"
-        fi
+        # if [ "${{ inputs.check-format }}" = "true" ]; then
+        #   TASKS="$TASKS check:format"
+        # fi
 
         if [ "${{ inputs.run-lint }}" = "true" ]; then
           TASKS="$TASKS lint"
