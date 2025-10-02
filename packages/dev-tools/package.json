@@ -6,7 +6,7 @@
   "main": "./config/",
   "types": "./config/",
   "scripts": {
-    "test:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

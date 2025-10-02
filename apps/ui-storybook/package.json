@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test:type": "tsc --noEmit",
+    "check:type": "tsc --noEmit",
     "dev": "storybook dev -p 6006 ${STORYBOOK_OPTIONS}",
     "build": "storybook build ${STORYBOOK_OPTIONS}",
     "preview": "serve storybook-static -p 6007"

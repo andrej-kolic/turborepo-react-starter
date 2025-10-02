@@ -13,7 +13,7 @@ inputs:
     default: '10'
 
   check-dependencies:
-    description: 'Run dependency check (pnpm depchk)'
+    description: 'Run dependency check (pnpm check:dependencies)'
     required: false
     default: 'true'
 
@@ -122,7 +122,7 @@ runs:
     - name: Check dependencies
       if: inputs.check-dependencies == 'true'
       shell: bash
-      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm depchk
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:dependencies
 
     # Check format
 

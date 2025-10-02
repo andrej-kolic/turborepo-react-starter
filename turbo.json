@@ -24,8 +24,8 @@
     "test": {
       "dependsOn": ["^build"]
     },
-    "test:type": {
-      "dependsOn": ["^build", "^test:type"]
+    "check:type": {
+      "dependsOn": ["^build", "^check:type"]
     },
     "test:watch": {
       "cache": false

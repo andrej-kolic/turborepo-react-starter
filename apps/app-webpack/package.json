@@ -9,7 +9,7 @@
     "preview": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack serve --mode production --config config/webpack.config.ts",
     "lint": "eslint .",
     "compile": "tsc",
-    "test:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
