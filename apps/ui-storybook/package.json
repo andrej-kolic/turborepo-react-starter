@@ -9,7 +9,8 @@
     "check:type": "tsc --noEmit",
     "dev": "storybook dev -p 6006 ${STORYBOOK_OPTIONS}",
     "build": "storybook build ${STORYBOOK_OPTIONS}",
-    "preview": "serve storybook-static -p 6007"
+    "preview": "serve storybook-static -p 6007",
+    "clear:output": "rm -rf ./storybook-static"
   },
   "keywords": [],
   "author": "",

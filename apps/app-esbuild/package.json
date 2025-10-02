@@ -16,7 +16,8 @@
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
     "lint": "eslint .",
     "preview": "serve ./dist",
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",

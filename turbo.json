@@ -29,6 +29,9 @@
     },
     "test:watch": {
       "cache": false
+    },
+    "clear:output": {
+      "cache": false
     }
   }
 }
