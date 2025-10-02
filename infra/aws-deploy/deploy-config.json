@@ -2,7 +2,7 @@
   "project_name": "trs",
   "region": "us-east-1",
   "oidc": {
-    "oidc_arn": "",
+    "oidc_arn": "arn:aws:iam::629994690329:oidc-provider/token.actions.githubusercontent.com",
     "github_org": "andrej-kolic",
     "github_repo": "turborepo-react-starter"
   },
