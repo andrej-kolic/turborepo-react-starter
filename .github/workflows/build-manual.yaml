@@ -44,6 +44,12 @@ jobs:
     #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
+      - name: DEBUG
+        run: |
+          echo "BUNDLER: $BUNDLER"
+          echo "inputs.bundler: ${{ github.event.inputs.bundler }}"
+          echo "github.event.inputs.bundler == 'all': ${{ github.event.inputs.bundler == 'all' }}"
+
       - name: Check DEFAULT_BUNDLER
         if: ${{ !vars.DEFAULT_BUNDLER }}
         run: |
