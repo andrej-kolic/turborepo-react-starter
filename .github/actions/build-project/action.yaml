@@ -171,7 +171,7 @@ runs:
         # TODO: confitional FILTER
 
         # Run turbo with all tasks, filtered to the specific build target
-        BUILD_ENVIRONMENT=${{ inputs.build-environment }}pnpm turbo $TASKS --filter "${{ inputs.build-filter }}"...
+        BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS --filter "${{ inputs.build-filter }}"...
 
 # # Run checks across entire monorepo, but build only the filtered app
 # if [ -n "$TASKS" ]; then
