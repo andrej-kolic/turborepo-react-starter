@@ -52,13 +52,13 @@ runs:
         echo "Validate input"
         echo "──────────────────────────────────────"
         echo " "
-        if ! [ -n "${{ inputs.build-filter }}" ]; then
-          echo "No build filter provided."
-          exit 1
-        fi
+        # if ! [ -n "${{ inputs.build-filter }}" ]; then
+        #   echo "No build filter provided."
+        #   exit 1
+        # fi
 
-        echo "Input is valid:"
-        echo " "
+        # echo "Input is valid:"
+        # echo " "
         echo "Node.js version: ${{ inputs.node-version }}"
         echo "pnpm version: ${{ inputs.pnpm-version }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
