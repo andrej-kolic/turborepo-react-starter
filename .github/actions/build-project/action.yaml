@@ -7,11 +7,6 @@ inputs:
     required: false
     default: '20'
 
-  pnpm-version:
-    description: 'pnpm version to use'
-    required: false
-    default: '10'
-
   check-dependencies:
     description: 'Run dependency check (pnpm check:dependencies)'
     required: false
@@ -58,7 +53,6 @@ runs:
       run: |
         echo " "
         echo "Node.js version: ${{ inputs.node-version }}"
-        echo "pnpm version: ${{ inputs.pnpm-version }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
@@ -78,8 +72,6 @@ runs:
         echo " "
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
-      with:
-        version: ${{ inputs.pnpm-version }}
 
     # Setup Setup Node.js
 
