@@ -24,6 +24,7 @@
     "format:code": "dotenv -- prettier . --write",
     "format:dependencies": "dotenv -- pnpm dlx sherif@latest -f",
     "quality-checks": "dotenv -- pnpm check:dependencies && pnpm turbo check:type lint test",
+    "deploy:aws": "dotenv -- ./infra/aws/scripts/deploy.sh",
     "prepare": "husky"
   },
   "devDependencies": {
