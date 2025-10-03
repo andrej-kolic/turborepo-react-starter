@@ -13,8 +13,8 @@ source "$SCRIPTS_DIR/helpers.sh"
 export AWS_PAGER=""
 
 # Default values
-ACTION=${1:-content}
-ENVIRONMENT=${2:-development}
+ACTION=${1}
+ENVIRONMENT=${2}
 CONFIG_FILE="${ROOT_DIR}/deploy-config.json"
 BUNDLER_NAME="${BUNDLER:-app-vite}"
 
@@ -34,8 +34,18 @@ get_config() {
     # Global config
     PROJECT_NAME=$(jq -r ".project_name" "$CONFIG_FILE")
     REGION=$(jq -r ".region" "$CONFIG_FILE")
+    PACKAGE_BUCKET="${PROJECT_NAME}-cf-templates-${ACCOUNT_ID}-${REGION}"
+
+    # print variables
+    print_debug "Project Name: $PROJECT_NAME"
+    print_debug "Region: $REGION"
+    print_debug "Package Bucket: $PACKAGE_BUCKET"
 
     # Environment-specific config
+    if [ -z "$ENVIRONMENT" ]; then
+        print_warning "No environment specific configuration provided, skipping environment-specific parameters."
+        return 0
+    fi
     if ! jq -e ".environments.${ENVIRONMENT}" "$CONFIG_FILE" > /dev/null 2>&1; then
         print_error "Configuration for environment '${ENVIRONMENT}' not found in .environments of ${CONFIG_FILE}"
         exit 1
@@ -48,16 +58,11 @@ get_config() {
         PARAMETERS+=("${param}=${value}")
     done
 
-    # Derived values
-    PACKAGE_BUCKET="${PROJECT_NAME}-cf-templates-${ACCOUNT_ID}-${REGION}"
     STACK_NAME="${PROJECT_NAME}-${ENVIRONMENT}"
 
     # print variables
     print_debug "Environment: $ENVIRONMENT"
-    print_debug "Project Name: $PROJECT_NAME"
-    print_debug "Package Bucket: $PACKAGE_BUCKET"
     print_debug "Stack Name: $STACK_NAME"
-    print_debug "Region: $REGION"
     print_debug "Parameters: ${PARAMETERS[*]}"
 }
 
@@ -229,28 +234,36 @@ print_help() {
 }
 
 main() {
-    check_dependencies
-    get_aws_account_id
-    get_config
-
     # Execute action
     case $ACTION in
         "help")
             print_help
             ;;
         "validate")
+            check_dependencies
+            get_aws_account_id
+            get_config
             validate_template
             ;;
         "infra")
+            check_dependencies
+            get_aws_account_id
+            get_config
             package_artifacts
             deploy_infrastructure
             ;;
         "content")
+            check_dependencies
+            get_aws_account_id
+            get_config
             sync_site_content
             invalidate_cloudfront_cache
             print_success "Content deployment completed!"
             ;;
         "outputs")
+            check_dependencies
+            get_aws_account_id
+            get_config
             get_stack_outputs
             ;;
         *)
