@@ -22,6 +22,26 @@ on:
           - development
           - staging
           - production
+      check_dependencies:
+        type: boolean
+        description: Check dependencies
+        required: false
+        default: true
+      check_format:
+        type: boolean
+        description: Check format
+        # required: false
+        default: true
+      run_lint:
+        type: boolean
+        description: Run lint
+        required: false
+        default: true
+      run_tests:
+        type: boolean
+        description: Run tests
+        required: false
+        default: true
 
 env:
   HUSKY: 0
@@ -65,7 +85,7 @@ jobs:
         with:
           build-filter: ${{ steps.set-bundler.outputs.bundler }}
           build-environment: ${{ github.event.inputs.build_environment }}
-          check-dependencies: 'true'
-          check-format: 'true'
-          run-lint: 'true'
-          run-tests: 'true'
+          check-dependencies: ${{ github.event.inputs.check_dependencies }}
+          check-format: ${{ github.event.inputs.check_format }}
+          run-lint: ${{ github.event.inputs.run_lint }}
+          run-tests: ${{ github.event.inputs.run_tests }}
