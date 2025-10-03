@@ -67,7 +67,7 @@ runs:
         echo "──────────────────────────────────────"
         echo " "
     - name: Configure AWS credentials using OIDC
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v5
       with:
         role-to-assume: ${{ inputs.aws-role-arn }}
         role-session-name: github-actions-${{ inputs.environment }}
@@ -155,7 +155,7 @@ runs:
         echo " "
     - name: Comment PR with deployment info
       if: env.COMMENT_PR == 'true'
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         github-token: ${{ inputs.github-token }}
         script: |

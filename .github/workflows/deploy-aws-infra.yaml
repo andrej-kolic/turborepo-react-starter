@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy infrastructure to ${{ github.event.inputs.environment }}
         uses: ./infra/aws/.github/actions/deploy

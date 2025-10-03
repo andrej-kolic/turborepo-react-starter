@@ -61,7 +61,7 @@ jobs:
     environment: development
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy to development
         uses: ./.github/actions/deploy
@@ -82,7 +82,7 @@ jobs:
     environment: staging
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy to staging
         uses: ./.github/actions/deploy
@@ -100,7 +100,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy to production
         uses: ./.github/actions/deploy
