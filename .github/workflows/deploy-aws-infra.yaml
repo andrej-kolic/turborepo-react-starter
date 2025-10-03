@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy infrastructure to ${{ github.event.inputs.environment }}
-        uses: ./infra/aws-deploy/.github/actions/deploy
+        uses: ./infra/aws/.github/actions/deploy
         with:
           environment: ${{ github.event.inputs.environment }}
           action: infra

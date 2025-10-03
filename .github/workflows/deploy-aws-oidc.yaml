@@ -46,7 +46,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Setup GitHub OIDC Provider and Role
-        run: ./infra/aws-deploy/scripts/oidc.sh
+        run: ./infra/aws/scripts/oidc.sh
 
   warn-if-not-confirmed:
     runs-on: ubuntu-latest

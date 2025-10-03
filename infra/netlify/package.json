@@ -4,15 +4,14 @@
   "description": "",
   "scripts": {
     "envprint": "printenv",
-    "envtest": "dotenvx run -- pnpm envprint",
-    "deploy:netlify": "dotenvx run -- ./tools/deploy-netlify.sh && cat deploy_output.json",
-    "deploy:netlify:ci": "./tools/deploy-netlify.sh"
+    "envtest": "dotenv -- pnpm envprint",
+    "deploy": "dotenv -- ./tools/deploy-netlify.sh && cat deploy_output.json",
+    "deploy:ci": "./tools/deploy-netlify.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.16.1",
     "netlify-cli": "21.5.0"
   }
 }
