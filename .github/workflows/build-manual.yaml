@@ -25,22 +25,18 @@ on:
       check_dependencies:
         type: boolean
         description: Check dependencies
-        # required: false
         default: true
       check_format:
         type: boolean
         description: Check format
-        # required: false
         default: true
       run_lint:
         type: boolean
         description: Run lint
-        # required: false
         default: true
       run_tests:
         type: boolean
         description: Run tests
-        # required: false
         default: true
 
 env:
