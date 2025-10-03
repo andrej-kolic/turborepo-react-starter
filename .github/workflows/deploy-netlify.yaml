@@ -70,7 +70,7 @@ jobs:
 
       - name: Deploy to Netlify
         id: netlify_deploy
-        run: run --filter @repo/infra-netlify deploy:ci
+        run: pnpm run --filter @repo/infra-netlify deploy:ci
         # run: |
         #   cd infra/netlify
         #   pnpm deploy:ci
