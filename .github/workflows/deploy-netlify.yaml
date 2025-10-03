@@ -26,7 +26,7 @@ env:
   HUSKY: 0
   # SELECTED_ENVIRONMENT: ${{ github.ref_name }}
   BRANCH_NAME: ${{ github.ref_name }}
-  BUILDENV: ${{ github.event.inputs.environment }}
+  BUILD_ENVIRONMENT: ${{ github.event.inputs.environment }}
   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   BUNDLER: >-
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Log environment
-        run: echo "Environment=${{ github.event.inputs.environment }}, Bundler=${{github.event.inputs.bundler}}, BRANCH_NAME=$BRANCH_NAME"
+        run: echo "Environment=${{ github.event.inputs.environment }}, Bundler=${{env.BUNDLER}}, BRANCH_NAME=${{ env.BRANCH_NAME }}"
 
       - name: Check out code
         uses: actions/checkout@v4
@@ -63,17 +63,15 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: BUILD_ENVIRONMENT=${{ github.event.inputs.environment }} BUNDLER=${{ env.BUNDLER }} pnpm build:app
+        run: BUILD_ENVIRONMENT=${{ env.BUILD_ENVIRONMENT }} BUNDLER=${{ env.BUNDLER }} pnpm build:app
 
       - name: Log Build output
-        run: ls apps/${{ github.event.inputs.bundler }}/dist
+        run: ls apps/${{ env.BUNDLER }}/dist
 
       - name: Deploy to Netlify
         id: netlify_deploy
-        run: |
-          cd infra/netlify
-          pnpm deploy:netlify:ci
-        # output saved in a file we can read (deploy_output.json):
+        run: pnpm run --filter @repo/infra-netlify deploy:ci
+        # NOTE: output saved in a file we can read (deploy_output.json), in this format:
         # {
         #   "site_name": "turborepo-react-starter",
         #   "deploy_id": "672197a700d5efd972e83103",

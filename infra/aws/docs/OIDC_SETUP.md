@@ -66,7 +66,7 @@ The OIDC setup uses configuration from `deploy-config.json`:
     "github_repo": "your-repo-name"
   },
   "environments": {
-    "dev": {
+    "development": {
       "parameters": {
         "DomainName": "example.com",
         "SubDomain": "dev",
@@ -82,7 +82,7 @@ The OIDC setup uses configuration from `deploy-config.json`:
         "CreateApex": "no"
       }
     },
-    "prod": {
+    "production": {
       "parameters": {
         "DomainName": "example.com",
         "SubDomain": "prod",

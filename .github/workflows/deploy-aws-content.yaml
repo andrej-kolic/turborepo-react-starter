@@ -29,12 +29,12 @@ on:
       environment:
         description: 'Deployment environment'
         required: true
-        default: dev
+        default: development
         type: choice
         options:
-          - dev
+          - development
           - staging
-          - prod
+          - production
 
 concurrency:
   # Unique group for each workflow + branch + environment + content action
@@ -59,12 +59,12 @@ permissions:
 
 jobs:
   # Deploy to development environment
-  deploy-dev:
+  deploy-development:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
       (github.event_name == 'pull_request' && github.head_ref == 'develop') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
     environment: development
     steps:
       - name: Checkout code
@@ -81,9 +81,9 @@ jobs:
           run-tests: 'false'
 
       - name: Deploy to development
-        uses: ./infra/aws-deploy/.github/actions/deploy
+        uses: ./infra/aws/.github/actions/deploy
         with:
-          environment: dev
+          environment: development
           action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -112,7 +112,7 @@ jobs:
           run-tests: 'false'
 
       - name: Deploy to staging
-        uses: ./infra/aws-deploy/.github/actions/deploy
+        uses: ./infra/aws/.github/actions/deploy
         with:
           environment: staging
           action: content
@@ -120,10 +120,10 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
   # Deploy to production environment
-  deploy-prod:
+  deploy-production:
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     environment: production
     steps:
       - name: Checkout code
@@ -140,9 +140,9 @@ jobs:
           run-tests: 'false'
 
       - name: Deploy to production
-        uses: ./infra/aws-deploy/.github/actions/deploy
+        uses: ./infra/aws/.github/actions/deploy
         with:
-          environment: prod
+          environment: production
           action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}

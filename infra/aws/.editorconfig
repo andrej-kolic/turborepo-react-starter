@@ -14,10 +14,7 @@ indent_style = space
 indent_size = 4
 
 # --language-dialect
-# shell_variant      = posix
 # shell_variant      = bash
-# shell_variant      = mksh
-# shell_variant      = dash
 simplify           = true
 binary_next_line   = true
 
@@ -28,10 +25,3 @@ space_redirects    = true
 # --func-next-line
 # function_next_line = false
 # minify             = false
-
-# Ignore the entire "third_party" directory when calling shfmt on directories,
-# such as "shfmt -l -w .". When formatting files directly,
-# like "shfmt -w third_party/foo.sh" or "shfmt --filename=third_party/foo.sh",
-# the ignore logic is applied only when the --apply-ignore flag is given.
-# [third_party/**]
-# ignore = true

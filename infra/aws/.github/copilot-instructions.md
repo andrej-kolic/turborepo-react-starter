@@ -35,8 +35,8 @@ All environments are defined in `deploy-config.json`:
     "github_repo": "repo-name"
   },
   "environments": {
-    "dev": { "parameters": { "SubDomain": "dev", "CreateApex": "no" } },
-    "prod": { "parameters": { "SubDomain": "www", "CreateApex": "yes" } }
+    "development": { "parameters": { "SubDomain": "dev", "CreateApex": "no" } },
+    "production": { "parameters": { "SubDomain": "www", "CreateApex": "yes" } }
   }
 }
 ```
@@ -46,7 +46,7 @@ All environments are defined in `deploy-config.json`:
 ### Parameter Naming Convention
 
 - `ProjectName`: Used for resource naming and tagging (lowercase, hyphenated, 3-20 chars)
-- `Environment`: dev/staging/prod - affects resource names and deployment behavior
+- `Environment`: development/staging/production - affects resource names and deployment behavior
 - `DomainName`: Apex domain (example.com)
 - `SubDomain`: Prefix for full domain (www → www.example.com)
 
@@ -80,7 +80,7 @@ One-time GitHub OIDC setup (account-level, creates IAM role for GitHub Actions)
 
 - Uses `jq` to parse `deploy-config.json`
 - Creates template package bucket: `{project_name}-cf-templates-{account-id}-{region}`
-- Stack naming: `{project_name}-{environment}` (e.g., `mysite-dev`)
+- Stack naming: `{project_name}-{environment}` (e.g., `mysite-development`)
 - OIDC stack naming: `{project_name}-github-oidc`
 
 ### GitHub Actions Integration
@@ -110,7 +110,7 @@ templates/
 
 ### Resource Naming Pattern
 
-- **Stacks**: `{ProjectName}-{Environment}` (e.g., `mysite-dev`)
+- **Stacks**: `{ProjectName}-{Environment}` (e.g., `mysite-development`)
 - **S3 Buckets**: Auto-generated with stack-specific suffixes (`-s3bucketroot-`, `-s3bucketlogs-`)
 - **IAM Roles**: `{ProjectName}-github-actions-role`
 
@@ -131,13 +131,13 @@ templates/
 ./scripts/deploy.sh validate
 
 # Deploy infrastructure changes
-./scripts/deploy.sh infra dev
+./scripts/deploy.sh infra development
 
 # Deploy content updates only
-./scripts/deploy.sh content dev
+./scripts/deploy.sh content development
 
 # View stack information
-./scripts/deploy.sh outputs dev
+./scripts/deploy.sh outputs development
 
 # Get help information
 ./scripts/deploy.sh help
@@ -167,7 +167,7 @@ Modify `ResponseHeadersPolicy` in `templates/cloudfront-site.yaml` to adjust:
 ## GitHub Actions Architecture
 
 - **Composite Action**: `.github/actions/deploy/action.yaml` encapsulates deployment logic
-- **Branch-based triggers**: `develop` → dev, `main/master` → staging, manual → prod
+- **Branch-based triggers**: `develop` → development, `main/master` → staging, manual → production
 - **Concurrency control**: Uses workflow + branch + environment + action for unique group naming
 - **Environment gates**: Uses GitHub environment protection rules for production deployments
 

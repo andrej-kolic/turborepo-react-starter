@@ -6,12 +6,12 @@ on:
       environment:
         description: 'Deployment environment'
         required: true
-        default: dev
+        default: development
         type: choice
         options:
-          - dev
+          - development
           - staging
-          - prod
+          - production
 
 concurrency:
   # Unique group for each workflow + branch + environment + infra action
@@ -29,20 +29,14 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
 
-    # map input environment to GitHub environment
-    environment: >-
-      ${{
-        github.event.inputs.environment == 'dev' && 'development' ||
-        github.event.inputs.environment == 'staging' && 'staging' ||
-        'production'
-      }}
+    environment: ${{ github.event.inputs.environment }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Deploy infrastructure to ${{ github.event.inputs.environment }}
-        uses: ./infra/aws-deploy/.github/actions/deploy
+        uses: ./infra/aws/.github/actions/deploy
         with:
           environment: ${{ github.event.inputs.environment }}
           action: infra
