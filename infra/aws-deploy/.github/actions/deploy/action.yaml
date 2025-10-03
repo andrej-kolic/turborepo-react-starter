@@ -37,21 +37,27 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Log Environment
-      shell: bash
+    # Log input
+
+    - shell: bash
       run: |
         echo " "
         echo " "
-        echo "Log Environment"
+        echo "Log input"
         echo "──────────────────────────────────────"
         echo " "
+    - name: Log input
+      shell: bash
+      run: |
         echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         echo "GITHUB_REF: $GITHUB_REF"
         echo "github.head_ref: ${{ github.head_ref }}"
         echo " "
-        echo "github.event.inputs.environment: ${{ github.event.inputs.environment }} (default: ${{ env.DEFAULT_ENVIRONMENT }})"
-        echo "github.event.inputs.action: ${{ github.event.inputs.action }} (default: ${{ env.DEFAULT_ACTION }})"
+        echo "inputs.environment: ${{ inputs.environment }}"
+        echo "inputs.action: ${{ inputs.action }}"
         echo " "
+
+    # Configure AWS credentials using OIDC
 
     - shell: bash
       run: |
@@ -67,25 +73,32 @@ runs:
         role-session-name: github-actions-${{ inputs.environment }}
         aws-region: ${{ inputs.aws-region }}
 
-    - name: Deploy to ${{ inputs.environment }}
-      shell: bash
+    # Deploy to environment
+
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Deploy to ${{ inputs.environment }}"
         echo "──────────────────────────────────────"
         echo " "
-        ./infra/aws-deploy/scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
-
-    - name: Get deployment outputs
-      id: get-outputs
+    - name: Deploy to ${{ inputs.environment }}
       shell: bash
+      run: ./infra/aws-deploy/scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
+
+    # Get deployment outputs
+
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Get deployment outputs"
         echo "──────────────────────────────────────"
         echo " "
+    - name: Get deployment outputs
+      id: get-outputs
+      shell: bash
+      run: |
         output=$(./infra/aws-deploy/scripts/deploy.sh outputs ${{ inputs.environment }})
         echo "Raw output: $output"
 
@@ -103,18 +116,19 @@ runs:
           echo "Distribution ID found: $distribution_id"
         fi
 
-    # echo "SKIP_SLOW_CHECKS=${{ inputs.run-tests == 'false' && inputs.run-lint == 'false' }}" >> $GITHUB_ENV
+    # Calculate variables
 
-    - name: Calculate variables
-      id: calculate-vars
-      shell: bash
+    - shell: bash
       run: |
         echo " "
         echo " "
         echo "Calculate variables"
         echo "──────────────────────────────────────"
         echo " "
-
+    - name: Calculate variables
+      id: calculate-vars
+      shell: bash
+      run: |
         COMMENT_PR=false
         if [[ "${{ inputs.comment-pr }}" == "true" && "${{ steps.get-outputs.outputs.website-url }}" != "" && "${{ inputs.action }}" == "content" ]]; then
           COMMENT_PR=true
@@ -128,6 +142,8 @@ runs:
         fi
         echo "CREATE_RELEASE=$CREATE_RELEASE"
         echo "CREATE_RELEASE=$CREATE_RELEASE" >> $GITHUB_ENV
+
+    # Comment PR with deployment info
 
     - shell: bash
       if: env.COMMENT_PR == 'true'
@@ -151,6 +167,8 @@ runs:
             repo: context.repo.repo,
             body: `🚀 **Development Environment Deployed**\n\n**Website URL:** ${websiteUrl}\n\n*This deployment is automatically updated with each push to this PR.*`
           });
+
+    # Create GitHub release
 
     - shell: bash
       if: env.CREATE_RELEASE == 'true'
