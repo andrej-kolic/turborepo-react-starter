@@ -71,10 +71,7 @@ jobs:
       - name: Deploy to Netlify
         id: netlify_deploy
         run: pnpm run --filter @repo/infra-netlify deploy:ci
-        # run: |
-        #   cd infra/netlify
-        #   pnpm deploy:ci
-        # output saved in a file we can read (deploy_output.json):
+        # NOTE: output saved in a file we can read (deploy_output.json), in this format:
         # {
         #   "site_name": "turborepo-react-starter",
         #   "deploy_id": "672197a700d5efd972e83103",
