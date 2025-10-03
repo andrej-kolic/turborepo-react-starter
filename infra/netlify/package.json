@@ -5,8 +5,8 @@
   "scripts": {
     "envprint": "printenv",
     "envtest": "dotenvx run -- pnpm envprint",
-    "deploy:netlify": "dotenvx run -- ./tools/deploy-netlify.sh && cat deploy_output.json",
-    "deploy:netlify:ci": "./tools/deploy-netlify.sh"
+    "deploy": "dotenvx run -- ./tools/deploy-netlify.sh && cat deploy_output.json",
+    "deploy:ci": "./tools/deploy-netlify.sh"
   },
   "keywords": [],
   "author": "",
