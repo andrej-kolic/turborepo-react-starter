@@ -14,7 +14,7 @@ export AWS_PAGER=""
 
 # Default values
 ACTION=${1:-content}
-ENVIRONMENT=${2:-dev}
+ENVIRONMENT=${2:-development}
 CONFIG_FILE="${ROOT_DIR}/deploy-config.json"
 BUNDLER_NAME="${BUNDLER:-app-vite}"
 

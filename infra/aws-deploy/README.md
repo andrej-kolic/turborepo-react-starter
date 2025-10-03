@@ -14,7 +14,7 @@ This solution is an enhanced version of the [AWS CloudFront Secure Static Site s
 
 ### 🚀 **Multi-Environment Support**
 
-- Deploy to multiple environments (dev, staging, prod) with separate configurations
+- Deploy to multiple environments (development, staging, production) with separate configurations
 - Environment-specific domain names and settings
 - Isolated infrastructure stacks per environment
 
@@ -117,7 +117,7 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
        "github_repo": "your-repo-name"
      },
      "environments": {
-       "dev": {
+       "development": {
          "parameters": {
            "DomainName": "example.com",
            "SubDomain": "dev",
@@ -133,7 +133,7 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
            "CreateApex": "no"
          }
        },
-       "prod": {
+       "production": {
          "parameters": {
            "DomainName": "example.com",
            "SubDomain": "prod",
@@ -165,7 +165,7 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
 
    - Use the "AWS: Deploy: Infrastructure" workflow
    - This is manual-only (workflow_dispatch) and does not require building
-   - Select environment (dev/staging/prod)
+   - Select environment (development/staging/production)
    - Only deploys CloudFormation stacks without content
 
    **For Content Deployment:**
@@ -208,7 +208,7 @@ This method uses the included deployment scripts to deploy the solution directly
        "github_repo": "your-repo-name"
      },
      "environments": {
-       "dev": {
+       "development": {
          "parameters": {
            "DomainName": "example.com",
            "SubDomain": "dev",
@@ -216,7 +216,7 @@ This method uses the included deployment scripts to deploy the solution directly
            "CreateApex": "no"
          }
        },
-       "prod": {
+       "production": {
          "parameters": {
            "DomainName": "example.com",
            "SubDomain": "www",
@@ -232,17 +232,17 @@ This method uses the included deployment scripts to deploy the solution directly
 
    ```bash
    # Deploy to development environment
-   ./scripts/deploy.sh infra dev
+   ./scripts/deploy.sh infra development
 
    # Deploy to production environment
-   ./scripts/deploy.sh infra prod
+   ./scripts/deploy.sh infra production
    ```
 
 4. **Deploy your website content**:
    ```bash
    # First, add your content to the www/ directory
    # Then sync content to S3 and invalidate CloudFront cache
-   ./scripts/deploy.sh content dev
+   ./scripts/deploy.sh content development
    ```
 
 **Available script commands:**
@@ -273,14 +273,14 @@ The `content` action will:
 ./scripts/deploy.sh validate
 
 # Deploy infrastructure
-./scripts/deploy.sh infra dev
+./scripts/deploy.sh infra development
 
 # View stack information
-./scripts/deploy.sh outputs dev
+./scripts/deploy.sh outputs development
 
 # Update content
 # (Make changes to files in www/ directory)
-./scripts/deploy.sh content dev
+./scripts/deploy.sh content development
 ```
 
 ### Method 3: Use the CloudFormation console

@@ -10,10 +10,10 @@ validate:
 	./scripts/deploy.sh validate
 
 deploy-dev:
-	./scripts/deploy.sh infra dev
+	./scripts/deploy.sh infra development
 
 deploy-dev-content:
-	./scripts/deploy.sh content dev
+	./scripts/deploy.sh content development
 
 deploy-staging:
 	./scripts/deploy.sh infra staging
@@ -22,10 +22,10 @@ deploy-staging-content:
 	./scripts/deploy.sh content staging
 
 deploy-prod:
-	./scripts/deploy.sh infra prod
+	./scripts/deploy.sh infra production
 
 deploy-prod-content:
-	./scripts/deploy.sh content prod
+	./scripts/deploy.sh content production
 
 oidc:
 	./scripts/oidc.sh

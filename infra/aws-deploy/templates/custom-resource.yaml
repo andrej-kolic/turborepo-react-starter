@@ -10,9 +10,9 @@ Parameters:
     Type: String
     Description: 'Environment name'
     AllowedValues:
-      - dev
+      - development
       - staging
-      - prod
+      - production
 
 Resources:
   S3BucketLogs:
