@@ -30,10 +30,10 @@
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
     "prop-types": "15.8.1",
-    "serve": "14.2.4",
+    "serve": "14.2.5",
     "storybook": "9.1.10",
     "vite": "7.1.9",
-    "vite-tsconfig-paths": "5.0.1",
+    "vite-tsconfig-paths": "5.1.4",
     "eslint-plugin-storybook": "9.1.10",
     "@storybook/addon-docs": "9.1.10"
   }
