@@ -43,7 +43,6 @@ This will:
 The OIDC setup is a **one-time, account-level operation** that creates:
 
 1. **GitHub OIDC Identity Provider** (if not already present)
-
    - Allows GitHub Actions to authenticate with AWS
    - Account-wide resource (one per AWS account)
 

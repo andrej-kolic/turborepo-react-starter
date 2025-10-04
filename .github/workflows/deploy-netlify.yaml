@@ -45,18 +45,16 @@ jobs:
         run: echo "Environment=${{ github.event.inputs.environment }}, Bundler=${{env.BUNDLER}}, BRANCH_NAME=${{ env.BRANCH_NAME }}"
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - uses: pnpm/action-setup@v4
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install dependencies
