@@ -21,16 +21,16 @@
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/dev-tools": "workspace:*",
-    "@types/node": "^22.7.4",
-    "@types/react": "19.1.5",
-    "@types/react-dom": "19.1.5",
-    "esbuild": "0.25.4",
+    "@types/node": "24.6.2",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "esbuild": "0.25.10",
     "serve": "^14.2.4",
     "ts-node": "^10.9.2"
   }
