@@ -6,6 +6,14 @@ const config = {
 
   dependencyTypes: ['prod', 'dev'],
 
+  semverGroups: [
+    {
+      dependencies: ['**'],
+      packages: ['**'],
+      range: '',
+    },
+  ],
+
   // semverGroups: [
   //   {
   //     label: "use exact version numbers in production",
