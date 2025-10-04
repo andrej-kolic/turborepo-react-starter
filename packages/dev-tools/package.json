@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.7.4",
-    "dotenv-flow": "^4.1.0"
+    "@types/node": "24.6.2",
+    "dotenv-flow": "4.1.0"
   }
 }
