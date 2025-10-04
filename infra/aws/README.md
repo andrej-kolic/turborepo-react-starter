@@ -146,7 +146,6 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
    ```
 
 2. **One-time OIDC Setup**:
-
    - Go to GitHub Actions in your repository
    - Run the "Setup GitHub OIDC Provider" workflow
    - Check the confirmation box and run the workflow
@@ -162,14 +161,12 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
 3. **Deploy via GitHub Actions**:
 
    **For Infrastructure Deployment:**
-
    - Use the "AWS: Deploy: Infrastructure" workflow
    - This is manual-only (workflow_dispatch) and does not require building
    - Select environment (development/staging/production)
    - Only deploys CloudFormation stacks without content
 
    **For Content Deployment:**
-
    - Use the "AWS: Deploy: Content" workflow
    - Automatically triggered on branch pushes or manual workflow_dispatch
    - Builds the project and deploys website content
@@ -297,7 +294,6 @@ For manual console deployment:
 4. You should see a **Create stack** page, with pre-populated fields that specify the CloudFormation template. Choose the **Next** button at the bottom of the page.
 5. On the **Specify stack details** page, enter values for the
    following fields:
-
    - **SubDomain:** The subdomain for your registered domain name. Viewers use the subdomain to access your website, for example: www.example.com. We recommend using the default value of **www** as the subdomain.
    - **DomainName:** Your registered domain name, such as example.com. This domain must be pointed to a Route 53 hosted zone.
    - **HostedZoneId** The Route 53 Hosted Zone Id containing the domain being used.
@@ -307,7 +303,6 @@ For manual console deployment:
 
 6. On the **Configure stack options** page, you can optionally [add tags and other stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html). When finished, choose the **Next** button.
 7. On the **Review** page, you must scroll down and check the two boxes in the **Capabilities** section:
-
    - **I acknowledge that AWS CloudFormation might create IAM resources with custom names.**
    - **I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND**
 
