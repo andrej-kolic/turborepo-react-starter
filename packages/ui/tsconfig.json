@@ -2,13 +2,11 @@
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "build",
-    "paths": {
-      "~ui/*": ["./src/*"]
-    },
+    "rootDir": "./src",
 
     /** needed for Jest 'ts-jest/presets/js-with-ts' preset to transform ESM files */
     "allowJs": true
   },
-  "include": ["src/**/*", "test", "../../@types"], // TODO: @types as package?
+  "include": ["src/**/*", "../../@types"], // TODO: @types as package?
   "exclude": ["dist", "build", "node_modules", "src/**/*/assets"]
 }

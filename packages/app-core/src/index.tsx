@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@repo/ui';
 import type { CustomType } from '@repo/commons';
-import { Header } from '~app-core/Header';
+import { Header } from '@repo/app-core/Header';
 
 import './styles.css';
 import { getEnvironmentVariables } from './utils/environment';

@@ -4,6 +4,11 @@
   "type": "module",
   "main": "./src/index.tsx",
   "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./card": "./src/card.tsx",
+    "./*": "./src/*"
+  },
   "private": true,
   "license": "MIT",
   "scripts": {

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths'; // set up aliases from tsconfig
 import util from 'util';
 
 const debuglog = util.debuglog('app-vite');
@@ -41,7 +40,7 @@ export default defineConfig((configEnv) => {
       ),
     },
 
-    plugins: [react(), tsconfigPaths()],
+    plugins: [react()],
 
     publicDir: appCorePublic,
 

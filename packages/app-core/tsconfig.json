@@ -2,12 +2,8 @@
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "build",
-    "paths": {
-      // "~/*": ["./src/*", "../ui/src/*"],
-      "~app-core/*": ["./src/*"],
-      "~ui/*": ["../ui/src/*"]
-    }
+    "rootDir": "./src"
   },
-  "include": ["src/**/*", "test", "../../@types"],
+  "include": ["src/**/*", "../../@types"],
   "exclude": ["node_modules", "src/**/*/assets"]
 }
