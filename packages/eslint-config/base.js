@@ -74,6 +74,12 @@ export const config = tseslint.config(
        * https://www.totaltypescript.com/type-vs-interface-which-should-you-use
        */
       '@typescript-eslint/consistent-type-definitions': ['warn', 'type'],
+
+      /**
+       * Temporary disable due to bug in @typescript-eslint/unified-signatures v8.46.2
+       * Error: "TypeError: typeParameters.params is not iterable"
+       */
+      '@typescript-eslint/unified-signatures': 'off',
     },
   },
 
