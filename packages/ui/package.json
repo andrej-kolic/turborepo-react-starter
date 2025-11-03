@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.tsx",
     "./card": "./src/card.tsx",
+    "./utils": "./src/utils.ts",
     "./*": "./src/*"
   },
   "private": true,

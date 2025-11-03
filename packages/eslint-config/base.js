@@ -130,5 +130,6 @@ export const config = tseslint.config(
     'turbo/',
     '**/build/**',
     '**/dist/**',
+    '**/test/**/*.d.ts', // Ignore generated test type definitions
   ]),
 );
