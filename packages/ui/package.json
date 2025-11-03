@@ -6,7 +6,6 @@
   "types": "./src/index.tsx",
   "exports": {
     ".": "./src/index.tsx",
-    "./card": "./src/card.tsx",
     "./utils": "./src/utils.ts",
     "./*": "./src/*"
   },

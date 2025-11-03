@@ -1,2 +1,2 @@
 // component exports
-export { Card } from '@repo/ui/card';
+export { Card } from './card';
