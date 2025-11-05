@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from '@repo/ui';
+import { add } from '@repo/ui/utils';
 import type { CustomType } from '@repo/commons';
-import { Header } from '~app-core/Header';
+import { Header } from './Header';
 
 import './styles.css';
 import { getEnvironmentVariables } from './utils/environment';
@@ -12,6 +13,9 @@ import { getEnvironmentVariables } from './utils/environment';
 // TODO remove
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
+
+// TODO remove
+console.log('* 1 + 2:', add(1, 2));
 
 const _orphan = 1;
 
