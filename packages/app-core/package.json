@@ -6,7 +6,6 @@
   "types": "./src/index.tsx",
   "exports": {
     ".": "./src/index.tsx",
-    "./Header": "./src/Header/index.tsx",
     "./*": "./src/*"
   },
   "private": true,
