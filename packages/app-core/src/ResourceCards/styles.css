@@ -1,0 +1,13 @@
+.ResourceCards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ResourceCards__card-image {
+  width: 80px;
+  height: 80px;
+  background-image: url('./assets/landscape.svg');
+  background-size: cover;
+  background-position: center;
+}
