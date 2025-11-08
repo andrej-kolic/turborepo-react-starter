@@ -40,7 +40,7 @@ debuglog('Runtime environment Variables:', environmentVariables);
 async function bundle() {
   try {
     const buildResult = await esbuild.build({
-      entryPoints: ['src/app.tsx'],
+      entryPoints: ['src/index.tsx'],
       bundle: true,
       outdir: BUILD_DIR,
       metafile: true,

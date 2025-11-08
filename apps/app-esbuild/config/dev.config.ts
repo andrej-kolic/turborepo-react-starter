@@ -39,7 +39,7 @@ debuglog('Runtime environment Variables:', environmentVariables);
 
 async function dev() {
   const ctx = await esbuild.context({
-    entryPoints: ['src/app.tsx'],
+    entryPoints: ['src/index.tsx'],
     bundle: true,
     outdir: DEV_DIR,
     metafile: true,

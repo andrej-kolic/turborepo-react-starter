@@ -8,7 +8,11 @@ body {
 }
 
 .AppCore {
-  border: 2px orange dashed;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .AppCore__card-image {

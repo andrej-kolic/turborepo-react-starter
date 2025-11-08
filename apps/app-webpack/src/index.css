@@ -1,4 +1,5 @@
 body {
-  border: 5px solid cyan;
+  border: 3px solid rgba(0, 255, 255, 0.5);
+  margin: 0;
   padding: 20px;
 }
