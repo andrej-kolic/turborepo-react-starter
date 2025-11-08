@@ -1,5 +1,5 @@
 import React from 'react';
-import TurboRepoImg from './assets/idea.svg'; // TODO: report for bad path
+import LogoIcon from './assets/idea.svg'; // TODO: report for bad path
 import './styles.css';
 
 export function Header({ title }: { title: string }): React.ReactNode {
@@ -9,8 +9,10 @@ export function Header({ title }: { title: string }): React.ReactNode {
 
   return (
     <div className="Header">
-      <img alt="Turborepo" src={TurboRepoImg} width={100} />
-      <h1 onClick={handleClick}>{title}</h1>
+      <img className="Header__logo" alt="Logo" src={LogoIcon} />
+      <div className="Header__title" onClick={handleClick}>
+        {title}
+      </div>
     </div>
   );
 }
