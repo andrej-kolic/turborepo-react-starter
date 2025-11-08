@@ -59,8 +59,28 @@ export function AppCore(props: {
 
   return (
     <div className="AppCore">
-      <Header />
-      <Card {...props} />
+      <Header title={props.title} />
+
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+        <Card title="Embedded image">
+          <div>{"import Icon from 'pic.svg'"}</div>
+        </Card>
+
+        <Card
+          title="Public folder image"
+          image={<img src="images/image-file.svg" alt="icon" width={100} />}
+        >
+          <div>{'<img src="images/pic.svg" />'}</div>
+        </Card>
+
+        <Card
+          title="Css image"
+          image={<div className="AppCore__card-image"></div>}
+        >
+          <div>{"background-image: url('../public/pic.svg')"}</div>
+        </Card>
+      </div>
+
       <a href="readme.txt" target="_blank">
         Readme
       </a>

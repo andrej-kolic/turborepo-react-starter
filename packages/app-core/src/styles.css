@@ -1,8 +1,20 @@
 body {
   /* image should be in src/assets folder, but this is to test css url transform */
-  background-image: url('../public/images/bg-pattern.webp');
+  background-image: url('./assets/bg-pattern.webp');
+
+  font-family:
+    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
+    Arial, sans-serif;
 }
 
 .AppCore {
   border: 2px orange dashed;
+}
+
+.AppCore__card-image {
+  width: 100px;
+  height: 100px;
+  background-image: url('./assets/landscape.svg');
+  background-size: cover;
+  background-position: center;
 }
