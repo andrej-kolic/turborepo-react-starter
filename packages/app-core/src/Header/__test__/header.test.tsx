@@ -5,7 +5,7 @@ import { Header } from '../';
 
 describe('Card', () => {
   it('should render', () => {
-    render(<Header />);
+    render(<Header title="starter app" />);
 
     expect(screen.getByText(/starter app/i)).toBeInTheDocument();
   });
