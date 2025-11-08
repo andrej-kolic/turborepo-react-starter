@@ -1,6 +1,6 @@
 import React from 'react';
 import { toUppercase } from '@repo/commons';
-import SupportIcon from '../assets/picture.svg'; // TODO: named import?
+import ImageIcon from '../assets/picture.svg'; // TODO: named import?
 import './styles.css';
 
 export type CardProps = {
@@ -28,9 +28,9 @@ export function Card({
       // rel="noopener noreferrer"
       // target="_blank"
     >
-      {image ?? (
-        <img className="Card__image" alt="icon" src={SupportIcon} width={100} />
-      )}
+      <div className="Card__image">
+        {image ?? <img alt="icon" src={ImageIcon} />}
+      </div>
 
       <div className="Card__title" onClick={handleClick}>
         {toUppercase(title)}

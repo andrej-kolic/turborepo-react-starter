@@ -12,8 +12,8 @@ body {
 }
 
 .AppCore__card-image {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   background-image: url('./assets/landscape.svg');
   background-size: cover;
   background-position: center;

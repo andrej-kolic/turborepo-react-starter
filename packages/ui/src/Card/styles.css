@@ -16,12 +16,28 @@
 
 .Card__image {
   display: block;
+  background-color: rgba(255, 255, 255, 0.5);
+  /* border: 5px solid rgba(255, 255, 255, 0.5); */
+  border-radius: 50%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
 }
 
 .Card__title {
   font-size: 1.25rem;
   font-weight: bold;
   cursor: pointer;
+  color: royalblue;
+  /* color: steelblue; */
 }
 
 .Card__content {

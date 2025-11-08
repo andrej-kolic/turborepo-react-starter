@@ -6,6 +6,7 @@ import { Header } from './Header';
 
 import './styles.css';
 import { getEnvironmentVariables } from './utils/environment';
+import LinkIcon from './assets/link.svg';
 
 // TODO remove
 /* _eslint no-console: "error" */
@@ -67,8 +68,8 @@ export function AppCore(props: {
         </Card>
 
         <Card
-          title="Public folder image"
-          image={<img src="images/image-file.svg" alt="icon" width={100} />}
+          title="Public image"
+          image={<img src="images/image-file.svg" alt="icon" />}
         >
           <div>{'<img src="images/pic.svg" />'}</div>
         </Card>
@@ -77,13 +78,20 @@ export function AppCore(props: {
           title="Css image"
           image={<div className="AppCore__card-image"></div>}
         >
-          <div>{"background-image: url('../public/pic.svg')"}</div>
+          <div>{"background-image: url('./assets/pic.svg')"}</div>
+        </Card>
+
+        <Card
+          title="Public resource"
+          image={
+            <img src={LinkIcon} style={{ position: 'relative', top: 3 }} />
+          }
+        >
+          <a href="readme.txt" target="_blank" rel="noopener">
+            Readme
+          </a>
         </Card>
       </div>
-
-      <a href="readme.txt" target="_blank">
-        Readme
-      </a>
     </div>
   );
 }
