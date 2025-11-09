@@ -6,6 +6,7 @@ import { debugLog } from './utils/debug';
 import { ResourceCards } from './ResourceCards';
 
 import './styles.css';
+import { Scroller } from './Scroller';
 
 // TODO remove
 /* _eslint no-console: "error" */
@@ -31,7 +32,9 @@ export function AppCore(props: {
     <div className="AppCore">
       <Header title={props.title} />
 
-      <ResourceCards />
+      <Scroller />
+
+      {/* <ResourceCards /> */}
     </div>
   );
 }
