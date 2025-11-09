@@ -1,42 +1,46 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  createPaginatedFetcher,
+  fakeFetchItems,
+  type PaginatedFetcher,
+} from './api';
 
 export type Status = 'idle' | 'loading';
-
-const PAGE_SIZE = 10;
 
 export function UseScroller() {
   const [status, setStatus] = useState<Status>('idle');
   const [items, setItems] = useState<string[]>([]);
 
-  const nextIdRef = useRef<number>(0);
-  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const fetcherRef = useRef<PaginatedFetcher<string> | null>(null);
+
+  // Initialize the fetcher once
+  useEffect(() => {
+    fetcherRef.current = createPaginatedFetcher(fakeFetchItems);
+
+    return () => {
+      fetcherRef.current?.cancel();
+    };
+  }, []);
 
   const fetchNext = useCallback(async (): Promise<string[]> => {
+    if (!fetcherRef.current) return [];
+
     setStatus('loading');
 
-    return new Promise((resolve) => {
-      timeoutIdRef.current = setTimeout(() => {
-        let index = nextIdRef.current;
-        const newItems: string[] = [];
-        Array.from({ length: PAGE_SIZE }).forEach(() => {
-          newItems.push(`Item ${String(++index)}`);
-        });
-        setStatus('idle');
-        setItems((prevItems) => [...prevItems, ...newItems]);
-        nextIdRef.current += PAGE_SIZE;
-
-        timeoutIdRef.current = null;
-        resolve(newItems);
-      }, 2000);
-    });
+    try {
+      const newItems = await fetcherRef.current.fetchNext();
+      setStatus('idle');
+      setItems((prevItems) => [...prevItems, ...newItems]);
+      return newItems;
+    } catch {
+      setStatus('idle');
+      return [];
+    }
   }, []);
 
   const abortFetch = useCallback(() => {
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-      timeoutIdRef.current = null;
-      setStatus('idle');
-    }
+    fetcherRef.current?.cancel();
+    setStatus('idle');
   }, []);
 
   return {
