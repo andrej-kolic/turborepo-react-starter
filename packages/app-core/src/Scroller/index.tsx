@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useEffectEvent } from 'react';
+import { UseScroller } from './hooks';
 import './styles.css';
 
 export function Scroller() {
-  const [status, setStatus] = useState<'idle' | 'loading'>('idle');
-  const [items, setItems] = useState<string[]>([]);
-
+  const { status, items, fetchNext, abortFetch } = UseScroller();
   const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const doFetch = useEffectEvent(async () => {
+    if (status === 'loading') return;
+    await fetchNext();
+  });
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -17,22 +21,13 @@ export function Scroller() {
       threshold: 1,
     };
 
-    let timeoutId: NodeJS.Timeout;
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const element = entry.target as HTMLElement;
         if (entry.isIntersecting) {
           if (element.classList.contains('Scroller__trigger')) {
             console.log('Trigger is visible, load more items...');
-            setStatus('loading');
-            timeoutId = setTimeout(() => {
-              setItems((prevItems) => [
-                ...prevItems,
-                ...(Array(10).fill('New Item') as string[]),
-              ]);
-              setStatus('idle');
-            }, 2000);
+            void doFetch();
           } else {
             element.classList.add('Scroller__item--visible');
           }
@@ -52,16 +47,16 @@ export function Scroller() {
 
     return () => {
       observer.disconnect();
-      clearTimeout(timeoutId);
+      abortFetch();
     };
-  }, [items]);
+  }, [items, abortFetch]);
 
   return (
     <div className="Scroller" ref={containerRef}>
       <ol>
-        {items.map((_: unknown, index: number) => (
+        {items.map((item: string, index: number) => (
           <li key={index} className="Scroller__item">
-            Item {index + 1}
+            {item}
           </li>
         ))}
       </ol>
