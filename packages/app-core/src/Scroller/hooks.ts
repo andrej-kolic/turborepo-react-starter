@@ -45,5 +45,5 @@ export const fakeFetchItems: Fetcher<string> = async function (
 };
 
 export function UseScroller() {
-  return useService<string>(fakeFetchItems, PAGE_SIZE);
+  return useService(fakeFetchItems, PAGE_SIZE);
 }
