@@ -1,4 +1,4 @@
-import { useService, type Fetcher } from './use-service';
+import { useService, type Fetcher } from '../hooks/use-service';
 
 const PAGE_SIZE = 10;
 const TOTAL_ITEMS = 22;
