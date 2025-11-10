@@ -1,5 +1,5 @@
 import React, { useEffect, useEffectEvent } from 'react';
-import { UseScroller } from './hooks2';
+import { UseScroller } from './hooks';
 
 import './styles.css';
 
@@ -54,7 +54,7 @@ export function Scroller() {
 
   return (
     <>
-      <div>status: {status}</div>
+      {/* <div>status: {status}</div> */}
 
       <div className="Scroller" ref={containerRef}>
         <ol>
