@@ -33,3 +33,16 @@
 .Scroller__trigger--loading {
   background-color: rgba(0, 255, 255, 1);
 }
+
+.Scroller__abort {
+  display: inline-block;
+  margin: 20px 10px 10px 10px;
+  border: 0;
+  border-radius: 20px;
+  padding: 20px;
+  background-color: red;
+}
+
+.Scroller__abort--disabled {
+  opacity: 0.5;
+}

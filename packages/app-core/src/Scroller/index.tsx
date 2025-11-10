@@ -52,19 +52,36 @@ export function Scroller() {
   }, [items, abortFetch]);
 
   return (
-    <div className="Scroller" ref={containerRef}>
-      <ol>
-        {items.map((item: string, index: number) => (
-          <li key={index} className="Scroller__item">
-            {item}
-          </li>
-        ))}
-      </ol>
-      <div
-        className={`Scroller__trigger ${status === 'loading' ? 'Scroller__trigger--loading' : ''}`}
-      >
-        {status === 'loading' ? 'Loading...' : 'Load more'}
+    <>
+      <div>status: {status}</div>
+
+      <div className="Scroller" ref={containerRef}>
+        <ol>
+          {items.map((item: string, index: number) => (
+            <li key={index} className="Scroller__item">
+              {item}
+            </li>
+          ))}
+        </ol>
+
+        <div
+          className={`Scroller__trigger ${status === 'loading' ? 'Scroller__trigger--loading' : ''}`}
+        >
+          {status === 'loading'
+            ? 'Loading...'
+            : status === 'idle'
+              ? 'Load more'
+              : 'No more items'}
+        </div>
+
+        <button
+          className={`Scroller__abort ${status !== 'loading' ? 'Scroller__abort--disabled' : ''}`}
+          onClick={abortFetch}
+          disabled={status !== 'loading'}
+        >
+          Abort
+        </button>
       </div>
-    </div>
+    </>
   );
 }

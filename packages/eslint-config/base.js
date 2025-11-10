@@ -80,6 +80,16 @@ export const config = tseslint.config(
        * Error: "TypeError: typeParameters.params is not iterable"
        */
       '@typescript-eslint/unified-signatures': 'off',
+
+      /**
+       * Allow numbers in template expressions
+       */
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowNumber: true,
+        },
+      ],
     },
   },
 

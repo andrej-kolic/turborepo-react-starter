@@ -1,4 +1,5 @@
 const PAGE_SIZE = 10;
+const TOTAL_ITEMS = 22;
 const FETCH_DELAY = 2000;
 
 export type FetchResult<T> = {
@@ -9,6 +10,7 @@ export type FetchResult<T> = {
 export type PaginatedFetcher<T> = {
   fetchNext(): Promise<T[]>;
   cancel(): void;
+  hasNext(): boolean;
 };
 
 /**
@@ -53,9 +55,14 @@ export function createPaginatedFetcher<T>(
     });
   };
 
+  const hasNext = (): boolean => {
+    return currentCursor !== null;
+  };
+
   return {
     fetchNext,
     cancel,
+    hasNext,
   };
 }
 
@@ -63,17 +70,28 @@ export function createPaginatedFetcher<T>(
  * Fake fetch function that simulates API pagination with cursor.
  */
 export function fakeFetchItems(
-  cursor: number,
+  startCursor: number,
   pageSize: number,
 ): Promise<FetchResult<string>> {
   const items: string[] = [];
 
-  for (let i = 0; i < pageSize; i++) {
-    items.push(`Item ${String(cursor + i + 1)}`);
+  if (startCursor >= TOTAL_ITEMS) {
+    return Promise.resolve({
+      items: [],
+      nextCursor: null,
+    });
   }
+
+  const endCursor = Math.min(startCursor + pageSize - 1, TOTAL_ITEMS - 1);
+
+  for (let i = startCursor; i <= endCursor; i++) {
+    items.push(`Item ${i + 1}`);
+  }
+
+  const nextCursor = endCursor >= TOTAL_ITEMS - 1 ? null : endCursor + 1;
 
   return Promise.resolve({
     items,
-    nextCursor: cursor + pageSize,
+    nextCursor,
   });
 }
