@@ -1,12 +1,12 @@
 import React from 'react';
 import { add } from '@repo/ui/utils';
 import type { CustomType } from '@repo/commons';
-import { Header } from './Header';
+import { Header } from './components/Header';
 import { debugLog } from './utils/debug';
-import { ResourceCards } from './ResourceCards';
+import { ResourceCards } from './components/ResourceCards';
 
 import './styles.css';
-import { Scroller } from './Scroller';
+import { Scroller } from './components/Scroller';
 
 // TODO remove
 /* _eslint no-console: "error" */
