@@ -1,5 +1,6 @@
 import React, { useEffect, useEffectEvent } from 'react';
-import { UseScroller } from './hooks';
+import { UseScroller } from './hooks2';
+
 import './styles.css';
 
 export function Scroller() {
@@ -64,22 +65,28 @@ export function Scroller() {
           ))}
         </ol>
 
-        <div
-          className={`Scroller__trigger ${status === 'loading' ? 'Scroller__trigger--loading' : ''}`}
+        <button
+          className={[
+            'Scroller__trigger',
+            status === 'idle'
+              ? 'Scroller__trigger--idle'
+              : status === 'loading'
+                ? 'Scroller__trigger--loading'
+                : 'Scroller__trigger--done',
+          ].join(' ')}
+          onClick={() => {
+            if (status === 'idle') {
+              void fetchNext();
+            } else if (status === 'loading') {
+              abortFetch();
+            }
+          }}
         >
           {status === 'loading'
-            ? 'Loading...'
+            ? 'Abort load...'
             : status === 'idle'
               ? 'Load more'
               : 'No more items'}
-        </div>
-
-        <button
-          className={`Scroller__abort ${status !== 'loading' ? 'Scroller__abort--disabled' : ''}`}
-          onClick={abortFetch}
-          disabled={status !== 'loading'}
-        >
-          Abort
         </button>
       </div>
     </>

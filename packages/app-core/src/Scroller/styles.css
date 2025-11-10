@@ -25,24 +25,27 @@
 
 .Scroller__trigger {
   display: inline-block;
+  border: 0;
   margin: 20px 10px 10px 10px;
   border-radius: 20px;
   padding: 20px;
   background-color: rgba(0, 255, 255, 0.75);
 }
-.Scroller__trigger--loading {
-  background-color: rgba(0, 255, 255, 1);
+
+.Scroller__trigger--idle {
+  cursor: pointer;
 }
 
-.Scroller__abort {
+.Scroller__trigger--loading {
+  cursor: pointer;
   display: inline-block;
   margin: 20px 10px 10px 10px;
   border: 0;
   border-radius: 20px;
   padding: 20px;
-  background-color: red;
+  background-color: rgba(255, 0, 0, 0.75);
 }
 
-.Scroller__abort--disabled {
-  opacity: 0.5;
+.Scroller__trigger--done {
+  cursor: not-allowed;
 }
