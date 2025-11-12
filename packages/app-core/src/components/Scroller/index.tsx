@@ -1,14 +1,14 @@
 import React, { useEffect, useEffectEvent } from 'react';
-import { UseScroller } from './hooks';
+import { UseScroller, type ItemDto } from './hooks';
 
 import './styles.css';
 
 export function Scroller() {
-  const { status, items, fetchNext, abortFetch } = UseScroller();
+  const { state, fetchNext, abortFetch } = UseScroller();
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const doFetch = useEffectEvent(async () => {
-    if (status === 'loading') return;
+    if (state.status === 'loading') return;
     await fetchNext();
   });
 
@@ -43,24 +43,34 @@ export function Scroller() {
       observer.observe(item);
     });
 
-    const trigger = container.querySelector('.Scroller__trigger');
-    if (trigger) observer.observe(trigger);
+    if (state.status === 'idle' && !state.aborted) {
+      const trigger = container.querySelector('.Scroller__trigger');
+      if (trigger) observer.observe(trigger);
+    }
 
     return () => {
       observer.disconnect();
       abortFetch();
     };
-  }, [items, abortFetch]);
+  }, [state, abortFetch]);
+
+  if (state.status === 'error') {
+    return <div className="Scroller">Error: {state.message}</div>;
+  }
+
+  const status = state.status;
+
+  // console.log('* state:', state);
 
   return (
     <>
-      {/* <div>status: {status}</div> */}
+      {/* <div>status: {state.status}</div> */}
 
       <div className="Scroller" ref={containerRef}>
         <ol>
-          {items.map((item: string, index: number) => (
-            <li key={index} className="Scroller__item">
-              {item}
+          {state.items.map((item: ItemDto) => (
+            <li key={item.id} className="Scroller__item">
+              {item.name}
             </li>
           ))}
         </ol>

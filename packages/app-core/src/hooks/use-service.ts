@@ -1,75 +1,102 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-export type FetchResult<T> = {
+export type FetchResult<T, C> = {
   items: T[];
-  nextCursor: number | null;
+  nextCursor: C | null;
 };
 
-export type Fetcher<T> = (
-  cursor: number,
+export type Fetcher<T, C> = (
+  cursor: C | undefined,
   pageSize: number,
   signal?: AbortSignal,
-) => Promise<FetchResult<T>>;
+) => Promise<FetchResult<T, C>>;
 
-export type Status = 'idle' | 'loading' | 'done';
+export type Status = 'idle' | 'loading' | 'success' | 'error' | 'done';
 
-export const useService = <T>(fetch: Fetcher<T>, pageSize: number) => {
-  const [status, setStatus] = useState<Status>('idle');
-  const [items, setItems] = useState<T[]>([]);
-  const currentCursor = useRef<number | null>(0);
-  const abortControllerRef = useRef<AbortController | null>(null);
+export type State<T, C> =
+  | { status: 'idle'; items: T[]; nextCursor: C | undefined; aborted: boolean }
+  | {
+      status: 'loading';
+      items: T[];
+      currentCursor: C | undefined;
+      abortController: AbortController;
+    }
+  | { status: 'error'; message: string }
+  | { status: 'done'; items: T[] };
+
+export const useService = <T, C>(fetch: Fetcher<T, C>, pageSize: number) => {
+  const [state, setState] = useState<State<T, C>>({
+    status: 'idle',
+    items: [],
+    nextCursor: undefined,
+    aborted: false,
+  });
 
   const fetchNext = useCallback(async () => {
-    if (currentCursor.current === null) {
+    // console.log('* fetchNext called:', state);
+
+    if (
+      state.status == 'loading' ||
+      state.status === 'done' ||
+      state.status === 'error'
+    ) {
       return;
     }
 
-    // Abort any ongoing fetch
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    // TODO: Abort any ongoing fetch?
 
-    // Create new AbortController for this fetch
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
-
-    setStatus('loading');
+    const previousState = state;
+    const abortController = new AbortController();
+    setState({
+      status: 'loading',
+      items: state.items,
+      currentCursor: state.nextCursor,
+      abortController,
+    });
 
     try {
-      const data = await fetch(currentCursor.current, pageSize, signal);
+      const data = await fetch(
+        state.nextCursor,
+        pageSize,
+        abortController.signal,
+      );
+      const newItems = [...state.items, ...data.items];
 
-      currentCursor.current = data.nextCursor;
-      setItems((prevItems) => [...prevItems, ...data.items]);
+      // console.log('* fetchNext succeeded:', data, newItems);
+
+      if (data.nextCursor === null) {
+        setState({ status: 'done', items: newItems });
+      } else {
+        setState({
+          status: 'idle',
+          items: newItems,
+          nextCursor: data.nextCursor,
+          aborted: false,
+        });
+      }
     } catch (e) {
-      // Ignore abort errors and go to finally block
       if (e instanceof Error && e.name === 'AbortError') {
-        console.log('* catch aborted');
+        // console.log('* catch aborted');
+        setState({ ...previousState, aborted: true });
         return;
       }
       console.error(e);
-    } finally {
-      setStatus(currentCursor.current !== null ? 'idle' : 'done');
-      abortControllerRef.current = null;
+      setState({ status: 'error', message: (e as Error).message });
     }
-  }, [fetch, pageSize]);
-
-  const hasNext = useCallback((): boolean => {
-    return currentCursor.current !== null;
-  }, []);
+  }, [fetch, pageSize, state]);
 
   const abortFetch = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-      setStatus('idle');
+    // console.log('* abortFetch called:', state);
+    if (state.status !== 'loading') {
+      return;
     }
-  }, []);
+
+    state.abortController.abort();
+  }, [state]);
 
   return {
     fetchNext,
-    hasNext,
     abortFetch,
-    status,
-    items,
+    state,
   };
 };

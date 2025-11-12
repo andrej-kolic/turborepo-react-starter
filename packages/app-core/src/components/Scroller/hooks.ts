@@ -4,12 +4,19 @@ const PAGE_SIZE = 10;
 const TOTAL_ITEMS = 22;
 const FETCH_DELAY = 2000;
 
-export const fakeFetchItems: Fetcher<string> = async function (
-  startCursor: number,
+export type ItemDto = {
+  id: number;
+  name: string;
+};
+
+export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
+  cursor?: number,
   pageSize: number = PAGE_SIZE,
   signal?: AbortSignal,
 ) {
-  const items: string[] = [];
+  const items: ItemDto[] = [];
+
+  const startCursor = cursor ?? 0;
 
   if (startCursor >= TOTAL_ITEMS) {
     return Promise.resolve({
@@ -21,7 +28,7 @@ export const fakeFetchItems: Fetcher<string> = async function (
   const endCursor = Math.min(startCursor + pageSize - 1, TOTAL_ITEMS - 1);
 
   for (let i = startCursor; i <= endCursor; i++) {
-    items.push(`Item ${i + 1}`);
+    items.push({ id: i, name: `Item ${i + 1}` });
   }
 
   const nextCursor = endCursor >= TOTAL_ITEMS - 1 ? null : endCursor + 1;
