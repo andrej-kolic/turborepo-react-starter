@@ -54,10 +54,6 @@ export function Scroller() {
     };
   }, [state, abortFetch]);
 
-  if (state.status === 'error') {
-    return <div className="Scroller">Error: {state.message}</div>;
-  }
-
   const status = state.status;
 
   // console.log('* state:', state);
@@ -82,10 +78,12 @@ export function Scroller() {
               ? 'Scroller__trigger--idle'
               : status === 'loading'
                 ? 'Scroller__trigger--loading'
-                : 'Scroller__trigger--done',
+                : status === 'error'
+                  ? 'Scroller__trigger--error'
+                  : 'Scroller__trigger--done',
           ].join(' ')}
           onClick={() => {
-            if (status === 'idle') {
+            if (status === 'idle' || state.status === 'error') {
               void fetchNext();
             } else if (status === 'loading') {
               abortFetch();
@@ -96,7 +94,9 @@ export function Scroller() {
             ? 'Abort load...'
             : status === 'idle'
               ? 'Load more'
-              : 'No more items'}
+              : status === 'error'
+                ? 'Retry'
+                : 'No more items'}
         </button>
       </div>
     </>

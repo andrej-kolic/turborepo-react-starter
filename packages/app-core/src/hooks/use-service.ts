@@ -21,7 +21,7 @@ export type State<T, C> =
       currentCursor: C | undefined;
       abortController: AbortController;
     }
-  | { status: 'error'; message: string }
+  | { status: 'error'; items: T[]; nextCursor: C | undefined; message: string }
   | { status: 'done'; items: T[] };
 
 export const useService = <T, C>(fetch: Fetcher<T, C>, pageSize: number) => {
@@ -35,11 +35,7 @@ export const useService = <T, C>(fetch: Fetcher<T, C>, pageSize: number) => {
   const fetchNext = useCallback(async () => {
     // console.log('* fetchNext called:', state);
 
-    if (
-      state.status == 'loading' ||
-      state.status === 'done' ||
-      state.status === 'error'
-    ) {
+    if (state.status == 'loading' || state.status === 'done') {
       return;
     }
 
@@ -77,11 +73,21 @@ export const useService = <T, C>(fetch: Fetcher<T, C>, pageSize: number) => {
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') {
         // console.log('* catch aborted');
-        setState({ ...previousState, aborted: true });
+        setState({
+          status: 'idle',
+          items: previousState.items,
+          nextCursor: previousState.nextCursor,
+          aborted: true,
+        });
         return;
       }
       console.error(e);
-      setState({ status: 'error', message: (e as Error).message });
+      setState({
+        status: 'error',
+        items: state.items,
+        nextCursor: state.nextCursor,
+        message: (e as Error).message,
+      });
     }
   }, [fetch, pageSize, state]);
 

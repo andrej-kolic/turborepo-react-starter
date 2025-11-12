@@ -2,12 +2,14 @@ import { useService, type Fetcher } from '../../hooks/use-service';
 
 const PAGE_SIZE = 10;
 const TOTAL_ITEMS = 22;
-const FETCH_DELAY = 2000;
+const FETCH_DELAY = 1000;
 
 export type ItemDto = {
   id: number;
   name: string;
 };
+
+let requestCount = 0;
 
 export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
   cursor?: number,
@@ -17,6 +19,11 @@ export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
   const items: ItemDto[] = [];
 
   const startCursor = cursor ?? 0;
+  requestCount++;
+
+  if (requestCount % 3 === 0) {
+    return Promise.reject(new Error('Simulated fetch error'));
+  }
 
   if (startCursor >= TOTAL_ITEMS) {
     return Promise.resolve({

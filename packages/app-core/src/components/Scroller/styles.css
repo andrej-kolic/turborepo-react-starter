@@ -38,14 +38,15 @@
 
 .Scroller__trigger--loading {
   cursor: pointer;
-  display: inline-block;
-  margin: 20px 10px 10px 10px;
-  border: 0;
-  border-radius: 20px;
-  padding: 20px;
+  background-color: rgba(255, 165, 0, 0.75);
+}
+
+.Scroller__trigger--error {
+  cursor: pointer;
   background-color: rgba(255, 0, 0, 0.75);
 }
 
 .Scroller__trigger--done {
+  background-color: rgba(0, 0, 0, 0.15);
   cursor: not-allowed;
 }
