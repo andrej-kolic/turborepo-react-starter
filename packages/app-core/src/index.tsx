@@ -34,7 +34,7 @@ export function AppCore(props: {
 
       <Scroller />
 
-      {/* <ResourceCards /> */}
+      <ResourceCards />
     </div>
   );
 }
