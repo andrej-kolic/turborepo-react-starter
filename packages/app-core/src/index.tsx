@@ -4,9 +4,10 @@ import type { CustomType } from '@repo/commons';
 import { Header } from './components/Header';
 import { debugLog } from './utils/debug';
 import { ResourceCards } from './components/ResourceCards';
-
-import './styles.css';
 import { Scroller } from './components/Scroller';
+
+import '@repo/ui/theme.css';
+import './styles.css';
 
 // TODO remove
 /* _eslint no-console: "error" */

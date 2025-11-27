@@ -2,10 +2,6 @@ body {
   /* image should be in src/assets folder, but this is to test css url transform */
   background-image: url('./assets/bg-pattern.webp');
   background-size: cover;
-
-  font-family:
-    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
-    Arial, sans-serif;
 }
 
 .AppCore {
