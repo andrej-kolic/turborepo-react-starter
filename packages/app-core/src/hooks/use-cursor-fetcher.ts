@@ -24,7 +24,10 @@ export type State<T, C> =
   | { status: 'error'; items: T[]; nextCursor: C | undefined; message: string }
   | { status: 'done'; items: T[] };
 
-export const useService = <T, C>(fetch: Fetcher<T, C>, pageSize: number) => {
+export const useCursorFetcher = <T, C>(
+  fetch: Fetcher<T, C>,
+  pageSize: number,
+) => {
   const [state, setState] = useState<State<T, C>>({
     status: 'idle',
     items: [],

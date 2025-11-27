@@ -1,4 +1,4 @@
-import { useService, type Fetcher } from '../../hooks/use-service';
+import { useCursorFetcher, type Fetcher } from '../../hooks/use-cursor-fetcher';
 
 const PAGE_SIZE = 10;
 const TOTAL_ITEMS = 22;
@@ -59,5 +59,5 @@ export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
 };
 
 export function UseScroller() {
-  return useService(fakeFetchItems, PAGE_SIZE);
+  return useCursorFetcher(fakeFetchItems, PAGE_SIZE);
 }
