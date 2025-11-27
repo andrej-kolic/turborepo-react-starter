@@ -54,6 +54,7 @@ export const Aborted: Story = {
     abortFetch: empty,
   },
 };
+
 export const Error: Story = {
   args: {
     items: Array.from({ length: 2 }, (_, i) => ({
@@ -65,6 +66,7 @@ export const Error: Story = {
     abortFetch: empty,
   },
 };
+
 export const Idle: Story = {
   args: {
     items: Array.from({ length: 2 }, (_, i) => ({
@@ -76,6 +78,7 @@ export const Idle: Story = {
     abortFetch: empty,
   },
 };
+
 export const Done: Story = {
   args: {
     items: Array.from({ length: 2 }, (_, i) => ({
