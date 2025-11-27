@@ -32,9 +32,9 @@ export function AppCore(props: {
     <div className="AppCore">
       <Header title={props.title} />
 
-      <Scroller />
-
       <ResourceCards />
+
+      <Scroller />
     </div>
   );
 }
