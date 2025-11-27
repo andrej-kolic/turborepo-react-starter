@@ -16,9 +16,7 @@ export function Scroller() {
             content: item.name,
           }) satisfies ListItem,
       )}
-      listStatus={
-        state.status === 'idle' && state.aborted ? 'aborted' : state.status
-      }
+      listStatus={state.status}
       fetchNext={fetchNext}
       abortFetch={abortFetch}
     />

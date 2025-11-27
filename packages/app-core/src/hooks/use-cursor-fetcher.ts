@@ -11,16 +11,23 @@ export type Fetcher<T, C> = (
   signal?: AbortSignal,
 ) => Promise<FetchResult<T, C>>;
 
-export type Status = 'idle' | 'loading' | 'success' | 'error' | 'done';
+export type Status =
+  | 'idle'
+  | 'loading'
+  | 'aborted'
+  | 'success'
+  | 'error'
+  | 'done';
 
 export type State<T, C> =
-  | { status: 'idle'; items: T[]; nextCursor: C | undefined; aborted: boolean }
+  | { status: 'idle'; items: T[]; nextCursor: C | undefined }
   | {
       status: 'loading';
       items: T[];
       currentCursor: C | undefined;
       abortController: AbortController;
     }
+  | { status: 'aborted'; items: T[]; nextCursor: C | undefined }
   | { status: 'error'; items: T[]; nextCursor: C | undefined; message: string }
   | { status: 'done'; items: T[] };
 
@@ -32,7 +39,6 @@ export const useCursorFetcher = <T, C>(
     status: 'idle',
     items: [],
     nextCursor: undefined,
-    aborted: false,
   });
 
   const fetchNext = useCallback(async () => {
@@ -70,17 +76,15 @@ export const useCursorFetcher = <T, C>(
           status: 'idle',
           items: newItems,
           nextCursor: data.nextCursor,
-          aborted: false,
         });
       }
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') {
         // console.log('* catch aborted');
         setState({
-          status: 'idle',
+          status: 'aborted',
           items: previousState.items,
           nextCursor: previousState.nextCursor,
-          aborted: true,
         });
         return;
       }
