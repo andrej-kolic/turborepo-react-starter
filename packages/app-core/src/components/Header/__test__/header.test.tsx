@@ -1,11 +1,11 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Header } from '~app-core/Header';
+import { Header } from '..';
 
 describe('Card', () => {
   it('should render', () => {
-    render(<Header />);
+    render(<Header title="starter app" />);
 
     expect(screen.getByText(/starter app/i)).toBeInTheDocument();
   });

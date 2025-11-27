@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
-import './app.css';
+import './index.css';
 // import './index.html';
 
 console.log('* in app'); // TODO: remove
