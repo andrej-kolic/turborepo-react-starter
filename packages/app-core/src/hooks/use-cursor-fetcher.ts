@@ -36,7 +36,7 @@ export const useCursorFetcher = <T, C>(
   });
 
   const fetchNext = useCallback(async () => {
-    // console.log('* fetchNext called:', state);
+    console.log('* fetchNext called:', state);
 
     if (state.status == 'loading' || state.status === 'done') {
       return;
@@ -95,7 +95,7 @@ export const useCursorFetcher = <T, C>(
   }, [fetch, pageSize, state]);
 
   const abortFetch = useCallback(() => {
-    // console.log('* abortFetch called:', state);
+    console.log('* abortFetch called:', state);
     if (state.status !== 'loading') {
       return;
     }

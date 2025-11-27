@@ -9,14 +9,13 @@ export type ListItem = {
 
 type DynamicListProps = {
   items: ListItem[];
-  listStatus: 'idle' | 'loading' | 'error' | 'done';
-  isAborted: boolean;
+  listStatus: 'idle' | 'loading' | 'aborted' | 'error' | 'done';
   fetchNext: () => Promise<void>;
   abortFetch: () => void;
 };
 
 export function DynamicList(props: DynamicListProps) {
-  const { items, listStatus, isAborted, fetchNext, abortFetch } = props;
+  const { items, listStatus, fetchNext, abortFetch } = props;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -56,7 +55,7 @@ export function DynamicList(props: DynamicListProps) {
       observer.observe(item);
     });
 
-    if (listStatus === 'idle' && !isAborted) {
+    if (listStatus === 'idle') {
       const trigger = container.querySelector('.DynamicList__trigger');
       if (trigger) observer.observe(trigger);
     }
@@ -65,7 +64,7 @@ export function DynamicList(props: DynamicListProps) {
       observer.disconnect();
       abortFetch();
     };
-  }, [listStatus, isAborted, abortFetch]);
+  }, [listStatus, abortFetch]);
 
   return (
     <>
@@ -85,14 +84,20 @@ export function DynamicList(props: DynamicListProps) {
             'DynamicList__trigger',
             listStatus === 'idle'
               ? 'DynamicList__trigger--idle'
-              : listStatus === 'loading'
-                ? 'DynamicList__trigger--loading'
-                : listStatus === 'error'
-                  ? 'DynamicList__trigger--error'
-                  : 'DynamicList__trigger--done',
+              : listStatus === 'aborted'
+                ? 'DynamicList__trigger--aborted'
+                : listStatus === 'loading'
+                  ? 'DynamicList__trigger--loading'
+                  : listStatus === 'error'
+                    ? 'DynamicList__trigger--error'
+                    : 'DynamicList__trigger--done',
           ].join(' ')}
           onClick={() => {
-            if (listStatus === 'idle' || listStatus === 'error') {
+            if (
+              listStatus === 'idle' ||
+              listStatus === 'error' ||
+              listStatus === 'aborted'
+            ) {
               void fetchNext();
             } else if (listStatus === 'loading') {
               abortFetch();
@@ -103,9 +108,11 @@ export function DynamicList(props: DynamicListProps) {
             ? 'Abort load...'
             : listStatus === 'idle'
               ? 'Load more'
-              : listStatus === 'error'
+              : listStatus === 'aborted'
                 ? 'Retry'
-                : 'No more items'}
+                : listStatus === 'error'
+                  ? 'Retry'
+                  : 'No more items'}
         </button>
       </div>
     </>
