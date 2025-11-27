@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 // import { fn } from "storybook/test";
 import { DynamicList } from '@repo/ui';
+import { empty, emptyAsync } from '../utils';
 
 const meta = {
   title: 'Example/DynamicList',
@@ -25,21 +26,64 @@ export const Default: Story = {
       content: `Item ${i + 1}`,
     })),
     listStatus: 'idle',
-    fetchNext: async () => {
-      console.log('Fetching next items...');
-      // Simulate a network request
-      return new Promise((resolve) => setTimeout(resolve, 1000));
-    },
-    abortFetch: () => {
-      console.log('Fetch aborted.');
-    },
+    fetchNext: emptyAsync,
+    abortFetch: empty,
   },
 };
 
-// export const ExternalLink: Story = {
-//   args: {
-//     title: 'DynamicList Title',
-//     href: 'http://example.com',
-//     children: 'Children',
-//   },
-// };
+export const Loading: Story = {
+  args: {
+    items: Array.from({ length: 2 }, (_, i) => ({
+      id: `item-${i + 1}`,
+      content: `Item ${i + 1}`,
+    })),
+    listStatus: 'loading',
+    fetchNext: emptyAsync,
+    abortFetch: empty,
+  },
+};
+
+export const Aborted: Story = {
+  args: {
+    items: Array.from({ length: 2 }, (_, i) => ({
+      id: `item-${i + 1}`,
+      content: `Item ${i + 1}`,
+    })),
+    listStatus: 'aborted',
+    fetchNext: emptyAsync,
+    abortFetch: empty,
+  },
+};
+export const Error: Story = {
+  args: {
+    items: Array.from({ length: 2 }, (_, i) => ({
+      id: `item-${i + 1}`,
+      content: `Item ${i + 1}`,
+    })),
+    listStatus: 'error',
+    fetchNext: emptyAsync,
+    abortFetch: empty,
+  },
+};
+export const Idle: Story = {
+  args: {
+    items: Array.from({ length: 2 }, (_, i) => ({
+      id: `item-${i + 1}`,
+      content: `Item ${i + 1}`,
+    })),
+    listStatus: 'idle',
+    fetchNext: emptyAsync,
+    abortFetch: empty,
+  },
+};
+export const Done: Story = {
+  args: {
+    items: Array.from({ length: 2 }, (_, i) => ({
+      id: `item-${i + 1}`,
+      content: `Item ${i + 1}`,
+    })),
+    listStatus: 'done',
+    fetchNext: emptyAsync,
+    abortFetch: empty,
+  },
+};
