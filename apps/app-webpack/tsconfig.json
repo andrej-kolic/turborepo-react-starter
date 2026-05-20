@@ -1,9 +1,5 @@
 {
   "extends": "@repo/typescript-config/webpack.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "build"
-  },
 
   // needed for ts-node to resolve imports without file extension
   "ts-node": {
