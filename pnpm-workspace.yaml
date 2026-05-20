@@ -1,4 +1,13 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
-  - 'infra/*'
+  - apps/*
+  - packages/*
+  - infra/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js-pure
+  - esbuild
+  - netlify-cli
+  - sharp
+  - unix-dgram
+  - unrs-resolver
