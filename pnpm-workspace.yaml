@@ -3,6 +3,14 @@ packages:
   - packages/*
   - infra/*
 
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  netlify-cli: true
+  sharp: true
+  unix-dgram: true
+  unrs-resolver: true
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - core-js-pure
