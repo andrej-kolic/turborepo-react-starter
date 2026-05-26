@@ -12,8 +12,8 @@ export type ItemDto = {
 let requestCount = 0;
 
 export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
-  cursor?: number,
-  pageSize: number = PAGE_SIZE,
+  cursor: number | undefined,
+  pageSize: number,
   signal?: AbortSignal,
 ) {
   const items: ItemDto[] = [];
