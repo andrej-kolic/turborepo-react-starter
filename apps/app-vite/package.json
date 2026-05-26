@@ -22,8 +22,8 @@
     "@types/node": "24.6.2",
     "@types/react": "19.2.0",
     "@types/react-dom": "19.2.0",
-    "@vitejs/plugin-react": "5.0.4",
-    "vite": "7.1.9"
+    "@vitejs/plugin-react": "6.0.2",
+    "vite": "8.0.14"
   },
   "_devDependencies": {
     "eslint-plugin-react-refresh": "^0.4.12"
