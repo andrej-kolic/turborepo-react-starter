@@ -2,6 +2,7 @@ import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginReact from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
+import { fixupConfigRules } from '@eslint/compat';
 import { config as baseConfig } from './base.js';
 
 /**
@@ -11,9 +12,15 @@ import { config as baseConfig } from './base.js';
 export const config = [
   ...baseConfig,
 
-  pluginReact.configs.flat.recommended,
+  /**
+   * eslint-plugin-react uses deprecated context.getFilename() removed in ESLint 10.
+   * fixupConfigRules patches the plugin's rules with the required shims.
+   * Remove once eslint-plugin-react ships ESLint 10 support (v8+).
+   */
+  ...fixupConfigRules([pluginReact.configs.flat.recommended]),
 
   {
+    // Merge browser + service worker globals on top of what the plugin sets
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {

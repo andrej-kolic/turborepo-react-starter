@@ -8,9 +8,6 @@ export default {
 
   // "!(*.js|*.cjs|*.mjs|*.jsx|*.ts|*.tsx)": ["prettier --write"]
 
-  '*.{js,jsx,ts,tsx}': [
-    'eslint --flag unstable_config_lookup_from_file --fix',
-    'prettier --write',
-  ],
+  '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json}': ['prettier --write'],
 };

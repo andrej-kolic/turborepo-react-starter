@@ -2,8 +2,8 @@ import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginReact from 'eslint-plugin-react';
 import globals from 'globals';
 import pluginNext from '@next/eslint-plugin-next';
+import { fixupPluginRules } from '@eslint/compat';
 import { config as baseConfig } from './base.js';
-// import { ignores } from './_next.js';
 
 /**
  * A custom ESLint configuration for libraries that use Next.js.
@@ -15,6 +15,14 @@ export const nextJsConfig = [
 
   {
     ...pluginReact.configs.flat.recommended,
+    plugins: {
+      /**
+       * eslint-plugin-react uses deprecated context.getFilename() removed in ESLint 10.
+       * fixupPluginRules patches the plugin's rules with the required shims.
+       * Remove once eslint-plugin-react ships ESLint 10 support (v8+).
+       */
+      react: fixupPluginRules(pluginReact),
+    },
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {

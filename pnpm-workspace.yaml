@@ -3,6 +3,9 @@ packages:
   - packages/*
   - infra/*
 
+overrides:
+  '@typescript-eslint/utils': '^8.60.0'
+
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
