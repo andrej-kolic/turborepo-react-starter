@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode ${BUILD_ENVIRONMENT}",
-    "build": "tsc && vite build --mode ${BUILD_ENVIRONMENT}",
+    "dev": "vite --configLoader runner --mode ${BUILD_ENVIRONMENT}",
+    "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit",
     "clear:output": "rm -rf ./dist"
   },

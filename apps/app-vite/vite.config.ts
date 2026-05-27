@@ -4,12 +4,7 @@ import util from 'util';
 
 const debuglog = util.debuglog('app-vite');
 
-// TODO: fix import when fix is available
-// must be local path, or vite complains (for now). See https://github.com/vitejs/vite/issues/5370
-import {
-  appCorePublic,
-  appCoreEnvDir,
-} from './node_modules/@repo/dev-tools/config/paths';
+import { appCorePublic, appCoreEnvDir } from '@repo/dev-tools/config/paths';
 
 // NOTE on environments: Vite's mode should be set to the same as BUILD_ENVIRONMENT
 
