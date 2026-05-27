@@ -5,8 +5,7 @@
     "rootDir": "./src",
 
     /** needed for Jest 'ts-jest/presets/js-with-ts' preset to transform ESM files */
-    "allowJs": true,
-    "ignoreDeprecations": "6.0"
+    "allowJs": true
   },
   "include": ["src/**/*", "../../@types"], // TODO: @types as package?
   "exclude": ["dist", "build", "node_modules", "src/**/*/assets"]

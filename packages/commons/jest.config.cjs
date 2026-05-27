@@ -179,6 +179,11 @@ const config = {
   //   "^.+\\.(ts|tsx)$": "ts-jest"
   // },
 
+  /** ts-jest internally maps moduleResolution:bundler → node10 (deprecated in TS6); TS5107 suppresses that diagnostic */
+  transform: {
+    '^.+\\.[tj]sx?$': ['ts-jest', { diagnostics: { ignoreCodes: ['TS5107'] } }],
+  },
+
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
   //   "/node_modules/",

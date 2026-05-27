@@ -202,7 +202,8 @@ const config = {
 
   transform: {
     // '^.+\\.jsx?$': ['babel-jest', { configFile: './babel.test.config.cjs' }], //   <== uncomment to use babel for js files
-    '^.+\\.tsx?$': 'ts-jest',
+    /** ts-jest internally maps moduleResolution:bundler → node10 (deprecated in TS6); TS5107 suppresses that diagnostic */
+    '^.+\\.tsx?$': ['ts-jest', { diagnostics: { ignoreCodes: ['TS5107'] } }],
   },
 
   verbose: true,
