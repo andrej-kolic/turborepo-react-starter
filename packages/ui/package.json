@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.tsx",
     "./utils": "./src/utils.ts",
+    "./package.json": "./package.json",
     "./*": "./src/*"
   },
   "private": true,
