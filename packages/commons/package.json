@@ -13,7 +13,6 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "compile": "tsc",
     "bundle": "tsup-node",
     "bundle:watch": "tsup-node --watch",
     "type:gen": "tsc --emitDeclarationOnly",
