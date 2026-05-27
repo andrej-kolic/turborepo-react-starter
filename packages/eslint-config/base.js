@@ -5,6 +5,7 @@ import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
 // import onlyWarn from 'eslint-plugin-only-warn';
 import globals from 'globals';
+import vitest from '@vitest/eslint-plugin';
 
 /**
  * Utility function to disable typed linting on provided files.
@@ -130,6 +131,17 @@ export const config = tseslint.config(
     rules: {
       'no-useless-concat': 'error',
       'no-else-return': 'error',
+    },
+  },
+
+  /** Vitest: declare test globals for test files so typed linting works correctly */
+
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    plugins: { vitest },
+    rules: vitest.configs.recommended.rules,
+    languageOptions: {
+      globals: vitest.environments.env.globals,
     },
   },
 

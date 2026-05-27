@@ -1,11 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "React Library",
+  "display": "React Library (Just-in-Time)",
   "extends": "./base.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
     "jsx": "react-jsx",
-    "types": ["node"]
+    "types": ["vitest/globals", "node"]
   }
 }

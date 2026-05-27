@@ -1,9 +1,5 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
-  "compilerOptions": {
-    "outDir": "build",
-    "rootDir": "./src"
-  },
-  "include": ["src/**/*", "../../@types"],
+  "extends": "@repo/typescript-config/react-jit.json",
+  "include": ["src/**/*", "test/**/*", "../../@types"],
   "exclude": ["node_modules", "src/**/*/assets"]
 }
