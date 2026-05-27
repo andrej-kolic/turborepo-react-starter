@@ -3,7 +3,7 @@
   "globalDependencies": ["**/.env.*local", "tsconfig.json"],
 
   "globalEnv": ["BUNDLER", "BUILD_ENVIRONMENT", "NODE_ENV", "NODE_DEBUG"],
-  "globalPassThroughEnv": ["AWS_SECRET_KEY", "GITHUB_TOKEN"],
+  "globalPassThroughEnv": ["GITHUB_TOKEN"],
 
   "tasks": {
     "build": {
