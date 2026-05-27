@@ -91,7 +91,7 @@ const webpackConfig = (
         {
           test: /\.tsx?$/,
           use: 'ts-loader',
-          exclude: /node_modules/,
+          exclude: /node_modules\/(?!@repo)/,
         },
         {
           test: /\.css$/i,
