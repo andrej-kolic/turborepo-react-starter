@@ -28,7 +28,7 @@
         "DomainName": "andrejkolic.com",
         "SubDomain": "trs",
         "HostedZoneId": "Z00295123IDZ7CVMX671W",
-        "CreateApex": "yes"
+        "CreateApex": "no"
       }
     }
   }
