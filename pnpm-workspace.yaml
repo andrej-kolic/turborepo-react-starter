@@ -29,6 +29,7 @@ catalog:
 
 allowBuilds:
   '@parcel/watcher': true
+  '@typescript/native-preview': true
   esbuild: true
   netlify-cli: true
   sharp: true
@@ -37,9 +38,20 @@ allowBuilds:
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
+  - '@typescript/native-preview'
   - core-js-pure
   - esbuild
   - netlify-cli
   - sharp
   - unix-dgram
   - unrs-resolver
+
+minimumReleaseAgeExclude:
+  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260527.2'
+  - '@typescript/native-preview@7.0.0-dev.20260527.2'

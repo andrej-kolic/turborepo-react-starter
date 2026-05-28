@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {

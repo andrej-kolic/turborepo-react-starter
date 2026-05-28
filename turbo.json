@@ -27,6 +27,9 @@
     "check:type": {
       "dependsOn": ["^build", "^check:type"]
     },
+    "check:type:go": {
+      "dependsOn": ["^build", "^check:type:go"]
+    },
     "test:watch": {
       "cache": false
     },

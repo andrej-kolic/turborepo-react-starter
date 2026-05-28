@@ -15,7 +15,8 @@
     "generate:component": "turbo gen react-component",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit"
   },
   "dependencies": {
     "@repo/commons": "workspace:*",

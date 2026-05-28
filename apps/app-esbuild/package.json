@@ -17,6 +17,7 @@
     "lint": "eslint .",
     "preview": "serve ./dist",
     "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {

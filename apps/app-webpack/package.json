@@ -9,6 +9,7 @@
     "preview": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack serve --mode production --config config/webpack.config.ts",
     "lint": "eslint .",
     "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {

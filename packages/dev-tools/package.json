@@ -6,7 +6,8 @@
   "main": "./config/",
   "types": "./config/",
   "scripts": {
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit"
   },
   "keywords": [],
   "author": "",
