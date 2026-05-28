@@ -1,13 +1,13 @@
+import path from 'node:path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
-import {
-  appCorePublic,
-  appCoreEnvDir,
-  distPath,
-} from '@repo/dev-tools/config/paths';
+import { createPaths } from '@repo/dev-tools/config/paths';
+
+const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
+const distPath = path.resolve('dist');
 
 import 'webpack-dev-server';
 import util from 'util';

@@ -1,11 +1,20 @@
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
-const __dirname = process.cwd();
+/**
+ * Creates resolved paths for @repo/app-core using the caller's module resolution context.
+ * Pass `import.meta.url` from the calling config file.
+ */
+export function createPaths(importMetaUrl: string) {
+  const require = createRequire(importMetaUrl);
 
-const pathResolve = (pathEntry: string) => path.resolve(__dirname, pathEntry);
+  // Resolve @repo/app-core from the caller's perspective — correct regardless of pnpm hoisting
+  const appCoreMain = require.resolve('@repo/app-core');
+  // main is ./src/index.tsx → two dirname calls to reach the package root
+  const appCoreRoot = path.dirname(path.dirname(appCoreMain));
 
-const appCorePublic = pathResolve('./node_modules/@repo/app-core/public');
-const distPath = pathResolve('./dist');
-const appCoreEnvDir = pathResolve('./node_modules/@repo/app-core/');
-
-export { appCorePublic, appCoreEnvDir, distPath };
+  return {
+    appCorePublic: path.join(appCoreRoot, 'public'),
+    appCoreEnvDir: appCoreRoot,
+  };
+}

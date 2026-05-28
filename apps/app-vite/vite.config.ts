@@ -4,7 +4,9 @@ import util from 'util';
 
 const debuglog = util.debuglog('app-vite');
 
-import { appCorePublic, appCoreEnvDir } from '@repo/dev-tools/config/paths';
+import { createPaths } from '@repo/dev-tools/config/paths';
+
+const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 
 // NOTE on environments: Vite's mode should be set to the same as BUILD_ENVIRONMENT
 
