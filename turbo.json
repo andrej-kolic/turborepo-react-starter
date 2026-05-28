@@ -2,7 +2,15 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", "prettier.config.js"],
 
-  "globalEnv": ["BUNDLER", "BUILD_ENVIRONMENT", "NODE_ENV", "NODE_DEBUG"],
+  "globalEnv": [
+    "BUNDLER",
+    "BUILD_ENVIRONMENT",
+    "NODE_ENV",
+    "NODE_DEBUG",
+    "MODE",
+    "APP_REACT_ENV_FILE",
+    "APP_REACT_TITLE"
+  ],
   "globalPassThroughEnv": ["GITHUB_TOKEN"],
 
   "tasks": {

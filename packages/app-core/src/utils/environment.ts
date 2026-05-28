@@ -18,7 +18,7 @@ const environmentVariables: EnvironmentVariables = {
   APP_REACT_TITLE: import.meta.env.APP_REACT_TITLE,
 };
 
-// TODO: rename to getRuntimeEnvVariables()
+// TODO: rename to getRuntimeEnvVariables() or getAppconfig()
 export function getEnvironmentVariables() {
   return environmentVariables;
 }

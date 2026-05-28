@@ -62,7 +62,12 @@ const webpackConfig = (
 
     plugins: [
       new webpack.DefinePlugin({
-        'import.meta.env': JSON.stringify(environmentVariables),
+        'import.meta.env': Object.fromEntries(
+          Object.entries(environmentVariables).map(([key, value]) => [
+            key,
+            JSON.stringify(value),
+          ]),
+        ),
       }),
 
       new HtmlWebpackPlugin({
