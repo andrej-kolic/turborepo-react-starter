@@ -31,7 +31,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "npm-run-all": "4.1.5",
-    "tsup": "8.5.0",
+    "tsup": "8.5.1",
     "vitest": "catalog:"
   }
 }
