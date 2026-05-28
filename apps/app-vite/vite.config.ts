@@ -39,6 +39,13 @@ export default defineConfig((configEnv) => {
 
     plugins: [react()],
 
+    // Exclude JIT workspace packages from pre-bundling.
+    // Vite's pre-bundler (Rolldown in Vite 8) cannot process raw .tsx source files —
+    // these packages must flow through Vite's own transform pipeline instead.
+    optimizeDeps: {
+      exclude: ['@repo/ui', '@repo/app-core'],
+    },
+
     publicDir: appCorePublic,
 
     // TODO: remove, added for readable output
