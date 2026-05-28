@@ -21,7 +21,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "publint": "pnpm dlx publint"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
