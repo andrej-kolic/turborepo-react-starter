@@ -21,18 +21,18 @@
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
-    "@types/react-dom": "19.2.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "esbuild": "0.28.0",
     "esbuild-plugin-copy": "2.1.1",
-    "serve": "14.2.5",
-    "ts-node": "10.9.2"
+    "serve": "catalog:",
+    "ts-node": "catalog:"
   }
 }

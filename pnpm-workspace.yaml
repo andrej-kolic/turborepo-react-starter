@@ -3,6 +3,30 @@ packages:
   - packages/*
   - infra/*
 
+catalog:
+  # React ecosystem
+  react: '19.2.0'
+  react-dom: '19.2.0'
+  '@types/react': '19.2.0'
+  '@types/react-dom': '19.2.0'
+
+  # Node
+  '@types/node': '24.6.2'
+
+  # Build tools
+  vite: '8.0.14'
+  ts-node: '10.9.2'
+  serve: '14.2.5'
+  '@turbo/gen': '2.9.14'
+
+  # Testing
+  vitest: '4.1.7'
+  jsdom: '29.0.0'
+  '@testing-library/dom': '10.4.1'
+  '@testing-library/jest-dom': '6.9.1'
+  '@testing-library/react': '16.3.0'
+  '@testing-library/user-event': '14.6.1'
+
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
