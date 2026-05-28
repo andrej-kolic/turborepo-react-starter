@@ -35,10 +35,10 @@
   font-size: 1.25rem;
   font-weight: bold;
   cursor: pointer;
-  color: royalblue;
+  color: var(--color-accent);
 }
 
 .Card__content {
   font-size: 1rem;
-  color: #333;
+  color: var(--color-text-primary);
 }
