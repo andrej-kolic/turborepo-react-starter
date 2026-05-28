@@ -32,7 +32,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "npm-run-all": "4.1.5",
+    "npm-run-all2": "7.0.2",
     "tsup": "8.5.1",
     "vitest": "catalog:"
   }
