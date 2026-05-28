@@ -14,6 +14,7 @@ interface ImportMetaEnv {
   // client:
   readonly APP_REACT_TITLE: string;
   readonly APP_REACT_ENV_FILE: string;
+  readonly APP_REACT_VERSION: string;
 
   readonly [key: string]: string;
 }
