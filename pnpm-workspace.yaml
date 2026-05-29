@@ -55,3 +55,11 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260527.2'
   - '@typescript/native-preview-win32-x64@7.0.0-dev.20260527.2'
   - '@typescript/native-preview@7.0.0-dev.20260527.2'
+  - '@turbo/darwin-64@2.9.16'
+  - '@turbo/darwin-arm64@2.9.16'
+  - '@turbo/linux-64@2.9.16'
+  - '@turbo/linux-arm64@2.9.16'
+  - '@turbo/windows-64@2.9.16'
+  - '@turbo/windows-arm64@2.9.16'
+  - eslint-plugin-turbo@2.9.16
+  - turbo@2.9.16

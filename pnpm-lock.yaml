@@ -81,8 +81,8 @@ importers:
         specifier: 15.3.1
         version: 15.3.1
       turbo:
-        specifier: 2.9.15
-        version: 2.9.15
+        specifier: 2.9.16
+        version: 2.9.16
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -211,13 +211,13 @@ importers:
         version: 10.9.2(@types/node@24.6.2)(typescript@6.0.3)
       webpack:
         specifier: 5.107.2
-        version: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+        version: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
       webpack-cli:
-        specifier: 7.0.2
-        version: 7.0.2(webpack-dev-server@5.2.4)(webpack@5.107.2)
+        specifier: 7.0.3
+        version: 7.0.3(webpack-dev-server@5.2.4)(webpack@5.107.2)
       webpack-dev-server:
         specifier: 5.2.4
-        version: 5.2.4(webpack-cli@7.0.2)(webpack@5.107.2)
+        version: 5.2.4(webpack-cli@7.0.3)(webpack@5.107.2)
 
   apps/ui-storybook:
     dependencies:
@@ -388,8 +388,8 @@ importers:
         specifier: 0.5.2
         version: 0.5.2(eslint@10.4.0(jiti@2.6.1))
       eslint-plugin-turbo:
-        specifier: 2.9.15
-        version: 2.9.15(eslint@10.4.0(jiti@2.6.1))(turbo@2.9.15)
+        specifier: 2.9.16
+        version: 2.9.16(eslint@10.4.0(jiti@2.6.1))(turbo@2.9.16)
       globals:
         specifier: 17.6.0
         version: 17.6.0
@@ -2781,13 +2781,13 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  '@turbo/darwin-64@2.9.15':
-    resolution: {integrity: sha512-nnDo9R1Df+s2x6jxlERtbg7xRpuicf8p4J2krcnjeaMBt3q9V41pGXa4t9YM2Y4ozozsVJ+CH405CJUrWIQK4Q==}
+  '@turbo/darwin-64@2.9.16':
+    resolution: {integrity: sha512-jLjApWTSNd7JZ5JaLYfelW1ytnGQOvB7ivl+2RD1xQvJTbi8I9gBjzcga7tDZVPyaxpl10YTfJt3BrYXR18KDw==}
     cpu: [x64]
     os: [darwin]
 
-  '@turbo/darwin-arm64@2.9.15':
-    resolution: {integrity: sha512-fDSx56oqoFuS+yUQw7hqjQTkjrSLdMcplhuLC8HcSkWC6YrpwEmUUYsPYHPxy4ALvLxnmPQuk6XoSD8tdkjP+g==}
+  '@turbo/darwin-arm64@2.9.16':
+    resolution: {integrity: sha512-YPgrn+5HIGzrx0O2a631SV4MBQUe4W/DafMFUuBVgaU32PW9/OTT0ehviF0QSxTXuRJlHvW2eUTemddF5/spmw==}
     cpu: [arm64]
     os: [darwin]
 
@@ -2795,23 +2795,23 @@ packages:
     resolution: {integrity: sha512-ywed2U3ku8oPLpJKmwSpn82Tl7WCHo5W5dVyj0jj100fk3PexlaJt6Rr6mgk+62XjuiLVErSnxtFLwHUkm4erg==}
     hasBin: true
 
-  '@turbo/linux-64@2.9.15':
-    resolution: {integrity: sha512-/bmxn+x/xE+oh0VzEXt/zf2zsORAYZPrL3db5/VrXzYt0Z4wxcvffwJBGlSfla2smfS1BLGBiyWldJlWDXJVXA==}
+  '@turbo/linux-64@2.9.16':
+    resolution: {integrity: sha512-vAEf1H6l26lTpl9FJ/peQo1NUB8RC0sbEJJz5mPcUhHA2bPDup2x3CZPgo/bH8S4cUcBLm4FN3UHd5iUO2RAew==}
     cpu: [x64]
     os: [linux]
 
-  '@turbo/linux-arm64@2.9.15':
-    resolution: {integrity: sha512-cbOaDe1ijz5As+mimOOHgmRMolZZZO7miNBHHp5xdiYMm2Q/Dwu1JVLx/Kw4s7xjocG/oEoHrpHrxpEAIEfNiw==}
+  '@turbo/linux-arm64@2.9.16':
+    resolution: {integrity: sha512-xDBLR2PZg4BrQOchfG6svgpv5FCNJ2TOtT2psLdEJcdKo1BH+pnPs9Xj6pvUjgfkHbuvBOfeE4R6tvxMoQKDHQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@turbo/windows-64@2.9.15':
-    resolution: {integrity: sha512-/Fzm7afui7uK7dFBwrTXKuDhBBTiHk5I+hMVAPMR7cqQyDo2norCNUsN9PdNuYcmzYbhSOxzz498wQYvSAz29w==}
+  '@turbo/windows-64@2.9.16':
+    resolution: {integrity: sha512-NBAJnaUiGdgkSzQwUIdOvkCkcpTSu58G/sBGa0mvBtzfvFOOgrQwepKOOQ8cp6sWM6OcKDNFj2p1dsZA1OWjPg==}
     cpu: [x64]
     os: [win32]
 
-  '@turbo/windows-arm64@2.9.15':
-    resolution: {integrity: sha512-fOHEsLcqVdFXLw2ApWv4gxwfHzkUnpo9rHGml+9+dyHj148m/Bc+556kEvb5+4u6prI1LMd8zEZE2HcO6Jn2VQ==}
+  '@turbo/windows-arm64@2.9.16':
+    resolution: {integrity: sha512-Y7SJppD0Z8wjO3Ec0ZGd9KQ4Yv0BMnA8CIowj5Vp+OEVsosXDG2weK6/t1RRLfJmc2Ozrnd6y4DOgQys+mn3WQ==}
     cpu: [arm64]
     os: [win32]
 
@@ -4268,11 +4268,6 @@ packages:
     resolution: {integrity: sha512-pxP8eL2SwwaTRi/KHYwLYXinDs7gL3jxFcBYmEdYfZmZXbaVDvdppd0XBU8qVz03rDfKZMXg1omHCbsJjZrMsw==}
     engines: {node: '>=20'}
 
-  envinfo@7.16.0:
-    resolution: {integrity: sha512-LqGbDxROFEWnYpUm9KiU2xHiYbjlHZS6NZQUpm1Lg1To4p+FJLks5crEhUnw+s/ZLHzI8U0QB+oVG7e8cXckMg==}
-    engines: {node: '>=4'}
-    hasBin: true
-
   envinfo@7.21.0:
     resolution: {integrity: sha512-Lw7I8Zp5YKHFCXL7+Dz95g4CcbMEpgvqZNNq3AmlT5XAV6CgAAk6gyAMqn2zjw08K9BHfcNuKrMiCPLByGafow==}
     engines: {node: '>=4'}
@@ -4413,8 +4408,8 @@ packages:
       eslint: '>=8'
       storybook: ^10.4.1
 
-  eslint-plugin-turbo@2.9.15:
-    resolution: {integrity: sha512-IBV3/xMl/TuK7pdW4nHQtbEOq/Si1e4WVOFuEmNsdX0VgzC9CWWtYf+kUH5gqz4h9+uRRYY7nR9SvzCEx2sWlQ==}
+  eslint-plugin-turbo@2.9.16:
+    resolution: {integrity: sha512-NOITpZwuq+c/urW2aGD7QruJ/1frWyci2SF9lX8IaFFGwu2iNSI/90XqOiiWbQe5Ur96C8rspnhDSKzh+EXzIg==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
@@ -7355,8 +7350,8 @@ packages:
     resolution: {integrity: sha512-axr3IdNuVIxnaK5XGEUFTu3YmAQ6lllgrvqfEoR16g/HGnYY/6We4oWENtAnzK6/LpJ2ur9PAb80RBt7/U4ugw==}
     engines: {node: '>= 6.0.0'}
 
-  turbo@2.9.15:
-    resolution: {integrity: sha512-VpKvD9Z0Hu/xrGUAYX1wnhfpqv835wIwGqeKfulvBPTOcDap0E3nFwyzCAVV85fB1sBcBDEfTP+7FSW7GzwWSQ==}
+  turbo@2.9.16:
+    resolution: {integrity: sha512-NqgRQy6j6dPYcdSdv0q1g9QsZg7SWg87RERM8otw/1AtKU2yTFVClOM7cbwKzOonZr/Ek1blTBucw64L9H0Bwg==}
     hasBin: true
 
   type-check@0.4.0:
@@ -7702,8 +7697,8 @@ packages:
     resolution: {integrity: sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==}
     engines: {node: '>=20'}
 
-  webpack-cli@7.0.2:
-    resolution: {integrity: sha512-dB0R4T+C/8YuvM+fabdvil6QE44/ChDXikV5lOOkrUeCkW5hTJv2pGLE3keh+D5hjYw8icBaJkZzpFoaHV4T+g==}
+  webpack-cli@7.0.3:
+    resolution: {integrity: sha512-2E2C6A1e2El7791zQgTH7LPIuwLjRliow9OHS/qlJc9pwhZlCoL/uiwqd/1WSlXT83wJfmfDbkcqHXuXoPJZ3g==}
     engines: {node: '>=20.9.0'}
     hasBin: true
     peerDependencies:
@@ -10189,10 +10184,10 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@turbo/darwin-64@2.9.15':
+  '@turbo/darwin-64@2.9.16':
     optional: true
 
-  '@turbo/darwin-arm64@2.9.15':
+  '@turbo/darwin-arm64@2.9.16':
     optional: true
 
   '@turbo/gen@2.9.15(@types/node@24.6.2)':
@@ -10202,16 +10197,16 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@turbo/linux-64@2.9.15':
+  '@turbo/linux-64@2.9.16':
     optional: true
 
-  '@turbo/linux-arm64@2.9.15':
+  '@turbo/linux-arm64@2.9.16':
     optional: true
 
-  '@turbo/windows-64@2.9.15':
+  '@turbo/windows-64@2.9.16':
     optional: true
 
-  '@turbo/windows-arm64@2.9.15':
+  '@turbo/windows-arm64@2.9.16':
     optional: true
 
   '@tybys/wasm-util@0.10.1':
@@ -11405,7 +11400,7 @@ snapshots:
       schema-utils: 4.3.3
       serialize-javascript: 7.0.5
       tinyglobby: 0.2.16
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
   core-util-is@1.0.3: {}
 
@@ -11452,7 +11447,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.8.0
     optionalDependencies:
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
   css-select@4.3.0:
     dependencies:
@@ -11766,8 +11761,6 @@ snapshots:
     dependencies:
       is-safe-filename: 0.1.1
 
-  envinfo@7.16.0: {}
-
   envinfo@7.21.0: {}
 
   environment@1.1.0: {}
@@ -12016,11 +12009,11 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-turbo@2.9.15(eslint@10.4.0(jiti@2.6.1))(turbo@2.9.15):
+  eslint-plugin-turbo@2.9.16(eslint@10.4.0(jiti@2.6.1))(turbo@2.9.16):
     dependencies:
       dotenv: 16.0.3
       eslint: 10.4.0(jiti@2.6.1)
-      turbo: 2.9.15
+      turbo: 2.9.16
 
   eslint-scope@5.1.1:
     dependencies:
@@ -12632,7 +12625,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.3.3
     optionalDependencies:
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
   htmlparser2@6.1.0:
     dependencies:
@@ -13412,7 +13405,7 @@ snapshots:
     dependencies:
       schema-utils: 4.3.3
       tapable: 2.3.3
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
   minimalistic-assert@1.0.1: {}
 
@@ -15135,7 +15128,7 @@ snapshots:
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.44.0
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
     optionalDependencies:
       postcss: 8.5.15
 
@@ -15262,7 +15255,7 @@ snapshots:
       semver: 7.8.0
       source-map: 0.7.6
       typescript: 6.0.3
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
   ts-node@10.9.2(@types/node@24.6.2)(typescript@5.9.3):
     dependencies:
@@ -15344,14 +15337,14 @@ snapshots:
     dependencies:
       tslib: 1.14.1
 
-  turbo@2.9.15:
+  turbo@2.9.16:
     optionalDependencies:
-      '@turbo/darwin-64': 2.9.15
-      '@turbo/darwin-arm64': 2.9.15
-      '@turbo/linux-64': 2.9.15
-      '@turbo/linux-arm64': 2.9.15
-      '@turbo/windows-64': 2.9.15
-      '@turbo/windows-arm64': 2.9.15
+      '@turbo/darwin-64': 2.9.16
+      '@turbo/darwin-arm64': 2.9.16
+      '@turbo/linux-64': 2.9.16
+      '@turbo/linux-arm64': 2.9.16
+      '@turbo/windows-64': 2.9.16
+      '@turbo/windows-arm64': 2.9.16
 
   type-check@0.4.0:
     dependencies:
@@ -15627,20 +15620,19 @@ snapshots:
 
   webidl-conversions@8.0.1: {}
 
-  webpack-cli@7.0.2(webpack-dev-server@5.2.4)(webpack@5.107.2):
+  webpack-cli@7.0.3(webpack-dev-server@5.2.4)(webpack@5.107.2):
     dependencies:
       '@discoveryjs/json-ext': 1.1.0
       commander: 14.0.3
       cross-spawn: 7.0.6
-      envinfo: 7.16.0
-      fastest-levenshtein: 1.0.16
+      envinfo: 7.21.0
       import-local: 3.2.0
       interpret: 3.1.1
       rechoir: 0.8.0
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
       webpack-merge: 6.0.1
     optionalDependencies:
-      webpack-dev-server: 5.2.4(webpack-cli@7.0.2)(webpack@5.107.2)
+      webpack-dev-server: 5.2.4(webpack-cli@7.0.3)(webpack@5.107.2)
 
   webpack-dev-middleware@7.4.5(webpack@5.107.2):
     dependencies:
@@ -15651,9 +15643,9 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.3.3
     optionalDependencies:
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
 
-  webpack-dev-server@5.2.4(webpack-cli@7.0.2)(webpack@5.107.2):
+  webpack-dev-server@5.2.4(webpack-cli@7.0.3)(webpack@5.107.2):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -15684,8 +15676,8 @@ snapshots:
       webpack-dev-middleware: 7.4.5(webpack@5.107.2)
       ws: 8.18.3
     optionalDependencies:
-      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.2)
-      webpack-cli: 7.0.2(webpack-dev-server@5.2.4)(webpack@5.107.2)
+      webpack: 5.107.2(postcss@8.5.15)(webpack-cli@7.0.3)
+      webpack-cli: 7.0.3(webpack-dev-server@5.2.4)(webpack@5.107.2)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -15742,7 +15734,7 @@ snapshots:
       - uglify-js
     optional: true
 
-  webpack@5.107.2(postcss@8.5.15)(webpack-cli@7.0.2):
+  webpack@5.107.2(postcss@8.5.15)(webpack-cli@7.0.3):
     dependencies:
       '@types/estree': 1.0.8
       '@types/json-schema': 7.0.15
@@ -15768,7 +15760,7 @@ snapshots:
       watchpack: 2.5.1
       webpack-sources: 3.5.0
     optionalDependencies:
-      webpack-cli: 7.0.2(webpack-dev-server@5.2.4)(webpack@5.107.2)
+      webpack-cli: 7.0.3(webpack-dev-server@5.2.4)(webpack@5.107.2)
     transitivePeerDependencies:
       - '@minify-html/node'
       - '@swc/core'
