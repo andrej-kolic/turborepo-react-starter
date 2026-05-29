@@ -1,0 +1,22 @@
+# MCP server configuration for Copilot
+# Defines a Storybook server that Copilot agents can start and interact with.
+servers:
+  - id: storybook
+    name: Storybook
+    description: 'Starts Storybook dev for the ui-storybook package on port 6006'
+    # Command used to start the dev server. Uses pnpm workspace filter to scope to the package.
+    start:
+      command: 'pnpm --filter ui-storybook dev'
+      env:
+        NODE_ENV: development
+    # Optional build command for static Storybook output
+    build:
+      command: 'pnpm --filter ui-storybook build'
+    # Command to preview built static Storybook
+    preview:
+      command: 'pnpm --filter ui-storybook preview'
+    # Healthcheck Copilot can use to verify server readiness
+    healthcheck:
+      url: 'http://127.0.0.1:6006/'
+      timeout_seconds: 60
+    port: 6006
