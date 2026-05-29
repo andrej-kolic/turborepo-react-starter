@@ -53,5 +53,7 @@
 			"path": "packages/ui"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"js/ts.tsdk.path": "✨ turborepo-react-starter/node_modules/typescript/lib"
+	}
 }
