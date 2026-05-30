@@ -70,12 +70,16 @@ pnpm lint
 
 ### Debug
 
-https://code.visualstudio.com/docs/nodejs/reactjs-tutorial#_debugging-react
+To open Chrome in debug mode with automatic lifecycle management:
 
-To open chrome in debug mode run:
-
-```
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=remote-debug-profile
+```bash
+pnpm chrome:debug
 ```
 
-(lot's of data will be saved to 'remote-debug-profile' dir)
+This automatically:
+
+- Detects Chrome on your machine
+- Starts it with remote debugging enabled
+- Manages the session (start/stop/status)
+
+See [copilot-instructions.md](.github/copilot-instructions.md#chrome-remote-debugging-for-agents--browser-inspection) for full details and agent integration examples.

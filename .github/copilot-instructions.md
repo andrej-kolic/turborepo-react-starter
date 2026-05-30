@@ -48,7 +48,91 @@ Key conventions and notes for Copilot
 - Deployment: `infra/aws` and `infra/netlify` contain deploy scripts; root has `deploy:aws` and `deploy:netlify` wrappers.
 - Avoid editing generated infra deployment scripts without confirmation — they have environment-specific behavior.
 
-Files to consult
+### Chrome Remote Debugging (for Agents & Browser Inspection)
+
+Agents can inspect pages using Chrome DevTools Protocol (CDP) by first starting Chrome with debugging enabled.
+
+#### Quick Start
+
+Start Chrome with debugging on port 9222:
+
+```bash
+pnpm chrome:debug
+```
+
+This will:
+
+- Automatically detect Chrome on your machine
+- Start Chrome with remote debugging enabled (`--remote-debugging-port=9222`)
+- Create an isolated debugging session
+- Print the DevTools URL for manual inspection
+
+Check if Chrome is running:
+
+```bash
+pnpm chrome:debug:status
+```
+
+Stop Chrome cleanly:
+
+```bash
+pnpm chrome:debug:stop
+```
+
+#### For Agents
+
+When agents need to inspect pages:
+
+1. **Ensure Chrome is running:** `pnpm chrome:debug`
+2. **Connect to Chrome:** MCP connects to `http://localhost:9222`
+3. **Use browser tools:** All Chrome DevTools MCP tools are auto-discoverable and self-documenting. See [chrome-devtools-mcp docs](https://github.com/ChromeDevTools/chrome-devtools-mcp) for full reference.
+
+#### MCP Setup (one-time per machine)
+
+The repo includes `.vscode/mcp.json` for VS Code users. For the **Copilot CLI**, create `~/.copilot/mcp-config.json` with:
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--browserUrl",
+        "http://localhost:9222"
+      ]
+    }
+  }
+}
+```
+
+#### Advanced
+
+**Custom port:**
+
+```bash
+CHROME_DEBUG_PORT=9223 pnpm chrome:debug
+```
+
+**Custom Chrome location (macOS example):**
+
+```bash
+CHROME_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary" pnpm chrome:debug
+```
+
+**Check session directory:**
+
+```bash
+ls ~/.chrome-debugging-sessions/
+```
+
+#### Troubleshooting
+
+- **Chrome not found:** Install Google Chrome or set `CHROME_PATH` env var
+- **Port in use:** Check `pnpm chrome:debug:status` or stop with `pnpm chrome:debug:stop`
+- **Connection refused:** Wait a few seconds for Chrome to fully start
+- **Headless mode needed:** Edit `scripts/chrome-debug.js` and add `--headless=new` to chrome args
 
 - README.md (project overview)
 - apps/\*/README.md (per-app notes)
