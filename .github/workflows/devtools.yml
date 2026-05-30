@@ -49,3 +49,18 @@ jobs:
         with:
           name: devtools-artifacts
           path: packages/copilot-devtools/artifacts/**
+
+      - name: Comment on PR with run link
+        if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = `DevTools capture complete. Artifacts are attached to this workflow run:\n${runUrl}\n\nYou can download them from the 'Artifacts' section on the run page.`;
+            const issue_number = context.payload.issue.number;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body
+            });
