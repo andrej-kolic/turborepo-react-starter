@@ -159,18 +159,33 @@ async function startChrome() {
   }
 
   // Spawn Chrome in background (detached)
-  const chrome = spawn(
-    chromePath,
-    [
-      `--remote-debugging-port=${PORT}`,
-      `--user-data-dir=${userDataDir}`,
-      '--disable-blink-features=AutomationControlled',
-    ],
-    {
-      detached: true,
-      stdio: 'ignore',
-    },
-  );
+  const spawnArgs = [
+    `--remote-debugging-port=${PORT}`,
+    `--user-data-dir=${userDataDir}`,
+    '--disable-blink-features=AutomationControlled',
+  ];
+
+  // Support headless mode in CI via CHROME_HEADLESS or HEADLESS env vars
+  if (
+    process.env.CHROME_HEADLESS === '1' ||
+    process.env.CHROME_HEADLESS === 'true' ||
+    process.env.HEADLESS === '1' ||
+    process.env.HEADLESS === 'true'
+  ) {
+    spawnArgs.push('--headless=new');
+  }
+
+  // Append any extra flags from CHROME_EXTRA_ARGS (space-separated, supports quoted args)
+  if (process.env.CHROME_EXTRA_ARGS) {
+    const extra =
+      process.env.CHROME_EXTRA_ARGS.match(/(?:[^\s\"]+|\"[^\"]*\")+/g) || [];
+    extra.forEach((a) => spawnArgs.push(a.replace(/^\"(.*)\"$/, '$1')));
+  }
+
+  const chrome = spawn(chromePath, spawnArgs, {
+    detached: true,
+    stdio: 'ignore',
+  });
 
   chrome.unref();
 
