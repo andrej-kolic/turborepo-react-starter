@@ -1,0 +1,51 @@
+name: DevTools artifact capture
+
+on:
+  workflow_dispatch:
+  issue_comment:
+    types: [created]
+
+jobs:
+  capture:
+    # Only run on manual dispatch or when a comment contains /capture-trace
+    if: github.event_name != 'issue_comment' || contains(github.event.comment.body, '/capture-trace')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start Chrome (headless)
+        run: pnpm chrome:debug
+        env:
+          CHROME_HEADLESS: 'true'
+
+      - name: Wait for DevTools endpoint
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -sS http://localhost:9222/json/version > /dev/null; then
+              echo "DevTools ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
+
+      - name: Capture snapshot
+        run: node packages/copilot-devtools/bin/copilot-devtools.js capture-snapshot
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: devtools-artifacts
+          path: packages/copilot-devtools/artifacts/**

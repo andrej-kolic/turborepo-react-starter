@@ -83,3 +83,7 @@ This automatically:
 - Manages the session (start/stop/status)
 
 See [copilot-instructions.md](.github/copilot-instructions.md#chrome-remote-debugging-for-agents--browser-inspection) for full details and agent integration examples.
+
+This repository includes a lightweight Copilot DevTools helper:
+
+- packages/copilot-devtools — CLI to capture snapshots and package artifacts. Usage: node packages/copilot-devtools/bin/copilot-devtools.js capture-snapshot
