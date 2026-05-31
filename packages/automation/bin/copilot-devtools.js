@@ -4,7 +4,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import CDP from 'chrome-remote-interface';
+import { chromium } from 'playwright-core';
 
 const PORT = Number(process.env.CHROME_DEBUG_PORT || 9222);
 const HOST = process.env.CHROME_DEBUG_HOST || 'localhost';
@@ -19,15 +19,8 @@ const DEFAULT_DURATION_MS = _rawCaptureDurationMs;
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(SCRIPT_DIR, '..');
 const ARTIFACTS_ROOT = path.join(PACKAGE_ROOT, 'artifacts');
-const TRACE_CATEGORIES = [
-  'devtools.timeline',
-  'disabled-by-default-devtools.timeline',
-  'loading',
-  'navigation',
-  'blink.user_timing',
-  'v8.execute',
-  'disabled-by-default-v8.cpu_profiler',
-].join(',');
+
+// Injected into each new page before navigation to collect Web Vitals.
 const PERFORMANCE_OBSERVER_SOURCE = `(() => {
   const state = {
     navigationStart: performance.timeOrigin,
@@ -250,374 +243,7 @@ function getGitCommit() {
   return safeExec('git rev-parse HEAD');
 }
 
-function normalizeHeaders(headers = {}) {
-  return Object.entries(headers).map(([name, value]) => ({
-    name,
-    value: Array.isArray(value) ? value.join(', ') : String(value),
-  }));
-}
-
-function serializeRemoteObject(remoteObject = {}) {
-  return {
-    type: remoteObject.type || null,
-    subtype: remoteObject.subtype || null,
-    className: remoteObject.className || null,
-    description: remoteObject.description || null,
-    value: remoteObject.value ?? null,
-    unserializableValue: remoteObject.unserializableValue || null,
-  };
-}
-
-function serializeResponse(response = {}) {
-  return {
-    url: response.url || null,
-    status: response.status ?? null,
-    statusText: response.statusText || '',
-    mimeType: response.mimeType || null,
-    protocol: response.protocol || null,
-    remoteIPAddress: response.remoteIPAddress || null,
-    remotePort: response.remotePort || null,
-    fromDiskCache: response.fromDiskCache || false,
-    fromServiceWorker: response.fromServiceWorker || false,
-    fromPrefetchCache: response.fromPrefetchCache || false,
-    headers: response.headers || {},
-    headersText: response.headersText || null,
-    encodedDataLength: response.encodedDataLength ?? null,
-  };
-}
-
-function createConsoleCollector() {
-  const entries = [];
-
-  return {
-    attach(Runtime, Log) {
-      Runtime.consoleAPICalled((event) => {
-        entries.push({
-          channel: 'runtime',
-          type: event.type,
-          timestamp: event.timestamp ?? null,
-          executionContextId: event.executionContextId ?? null,
-          args: (event.args || []).map(serializeRemoteObject),
-          stackTrace: event.stackTrace || null,
-        });
-      });
-
-      Runtime.exceptionThrown((event) => {
-        entries.push({
-          channel: 'exception',
-          timestamp: event.timestamp ?? null,
-          exceptionDetails: event.exceptionDetails || null,
-        });
-      });
-
-      Log.entryAdded((event) => {
-        entries.push({
-          channel: 'log',
-          level: event.entry?.level || null,
-          source: event.entry?.source || null,
-          text: event.entry?.text || '',
-          url: event.entry?.url || null,
-          timestamp: event.entry?.timestamp || null,
-          stackTrace: event.entry?.stackTrace || null,
-        });
-      });
-    },
-    getEntries() {
-      return entries;
-    },
-  };
-}
-
-function createNetworkCollector() {
-  const records = [];
-  const activeRecords = new Map();
-
-  return {
-    attach(Network) {
-      Network.requestWillBeSent((event) => {
-        if (event.redirectResponse && activeRecords.has(event.requestId)) {
-          const redirected = activeRecords.get(event.requestId);
-          redirected.response = serializeResponse(event.redirectResponse);
-          redirected.responseTimestamp = event.timestamp;
-          redirected.endTimestamp = event.timestamp;
-          redirected.redirectedTo = event.request.url;
-          activeRecords.delete(event.requestId);
-        }
-
-        const record = {
-          requestId: event.requestId,
-          loaderId: event.loaderId,
-          documentURL: event.documentURL,
-          frameId: event.frameId || null,
-          wallTime: event.wallTime ?? null,
-          startTimestamp: event.timestamp,
-          type: event.type || null,
-          initiator: event.initiator || null,
-          request: event.request,
-          response: null,
-          responseTimestamp: null,
-          endTimestamp: null,
-          encodedDataLength: null,
-          errorText: null,
-        };
-
-        records.push(record);
-        activeRecords.set(event.requestId, record);
-      });
-
-      Network.responseReceived((event) => {
-        const record = activeRecords.get(event.requestId);
-        if (!record) {
-          return;
-        }
-
-        record.response = serializeResponse(event.response);
-        record.responseTimestamp = event.timestamp;
-        record.type = event.type || record.type;
-      });
-
-      Network.loadingFinished((event) => {
-        const record = activeRecords.get(event.requestId);
-        if (!record) {
-          return;
-        }
-
-        record.endTimestamp = event.timestamp;
-        record.encodedDataLength = event.encodedDataLength ?? null;
-      });
-
-      Network.loadingFailed((event) => {
-        const record = activeRecords.get(event.requestId);
-        if (!record) {
-          return;
-        }
-
-        record.endTimestamp = event.timestamp;
-        record.errorText = event.errorText || 'Unknown failure';
-      });
-    },
-    buildHar({ pageUrl, pageTitle, startedAt }) {
-      const entries = records
-        .map((record, index) => {
-          const responseTimestamp =
-            record.responseTimestamp ?? record.startTimestamp;
-          const endTimestamp = record.endTimestamp ?? responseTimestamp;
-          const totalTime = Math.max(
-            (endTimestamp - record.startTimestamp) * 1000,
-            0,
-          );
-          const waitTime = Math.max(
-            (responseTimestamp - record.startTimestamp) * 1000,
-            0,
-          );
-          const receiveTime = Math.max(
-            (endTimestamp - responseTimestamp) * 1000,
-            0,
-          );
-          const startedDateTime = record.wallTime
-            ? new Date(record.wallTime * 1000).toISOString()
-            : new Date(startedAt.getTime() + index).toISOString();
-          const responseStatus =
-            record.response?.status ?? (record.errorText ? 0 : 200);
-          const responseStatusText =
-            record.response?.statusText ?? record.errorText ?? '';
-
-          return {
-            pageref: 'page_0',
-            startedDateTime,
-            time: totalTime,
-            request: {
-              method: record.request?.method || 'GET',
-              url: record.request?.url || pageUrl || null,
-              httpVersion: record.response?.protocol || 'unknown',
-              headers: normalizeHeaders(record.request?.headers || {}),
-              queryString: [],
-              cookies: [],
-              headersSize: -1,
-              bodySize: record.request?.postData
-                ? Buffer.byteLength(record.request.postData, 'utf8')
-                : 0,
-              postData: record.request?.postData
-                ? {
-                    mimeType:
-                      record.request?.headers?.['Content-Type'] ||
-                      'application/octet-stream',
-                    text: record.request.postData,
-                  }
-                : undefined,
-            },
-            response: {
-              status: responseStatus,
-              statusText: responseStatusText,
-              httpVersion: record.response?.protocol || 'unknown',
-              headers: normalizeHeaders(record.response?.headers || {}),
-              cookies: [],
-              content: {
-                size: record.encodedDataLength ?? 0,
-                mimeType:
-                  record.response?.mimeType || 'application/octet-stream',
-              },
-              redirectURL: record.response?.headers?.location || '',
-              headersSize: record.response?.headersText
-                ? Buffer.byteLength(record.response.headersText, 'utf8')
-                : -1,
-              bodySize: record.encodedDataLength ?? 0,
-              _errorText: record.errorText,
-            },
-            cache: {},
-            timings: {
-              blocked: 0,
-              dns: -1,
-              connect: -1,
-              ssl: -1,
-              send: 0,
-              wait: waitTime,
-              receive: receiveTime,
-            },
-            serverIPAddress: record.response?.remoteIPAddress || null,
-            _resourceType: record.type,
-            _requestId: record.requestId,
-          };
-        })
-        .sort((left, right) =>
-          left.startedDateTime.localeCompare(right.startedDateTime),
-        );
-
-      return {
-        log: {
-          version: '1.2',
-          creator: {
-            name: '@repo/automation',
-            version: '0.0.0',
-          },
-          pages: [
-            {
-              id: 'page_0',
-              startedDateTime: startedAt.toISOString(),
-              title: pageTitle || pageUrl || 'Captured page',
-              pageTimings: {
-                onContentLoad: null,
-                onLoad: null,
-              },
-            },
-          ],
-          entries,
-        },
-      };
-    },
-  };
-}
-
-async function readProtocolStream(IO, handle) {
-  let content = '';
-
-  while (true) {
-    const chunk = await IO.read({ handle });
-    content += chunk.base64Encoded
-      ? Buffer.from(chunk.data, 'base64').toString('utf8')
-      : chunk.data;
-
-    if (chunk.eof) {
-      break;
-    }
-  }
-
-  await IO.close({ handle });
-  return content;
-}
-
-async function getPageDetails(Runtime) {
-  try {
-    const evaluation = await Runtime.evaluate({
-      expression: `(() => ({ url: location.href, title: document.title, readyState: document.readyState }))()`,
-      returnByValue: true,
-    });
-
-    return (
-      evaluation.result?.value || { url: null, title: null, readyState: null }
-    );
-  } catch {
-    return { url: null, title: null, readyState: null };
-  }
-}
-
-async function getPerformancePayload(Runtime, Performance) {
-  let browserMetrics = [];
-  let runtimeMetrics = {
-    navigationStart: null,
-    lcpEntries: [],
-    clsEntries: [],
-    clsValue: 0,
-    inpEntries: [],
-    observerErrors: [],
-  };
-
-  try {
-    const performanceMetrics = await Performance.getMetrics();
-    browserMetrics = performanceMetrics.metrics || [];
-  } catch {
-    browserMetrics = [];
-  }
-
-  try {
-    const evaluation = await Runtime.evaluate({
-      expression: `(() => {
-        const state = window.__COPILOT_DEVTOOLS_PERF__ || {
-          navigationStart: performance.timeOrigin,
-          lcpEntries: [],
-          clsEntries: [],
-          clsValue: 0,
-          inpEntries: [],
-          observerErrors: [],
-        };
-
-        return {
-          ...state,
-          navigation: performance.getEntriesByType('navigation').map((entry) => ({
-            name: entry.name,
-            startTime: entry.startTime,
-            duration: entry.duration,
-            domContentLoadedEventEnd: entry.domContentLoadedEventEnd,
-            loadEventEnd: entry.loadEventEnd,
-            responseEnd: entry.responseEnd,
-          })),
-          paints: performance.getEntriesByType('paint').map((entry) => ({
-            name: entry.name,
-            startTime: entry.startTime,
-          })),
-        };
-      })()`,
-      returnByValue: true,
-    });
-
-    runtimeMetrics = evaluation.result?.value || runtimeMetrics;
-  } catch {
-    runtimeMetrics = runtimeMetrics;
-  }
-
-  const metricMap = Object.fromEntries(
-    browserMetrics.map((metric) => [metric.name, metric.value]),
-  );
-  const inpCandidates = (runtimeMetrics.inpEntries || []).filter(
-    (entry) => Number(entry.interactionId) > 0,
-  );
-  const lcpEntry = (runtimeMetrics.lcpEntries || []).at(-1) || null;
-
-  return {
-    browserMetrics,
-    metricMap,
-    webVitals: {
-      lcp: lcpEntry ? lcpEntry.startTime : null,
-      cls: Number((runtimeMetrics.clsValue || 0).toFixed(4)),
-      inp: inpCandidates.length
-        ? Math.max(...inpCandidates.map((entry) => entry.duration || 0))
-        : null,
-    },
-    runtimeMetrics,
-  };
-}
-
-async function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
+function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
   return {
     mode,
     capturedAt: new Date().toISOString(),
@@ -636,63 +262,140 @@ async function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
   };
 }
 
-async function connectToFreshTarget() {
-  const target = await CDP.New({ host: HOST, port: PORT, url: 'about:blank' });
-  try {
-    const client = await CDP({ host: HOST, port: PORT, target });
-    return { target, client };
-  } catch (error) {
-    await closeTarget(target);
-    throw error;
-  }
+function connectCDP() {
+  return chromium.connectOverCDP(`http://${HOST}:${PORT}`);
 }
 
-async function connectToExistingTarget() {
-  const targets = await CDP.List({ host: HOST, port: PORT });
-  const target = [...targets]
-    .reverse()
-    .find(
-      (candidate) =>
-        candidate.type === 'page' && !candidate.url.startsWith('devtools://'),
-    );
+/** Returns the most recent non-blank, non-devtools page across all existing contexts. */
+function getExistingPage(browser) {
+  for (const context of browser.contexts()) {
+    const pages = [...context.pages()].reverse();
+    if (pages.length === 0) {
+      continue;
+    }
 
-  if (!target) {
-    throw new Error('No existing Chrome page target found.');
+    const page =
+      pages.find((p) => {
+        const url = p.url();
+        return url !== 'about:blank' && !url.startsWith('devtools://');
+      }) ?? pages[0];
+
+    return { context, page };
   }
 
-  const client = await CDP({ host: HOST, port: PORT, target });
-  return { target, client };
+  throw new Error('No existing Chrome page target found.');
 }
 
-async function closeTarget(target) {
-  if (!target?.id) {
-    return;
-  }
+/** Attaches console and pageerror listeners; returns entry accessor. */
+function createConsoleListener(page) {
+  const entries = [];
+
+  page.on('console', (msg) => {
+    entries.push({
+      channel: 'runtime',
+      type: msg.type(),
+      timestamp: Date.now(),
+      text: msg.text(),
+      location: msg.location(),
+    });
+  });
+
+  page.on('pageerror', (error) => {
+    entries.push({
+      channel: 'exception',
+      timestamp: Date.now(),
+      text: error.message,
+      stack: error.stack ?? null,
+    });
+  });
+
+  return { getEntries: () => entries };
+}
+
+/**
+ * Collects Web Vitals via the injected PerformanceObserver and CDP
+ * Performance.getMetrics() via a CDP session for exact browser metrics.
+ */
+async function getPerformanceMetrics(page, cdpSession) {
+  let browserMetrics = [];
 
   try {
-    await CDP.Close({ host: HOST, port: PORT, id: target.id });
+    await cdpSession.send('Performance.enable', {});
+    const result = await cdpSession.send('Performance.getMetrics', {});
+    browserMetrics = result.metrics ?? [];
   } catch {
-    // Ignore target cleanup failures.
+    // Performance domain unavailable; continue without browser metrics.
   }
-}
 
-async function closeClient(client) {
-  if (!client) {
-    return;
-  }
+  let runtimeMetrics = {
+    navigationStart: null,
+    lcpEntries: [],
+    clsEntries: [],
+    clsValue: 0,
+    inpEntries: [],
+    observerErrors: [],
+    navigation: [],
+    paints: [],
+  };
 
   try {
-    await client.close();
+    runtimeMetrics = await page.evaluate(() => {
+      const state = window.__COPILOT_DEVTOOLS_PERF__ || {
+        navigationStart: performance.timeOrigin,
+        lcpEntries: [],
+        clsEntries: [],
+        clsValue: 0,
+        inpEntries: [],
+        observerErrors: [],
+      };
+
+      return {
+        ...state,
+        navigation: performance.getEntriesByType('navigation').map((entry) => ({
+          name: entry.name,
+          startTime: entry.startTime,
+          duration: entry.duration,
+          domContentLoadedEventEnd: entry.domContentLoadedEventEnd,
+          loadEventEnd: entry.loadEventEnd,
+          responseEnd: entry.responseEnd,
+        })),
+        paints: performance.getEntriesByType('paint').map((entry) => ({
+          name: entry.name,
+          startTime: entry.startTime,
+        })),
+      };
+    });
   } catch {
-    // Ignore client cleanup failures.
+    // Page may have navigated away; use empty defaults.
   }
+
+  const metricMap = Object.fromEntries(
+    browserMetrics.map((metric) => [metric.name, metric.value]),
+  );
+  const inpCandidates = (runtimeMetrics.inpEntries || []).filter(
+    (entry) => Number(entry.interactionId) > 0,
+  );
+  const lcpEntry = (runtimeMetrics.lcpEntries || []).at(-1) ?? null;
+
+  return {
+    browserMetrics,
+    metricMap,
+    webVitals: {
+      lcp: lcpEntry ? lcpEntry.startTime : null,
+      cls: Number((runtimeMetrics.clsValue || 0).toFixed(4)),
+      inp: inpCandidates.length
+        ? Math.max(...inpCandidates.map((entry) => entry.duration || 0))
+        : null,
+    },
+    runtimeMetrics,
+  };
 }
 
 async function captureSnapshot() {
   const artifactsDir = ensureArtifactsDirectory('snapshot');
   const browserInfo = await httpGetJson('/json/version');
   const pages = await httpGetJson('/json/list');
-  const metadata = await buildMetadata('snapshot', artifactsDir, browserInfo, {
+  const metadata = buildMetadata('snapshot', artifactsDir, browserInfo, {
     pageCount: pages.length,
     url: null,
   });
@@ -709,96 +412,65 @@ async function recordTrace(url, options = {}) {
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('trace');
   const browserInfo = await httpGetJson('/json/version');
-  const { target, client } = await connectToFreshTarget();
+  const harPath = path.join(artifactsDir, 'har.json');
+  const tracePath = path.join(artifactsDir, 'trace.zip');
+
+  const browser = await connectCDP();
+  const context = await browser.newContext({
+    recordHar: { path: harPath, content: 'omit' },
+  });
+  let tracingStarted = false;
+  let requestCount = 0;
 
   try {
-    const { Page, Network, Runtime, Log, Performance, Tracing, IO } = client;
-    const consoleCollector = createConsoleCollector();
-    const networkCollector = createNetworkCollector();
+    await context.tracing.start({ screenshots: true, snapshots: true });
+    tracingStarted = true;
 
-    consoleCollector.attach(Runtime, Log);
-    networkCollector.attach(Network);
-
-    await Promise.all([
-      Page.enable(),
-      Network.enable(),
-      Runtime.enable(),
-      Log.enable(),
-      Performance.enable(),
-      Page.addScriptToEvaluateOnNewDocument({
-        source: PERFORMANCE_OBSERVER_SOURCE,
-      }),
-    ]);
-
-    const traceTimeoutMs = durationMs + 30_000;
-    const traceComplete = Promise.race([
-      new Promise((resolve, reject) => {
-        Tracing.tracingComplete(async (event) => {
-          try {
-            resolve(await readProtocolStream(IO, event.stream));
-          } catch (error) {
-            reject(error);
-          }
-        });
-      }),
-      new Promise((_, reject) =>
-        setTimeout(
-          () =>
-            reject(
-              new Error(
-                `Timed out waiting for tracingComplete after ${traceTimeoutMs}ms`,
-              ),
-            ),
-          traceTimeoutMs,
-        ),
-      ),
-    ]);
-
-    await Tracing.start({
-      categories: TRACE_CATEGORIES,
-      transferMode: 'ReturnAsStream',
+    const page = await context.newPage();
+    await page.addInitScript({ content: PERFORMANCE_OBSERVER_SOURCE });
+    const consoleListener = createConsoleListener(page);
+    page.on('request', () => {
+      requestCount += 1;
     });
 
-    await Page.navigate({ url: targetUrl });
-    await sleep(durationMs);
-    await Tracing.end();
+    await page.goto(targetUrl, { waitUntil: 'load', timeout: 30_000 });
+    await page.waitForTimeout(durationMs);
 
-    const [traceContent, pageDetails, performancePayload] = await Promise.all([
-      traceComplete,
-      getPageDetails(Runtime),
-      getPerformancePayload(Runtime, Performance),
+    const cdpSession = await context.newCDPSession(page);
+    const [pageDetails, performancePayload] = await Promise.all([
+      page
+        .evaluate(() => ({ url: location.href, title: document.title }))
+        .catch(() => ({ url: null, title: null })),
+      getPerformanceMetrics(page, cdpSession),
     ]);
 
-    const metadata = await buildMetadata('trace', artifactsDir, browserInfo, {
+    await context.tracing.stop({ path: tracePath });
+    tracingStarted = false;
+    await context.close(); // Finalizes HAR to disk.
+
+    const metadata = buildMetadata('trace', artifactsDir, browserInfo, {
       url: pageDetails.url || targetUrl,
       title: pageDetails.title || null,
       durationMs,
-      requestCount: networkCollector.buildHar({
-        pageUrl: pageDetails.url || targetUrl,
-        pageTitle: pageDetails.title || null,
-        startedAt: new Date(),
-      }).log.entries.length,
-      consoleMessageCount: consoleCollector.getEntries().length,
-    });
-    const har = networkCollector.buildHar({
-      pageUrl: pageDetails.url || targetUrl,
-      pageTitle: pageDetails.title || null,
-      startedAt: new Date(new Date(metadata.capturedAt).getTime() - durationMs),
+      requestCount,
+      consoleMessageCount: consoleListener.getEntries().length,
+      traceFormat: 'playwright-zip',
     });
 
     writeJson(artifactsDir, 'metadata.json', metadata);
-    writeJson(artifactsDir, 'har.json', har);
     writeJson(artifactsDir, 'console.json', {
-      entries: consoleCollector.getEntries(),
+      entries: consoleListener.getEntries(),
     });
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
-    fs.writeFileSync(path.join(artifactsDir, 'trace.json'), traceContent);
-
     console.log(`Saved trace artifacts to ${artifactsDir}`);
   } finally {
-    await closeClient(client);
-    await closeTarget(target);
+    if (tracingStarted) {
+      await context.tracing.stop({ path: tracePath }).catch(() => {});
+    }
+
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
   }
 }
 
@@ -807,45 +479,38 @@ async function recordPerformance(url, options = {}) {
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('performance');
   const browserInfo = await httpGetJson('/json/version');
-  const { target, client } = await connectToFreshTarget();
+
+  const browser = await connectCDP();
+  const context = await browser.newContext();
 
   try {
-    const { Page, Runtime, Performance } = client;
+    const page = await context.newPage();
+    await page.addInitScript({ content: PERFORMANCE_OBSERVER_SOURCE });
 
-    await Promise.all([
-      Page.enable(),
-      Runtime.enable(),
-      Performance.enable(),
-      Page.addScriptToEvaluateOnNewDocument({
-        source: PERFORMANCE_OBSERVER_SOURCE,
-      }),
-    ]);
+    await page.goto(targetUrl, { waitUntil: 'load', timeout: 30_000 });
+    await page.waitForTimeout(durationMs);
 
-    await Page.navigate({ url: targetUrl });
-    await sleep(durationMs);
-
+    const cdpSession = await context.newCDPSession(page);
     const [pageDetails, performancePayload] = await Promise.all([
-      getPageDetails(Runtime),
-      getPerformancePayload(Runtime, Performance),
+      page
+        .evaluate(() => ({ url: location.href, title: document.title }))
+        .catch(() => ({ url: null, title: null })),
+      getPerformanceMetrics(page, cdpSession),
     ]);
-    const metadata = await buildMetadata(
-      'performance',
-      artifactsDir,
-      browserInfo,
-      {
-        url: pageDetails.url || targetUrl,
-        title: pageDetails.title || null,
-        durationMs,
-      },
-    );
+
+    const metadata = buildMetadata('performance', artifactsDir, browserInfo, {
+      url: pageDetails.url || targetUrl,
+      title: pageDetails.title || null,
+      durationMs,
+    });
 
     writeJson(artifactsDir, 'metadata.json', metadata);
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
     console.log(`Saved performance artifacts to ${artifactsDir}`);
   } finally {
-    await closeClient(client);
-    await closeTarget(target);
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
   }
 }
 
@@ -853,33 +518,31 @@ async function recordConsole(options = {}) {
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('console');
   const browserInfo = await httpGetJson('/json/version');
-  const { client } = await connectToExistingTarget();
 
-  try {
-    const { Runtime, Log } = client;
-    const consoleCollector = createConsoleCollector();
+  const browser = await connectCDP();
+  const { page } = getExistingPage(browser);
+  const consoleListener = createConsoleListener(page);
 
-    consoleCollector.attach(Runtime, Log);
-    await Promise.all([Runtime.enable(), Log.enable()]);
-    await sleep(durationMs);
+  await sleep(durationMs);
 
-    const pageDetails = await getPageDetails(Runtime);
-    const metadata = await buildMetadata('console', artifactsDir, browserInfo, {
-      url: pageDetails.url || null,
-      title: pageDetails.title || null,
-      durationMs,
-      consoleMessageCount: consoleCollector.getEntries().length,
-    });
+  const pageDetails = await page
+    .evaluate(() => ({ url: location.href, title: document.title }))
+    .catch(() => ({ url: null, title: null }));
+  const metadata = buildMetadata('console', artifactsDir, browserInfo, {
+    url: pageDetails.url || null,
+    title: pageDetails.title || null,
+    durationMs,
+    consoleMessageCount: consoleListener.getEntries().length,
+  });
 
-    writeJson(artifactsDir, 'metadata.json', metadata);
-    writeJson(artifactsDir, 'console.json', {
-      entries: consoleCollector.getEntries(),
-    });
+  writeJson(artifactsDir, 'metadata.json', metadata);
+  writeJson(artifactsDir, 'console.json', {
+    entries: consoleListener.getEntries(),
+  });
 
-    console.log(`Saved console artifacts to ${artifactsDir}`);
-  } finally {
-    await closeClient(client);
-  }
+  await browser.close().catch(() => {});
+
+  console.log(`Saved console artifacts to ${artifactsDir}`);
 }
 
 function uploadArtifacts() {
@@ -894,13 +557,25 @@ function uploadArtifacts() {
 
 function usage() {
   console.log('copilot-devtools CLI');
-  console.log('Usage: copilot-devtools <command> [url] [--duration <seconds>]');
+  console.log(
+    'Usage: copilot-devtools <command> [url] [--duration <seconds>] [--duration-ms <ms>]',
+  );
   console.log('Commands:');
-  console.log('  capture-snapshot');
-  console.log('  record-trace <url>');
-  console.log('  record-performance <url>');
-  console.log('  record-console');
-  console.log('  upload-artifacts');
+  console.log(
+    '  capture-snapshot                   Fetch browser metadata and page list',
+  );
+  console.log(
+    '  record-trace <url>                 Full trace: HAR + Playwright trace + console + Web Vitals',
+  );
+  console.log(
+    '  record-performance <url>           Web Vitals: LCP, CLS, INP and CDP browser metrics',
+  );
+  console.log(
+    '  record-console                     Console messages from current page',
+  );
+  console.log(
+    '  upload-artifacts                   Package artifacts/  as tar.gz',
+  );
 }
 
 async function main() {
