@@ -5,20 +5,39 @@ import http from 'node:http';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+
+// Detect MCP server mode early so env validation and logging behave correctly.
+const _isMcpServer = process.argv[2] === 'mcp-server';
 
 const PORT = Number(process.env.CHROME_DEBUG_PORT || 9222);
 const HOST = process.env.CHROME_DEBUG_HOST || 'localhost';
 const _rawCaptureDurationMs = Number(process.env.CAPTURE_DURATION_MS || 10_000);
-if (!Number.isFinite(_rawCaptureDurationMs) || _rawCaptureDurationMs <= 0) {
+const _captureDurationValid =
+  Number.isFinite(_rawCaptureDurationMs) && _rawCaptureDurationMs > 0;
+
+// In CLI mode, an invalid CAPTURE_DURATION_MS is a fatal startup error.
+// In MCP mode, we fall back to 10 s so each tool call can still succeed.
+if (!_captureDurationValid && !_isMcpServer) {
   process.stderr.write(
     `Error: CAPTURE_DURATION_MS must be a positive number, got: ${process.env.CAPTURE_DURATION_MS}\n`,
   );
   process.exit(1);
 }
-const DEFAULT_DURATION_MS = _rawCaptureDurationMs;
+const DEFAULT_DURATION_MS = _captureDurationValid
+  ? _rawCaptureDurationMs
+  : 10_000;
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(SCRIPT_DIR, '..');
 const ARTIFACTS_ROOT = path.join(PACKAGE_ROOT, 'artifacts');
+
+// In MCP mode stdout is reserved for JSON-RPC; all logging goes to stderr.
+const log = (...args) => {
+  if (_isMcpServer) process.stderr.write(args.join(' ') + '\n');
+  else console.log(...args);
+};
 
 // Injected into each new page before navigation to collect Web Vitals.
 const PERFORMANCE_OBSERVER_SOURCE = `(() => {
@@ -404,7 +423,8 @@ async function captureSnapshot() {
   writeJson(artifactsDir, 'version.json', browserInfo);
   writeJson(artifactsDir, 'pages.json', pages);
 
-  console.log(`Saved snapshot artifacts to ${artifactsDir}`);
+  log(`Saved snapshot artifacts to ${artifactsDir}`);
+  return { artifactsDir, metadata };
 }
 
 async function recordTrace(url, options = {}) {
@@ -421,6 +441,7 @@ async function recordTrace(url, options = {}) {
   });
   let tracingStarted = false;
   let requestCount = 0;
+  let captureResult = null;
 
   try {
     await context.tracing.start({ screenshots: true, snapshots: true });
@@ -448,22 +469,28 @@ async function recordTrace(url, options = {}) {
     tracingStarted = false;
     await context.close(); // Finalizes HAR to disk.
 
+    const consoleEntries = consoleListener.getEntries();
     const metadata = buildMetadata('trace', artifactsDir, browserInfo, {
       url: pageDetails.url || targetUrl,
       title: pageDetails.title || null,
       durationMs,
       requestCount,
-      consoleMessageCount: consoleListener.getEntries().length,
+      consoleMessageCount: consoleEntries.length,
       traceFormat: 'playwright-zip',
     });
 
     writeJson(artifactsDir, 'metadata.json', metadata);
-    writeJson(artifactsDir, 'console.json', {
-      entries: consoleListener.getEntries(),
-    });
+    writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
-    console.log(`Saved trace artifacts to ${artifactsDir}`);
+    log(`Saved trace artifacts to ${artifactsDir}`);
+    captureResult = {
+      artifactsDir,
+      metadata,
+      webVitals: performancePayload.webVitals,
+      requestCount,
+      consoleMessageCount: consoleEntries.length,
+    };
   } finally {
     if (tracingStarted) {
       await context.tracing.stop({ path: tracePath }).catch(() => {});
@@ -472,6 +499,8 @@ async function recordTrace(url, options = {}) {
     await context.close().catch(() => {});
     await browser.close().catch(() => {});
   }
+
+  return captureResult;
 }
 
 async function recordPerformance(url, options = {}) {
@@ -482,6 +511,7 @@ async function recordPerformance(url, options = {}) {
 
   const browser = await connectCDP();
   const context = await browser.newContext();
+  let captureResult = null;
 
   try {
     const page = await context.newPage();
@@ -507,11 +537,19 @@ async function recordPerformance(url, options = {}) {
     writeJson(artifactsDir, 'metadata.json', metadata);
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
-    console.log(`Saved performance artifacts to ${artifactsDir}`);
+    log(`Saved performance artifacts to ${artifactsDir}`);
+    captureResult = {
+      artifactsDir,
+      metadata,
+      webVitals: performancePayload.webVitals,
+      browserMetricsCount: performancePayload.browserMetrics.length,
+    };
   } finally {
     await context.close().catch(() => {});
     await browser.close().catch(() => {});
   }
+
+  return captureResult;
 }
 
 async function recordConsole(options = {}) {
@@ -520,29 +558,39 @@ async function recordConsole(options = {}) {
   const browserInfo = await httpGetJson('/json/version');
 
   const browser = await connectCDP();
-  const { page } = getExistingPage(browser);
-  const consoleListener = createConsoleListener(page);
+  let captureResult = null;
 
-  await sleep(durationMs);
+  try {
+    const { page } = getExistingPage(browser);
+    const consoleListener = createConsoleListener(page);
 
-  const pageDetails = await page
-    .evaluate(() => ({ url: location.href, title: document.title }))
-    .catch(() => ({ url: null, title: null }));
-  const metadata = buildMetadata('console', artifactsDir, browserInfo, {
-    url: pageDetails.url || null,
-    title: pageDetails.title || null,
-    durationMs,
-    consoleMessageCount: consoleListener.getEntries().length,
-  });
+    await sleep(durationMs);
 
-  writeJson(artifactsDir, 'metadata.json', metadata);
-  writeJson(artifactsDir, 'console.json', {
-    entries: consoleListener.getEntries(),
-  });
+    const pageDetails = await page
+      .evaluate(() => ({ url: location.href, title: document.title }))
+      .catch(() => ({ url: null, title: null }));
+    const consoleEntries = consoleListener.getEntries();
+    const metadata = buildMetadata('console', artifactsDir, browserInfo, {
+      url: pageDetails.url || null,
+      title: pageDetails.title || null,
+      durationMs,
+      consoleMessageCount: consoleEntries.length,
+    });
 
-  await browser.close().catch(() => {});
+    writeJson(artifactsDir, 'metadata.json', metadata);
+    writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
 
-  console.log(`Saved console artifacts to ${artifactsDir}`);
+    log(`Saved console artifacts to ${artifactsDir}`);
+    captureResult = {
+      artifactsDir,
+      metadata,
+      consoleMessageCount: consoleEntries.length,
+    };
+  } finally {
+    await browser.close().catch(() => {});
+  }
+
+  return captureResult;
 }
 
 function uploadArtifacts() {
@@ -552,7 +600,7 @@ function uploadArtifacts() {
 
   const tar = path.join(PACKAGE_ROOT, `artifacts-${Date.now()}.tar.gz`);
   execSync(`tar -czf "${tar}" -C "${ARTIFACTS_ROOT}" .`);
-  console.log(`Packaged artifacts to ${tar}`);
+  log(`Packaged artifacts to ${tar}`);
 }
 
 function usage() {
@@ -576,10 +624,261 @@ function usage() {
   console.log(
     '  upload-artifacts                   Package artifacts/  as tar.gz',
   );
+  console.log(
+    '  mcp-server                         Start an MCP server (stdio) exposing capture tools',
+  );
+}
+
+/**
+ * Starts an MCP server over stdio, exposing the capture commands as tools.
+ * Stdout is reserved for JSON-RPC messages; all diagnostics go to stderr.
+ */
+async function startMcpServer() {
+  const pkg = JSON.parse(
+    fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+  );
+
+  const server = new McpServer({
+    name: 'copilot-devtools',
+    version: pkg.version,
+  });
+
+  server.registerTool(
+    'capture_snapshot',
+    {
+      title: 'Capture Snapshot',
+      description:
+        'Capture Chrome browser metadata and the list of open pages. Requires Chrome running with --remote-debugging-port=9222 (run: pnpm chrome:debug).',
+      inputSchema: z.object({}),
+      annotations: { readOnlyHint: true, destructiveHint: false },
+    },
+    async () => {
+      try {
+        const result = await captureSnapshot();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Snapshot saved to ${result.artifactsDir}\nFiles: metadata.json, version.json, pages.json\nPages found: ${result.metadata.pageCount}`,
+            },
+          ],
+          structuredContent: {
+            artifactsDir: result.artifactsDir,
+            pageCount: result.metadata.pageCount,
+            chrome: result.metadata.chrome,
+            capturedAt: result.metadata.capturedAt,
+          },
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: `Error: ${err.message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.registerTool(
+    'record_trace',
+    {
+      title: 'Record Trace',
+      description:
+        'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222.',
+      inputSchema: z.object({
+        url: z.string().url().describe('URL to navigate to and record'),
+        duration: z
+          .number()
+          .optional()
+          .describe(
+            'Capture duration in seconds after page load (default: 10)',
+          ),
+      }),
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async (args) => {
+      try {
+        const options =
+          args.duration !== undefined
+            ? { duration: String(args.duration) }
+            : {};
+        const result = await recordTrace(args.url, options);
+        const { lcp, cls, inp } = result.webVitals;
+        return {
+          content: [
+            {
+              type: 'text',
+              text: [
+                `Trace saved to ${result.artifactsDir}`,
+                `Files: metadata.json, har.json, trace.zip, console.json, performance.json`,
+                `View trace: npx playwright show-trace ${result.artifactsDir}/trace.zip`,
+                `Web Vitals: LCP=${lcp != null ? `${Math.round(lcp)}ms` : 'n/a'}, CLS=${cls}, INP=${inp != null ? `${Math.round(inp)}ms` : 'n/a'}`,
+                `Requests: ${result.requestCount}, Console messages: ${result.consoleMessageCount}`,
+              ].join('\n'),
+            },
+          ],
+          structuredContent: {
+            artifactsDir: result.artifactsDir,
+            files: [
+              'metadata.json',
+              'har.json',
+              'trace.zip',
+              'console.json',
+              'performance.json',
+            ],
+            url: result.metadata.url,
+            webVitals: result.webVitals,
+            requestCount: result.requestCount,
+            consoleMessageCount: result.consoleMessageCount,
+            durationMs: result.metadata.durationMs,
+          },
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: `Error: ${err.message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.registerTool(
+    'record_performance',
+    {
+      title: 'Record Performance',
+      description:
+        'Navigate to a URL and collect Web Vitals (LCP, CLS, INP) plus 36 CDP browser metrics. Requires Chrome running with --remote-debugging-port=9222.',
+      inputSchema: z.object({
+        url: z.string().url().describe('URL to navigate to and measure'),
+        duration: z
+          .number()
+          .optional()
+          .describe(
+            'Observation duration in seconds after page load (default: 10)',
+          ),
+      }),
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async (args) => {
+      try {
+        const options =
+          args.duration !== undefined
+            ? { duration: String(args.duration) }
+            : {};
+        const result = await recordPerformance(args.url, options);
+        const { lcp, cls, inp } = result.webVitals;
+        return {
+          content: [
+            {
+              type: 'text',
+              text: [
+                `Performance saved to ${result.artifactsDir}`,
+                `Files: metadata.json, performance.json`,
+                `Web Vitals: LCP=${lcp != null ? `${Math.round(lcp)}ms` : 'n/a'}, CLS=${cls}, INP=${inp != null ? `${Math.round(inp)}ms` : 'n/a'}`,
+                `Browser metrics: ${result.browserMetricsCount} measurements`,
+              ].join('\n'),
+            },
+          ],
+          structuredContent: {
+            artifactsDir: result.artifactsDir,
+            files: ['metadata.json', 'performance.json'],
+            url: result.metadata.url,
+            webVitals: result.webVitals,
+            browserMetricsCount: result.browserMetricsCount,
+            durationMs: result.metadata.durationMs,
+          },
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: `Error: ${err.message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.registerTool(
+    'record_console',
+    {
+      title: 'Record Console',
+      description:
+        'Listen to console output of the currently open Chrome tab for a specified duration. Requires Chrome running with --remote-debugging-port=9222 and at least one open tab. For navigating to a URL, use record_trace instead.',
+      inputSchema: z.object({
+        duration: z
+          .number()
+          .optional()
+          .describe('Duration to listen in seconds (default: 10)'),
+      }),
+      annotations: { readOnlyHint: true, destructiveHint: false },
+    },
+    async (args) => {
+      try {
+        const options =
+          args.duration !== undefined
+            ? { duration: String(args.duration) }
+            : {};
+        const result = await recordConsole(options);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: [
+                `Console log saved to ${result.artifactsDir}`,
+                `Files: metadata.json, console.json`,
+                `Messages captured: ${result.consoleMessageCount}`,
+                `Page: ${result.metadata.url || 'unknown'}`,
+              ].join('\n'),
+            },
+          ],
+          structuredContent: {
+            artifactsDir: result.artifactsDir,
+            files: ['metadata.json', 'console.json'],
+            url: result.metadata.url,
+            consoleMessageCount: result.consoleMessageCount,
+            durationMs: result.metadata.durationMs,
+          },
+        };
+      } catch (err) {
+        const message = err.message.includes('No existing Chrome page')
+          ? 'record_console requires an already-open Chrome tab. Open a page in Chrome first, then retry. For navigating to a URL, use record_trace instead.'
+          : err.message;
+        return {
+          content: [{ type: 'text', text: `Error: ${message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  process.stderr.write('copilot-devtools MCP server started (stdio)\n');
+
+  process.once('SIGINT', async () => {
+    await server.close();
+    process.exit(0);
+  });
+  process.once('SIGTERM', async () => {
+    await server.close();
+    process.exit(0);
+  });
 }
 
 async function main() {
   const cmd = process.argv[2];
+
+  // MCP server: runs indefinitely; errors go to stderr only (stdout = JSON-RPC).
+  if (cmd === 'mcp-server') {
+    try {
+      await startMcpServer();
+    } catch (error) {
+      process.stderr.write(
+        `Failed to start MCP server: ${error instanceof Error ? error.message : error}\n`,
+      );
+      process.exit(1);
+    }
+    return;
+  }
+
   const { positionals, options } = parseArgs(process.argv.slice(3));
   const url = positionals[0] || process.env.CAPTURE_URL;
 

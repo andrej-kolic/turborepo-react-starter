@@ -1,6 +1,6 @@
 # @repo/automation
 
-Chrome DevTools artifact capture CLI for Copilot workflows. Captures network traffic (HAR), Playwright traces, Web Vitals, and console logs from any URL, with CI integration.
+Chrome DevTools artifact capture CLI and MCP server for Copilot workflows. Captures network traffic (HAR), Playwright traces, Web Vitals, and console logs from any URL, with CI integration and MCP tool exposure for agent-driven workflows.
 
 Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `scripts/chrome-debug.js` — no bundled browser binary needed.
 
@@ -13,6 +13,7 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 | `record-performance <url>` | `metadata.json`, `performance.json`                                          | Navigate and collect LCP, CLS, INP and 36 CDP browser metrics                      |
 | `record-console`           | `metadata.json`, `console.json`                                              | Monitor console messages on the current page for a set duration                    |
 | `upload-artifacts`         | `artifacts-<timestamp>.tar.gz`                                               | Package the `artifacts/` directory as a tar.gz                                     |
+| `mcp-server`               | —                                                                            | Start an MCP server (stdio) exposing capture commands as tools                     |
 
 ## Usage
 
@@ -31,6 +32,46 @@ node packages/automation/bin/copilot-devtools.js upload-artifacts
 node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration 5
 node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration-ms 3000
 ```
+
+## MCP Server
+
+The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing all four capture commands as MCP tools that Copilot agents can call directly — no shell access needed.
+
+### Available MCP Tools
+
+| Tool                 | Inputs                                           | Description                                               |
+| -------------------- | ------------------------------------------------ | --------------------------------------------------------- |
+| `capture_snapshot`   | —                                                | Capture browser metadata and open page list               |
+| `record_trace`       | `url` (required), `duration` (optional, seconds) | Full trace: HAR + Playwright trace + console + Web Vitals |
+| `record_performance` | `url` (required), `duration` (optional, seconds) | Web Vitals + CDP browser metrics                          |
+| `record_console`     | `duration` (optional, seconds)                   | Console messages from current tab                         |
+
+Each tool returns both a human-readable text summary and structured JSON (`artifactsDir`, `webVitals`, `requestCount`, etc.).
+
+### VS Code Setup (already configured in `.vscode/mcp.json`)
+
+The `automation` MCP server is pre-configured in `.vscode/mcp.json`. It starts automatically when your agent session loads. Requires Chrome running on port 9222 (`pnpm chrome:debug`).
+
+### Copilot CLI Setup (user-level — not committed to repo)
+
+Add to `~/.copilot/mcp-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "automation": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
+        "mcp-server"
+      ],
+      "env": { "CHROME_DEBUG_PORT": "9222" }
+    }
+  }
+}
+```
+
+> See `skills/chrome-devtools/SKILL.md` for full MCP tool reference and example agent workflows.
 
 ## Artifacts
 
@@ -62,13 +103,13 @@ Console messages and page errors captured during the session. Each entry has `ch
 
 ## Environment Variables
 
-| Variable              | Default     | Description                                |
-| --------------------- | ----------- | ------------------------------------------ |
-| `CHROME_DEBUG_PORT`   | `9222`      | CDP port                                   |
-| `CHROME_DEBUG_HOST`   | `localhost` | CDP host                                   |
-| `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms)              |
-| `CAPTURE_URL`         | —           | Default URL for trace/performance commands |
-| `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                |
+| Variable              | Default     | Description                                                              |
+| --------------------- | ----------- | ------------------------------------------------------------------------ |
+| `CHROME_DEBUG_PORT`   | `9222`      | CDP port                                                                 |
+| `CHROME_DEBUG_HOST`   | `localhost` | CDP host                                                                 |
+| `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms) — per-tool `duration` arg takes precedence |
+| `CAPTURE_URL`         | —           | Default URL for trace/performance commands                               |
+| `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                                              |
 
 ## CI Integration
 
