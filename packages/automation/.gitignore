@@ -1,0 +1,3 @@
+# Captured DevTools artifacts (local only, uploaded via CI)
+artifacts/
+artifacts-*.tar.gz

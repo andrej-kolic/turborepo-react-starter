@@ -1,0 +1,12 @@
+{
+  "name": "@repo/automation",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "copilot-devtools": "./bin/copilot-devtools.js"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "0.33.3"
+  }
+}
