@@ -6,61 +6,218 @@ on:
     types: [created]
 
 jobs:
+  # ─── Main capture job ────────────────────────────────────────────────────────
   capture:
-    # Only run on manual dispatch or when a comment contains /capture-trace
-    if: github.event_name != 'issue_comment' || contains(github.event.comment.body, '/capture-trace')
+    name: Capture DevTools artifacts
+    timeout-minutes: 15
     runs-on: ubuntu-latest
+
+    # Only run on manual dispatch or when a PR collaborator comments /capture-trace
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        contains(github.event.comment.body, '/capture-trace') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      )
+
+    # Expose step outputs for the ops summary and PR comment
+    outputs:
+      chrome_startup_ms: ${{ steps.chrome-wait.outputs.chrome_startup_ms }}
+      capture_duration_ms: ${{ steps.capture.outputs.capture_duration_ms }}
+      artifact_size_bytes: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
+
     steps:
+      # ── Checkout ─────────────────────────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # ── pnpm + Node setup with dependency cache ───────────────────────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v5
         with:
           node-version: 24
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # ── Chrome binary cache ───────────────────────────────────────────────────
+      # google-chrome-stable is pre-installed on ubuntu-latest runners; caching
+      # avoids the apt-update overhead on cold cache misses on self-hosted runners.
+      - name: Cache Chrome binary
+        uses: actions/cache@v4
+        with:
+          path: /usr/bin/google-chrome-stable
+          key: chrome-${{ runner.os }}-${{ hashFiles('.nvmrc') }}
+          restore-keys: |
+            chrome-${{ runner.os }}-
+
+      # ── Start headless Chrome ─────────────────────────────────────────────────
       - name: Start Chrome (headless)
         run: pnpm chrome:debug
         env:
           CHROME_HEADLESS: 'true'
 
+      # ── Wait for DevTools endpoint (with startup timer) ───────────────────────
       - name: Wait for DevTools endpoint
+        id: chrome-wait
         run: |
-          for i in 1 2 3 4 5; do
-            if curl -sS http://localhost:9222/json/version > /dev/null; then
-              echo "DevTools ready"
+          START_MS=$(date +%s%3N)
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sS http://localhost:9222/json/version > /dev/null 2>&1; then
+              END_MS=$(date +%s%3N)
+              STARTUP_MS=$((END_MS - START_MS))
+              echo "DevTools ready in ${STARTUP_MS}ms"
+              echo "chrome_startup_ms=${STARTUP_MS}" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             sleep 1
           done
+          echo "chrome_startup_ms=-1" >> "$GITHUB_OUTPUT"
+          echo "::error::Chrome DevTools endpoint did not become ready within 10s"
           exit 1
 
+      # ── Capture snapshot (with duration timer) ────────────────────────────────
       - name: Capture snapshot
-        run: node packages/automation/bin/copilot-devtools.js capture-snapshot
+        id: capture
+        run: |
+          CAPTURE_START_MS=$(date +%s%3N)
+          node packages/automation/bin/copilot-devtools.js capture-snapshot
+          CAPTURE_END_MS=$(date +%s%3N)
+          DURATION_MS=$((CAPTURE_END_MS - CAPTURE_START_MS))
+          echo "Capture completed in ${DURATION_MS}ms"
+          echo "capture_duration_ms=${DURATION_MS}" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
 
+      # ── Sanitize artifacts (Phase 5 defense-in-depth) ────────────────────────
+      - name: Sanitize artifacts
+        run: |
+          for dir in packages/automation/artifacts/*/; do
+            node packages/automation/bin/copilot-devtools.js sanitize-artifacts "$dir"
+          done
+
+      # ── Upload artifacts ──────────────────────────────────────────────────────
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: devtools-artifacts
+          name: devtools-artifacts-${{ github.run_id }}
           path: packages/automation/artifacts/**
+          retention-days: 30
 
+      # ── Measure artifact size ─────────────────────────────────────────────────
+      - name: Compute artifact size
+        id: artifact-size
+        run: |
+          SIZE_BYTES=$(du -sb packages/automation/artifacts/ | cut -f1)
+          echo "Artifact directory size: ${SIZE_BYTES} bytes"
+          echo "artifact_size_bytes=${SIZE_BYTES}" >> "$GITHUB_OUTPUT"
+
+      # ── Job Summary (ops metrics) ─────────────────────────────────────────────
+      - name: Write ops summary
+        if: always()
+        run: |
+          STARTUP="${{ steps.chrome-wait.outputs.chrome_startup_ms }}"
+          CAPTURE="${{ steps.capture.outputs.capture_duration_ms }}"
+          SIZE="${{ steps.artifact-size.outputs.artifact_size_bytes }}"
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          # Human-readable size
+          if [ -n "$SIZE" ] && [ "$SIZE" -gt 0 ] 2>/dev/null; then
+            SIZE_KB=$(echo "scale=1; $SIZE / 1024" | bc)
+            SIZE_HUMAN="${SIZE_KB} KB"
+          else
+            SIZE_HUMAN="n/a"
+          fi
+
+          cat >> "$GITHUB_STEP_SUMMARY" << EOF
+          ## 🔍 DevTools Capture — Ops Report
+
+          | Metric | Value |
+          |--------|-------|
+          | Run ID | [\`${GITHUB_RUN_ID}\`](${RUN_URL}) |
+          | Actor | \`${{ github.actor }}\` |
+          | Trigger | \`${{ github.event_name }}\` |
+          | Branch | \`${{ github.ref_name }}\` |
+          | Chrome startup | ${STARTUP:-n/a} ms |
+          | Capture duration | ${CAPTURE:-n/a} ms |
+          | Artifact size | ${SIZE_HUMAN} (${SIZE:-n/a} bytes) |
+          | Retention | 30 days |
+
+          Artifacts: [Download from run page](${RUN_URL})
+          EOF
+
+      # ── Comment on PR with run link + metrics ─────────────────────────────────
       - name: Comment on PR with run link
         if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
         uses: actions/github-script@v6
+        env:
+          CHROME_STARTUP_MS: ${{ steps.chrome-wait.outputs.chrome_startup_ms }}
+          CAPTURE_DURATION_MS: ${{ steps.capture.outputs.capture_duration_ms }}
+          ARTIFACT_SIZE_BYTES: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
         with:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const body = `DevTools capture complete. Artifacts are attached to this workflow run:\n${runUrl}\n\nYou can download them from the 'Artifacts' section on the run page.`;
+            const sizeKb = process.env.ARTIFACT_SIZE_BYTES
+              ? (Number(process.env.ARTIFACT_SIZE_BYTES) / 1024).toFixed(1) + ' KB'
+              : 'n/a';
+            const body = [
+              '## ✅ DevTools capture complete',
+              '',
+              '| Metric | Value |',
+              '|--------|-------|',
+              `| Chrome startup | ${process.env.CHROME_STARTUP_MS ?? 'n/a'} ms |`,
+              `| Capture duration | ${process.env.CAPTURE_DURATION_MS ?? 'n/a'} ms |`,
+              `| Artifact size | ${sizeKb} |`,
+              `| Retention | 30 days |`,
+              '',
+              `Artifacts are attached to this workflow run: ${runUrl}`,
+              "Download them from the **Artifacts** section on the run page.",
+            ].join('\n');
             const issue_number = context.payload.issue.number;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue_number,
-              body
+              body,
+            });
+
+  # ─── Failure alert job ───────────────────────────────────────────────────────
+  alert-on-failure:
+    name: Alert on capture failure
+    runs-on: ubuntu-latest
+    needs: capture
+    if: failure()
+
+    steps:
+      - name: Post failure summary
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            await core.summary
+              .addHeading('❌ DevTools capture failed')
+              .addRaw(`The \`devtools.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
+              .addBreak()
+              .addRaw(`**Trigger:** \`${{ github.event_name }}\` | **Actor:** \`${{ github.actor }}\``)
+              .addBreak()
+              .addRaw(`Check the [run logs](${runUrl}) for details.`)
+              .write();
+
+      - name: Comment failure on PR
+        if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const issue_number = context.payload.issue.number;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: `## ❌ DevTools capture failed\n\nThe capture job encountered an error. Check the [run logs](${runUrl}) for details.\n\n**Run ID:** \`${process.env.GITHUB_RUN_ID}\``,
             });

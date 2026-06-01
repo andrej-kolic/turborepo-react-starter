@@ -13,6 +13,7 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 | `record-performance <url>`  | `metadata.json`, `performance.json`                                          | Navigate and collect LCP, CLS, INP and 36 CDP browser metrics                      |
 | `record-console`            | `metadata.json`, `console.json`                                              | Monitor console messages on the current page for a set duration                    |
 | `record-interactions <url>` | `metadata.json`, `interactions.json`, `generated.test.ts`                    | Record clicks/fills/navigation and generate a Playwright test file                 |
+| `sanitize-artifacts <dir>`  | _(modifies existing artifact files in-place)_                                | Strip secrets & PII: redact sensitive headers, fill values, and console text       |
 | `upload-artifacts`          | `artifacts-<timestamp>.tar.gz`                                               | Package the `artifacts/` directory as a tar.gz                                     |
 | `mcp-server`                | —                                                                            | Start an MCP server (stdio) exposing capture commands as tools                     |
 
@@ -28,11 +29,15 @@ node packages/automation/bin/copilot-devtools.js record-trace https://localhost:
 node packages/automation/bin/copilot-devtools.js record-performance https://localhost:3000
 node packages/automation/bin/copilot-devtools.js record-console
 node packages/automation/bin/copilot-devtools.js record-interactions https://localhost:3000
+node packages/automation/bin/copilot-devtools.js sanitize-artifacts packages/automation/artifacts/trace-<timestamp>
 node packages/automation/bin/copilot-devtools.js upload-artifacts
 
 # Duration control (default: 10s)
 node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration 5
 node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration-ms 3000
+
+# Skip automatic sanitization (e.g. for local debugging — never do this in CI)
+node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --no-sanitize
 ```
 
 ## MCP Server
@@ -48,6 +53,7 @@ The `mcp-server` command starts a [Model Context Protocol](https://modelcontextp
 | `record_performance`  | `url` (required), `duration` (optional, seconds) | Web Vitals + CDP browser metrics                                              |
 | `record_console`      | `duration` (optional, seconds)                   | Console messages from current tab                                             |
 | `record_interactions` | `url` (required), `duration` (optional, seconds) | Record user interactions and generate a Playwright test (`generated.test.ts`) |
+| `sanitize_artifacts`  | `dir` (required, absolute path)                  | Strip secrets & PII from an artifact directory (safe to re-run)               |
 
 Each tool returns both a human-readable text summary and structured JSON (`artifactsDir`, `webVitals`, `requestCount`, etc.).
 
@@ -143,6 +149,8 @@ test('recorded: localhost/', async ({ page }) => {
 | `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms) — per-tool `duration` arg takes precedence |
 | `CAPTURE_URL`         | —           | Default URL for trace/performance commands                               |
 | `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                                              |
+| `GITHUB_ACTOR`        | —           | Set automatically by CI; logged in `metadata.json` for audit trail       |
+| `GITHUB_EVENT_NAME`   | —           | Set automatically by CI; logged in `metadata.json` (`triggerEvent`)      |
 
 ## CI Integration
 
@@ -150,4 +158,4 @@ The included GitHub Actions workflow (`.github/workflows/devtools.yml`) runs whe
 
 ## Security
 
-Artifacts may contain sensitive data (auth headers, cookies, PII). The `record-trace` command uses `content: 'omit'` in HAR recording so response bodies are excluded. Sanitize artifacts before sharing publicly. See Phase 4 of the implementation plan for planned sanitization features.
+All capture commands run artifact sanitization automatically before writing results. See [`SECURITY.md`](./SECURITY.md) for the full policy, rules, and RBAC model.

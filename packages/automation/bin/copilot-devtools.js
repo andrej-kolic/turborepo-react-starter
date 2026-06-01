@@ -33,6 +33,8 @@ const DEFAULT_DURATION_MS = _captureDurationValid
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(SCRIPT_DIR, '..');
 const ARTIFACTS_ROOT = path.join(PACKAGE_ROOT, 'artifacts');
+// Phase 5: set false via --no-sanitize CLI flag to skip automatic artifact sanitization
+let _sanitizeEnabled = true;
 
 // In MCP mode stdout is reserved for JSON-RPC; all logging goes to stderr.
 const log = (...args) => {
@@ -276,6 +278,242 @@ function writeJson(dir, filename, value) {
   );
 }
 
+// ─── Phase 5: Security & Sanitization ───────────────────────────────────────
+
+/**
+ * HTTP headers that are safe to retain in sanitized HAR artifacts.
+ * All other header values are replaced with [REDACTED].
+ */
+const SAFE_HAR_HEADERS = new Set([
+  'accept',
+  'accept-encoding',
+  'accept-language',
+  'age',
+  'cache-control',
+  'content-encoding',
+  'content-language',
+  'content-length',
+  'content-type',
+  'etag',
+  'expires',
+  'last-modified',
+  'transfer-encoding',
+  'user-agent',
+  'vary',
+  'x-content-type-options',
+  'x-frame-options',
+  'x-xss-protection',
+]);
+
+/**
+ * Matches field names (name / id / data-testid) whose fill values must be
+ * fully redacted regardless of their content.
+ */
+const SENSITIVE_FIELD_RE =
+  /password|passwd|pwd|secret|token|api[_-]?key|auth(?:orization)?|ssn|social.?security|credit.?card|card.?num|cvv|cvc|\bpin\b|access.?key|private.?key/i;
+
+/**
+ * PII patterns applied to free-form text (console logs, fill values, etc.).
+ * Each match is replaced with [REDACTED-<LABEL>].
+ */
+const PII_PATTERNS = [
+  // Email addresses
+  {
+    pattern: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,
+    label: 'EMAIL',
+  },
+  // US Social Security Numbers (XXX-XX-XXXX)
+  { pattern: /\b\d{3}-\d{2}-\d{4}\b/g, label: 'SSN' },
+  // Credit card numbers (13–19 digits, optionally space/dash separated)
+  { pattern: /\b(?:\d[ \-]?){13,18}\d\b/g, label: 'CREDIT-CARD' },
+  // US phone numbers (various formats)
+  {
+    pattern: /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
+    label: 'PHONE',
+  },
+  // Bearer / JWT tokens in text
+  { pattern: /\bBearer\s+[A-Za-z0-9\-._~+/]+=*/g, label: 'BEARER-TOKEN' },
+  // Generic hex secrets ≥32 chars (hashes, API keys, UUIDs without dashes)
+  { pattern: /\b[0-9a-fA-F]{32,}\b/g, label: 'HEX-SECRET' },
+];
+
+/**
+ * Replaces PII and credential patterns in a string with [REDACTED-<LABEL>].
+ * @param {string} text
+ * @returns {string}
+ */
+function redactPii(text) {
+  if (typeof text !== 'string') return text;
+  let result = text;
+  for (const { pattern, label } of PII_PATTERNS) {
+    result = result.replace(pattern, `[REDACTED-${label}]`);
+  }
+  return result;
+}
+
+/**
+ * Returns true if the field name suggests it holds sensitive / secret data.
+ * @param {string|null|undefined} name
+ */
+function isSensitiveField(name) {
+  return typeof name === 'string' && SENSITIVE_FIELD_RE.test(name);
+}
+
+/**
+ * Sanitizes a HAR file in-place:
+ * - Strips non-allowlisted request and response header values
+ * - Redacts query-string and postData parameters with sensitive names
+ *
+ * @param {string} harPath
+ * @returns {{ headersRedacted: number, paramsRedacted: number }}
+ */
+function sanitizeHar(harPath) {
+  if (!fs.existsSync(harPath)) return { headersRedacted: 0, paramsRedacted: 0 };
+
+  const har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
+  let headersRedacted = 0;
+  let paramsRedacted = 0;
+
+  for (const entry of har?.log?.entries ?? []) {
+    for (const header of entry?.request?.headers ?? []) {
+      if (!SAFE_HAR_HEADERS.has(header.name.toLowerCase())) {
+        header.value = '[REDACTED]';
+        headersRedacted += 1;
+      }
+    }
+    for (const header of entry?.response?.headers ?? []) {
+      if (!SAFE_HAR_HEADERS.has(header.name.toLowerCase())) {
+        header.value = '[REDACTED]';
+        headersRedacted += 1;
+      }
+    }
+    for (const param of entry?.request?.queryString ?? []) {
+      if (isSensitiveField(param.name)) {
+        param.value = '[REDACTED]';
+        paramsRedacted += 1;
+      }
+    }
+    for (const param of entry?.request?.postData?.params ?? []) {
+      if (isSensitiveField(param.name)) {
+        param.value = '[REDACTED]';
+        paramsRedacted += 1;
+      }
+    }
+  }
+
+  fs.writeFileSync(harPath, `${JSON.stringify(har, null, 2)}\n`);
+  return { headersRedacted, paramsRedacted };
+}
+
+/**
+ * Sanitizes console.json in-place: applies PII redaction to message text.
+ * @param {string} consolePath
+ * @returns {{ messagesRedacted: number }}
+ */
+function sanitizeConsoleLog(consolePath) {
+  if (!fs.existsSync(consolePath)) return { messagesRedacted: 0 };
+
+  const data = JSON.parse(fs.readFileSync(consolePath, 'utf8'));
+  let messagesRedacted = 0;
+
+  for (const entry of data?.entries ?? []) {
+    const original = entry.text;
+    entry.text = redactPii(entry.text ?? '');
+    if (entry.text !== original) messagesRedacted += 1;
+    if (typeof entry.stack === 'string') entry.stack = redactPii(entry.stack);
+  }
+
+  fs.writeFileSync(consolePath, `${JSON.stringify(data, null, 2)}\n`);
+  return { messagesRedacted };
+}
+
+/**
+ * Sanitizes interactions.json in-place:
+ * - Fully redacts fill values for fields with sensitive names
+ * - Applies PII redaction to all other fill values
+ *
+ * @param {string} interactionsPath
+ * @returns {{ valuesRedacted: number }}
+ */
+function sanitizeInteractionLog(interactionsPath) {
+  if (!fs.existsSync(interactionsPath)) return { valuesRedacted: 0 };
+
+  const data = JSON.parse(fs.readFileSync(interactionsPath, 'utf8'));
+  let valuesRedacted = 0;
+
+  for (const interaction of data?.interactions ?? []) {
+    if (interaction.type === 'fill' && interaction.value != null) {
+      const el = interaction.element ?? {};
+      const isSensitive =
+        isSensitiveField(el.name) ||
+        isSensitiveField(el.id) ||
+        isSensitiveField(el.testId);
+
+      if (isSensitive) {
+        interaction.value = '[REDACTED]';
+        valuesRedacted += 1;
+      } else {
+        const original = interaction.value;
+        interaction.value = redactPii(String(interaction.value));
+        if (interaction.value !== original) valuesRedacted += 1;
+      }
+    }
+  }
+
+  fs.writeFileSync(interactionsPath, `${JSON.stringify(data, null, 2)}\n`);
+  return { valuesRedacted };
+}
+
+/**
+ * Sanitizes all recognized artifact files in a capture directory.
+ * Processes: har.json, console.json, interactions.json.
+ * Stamps metadata.json with sanitizedAt and a sanitization summary.
+ *
+ * @param {string} artifactsDir
+ * @returns {{ har: object, console: object, interactions: object, sanitizedAt: string }}
+ */
+function sanitizeArtifacts(artifactsDir) {
+  const harResult = sanitizeHar(path.join(artifactsDir, 'har.json'));
+  const consoleResult = sanitizeConsoleLog(
+    path.join(artifactsDir, 'console.json'),
+  );
+  const interactionsResult = sanitizeInteractionLog(
+    path.join(artifactsDir, 'interactions.json'),
+  );
+
+  // Stamp metadata.json with sanitization provenance
+  const metadataPath = path.join(artifactsDir, 'metadata.json');
+  if (fs.existsSync(metadataPath)) {
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    metadata.sanitizedAt = new Date().toISOString();
+    metadata.sanitization = {
+      headersRedacted: harResult.headersRedacted,
+      queryParamsRedacted: harResult.paramsRedacted,
+      consoleMessagesRedacted: consoleResult.messagesRedacted,
+      interactionValuesRedacted: interactionsResult.valuesRedacted,
+    };
+    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+  }
+
+  const summary = {
+    har: harResult,
+    console: consoleResult,
+    interactions: interactionsResult,
+    sanitizedAt: new Date().toISOString(),
+  };
+
+  log(
+    `Sanitized: ${harResult.headersRedacted} headers, ` +
+      `${harResult.paramsRedacted} query params, ` +
+      `${consoleResult.messagesRedacted} console messages, ` +
+      `${interactionsResult.valuesRedacted} interaction values redacted.`,
+  );
+
+  return summary;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function parseArgs(argv) {
   const positionals = [];
   const options = {};
@@ -397,12 +635,15 @@ function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
     artifactDirectory: path.relative(process.cwd(), artifactsDir),
     branch: getGitBranch(),
     commit: getGitCommit(),
+    // Phase 5 audit trail — populated from CI env vars when running in GitHub Actions
+    actor: process.env.GITHUB_ACTOR || process.env.USER || null,
+    triggerEvent: process.env.GITHUB_EVENT_NAME || 'local',
     chrome: {
       browser: browserInfo.Browser || browserInfo.browser || null,
       protocolVersion:
         browserInfo['Protocol-Version'] || browserInfo.protocolVersion || null,
       userAgent: browserInfo['User-Agent'] || browserInfo.userAgent || null,
-      webSocketDebuggerUrl: browserInfo.webSocketDebuggerUrl || null,
+      // webSocketDebuggerUrl intentionally omitted — CDP socket must not leak into artifacts
     },
     devtoolsEndpoint: `http://${HOST}:${PORT}`,
     ...extra,
@@ -729,6 +970,7 @@ async function captureSnapshot() {
   writeJson(artifactsDir, 'version.json', browserInfo);
   writeJson(artifactsDir, 'pages.json', pages);
 
+  if (_sanitizeEnabled) sanitizeArtifacts(artifactsDir);
   log(`Saved snapshot artifacts to ${artifactsDir}`);
   return { artifactsDir, metadata };
 }
@@ -789,6 +1031,7 @@ async function recordTrace(url, options = {}) {
     writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
+    if (_sanitizeEnabled) sanitizeArtifacts(artifactsDir);
     log(`Saved trace artifacts to ${artifactsDir}`);
     captureResult = {
       artifactsDir,
@@ -843,6 +1086,7 @@ async function recordPerformance(url, options = {}) {
     writeJson(artifactsDir, 'metadata.json', metadata);
     writeJson(artifactsDir, 'performance.json', performancePayload);
 
+    if (_sanitizeEnabled) sanitizeArtifacts(artifactsDir);
     log(`Saved performance artifacts to ${artifactsDir}`);
     captureResult = {
       artifactsDir,
@@ -886,6 +1130,7 @@ async function recordConsole(options = {}) {
     writeJson(artifactsDir, 'metadata.json', metadata);
     writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
 
+    if (_sanitizeEnabled) sanitizeArtifacts(artifactsDir);
     log(`Saved console artifacts to ${artifactsDir}`);
     captureResult = {
       artifactsDir,
@@ -999,7 +1244,15 @@ async function recordInteractions(url, options = {}) {
     writeJson(artifactsDir, 'metadata.json', metadata);
     writeJson(artifactsDir, 'interactions.json', { interactions });
 
-    const testCode = generatePlaywrightTest(targetUrl, interactions);
+    if (_sanitizeEnabled) sanitizeArtifacts(artifactsDir);
+
+    // Generate test from sanitized interaction data (fill values may have been redacted)
+    const sanitizedInteractions = _sanitizeEnabled
+      ? JSON.parse(
+          fs.readFileSync(path.join(artifactsDir, 'interactions.json'), 'utf8'),
+        ).interactions
+      : interactions;
+    const testCode = generatePlaywrightTest(targetUrl, sanitizedInteractions);
     const testFilePath = path.join(artifactsDir, 'generated.test.ts');
     fs.writeFileSync(testFilePath, testCode, 'utf8');
 
@@ -1056,7 +1309,15 @@ function usage() {
     '  upload-artifacts                   Package artifacts/  as tar.gz',
   );
   console.log(
+    '  sanitize-artifacts <dir>           Sanitize artifact directory: strip secrets and PII',
+  );
+  console.log(
     '  mcp-server                         Start an MCP server (stdio) exposing capture tools',
+  );
+  console.log('');
+  console.log('Options:');
+  console.log(
+    '  --no-sanitize                      Skip automatic artifact sanitization',
   );
 }
 
@@ -1337,6 +1598,53 @@ async function startMcpServer() {
     },
   );
 
+  server.registerTool(
+    'sanitize_artifacts',
+    {
+      title: 'Sanitize Artifacts',
+      description:
+        'Sanitize a capture artifact directory: strip sensitive HTTP headers (Authorization, Cookie, Set-Cookie, etc.), redact PII from console logs, and redact secret fill values from interaction recordings. Safe to re-run on already-sanitized directories.',
+      inputSchema: z.object({
+        dir: z
+          .string()
+          .describe('Absolute path to the artifact directory to sanitize'),
+      }),
+      annotations: { readOnlyHint: false, destructiveHint: false },
+    },
+    async (args) => {
+      try {
+        const result = sanitizeArtifacts(args.dir);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: [
+                `Sanitized ${args.dir}`,
+                `Headers redacted: ${result.har.headersRedacted}`,
+                `Query params redacted: ${result.har.paramsRedacted}`,
+                `Console messages redacted: ${result.console.messagesRedacted}`,
+                `Interaction values redacted: ${result.interactions.valuesRedacted}`,
+              ].join('\n'),
+            },
+          ],
+          structuredContent: {
+            dir: args.dir,
+            headersRedacted: result.har.headersRedacted,
+            queryParamsRedacted: result.har.paramsRedacted,
+            consoleMessagesRedacted: result.console.messagesRedacted,
+            interactionValuesRedacted: result.interactions.valuesRedacted,
+            sanitizedAt: result.sanitizedAt,
+          },
+        };
+      } catch (err) {
+        return {
+          content: [{ type: 'text', text: `Error: ${err.message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   process.stderr.write('copilot-devtools MCP server started (stdio)\n');
@@ -1369,6 +1677,7 @@ async function main() {
 
   const { positionals, options } = parseArgs(process.argv.slice(3));
   const url = positionals[0] || process.env.CAPTURE_URL;
+  if (options['no-sanitize']) _sanitizeEnabled = false;
 
   if (!cmd || cmd === 'help' || cmd === '--help') {
     usage();
@@ -1376,6 +1685,14 @@ async function main() {
   }
 
   try {
+    if (cmd === 'sanitize-artifacts') {
+      const dir = positionals[0];
+      if (!dir)
+        throw new Error('sanitize-artifacts requires a directory argument.');
+      sanitizeArtifacts(path.resolve(dir));
+      return;
+    }
+
     if (cmd === 'capture-snapshot') {
       await captureSnapshot();
       return;
