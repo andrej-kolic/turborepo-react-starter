@@ -6,14 +6,15 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 
 ## Commands
 
-| Command                    | Output                                                                       | Description                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `capture-snapshot`         | `metadata.json`, `version.json`, `pages.json`                                | Fetch browser metadata and open page list                                          |
-| `record-trace <url>`       | `metadata.json`, `har.json`, `trace.zip`, `console.json`, `performance.json` | Navigate and record: HAR (network), Playwright trace, console messages, Web Vitals |
-| `record-performance <url>` | `metadata.json`, `performance.json`                                          | Navigate and collect LCP, CLS, INP and 36 CDP browser metrics                      |
-| `record-console`           | `metadata.json`, `console.json`                                              | Monitor console messages on the current page for a set duration                    |
-| `upload-artifacts`         | `artifacts-<timestamp>.tar.gz`                                               | Package the `artifacts/` directory as a tar.gz                                     |
-| `mcp-server`               | —                                                                            | Start an MCP server (stdio) exposing capture commands as tools                     |
+| Command                     | Output                                                                       | Description                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `capture-snapshot`          | `metadata.json`, `version.json`, `pages.json`                                | Fetch browser metadata and open page list                                          |
+| `record-trace <url>`        | `metadata.json`, `har.json`, `trace.zip`, `console.json`, `performance.json` | Navigate and record: HAR (network), Playwright trace, console messages, Web Vitals |
+| `record-performance <url>`  | `metadata.json`, `performance.json`                                          | Navigate and collect LCP, CLS, INP and 36 CDP browser metrics                      |
+| `record-console`            | `metadata.json`, `console.json`                                              | Monitor console messages on the current page for a set duration                    |
+| `record-interactions <url>` | `metadata.json`, `interactions.json`, `generated.test.ts`                    | Record clicks/fills/navigation and generate a Playwright test file                 |
+| `upload-artifacts`          | `artifacts-<timestamp>.tar.gz`                                               | Package the `artifacts/` directory as a tar.gz                                     |
+| `mcp-server`                | —                                                                            | Start an MCP server (stdio) exposing capture commands as tools                     |
 
 ## Usage
 
@@ -26,6 +27,7 @@ node packages/automation/bin/copilot-devtools.js capture-snapshot
 node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000
 node packages/automation/bin/copilot-devtools.js record-performance https://localhost:3000
 node packages/automation/bin/copilot-devtools.js record-console
+node packages/automation/bin/copilot-devtools.js record-interactions https://localhost:3000
 node packages/automation/bin/copilot-devtools.js upload-artifacts
 
 # Duration control (default: 10s)
@@ -39,12 +41,13 @@ The `mcp-server` command starts a [Model Context Protocol](https://modelcontextp
 
 ### Available MCP Tools
 
-| Tool                 | Inputs                                           | Description                                               |
-| -------------------- | ------------------------------------------------ | --------------------------------------------------------- |
-| `capture_snapshot`   | —                                                | Capture browser metadata and open page list               |
-| `record_trace`       | `url` (required), `duration` (optional, seconds) | Full trace: HAR + Playwright trace + console + Web Vitals |
-| `record_performance` | `url` (required), `duration` (optional, seconds) | Web Vitals + CDP browser metrics                          |
-| `record_console`     | `duration` (optional, seconds)                   | Console messages from current tab                         |
+| Tool                  | Inputs                                           | Description                                                                   |
+| --------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `capture_snapshot`    | —                                                | Capture browser metadata and open page list                                   |
+| `record_trace`        | `url` (required), `duration` (optional, seconds) | Full trace: HAR + Playwright trace + console + Web Vitals                     |
+| `record_performance`  | `url` (required), `duration` (optional, seconds) | Web Vitals + CDP browser metrics                                              |
+| `record_console`      | `duration` (optional, seconds)                   | Console messages from current tab                                             |
+| `record_interactions` | `url` (required), `duration` (optional, seconds) | Record user interactions and generate a Playwright test (`generated.test.ts`) |
 
 Each tool returns both a human-readable text summary and structured JSON (`artifactsDir`, `webVitals`, `requestCount`, etc.).
 
@@ -100,6 +103,36 @@ Contains:
 ### `console.json`
 
 Console messages and page errors captured during the session. Each entry has `channel` (`runtime` or `exception`), `type`, `text`, `location`, and `timestamp`.
+
+### `interactions.json` (from `record-interactions`)
+
+Array of recorded user interactions. Each entry includes:
+
+- `type`: `click`, `fill`, `check`, `uncheck`, `selectOption`, or `navigate`
+- `element`: `{ tag, id, testId, ariaLabel, role, text, inputType, name }` — element metadata used to generate stable Playwright locators
+- `value`: filled/selected value (for `fill` and `selectOption`)
+- `react` (dev mode only): `{ componentName, fileName, lineNumber, columnNumber, originalSource }` — React component info resolved from fiber internals and source maps
+- `timestamp`: epoch ms
+
+### `generated.test.ts` (from `record-interactions`)
+
+A ready-to-run Playwright test generated from the recorded interactions. Locators follow the priority: `getByTestId` > `getByLabel` > `#id` > `getByRole(+name)` > `getByText`. When React component info is available, source location is added as a comment.
+
+Example output:
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+// Generated by copilot-devtools record-interactions
+// Source: http://localhost:5173/
+// Captured: 2026-05-31T...
+
+test('recorded: localhost/', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
+  await page.getByTestId('email-input').fill('user@example.com'); // LoginForm src/components/LoginForm.tsx:42
+  await page.getByRole('button', { name: 'Sign in' }).click(); // LoginButton src/components/LoginButton.tsx:15
+});
+```
 
 ## Environment Variables
 
