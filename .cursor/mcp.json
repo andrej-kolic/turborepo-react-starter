@@ -1,0 +1,21 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/config.json",
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--browserUrl",
+        "http://localhost:9222"
+      ]
+    },
+    "automation": {
+      "command": "node",
+      "args": ["packages/automation/bin/copilot-devtools.js", "mcp-server"],
+      "env": {
+        "CHROME_DEBUG_PORT": "9222"
+      }
+    }
+  }
+}
