@@ -31,7 +31,7 @@ flowchart TD
     H -- Yes --> I[pnpm browser:validate\n--selector … --contains …]
     H -- No --> J{Need HAR / trace\nor CI artifact?}
     J -- Yes --> K[devtools-capture MCP\nrecord_trace · record_performance]
-    J -- No --> L[pnpm test · pnpm dev:ui\nor wait for Phase 2b\nbrowser:validate CLI]
+    J -- No --> L[pnpm test · pnpm dev:ui\nor use chrome-devtools MCP]
 ```
 
 ---
@@ -208,9 +208,6 @@ CHROME_HEADLESS=true pnpm chrome:debug
 
 ## browser:validate / browser:read Reference
 
-> **Note:** These commands become available in Phase 2b. Until then, use the `chrome-devtools` MCP
-> for local verification or check the Storybook for component-level validation.
-
 ```bash
 # Assert selector exists (--url required; <port> from App URL table)
 pnpm browser:validate --url http://localhost:<port> --selector <css>
@@ -225,7 +222,7 @@ pnpm browser:read --url http://localhost:<port> --selector <css> --json
 pnpm browser:validate --url https://your-preview.netlify.app --selector <css>
 ```
 
-When `--url` is omitted (Phase 2b): CLI resolves `APP_URL` if set, else derives from `BUNDLER`.
+When `--url` is omitted: CLI resolves `APP_URL` if set, else derives from `BUNDLER`.
 
 Exit codes: `0` = assertion passed, `1` = assertion failed or error.
 
@@ -246,10 +243,10 @@ See `docs/component-validation-contract.md` for the full convention (added in Ph
 
 ## Related Files
 
-| File                                    | Purpose                                      |
-| --------------------------------------- | -------------------------------------------- |
-| `skills/browser-validation/SKILL.md`    | Agent entry point — read this first          |
-| `skills/chrome-devtools/SKILL.md`       | Capture-only skill (HAR, traces, Web Vitals) |
-| `docs/component-validation-contract.md` | `data-testid` convention (Phase 3)           |
-| `.cursor/mcp.json`                      | MCP server configuration                     |
-| `scripts/chrome-debug.js`               | Chrome lifecycle manager                     |
+| File                                         | Purpose                                      |
+| -------------------------------------------- | -------------------------------------------- |
+| `skills/browser-validation/SKILL.md`         | Agent entry point — read this first          |
+| `skills/chrome-devtools/SKILL.md`            | Capture-only skill (HAR, traces, Web Vitals) |
+| `docs/component-validation-contract.md`      | `data-testid` convention (Phase 3)           |
+| `.cursor/mcp.json`                           | MCP server configuration                     |
+| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                     |

@@ -27,7 +27,7 @@ Port follows `BUNDLER` in `.env`. Look up the port in the **Services** table in
 [`AGENTS.md`](../../AGENTS.md) (or [`docs/browser-validation.md`](../../docs/browser-validation.md#app-url)),
 then build `http://localhost:<port>`. For deployed previews, pass the full URL instead.
 
-Phase 2b: when `--url` is omitted, the CLI derives the URL from `BUNDLER` (or optional `APP_URL` in CI).
+When `--url` is omitted: CLI resolves `APP_URL` if set, else derives from `BUNDLER`.
 
 ---
 
@@ -62,8 +62,8 @@ pnpm browser:validate --url http://localhost:<port> --selector "h1" --contains "
 pnpm browser:read --url http://localhost:<port> --selector "body" --json
 ```
 
-> `pnpm browser:validate` and `pnpm browser:read` are added in Phase 2b. Until then, use the
-> `chrome-devtools` MCP for local verification.
+> `pnpm browser:validate` and `pnpm browser:read` connect to Chrome over CDP.
+> Requires Chrome running (`pnpm chrome:debug`) and the app serving at the target URL.
 
 ---
 
