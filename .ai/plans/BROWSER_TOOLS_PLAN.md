@@ -118,14 +118,15 @@ Biggest clarity win. All doc and config changes; nothing that can break the dev 
 - [ ] Update `AGENTS.md` — add "Browser validation" section: link to
       `skills/browser-validation/SKILL.md`, embed the light/heavy rule table, add Cloud Agent note
       (`pnpm browser:validate` when MCP unavailable)
-- [ ] Update `.env.example` — add `APP_DEV_URL`, `APP_VALIDATE_URL`, `CHROME_DEBUG_HOST`,
-      `CHROME_DEBUG_PORT`, `CHROME_HEADLESS` with inline comments
+- [ ] Update `.env.example` — add `CHROME_DEBUG_HOST`, `CHROME_DEBUG_PORT`, `CHROME_HEADLESS`
+      with inline comments; document optional `APP_URL` (CI/deployed override, Phase 2b) — do not
+      add bundler-specific URL vars; app URL derives from `BUNDLER` port table
 - [ ] Pin `chrome-devtools-mcp` to a fixed version in `.cursor/mcp.json` (look up current stable,
       remove `@latest`)
 - [ ] Rename MCP server key `"automation"` → `"devtools-capture"` in `.cursor/mcp.json` — see
       Breaking Change Notes above for all files to update atomically
-- [ ] Fix wrong port in any existing skill or example files (`localhost:3000` → `5173` or
-      `$APP_DEV_URL`)
+- [ ] Fix wrong port in any existing skill or example files (`localhost:3000` → bundler port, or
+      explicit `--url` with port from `BUNDLER` table)
 
 ### Verification checkpoint
 
@@ -210,7 +211,9 @@ no HAR, no trace, no artifacts.
 - [ ] Add `playwright-core` dependency to `packages/browser-tools/package.json` (use catalog
       version pinned in Phase 2a)
 - [ ] Create `packages/browser-tools/bin/browser-verify.js` — CLI with `--url`, `--selector`,
-      `--contains`, `--json` flags; exits `1` on assertion failure, `0` on pass
+      `--contains`, `--json` flags; exits `1` on assertion failure, `0` on pass. When `--url` is
+      omitted: resolve `APP_URL` env var, else derive `http://localhost:<port>` from `BUNDLER`
+      (app-vite 5173, app-webpack 8080, app-esbuild 8000), else error with port table
 - [ ] Update root `package.json` — add new scripts:
   ```json
   "browser:read":     "node packages/browser-tools/bin/browser-verify.js read",
@@ -333,8 +336,8 @@ node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
   # Validates app renders key components; not a replacement for unit tests.
   - run: pnpm chrome:debug # CHROME_HEADLESS=true
   - run: pnpm dev:app &
-  - run: wait-on $APP_DEV_URL
-  - run: pnpm browser:validate --url $APP_DEV_URL --selector "[data-testid=app-header]" --contains "app-vite"
+  - run: wait-on http://localhost:5173 # or derive port from BUNDLER matrix
+  - run: pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]" --contains "app-vite"
   ```
 
 ### Verification checkpoint
@@ -342,7 +345,7 @@ node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
 ```bash
 # Simulate CI locally
 CHROME_HEADLESS=true pnpm chrome:debug
-APP_DEV_URL=http://localhost:5173 pnpm dev:app &
+BUNDLER=app-vite pnpm dev:app &
 pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
 # exit 0
 ```
@@ -356,7 +359,7 @@ pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-h
 | `docs/browser-validation.md`                    | CREATE — decision tree, env table, 3 scenarios                  |      1       |
 | `skills/browser-validation/SKILL.md`            | CREATE — agent entry point                                      |      1       |
 | `AGENTS.md`                                     | UPDATE — add Browser validation section                         |      1       |
-| `.env.example`                                  | UPDATE — add APP*DEV_URL, APP_VALIDATE_URL, CHROME_DEBUG*\*     |      1       |
+| `.env.example`                                  | UPDATE — add CHROME_DEBUG\*\*; optional APP_URL note (Phase 2b) |      1       |
 | `.cursor/mcp.json`                              | UPDATE — pin version; rename key to devtools-capture            |      1       |
 | `packages/browser-tools/`                       | CREATE — new @repo/browser-tools package                        |      2a      |
 | `scripts/chrome-debug.js`                       | MOVE → `packages/browser-tools/bin/chrome-debug.js`             |      2a      |

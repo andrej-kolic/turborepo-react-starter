@@ -52,6 +52,24 @@ that fits.
 
 ---
 
+## App URL
+
+Do not store the app URL in `.env`. It depends on which bundler is running (`BUNDLER` in `.env`):
+
+| `BUNDLER`     | Dev port |
+| ------------- | -------- |
+| `app-vite`    | 5173     |
+| `app-webpack` | 8080     |
+| `app-esbuild` | 8000     |
+
+**Always pass `--url` explicitly** in `browser:validate` / `browser:read` examples and CI.
+Use `http://localhost:<port>` for local dev, or a full deployed preview URL when validating remotely.
+
+Phase 2b CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL` env var
+(CI/deployed only) → derive `http://localhost:<port>` from `BUNDLER` → error with port table.
+
+---
+
 ## Environment Scenarios
 
 ### Scenario 1 — Local dev (IDE with MCP)
@@ -59,21 +77,21 @@ that fits.
 Chrome and the app run on the same machine as the IDE. MCP servers are available.
 
 ```bash
-# 1. Start the app
-pnpm dev:app                      # http://localhost:5173 (app-vite default)
+# 1. Start the app (port follows BUNDLER — see App URL table above)
+pnpm dev:app
 
 # 2. Start Chrome with remote debugging
 pnpm chrome:debug                 # opens Chrome on port 9222
 
 # 3. Use MCP in your agent session
-# chrome-devtools MCP → navigate_page, evaluate_script, take_snapshot
+# chrome-devtools MCP → navigate_page url="http://localhost:<port>", evaluate_script, take_snapshot
 # devtools-capture MCP → record_trace, record_performance (only when you need artifacts)
 ```
 
-Environment variables (`.env`):
+Relevant `.env` variables:
 
 ```
-APP_DEV_URL=http://localhost:5173
+BUNDLER=app-vite
 CHROME_DEBUG_PORT=9222
 CHROME_DEBUG_HOST=localhost
 ```
@@ -96,10 +114,15 @@ pnpm chrome:debug                 # opens Chrome on port 9222
 # record_trace url="https://your-preview.netlify.app" duration=5
 ```
 
-Environment variables:
+Pass the deployed URL directly — no `.env` URL variable needed:
+
+```bash
+pnpm browser:validate --url https://your-preview.netlify.app --selector body
+```
+
+Relevant `.env` variables (Chrome only):
 
 ```
-APP_VALIDATE_URL=https://your-preview.netlify.app
 CHROME_DEBUG_PORT=9222
 CHROME_DEBUG_HOST=localhost
 ```
@@ -117,23 +140,23 @@ available. Use `pnpm browser:validate` which drives Chrome over CDP directly.
 # 1. Start Chrome headlessly (no display required)
 CHROME_HEADLESS=true pnpm chrome:debug
 
-# 2. Start the app
-pnpm dev:app                      # http://localhost:5173
+# 2. Start the app (port follows BUNDLER)
+pnpm dev:app
 
 # 3. Assert selectors (exit 0 = pass, exit 1 = fail)
-pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=app-header]"
+pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]"
 
 # 4. Assert visible text
-pnpm browser:validate --url "$APP_DEV_URL" --selector "h1" --contains "Welcome"
+pnpm browser:validate --url http://localhost:<port> --selector "h1" --contains "Welcome"
 
 # 5. Read DOM content as JSON
-pnpm browser:read --url "$APP_DEV_URL" --selector "body" --json
+pnpm browser:read --url http://localhost:<port> --selector "body" --json
 ```
 
 Environment variables (set on the VM):
 
 ```
-APP_DEV_URL=http://localhost:5173
+BUNDLER=app-vite
 CHROME_DEBUG_HOST=localhost
 CHROME_DEBUG_PORT=9222
 CHROME_HEADLESS=true
@@ -153,14 +176,14 @@ pnpm chrome:debug                 # listens on port 9222 of the remote host
 # On your local machine — open the SSH tunnel:
 ssh -L 9222:localhost:9222 user@remote-host
 
-# Now run assertions locally — they connect through the tunnel to the remote Chrome:
-pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=app-header]"
+# Now run assertions locally — they connect through the tunnel to the remote Chrome.
+# Use the URL where the app is reachable from your machine (remote host + app port):
+pnpm browser:validate --url http://<remote-host>:<port> --selector "[data-testid=app-header]"
 ```
 
 Environment variables (local machine, after tunnel is open):
 
 ```
-APP_DEV_URL=http://<remote-host>:<app-port>
 CHROME_DEBUG_HOST=localhost
 CHROME_DEBUG_PORT=9222
 ```
@@ -189,15 +212,20 @@ CHROME_HEADLESS=true pnpm chrome:debug
 > for local verification or check the Storybook for component-level validation.
 
 ```bash
-# Assert selector exists
-pnpm browser:validate --url <url> --selector <css>
+# Assert selector exists (--url required; <port> from App URL table)
+pnpm browser:validate --url http://localhost:<port> --selector <css>
 
 # Assert selector exists and contains text
-pnpm browser:validate --url <url> --selector <css> --contains <text>
+pnpm browser:validate --url http://localhost:<port> --selector <css> --contains <text>
 
 # Read selector content as JSON
-pnpm browser:read --url <url> --selector <css> --json
+pnpm browser:read --url http://localhost:<port> --selector <css> --json
+
+# Deployed preview — pass the full URL
+pnpm browser:validate --url https://your-preview.netlify.app --selector <css>
 ```
+
+When `--url` is omitted (Phase 2b): CLI resolves `APP_URL` if set, else derives from `BUNDLER`.
 
 Exit codes: `0` = assertion passed, `1` = assertion failed or error.
 

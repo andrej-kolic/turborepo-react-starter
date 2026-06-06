@@ -21,6 +21,16 @@ For full decision flowchart, environment scenarios, and command reference, see
 
 ---
 
+## App URL
+
+Port follows `BUNDLER` in `.env`. Look up the port in the **Services** table in
+[`AGENTS.md`](../../AGENTS.md) (or [`docs/browser-validation.md`](../../docs/browser-validation.md#app-url)),
+then build `http://localhost:<port>`. For deployed previews, pass the full URL instead.
+
+Phase 2b: when `--url` is omitted, the CLI derives the URL from `BUNDLER` (or optional `APP_URL` in CI).
+
+---
+
 ## Verify path (no artifacts)
 
 ### When MCP is available (local IDE session)
@@ -40,16 +50,16 @@ Do **not** use `record_trace` or `record_performance` for simple text or selecto
 pnpm chrome:debug          # or: CHROME_HEADLESS=true pnpm chrome:debug
 
 # 2. Start the app if not already running
-pnpm dev:app               # http://localhost:5173
+pnpm dev:app               # port follows BUNDLER (see App URL above)
 
 # 3. Assert a selector exists (exit 0 = pass, exit 1 = fail)
-pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=app-header]"
+pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]"
 
 # 4. Assert visible text
-pnpm browser:validate --url "$APP_DEV_URL" --selector "h1" --contains "Welcome"
+pnpm browser:validate --url http://localhost:<port> --selector "h1" --contains "Welcome"
 
 # 5. Read DOM content as JSON
-pnpm browser:read --url "$APP_DEV_URL" --selector "body" --json
+pnpm browser:read --url http://localhost:<port> --selector "body" --json
 ```
 
 > `pnpm browser:validate` and `pnpm browser:read` are added in Phase 2b. Until then, use the
@@ -67,8 +77,8 @@ Use the `devtools-capture` MCP server when you need:
 - Console logs
 
 ```
-devtools-capture MCP → record_trace url="http://localhost:5173" duration=5
-devtools-capture MCP → record_performance url="http://localhost:5173"
+devtools-capture MCP → record_trace url="http://localhost:<port>" duration=5
+devtools-capture MCP → record_performance url="http://localhost:<port>"
 ```
 
 Artifacts are saved under `packages/browser-capture/artifacts/` (after Phase 4 rename; currently
@@ -92,13 +102,13 @@ pnpm chrome:debug              # start Chrome on port 9222
 pnpm chrome:debug:status       # check if running
 pnpm chrome:debug:stop         # stop Chrome
 
-pnpm dev:app                   # start Vite dev server on http://localhost:5173
-pnpm dev:ui                    # start Storybook on http://localhost:6006
+pnpm dev:app                   # port follows BUNDLER — see App URL section
+pnpm dev:ui                    # Storybook on http://localhost:6006
 
-pnpm browser:validate --url <url> --selector <css>
-pnpm browser:validate --url <url> --selector <css> --contains <text>
-pnpm browser:read     --url <url> --selector <css> --json
+pnpm browser:validate --url http://localhost:<port> --selector <css>
+pnpm browser:validate --url http://localhost:<port> --selector <css> --contains <text>
+pnpm browser:read     --url http://localhost:<port> --selector <css> --json
 ```
 
-For SSH tunnel setup (remote Chrome), see
-[docs/browser-validation.md — Scenario 3](../../docs/browser-validation.md#scenario-3--ssh-tunnel--cloud-agent-no-mcp-no-gui).
+For Cloud Agent and SSH tunnel setup, see
+[docs/browser-validation.md — Scenarios 3a and 3b](../../docs/browser-validation.md#scenario-3a--cloud-agent-headless-vm-no-mcp).

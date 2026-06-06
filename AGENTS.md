@@ -69,8 +69,9 @@ Pick the **lightest** path that answers the question:
 | HAR / trace / Web Vitals / CI artifact       | `devtools-capture` MCP            |
 
 **Cloud Agent note:** MCP servers are not available in Cloud Agent sessions. Use
-`pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=…]"` for DOM assertions
-instead. For SSH tunnel setup, see Scenario 3 in `docs/browser-validation.md`.
+`pnpm browser:validate --url <url> --selector "[data-testid=…]"` for DOM assertions instead —
+pass `--url` explicitly (port follows `BUNDLER`; see Services table above). For SSH tunnel setup,
+see Scenario 3 in `docs/browser-validation.md`.
 
 ### Gotchas
 
