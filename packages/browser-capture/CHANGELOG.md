@@ -244,7 +244,7 @@ Targets:
 All changes to `packages/browser-capture/` should:
 
 1. Update this CHANGELOG.md
-2. Update `packages/browser-capture/README.md` and `skills/browser-capture/SKILL.md` if adding/modifying commands
+2. Update `packages/browser-capture/README.md` and `.cursor/skills/browser-capture/SKILL.md` if adding/modifying commands
 3. Add unit tests in `packages/browser-capture/__tests__/` (future)
 4. Validate in CI: run `pnpm chrome:debug && node packages/browser-capture/bin/copilot-devtools.js <command>`
 

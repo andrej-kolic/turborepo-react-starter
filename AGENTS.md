@@ -54,7 +54,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 ### Browser validation
 
-> **Read [`skills/browser-validation/SKILL.md`](skills/browser-validation/SKILL.md) first** before
+> **Read the [`browser-validation`](.cursor/skills/browser-validation/SKILL.md) skill first** before
 > doing any browser-related work. Full decision flowchart and environment scenarios are in
 > [`docs/browser-validation.md`](docs/browser-validation.md).
 

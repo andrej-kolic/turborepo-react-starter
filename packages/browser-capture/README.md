@@ -82,7 +82,7 @@ Add to `~/.copilot/mcp-config.json`:
 }
 ```
 
-> See `skills/browser-capture/SKILL.md` for full MCP tool reference and example agent workflows.
+> Agents: see the [`browser-capture`](../../.cursor/skills/browser-capture/SKILL.md) skill for a quick-start entry point. This README is the full tool reference.
 
 ## Artifacts
 

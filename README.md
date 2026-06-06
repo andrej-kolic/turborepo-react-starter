@@ -89,5 +89,5 @@ This repository includes a lightweight Copilot DevTools helper:
 - **`packages/browser-capture`** — CLI to capture DevTools artifacts (HAR, traces, performance, console, interactions) from any page. Capture/instrumentation only — not for routine DOM verification. Includes CI workflow and MCP tool exposure.
   - **Local:** `pnpm chrome:debug` then `node packages/browser-capture/bin/copilot-devtools.js <command>`
   - **Commands:** `capture-snapshot`, `record-trace`, `record-performance`, `record-console`, `record-interactions`, `upload-artifacts`, `mcp-server`
-  - **Docs:** `packages/browser-capture/README.md` and `skills/browser-capture/SKILL.md`
+  - **Docs:** `packages/browser-capture/README.md` and the `.cursor/skills/browser-capture/SKILL.md` agent skill
   - **CI:** `.github/workflows/devtools.yml` — triggered by `/capture-trace` PR comment or manual dispatch

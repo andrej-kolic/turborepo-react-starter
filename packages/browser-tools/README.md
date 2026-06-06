@@ -31,4 +31,4 @@ pnpm chrome:debug:stop        # Stop Chrome
 ## See Also
 
 - `docs/browser-validation.md` — decision flowchart, environment scenarios
-- `skills/browser-validation/SKILL.md` — agent entry point
+- `.cursor/skills/browser-validation/SKILL.md` — agent entry point
