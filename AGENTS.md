@@ -52,6 +52,26 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
 
+### Browser validation
+
+> **Read [`skills/browser-validation/SKILL.md`](skills/browser-validation/SKILL.md) first** before
+> doing any browser-related work. Full decision flowchart and environment scenarios are in
+> [`docs/browser-validation.md`](docs/browser-validation.md).
+
+Pick the **lightest** path that answers the question:
+
+| Goal                                         | Tool                              |
+| -------------------------------------------- | --------------------------------- |
+| Logic / hooks / pure functions               | `pnpm test`                       |
+| Component UI in isolation                    | `pnpm dev:ui` → Storybook `:6006` |
+| Assert DOM / text (IDE + MCP available)      | `chrome-devtools` MCP             |
+| Assert DOM / text (Cloud Agent, SSH, no MCP) | `pnpm browser:validate`           |
+| HAR / trace / Web Vitals / CI artifact       | `devtools-capture` MCP            |
+
+**Cloud Agent note:** MCP servers are not available in Cloud Agent sessions. Use
+`pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=…]"` for DOM assertions
+instead. For SSH tunnel setup, see Scenario 3 in `docs/browser-validation.md`.
+
 ### Gotchas
 
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.

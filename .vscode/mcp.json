@@ -4,12 +4,12 @@
       "command": "npx",
       "args": [
         "-y",
-        "chrome-devtools-mcp@latest",
+        "chrome-devtools-mcp@1.1.1",
         "--browserUrl",
         "http://localhost:9222"
       ]
     },
-    "automation": {
+    "devtools-capture": {
       "command": "node",
       "args": ["packages/automation/bin/copilot-devtools.js", "mcp-server"],
       "env": {

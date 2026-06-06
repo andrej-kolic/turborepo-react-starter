@@ -1,6 +1,9 @@
-# Chrome DevTools Automation — Copilot Skill
+# Chrome DevTools Capture — Copilot Skill
 
-Capture Chrome DevTools artifacts (HAR, traces, performance metrics, console logs) from any page using the `automation` MCP server built into this monorepo.
+> **This skill covers capture/instrumentation only** (HAR, traces, Web Vitals, console dumps).
+> For routine DOM/text verification, read [`skills/browser-validation/SKILL.md`](../browser-validation/SKILL.md) first.
+
+Capture Chrome DevTools artifacts (HAR, traces, performance metrics, console logs) from any page using the `devtools-capture` MCP server built into this monorepo.
 
 ## Prerequisites
 
@@ -12,7 +15,7 @@ pnpm chrome:debug:status   # check if running
 pnpm chrome:debug:stop     # stop Chrome
 ```
 
-The `automation` MCP server starts automatically when the agent session starts (configured in `.vscode/mcp.json`).
+The `devtools-capture` MCP server starts automatically when the agent session starts (configured in `.vscode/mcp.json`).
 
 ## Available MCP Tools
 
@@ -63,7 +66,7 @@ Navigates to a URL and records a full trace:
 **Example agent workflows:**
 
 ```
-Use record_trace with url="http://localhost:3000" and duration=5 to capture a full trace of the app homepage.
+Use record_trace with url="http://localhost:5173" and duration=5 to capture a full trace of the app homepage.
 
 After record_trace completes, read performance.json from the artifactsDir to summarize Web Vitals.
 ```
@@ -89,7 +92,7 @@ Navigates to a URL and measures Web Vitals + browser metrics (lighter than a ful
 **Example agent workflow:**
 
 ```
-Use record_performance with url="http://localhost:3000" to get Web Vitals. If LCP > 2500ms, investigate the trace using record_trace.
+Use record_performance with url="http://localhost:5173" to get Web Vitals. If LCP > 2500ms, investigate the trace using record_trace.
 ```
 
 ---
@@ -112,7 +115,7 @@ Listens to the console output of the **currently open** Chrome tab for a specifi
 **Example agent workflow:**
 
 ```
-Open http://localhost:3000 in Chrome manually, then use record_console with duration=15 to capture console output during your interaction.
+Open http://localhost:5173 in Chrome manually, then use record_console with duration=15 to capture console output during your interaction.
 ```
 
 ---
@@ -187,12 +190,12 @@ All artifacts are saved under `packages/automation/artifacts/<mode>-<timestamp>/
 
 ## MCP Server Config
 
-### VS Code (`.vscode/mcp.json` — already set up)
+### VS Code / Cursor (`.vscode/mcp.json` and `.cursor/mcp.json` — already set up)
 
 ```json
 {
   "servers": {
-    "automation": {
+    "devtools-capture": {
       "command": "node",
       "args": ["packages/automation/bin/copilot-devtools.js", "mcp-server"],
       "env": { "CHROME_DEBUG_PORT": "9222" }
@@ -206,7 +209,7 @@ All artifacts are saved under `packages/automation/artifacts/<mode>-<timestamp>/
 ```json
 {
   "mcpServers": {
-    "automation": {
+    "devtools-capture": {
       "command": "node",
       "args": [
         "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
