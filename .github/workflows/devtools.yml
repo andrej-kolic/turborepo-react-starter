@@ -85,7 +85,7 @@ jobs:
         id: capture
         run: |
           CAPTURE_START_MS=$(date +%s%3N)
-          node packages/automation/bin/copilot-devtools.js capture-snapshot
+          node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
           CAPTURE_END_MS=$(date +%s%3N)
           DURATION_MS=$((CAPTURE_END_MS - CAPTURE_START_MS))
           echo "Capture completed in ${DURATION_MS}ms"
@@ -97,8 +97,8 @@ jobs:
       # ── Sanitize artifacts (Phase 5 defense-in-depth) ────────────────────────
       - name: Sanitize artifacts
         run: |
-          for dir in packages/automation/artifacts/*/; do
-            node packages/automation/bin/copilot-devtools.js sanitize-artifacts "$dir"
+          for dir in packages/browser-capture/artifacts/*/; do
+            node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
           done
 
       # ── Upload artifacts ──────────────────────────────────────────────────────
@@ -106,14 +106,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: devtools-artifacts-${{ github.run_id }}
-          path: packages/automation/artifacts/**
+          path: packages/browser-capture/artifacts/**
           retention-days: 30
 
       # ── Measure artifact size ─────────────────────────────────────────────────
       - name: Compute artifact size
         id: artifact-size
         run: |
-          SIZE_BYTES=$(du -sb packages/automation/artifacts/ | cut -f1)
+          SIZE_BYTES=$(du -sb packages/browser-capture/artifacts/ | cut -f1)
           echo "Artifact directory size: ${SIZE_BYTES} bytes"
           echo "artifact_size_bytes=${SIZE_BYTES}" >> "$GITHUB_OUTPUT"
 

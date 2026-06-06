@@ -246,7 +246,7 @@ See `docs/component-validation-contract.md` for the full convention (added in Ph
 | File                                         | Purpose                                      |
 | -------------------------------------------- | -------------------------------------------- |
 | `skills/browser-validation/SKILL.md`         | Agent entry point — read this first          |
-| `skills/chrome-devtools/SKILL.md`            | Capture-only skill (HAR, traces, Web Vitals) |
+| `skills/browser-capture/SKILL.md`            | Capture-only skill (HAR, traces, Web Vitals) |
 | `docs/component-validation-contract.md`      | `data-testid` convention (Phase 3)           |
 | `.cursor/mcp.json`                           | MCP server configuration                     |
 | `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                     |

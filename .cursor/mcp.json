@@ -12,7 +12,10 @@
     },
     "devtools-capture": {
       "command": "node",
-      "args": ["packages/automation/bin/copilot-devtools.js", "mcp-server"],
+      "args": [
+        "packages/browser-capture/bin/copilot-devtools.js",
+        "mcp-server"
+      ],
       "env": {
         "CHROME_DEBUG_PORT": "9222"
       }

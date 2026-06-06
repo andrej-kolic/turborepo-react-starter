@@ -19,7 +19,7 @@ catalog:
   serve: 14.2.6
   '@turbo/gen': 2.9.15
 
-  # Browser automation
+  # Browser capture
   playwright-core: 1.44.0
 
   # Testing

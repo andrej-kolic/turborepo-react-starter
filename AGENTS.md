@@ -76,5 +76,5 @@ see Scenario 3 in `docs/browser-validation.md`.
 ### Gotchas
 
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
-- **Chrome automation** (`pnpm chrome:debug`, port 9222) and `packages/automation` are optional; not required for SPA dev.
+- **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

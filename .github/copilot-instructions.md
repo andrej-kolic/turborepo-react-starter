@@ -107,7 +107,7 @@ the **Copilot CLI**, create `~/.copilot/mcp-config.json` with:
     "devtools-capture": {
       "command": "node",
       "args": [
-        "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
+        "/absolute/path/to/turborepo-react-starter/packages/browser-capture/bin/copilot-devtools.js",
         "mcp-server"
       ],
       "env": { "CHROME_DEBUG_PORT": "9222" }

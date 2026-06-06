@@ -81,8 +81,7 @@ devtools-capture MCP → record_trace url="http://localhost:<port>" duration=5
 devtools-capture MCP → record_performance url="http://localhost:<port>"
 ```
 
-Artifacts are saved under `packages/browser-capture/artifacts/` (after Phase 4 rename; currently
-`packages/automation/artifacts/`).
+Artifacts are saved under `packages/browser-capture/artifacts/`.
 
 ---
 

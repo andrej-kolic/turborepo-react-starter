@@ -1,4 +1,4 @@
-# Chrome DevTools Capture — Copilot Skill
+# Browser Capture — Copilot Skill
 
 > **This skill covers capture/instrumentation only** (HAR, traces, Web Vitals, console dumps).
 > For routine DOM/text verification, read [`skills/browser-validation/SKILL.md`](../browser-validation/SKILL.md) first.
@@ -174,7 +174,7 @@ await page.getByTestId('email-input').fill('user@example.com'); // LoginForm src
 
 ---
 
-All artifacts are saved under `packages/automation/artifacts/<mode>-<timestamp>/`.
+All artifacts are saved under `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
 
 | File                | Format           | Description                                                          |
 | ------------------- | ---------------- | -------------------------------------------------------------------- |
@@ -197,7 +197,10 @@ All artifacts are saved under `packages/automation/artifacts/<mode>-<timestamp>/
   "servers": {
     "devtools-capture": {
       "command": "node",
-      "args": ["packages/automation/bin/copilot-devtools.js", "mcp-server"],
+      "args": [
+        "packages/browser-capture/bin/copilot-devtools.js",
+        "mcp-server"
+      ],
       "env": { "CHROME_DEBUG_PORT": "9222" }
     }
   }
@@ -212,7 +215,7 @@ All artifacts are saved under `packages/automation/artifacts/<mode>-<timestamp>/
     "devtools-capture": {
       "command": "node",
       "args": [
-        "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
+        "/absolute/path/to/turborepo-react-starter/packages/browser-capture/bin/copilot-devtools.js",
         "mcp-server"
       ],
       "env": { "CHROME_DEBUG_PORT": "9222" }

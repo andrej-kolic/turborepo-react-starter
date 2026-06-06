@@ -6,7 +6,7 @@ const DEFAULT_HOST = 'localhost';
 /**
  * Connect to an existing Chrome instance over CDP.
  *
- * Follows the same connection pattern as packages/automation/bin/copilot-devtools.js:
+ * Follows the same connection pattern as packages/browser-capture/bin/copilot-devtools.js:
  * uses chromium.connectOverCDP with the DevTools HTTP endpoint.
  *
  * The caller is responsible for calling browser.close() after use — this helper
