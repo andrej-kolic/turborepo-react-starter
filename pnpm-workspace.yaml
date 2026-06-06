@@ -19,6 +19,9 @@ catalog:
   serve: 14.2.6
   '@turbo/gen': 2.9.15
 
+  # Browser automation
+  playwright-core: 1.44.0
+
   # Testing
   vitest: '4.1.7'
   jsdom: 29.1.1

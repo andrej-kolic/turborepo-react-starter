@@ -30,9 +30,9 @@
     "deploy:netlify": "dotenv -- sh -c 'pnpm build:app && pnpm run --filter @repo/infra-netlify deploy'",
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
-    "chrome:debug": "node scripts/chrome-debug.js",
-    "chrome:debug:status": "node scripts/chrome-debug.js --status",
-    "chrome:debug:stop": "node scripts/chrome-debug.js --stop"
+    "chrome:debug": "node packages/browser-tools/bin/chrome-debug.js",
+    "chrome:debug:status": "node packages/browser-tools/bin/chrome-debug.js --status",
+    "chrome:debug:stop": "node packages/browser-tools/bin/chrome-debug.js --stop"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
