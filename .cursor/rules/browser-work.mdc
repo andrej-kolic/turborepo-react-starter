@@ -1,0 +1,22 @@
+---
+description: Browser verify vs capture — which tool tier to use for DOM checks and artifacts
+globs: packages/browser-tools/**,packages/browser-capture/**,.cursor/skills/browser-*/**,docs/browser-validation.md,.github/workflows/browser-smoke.yml,.github/workflows/devtools.yml
+alwaysApply: false
+---
+
+# Browser work
+
+Read the **browser-validation** skill first. Two tiers — never mix them:
+
+| Tier | Package / tool | Use for |
+| ---- | -------------- | ------- |
+| **Verify** | `@repo/browser-tools`, `chrome-devtools` MCP | DOM assertions, selector checks — no artifacts |
+| **Capture** | `@repo/browser-capture`, `devtools-capture` MCP | HAR, traces, Web Vitals, console — produces artifacts |
+
+- Routine DOM/text checks: `pnpm browser:validate` or `chrome-devtools` MCP — **not** `record_trace`.
+- CI smoke (verify): `.github/workflows/browser-smoke.yml`
+- CI artifacts (capture): `.github/workflows/devtools.yml`
+
+App URL port follows `BUNDLER` (5173 / 8080 / 8000). Always pass `--url` explicitly in examples and CI.
+
+Full decision tree: [`docs/browser-validation.md`](../../docs/browser-validation.md)

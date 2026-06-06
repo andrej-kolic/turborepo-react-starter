@@ -1,0 +1,24 @@
+---
+description: Canonical project context — AGENTS.md, pnpm/turbo conventions, single source of truth
+alwaysApply: true
+---
+
+# Project context
+
+**Read [`AGENTS.md`](../../AGENTS.md) first.** It is the single, tool-agnostic source for setup,
+commands, ports, and conventions. Do not duplicate that content in tool-specific files — keep
+`CLAUDE.md` and `.github/copilot-instructions.md` as thin pointers.
+
+## Monorepo conventions
+
+- **Package manager:** pnpm + Turborepo. Scope work with `pnpm --filter <pkg> <script>`.
+- **App bundler:** root `dev:app` / `build:app` use `BUNDLER` from `.env` (`app-vite` default).
+- **Internal packages:** `@repo/` prefix; `workspace:*` in `package.json`.
+- **TypeScript / ESLint:** extend `@repo/typescript-config` and `@repo/eslint-config`.
+- **Quality loop:** `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm quality-checks`.
+
+## Agent skills and docs
+
+- Browser verification: `.cursor/skills/browser-validation/SKILL.md` → `docs/browser-validation.md`
+- Browser capture: `.cursor/skills/browser-capture/SKILL.md` → `packages/browser-capture/README.md`
+- Component testids: `docs/component-validation-contract.md`

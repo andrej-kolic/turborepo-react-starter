@@ -10,4 +10,5 @@ export default {
 
   '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json}': ['prettier --write'],
+  '{.cursor,.vscode}/mcp.json': () => 'node scripts/check-mcp-config.mjs',
 };

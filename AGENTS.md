@@ -75,6 +75,9 @@ see Scenario 3 in `docs/browser-validation.md`.
 
 ### Gotchas
 
+- **MCP config:** `.cursor/mcp.json` (`mcpServers`) and `.vscode/mcp.json` (`servers`) must stay
+  identical — run `pnpm check:mcp-config` (also in `quality-checks` and pre-commit when either file
+  changes).
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

@@ -32,7 +32,7 @@ Build `http://localhost:<port>`, or pass a full deployed URL. Always pass `--url
 
 ```bash
 pnpm chrome:debug                                   # start Chrome on :9222 (CHROME_HEADLESS=true for CI/VM)
-pnpm dev:app                                         # start the app (port follows BUNDLER)
+pnpm dev:app                                        # start the app (port follows BUNDLER)
 
 pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]"   # exit 0 pass / 1 fail
 pnpm browser:validate --url http://localhost:<port> --selector "h1" --contains "Welcome"
