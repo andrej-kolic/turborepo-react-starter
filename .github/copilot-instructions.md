@@ -89,7 +89,8 @@ When agents need to inspect pages:
 
 #### MCP Setup (one-time per machine)
 
-The repo includes `.vscode/mcp.json` for VS Code users. For the **Copilot CLI**, create `~/.copilot/mcp-config.json` with:
+The repo includes `.vscode/mcp.json` and `.cursor/mcp.json` for IDE users (already set up). For
+the **Copilot CLI**, create `~/.copilot/mcp-config.json` with:
 
 ```json
 {
@@ -98,14 +99,25 @@ The repo includes `.vscode/mcp.json` for VS Code users. For the **Copilot CLI**,
       "command": "npx",
       "args": [
         "-y",
-        "chrome-devtools-mcp@latest",
+        "chrome-devtools-mcp@1.1.1",
         "--browserUrl",
         "http://localhost:9222"
       ]
+    },
+    "devtools-capture": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
+        "mcp-server"
+      ],
+      "env": { "CHROME_DEBUG_PORT": "9222" }
     }
   }
 }
 ```
+
+`chrome-devtools` is for DOM verification (`navigate_page`, `evaluate_script`, `take_snapshot`).
+`devtools-capture` is for artifact capture (`record_trace`, `record_performance`, HAR, Web Vitals).
 
 #### Advanced
 
@@ -132,7 +144,7 @@ ls ~/.chrome-debugging-sessions/
 - **Chrome not found:** Install Google Chrome or set `CHROME_PATH` env var
 - **Port in use:** Check `pnpm chrome:debug:status` or stop with `pnpm chrome:debug:stop`
 - **Connection refused:** Wait a few seconds for Chrome to fully start
-- **Headless mode needed:** Edit `scripts/chrome-debug.js` and add `--headless=new` to chrome args
+- **Headless mode needed:** Set `CHROME_HEADLESS=true` before running `pnpm chrome:debug`
 
 - README.md (project overview)
 - apps/\*/README.md (per-app notes)

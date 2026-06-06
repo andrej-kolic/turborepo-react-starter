@@ -7,10 +7,10 @@ These are two separate concerns with separate tools — pick the right tier.
 
 ## Verify vs Capture
 
-| Concept     | Industry terms                             | Role                                   | Artifacts | Tools                                          |
-| ----------- | ------------------------------------------ | -------------------------------------- | --------- | ---------------------------------------------- |
-| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `chrome-devtools` MCP, `pnpm browser:validate` |
-| **Capture** | instrumentation, tracing, DevTools capture | HAR, traces, Web Vitals, console dumps | Yes (CI)  | `devtools-capture` MCP, `pnpm automation:*`    |
+| Concept     | Industry terms                             | Role                                   | Artifacts | Tools                                             |
+| ----------- | ------------------------------------------ | -------------------------------------- | --------- | ------------------------------------------------- |
+| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `chrome-devtools` MCP, `pnpm browser:validate`    |
+| **Capture** | instrumentation, tracing, DevTools capture | HAR, traces, Web Vitals, console dumps | Yes (CI)  | `devtools-capture` MCP, `copilot-devtools.js` CLI |
 
 > **Rule:** Never use capture tools for routine verification. Never use verify tools when a CI
 > artifact is needed.
@@ -27,11 +27,11 @@ flowchart TD
     D -- Yes --> E[pnpm dev:ui\nStorybook :6006]
     D -- No --> F{MCP available?\nLocal / IDE session}
     F -- Yes --> G[chrome-devtools MCP\nnavigate_page · evaluate_script\ntake_snapshot]
-    F -- No --> H{Cloud Agent\nor SSH?}
+    F -- No --> H{Cloud Agent\nor SSH tunnel?}
     H -- Yes --> I[pnpm browser:validate\n--selector … --contains …]
     H -- No --> J{Need HAR / trace\nor CI artifact?}
     J -- Yes --> K[devtools-capture MCP\nrecord_trace · record_performance]
-    J -- No --> G
+    J -- No --> L[pnpm test · pnpm dev:ui\nor wait for Phase 2b\nbrowser:validate CLI]
 ```
 
 ---
@@ -80,63 +80,89 @@ CHROME_DEBUG_HOST=localhost
 
 ---
 
-### Scenario 2 — Remote / deployed URL (no local Chrome)
+### Scenario 2 — Remote / deployed URL
 
-The app is deployed (staging, Netlify preview). No Chrome process to manage.
+The app is deployed (staging, Netlify preview). The _target URL_ is remote, but both MCP servers
+still connect to `localhost:9222` — Chrome must run locally with remote debugging enabled.
 
 ```bash
-# No pnpm chrome:debug needed.
-# Use chrome-devtools MCP with the deployed URL directly:
+# 1. Start Chrome locally (as normal)
+pnpm chrome:debug                 # opens Chrome on port 9222
+
+# 2. Use chrome-devtools MCP with the deployed URL:
 # navigate_page url="https://your-preview.netlify.app"
 
-# Or capture a trace:
-# devtools-capture MCP → record_trace url="https://your-preview.netlify.app"
+# 3. Or capture a trace with devtools-capture MCP:
+# record_trace url="https://your-preview.netlify.app" duration=5
 ```
 
 Environment variables:
 
 ```
 APP_VALIDATE_URL=https://your-preview.netlify.app
+CHROME_DEBUG_PORT=9222
+CHROME_DEBUG_HOST=localhost
 ```
 
 ---
 
-### Scenario 3 — SSH tunnel / Cloud Agent (no MCP, no GUI)
+### Scenario 3a — Cloud Agent (headless VM, no MCP)
 
-Running in a headless CI-like environment or a Cursor Cloud Agent where MCP is unavailable.
-Use `pnpm browser:validate` which drives Chrome over CDP without requiring an MCP session.
-
-**Step 1 — Forward the Chrome debug port over SSH (if Chrome is on a remote machine):**
+Everything runs on the same remote VM: the agent, Chrome, and the dev server. MCP is not
+available. Use `pnpm browser:validate` which drives Chrome over CDP directly.
 
 ```bash
-# On the remote machine — start Chrome with remote debugging:
-pnpm chrome:debug
+# All commands run on the Cloud Agent VM:
 
-# On your local machine — open an SSH tunnel to expose port 9222 locally:
-ssh -L 9222:localhost:9222 user@remote-host
-```
+# 1. Start Chrome headlessly (no display required)
+CHROME_HEADLESS=true pnpm chrome:debug
 
-**Step 2 — Run assertions:**
+# 2. Start the app
+pnpm dev:app                      # http://localhost:5173
 
-```bash
-# Check that a selector exists (exit 0 = pass, exit 1 = fail)
+# 3. Assert selectors (exit 0 = pass, exit 1 = fail)
 pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=app-header]"
 
-# Assert visible text
+# 4. Assert visible text
 pnpm browser:validate --url "$APP_DEV_URL" --selector "h1" --contains "Welcome"
 
-# Read DOM content as JSON (for scripting / CI)
+# 5. Read DOM content as JSON
 pnpm browser:read --url "$APP_DEV_URL" --selector "body" --json
 ```
 
-Environment variables:
+Environment variables (set on the VM):
 
 ```
 APP_DEV_URL=http://localhost:5173
-APP_VALIDATE_URL=http://localhost:5173
 CHROME_DEBUG_HOST=localhost
 CHROME_DEBUG_PORT=9222
 CHROME_HEADLESS=true
+```
+
+---
+
+### Scenario 3b — SSH tunnel (Chrome on remote, commands from local)
+
+Chrome runs on a remote machine; you want to run `browser:validate` assertions from your local
+machine through an SSH tunnel. MCP may or may not be available locally.
+
+```bash
+# On the remote machine — start Chrome with remote debugging:
+pnpm chrome:debug                 # listens on port 9222 of the remote host
+
+# On your local machine — open the SSH tunnel:
+ssh -L 9222:localhost:9222 user@remote-host
+
+# Now run assertions locally — they connect through the tunnel to the remote Chrome:
+pnpm browser:validate --url "$APP_DEV_URL" --selector "[data-testid=app-header]"
+```
+
+Environment variables (local machine, after tunnel is open):
+
+```
+APP_DEV_URL=http://<remote-host>:<app-port>
+CHROME_DEBUG_HOST=localhost
+CHROME_DEBUG_PORT=9222
 ```
 
 ---
