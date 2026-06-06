@@ -65,6 +65,30 @@ pnpm browser:read --url http://localhost:<port> --selector "body" --json
 > `pnpm browser:validate` and `pnpm browser:read` connect to Chrome over CDP.
 > Requires Chrome running (`pnpm chrome:debug`) and the app serving at the target URL.
 
+### Storybook (`packages/ui` only)
+
+Storybook and the live app are different targets. **`app-core` is not in Storybook** — use
+`browser:validate` against `pnpm dev:app` for integrated page regions.
+
+| Storybook goal                              | Tool                                                         |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| CI visual regression                        | **Chromatic** (`@chromatic-com/storybook` in `ui-storybook`) |
+| Agent spot-check while Storybook is running | `pnpm browser:read` with canvas URLs                         |
+
+Use **canvas URLs** (`iframe.html?id=…`), not manager URLs (`?path=/story/…`). The CLI does not
+pierce Storybook's manager iframe.
+
+```bash
+pnpm dev:ui
+pnpm chrome:debug
+pnpm browser:read \
+  --url "http://localhost:6006/iframe.html?id=example-dynamiclist--default" \
+  --selector ".DynamicList" \
+  --json
+```
+
+CI live-app smoke runs via `.github/workflows/browser-smoke.yml` — not Storybook.
+
 ---
 
 ## Capture path (artifacts)

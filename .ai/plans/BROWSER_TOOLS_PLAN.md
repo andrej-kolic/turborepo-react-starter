@@ -346,20 +346,135 @@ node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
 - Phase 2b must be complete (`pnpm browser:validate` must exist)
 - Phase 3 must be complete (`data-testid=app-header` must exist)
 
+### Design notes (read before implementing)
+
+**Storybook vs live app — two targets, two tiers:**
+
+| Target                          | CI / regression                                                                                         | Agent / local spot-check                            |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** (`@chromatic-com/storybook` already wired in `ui-storybook`) — visual baselines, PR diffs | `pnpm browser:read` against canvas URLs (see below) |
+| `packages/app-core` in live app | `browser-smoke.yml` — selector smoke on bundler dev server                                              | `pnpm browser:validate` (Phase 2b)                  |
+
+Do **not** use `browser-smoke.yml` for Storybook or treat `browser:read` as a Chromatic replacement.
+Chromatic is the production Storybook CI path; `browser:read` is the lightweight verify tier for agents.
+
+**No Storybook URL in `.env`:** Same rule as app URLs in `docs/browser-validation.md` — pass
+`--url` explicitly. Storybook port is fixed at `6006` (`apps/ui-storybook/package.json`); unlike
+`BUNDLER`, it does not vary. Do **not** add `APP_STORYBOOK_URL` unless `browser-verify.js` is
+extended to consume it in the same commit.
+
+**Storybook canvas URLs, not manager URLs:** `browser:validate` / `browser:read` query the
+top-level page (`page.$()` in `verify.js`) — they do **not** pierce Storybook's manager iframe.
+Use Storybook's canvas URL format (official E2E pattern):
+
+```text
+http://localhost:6006/iframe.html?id=<story-id>
+```
+
+Example for `Example/DynamicList` → `Default`: `iframe.html?id=example-dynamiclist--default`.
+Do **not** document `?path=/story/…` for CLI verification — that is the manager UI.
+
 ### Tasks
 
-- [ ] Add `APP_STORYBOOK_URL=http://localhost:6006` to `.env.example`
-- [ ] Document Storybook validation path in `docs/browser-validation.md`:
-      `pnpm dev:ui` → `http://localhost:6006/?path=/story/…`
-- [ ] Add `pnpm browser:read` usage example against Storybook in the skill
-- [ ] Create `.github/workflows/browser-smoke.yml`:
+- [ ] Add a **Storybook validation** subsection to `docs/browser-validation.md`:
+  - Chromatic = CI visual regression for `packages/ui` (link to Storybook addon already in repo)
+  - Agent path: `pnpm dev:ui` → canvas URL → `pnpm browser:read --url … --selector …`
+  - Scope reminder: `app-core` components are **not** in Storybook; assert them via live app
+    (`browser:validate` / `browser-smoke.yml`), not Storybook URLs
+- [ ] Add `pnpm browser:read` Storybook example to `skills/browser-validation/SKILL.md`:
+  ```bash
+  pnpm dev:ui
+  pnpm browser:read \
+    --url "http://localhost:6006/iframe.html?id=example-dynamiclist--default" \
+    --selector ".DynamicList" \
+    --json
+  ```
+  (Use `.DynamicList` or add `data-testid` to a story args — stories do not ship testids by default.)
+- [ ] Create `.github/workflows/browser-smoke.yml` — full workflow, not step stubs:
+  - **Triggers:** `pull_request` + `workflow_dispatch` (manual re-run without a PR)
+  - **Separate from** `devtools.yml` (verify smoke, no artifacts) and `build-auto.yaml` (lint/test/build)
+  - **Pin bundler:** `BUNDLER=app-vite` only for v1 — avoid matrix until needed; document why in workflow comment
+  - **Required env** (job-level):
+    ```yaml
+    HUSKY: 0
+    BUILD_ENVIRONMENT: development
+    BUNDLER: app-vite
+    CHROME_HEADLESS: 'true'
+    CHROME_DEBUG_PORT: 9222
+    ```
+  - **Do not add `wait-on`** — reuse the curl retry loop from `devtools.yml` for both `:9222` (Chrome) and `:5173` (app)
+  - **Assertion:** selector only — no `--contains` (bundler-specific text breaks if matrix is added later):
+    ```bash
+    pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
+    ```
+  - **`timeout-minutes: 15`** (match other workflows)
+  - **Cleanup** (`if: always()`): `pnpm chrome:debug:stop` + kill background dev-server PID
+  - **Install:** `pnpm install --frozen-lockfile` (match `devtools.yml`)
+
+  Sketch (fill in checkout/setup-pnpm/setup-node steps to match `devtools.yml`):
+
   ```yaml
-  # Fast headless smoke test — separate from devtools.yml (artifact capture)
-  # Validates app renders key components; not a replacement for unit tests.
-  - run: pnpm chrome:debug # CHROME_HEADLESS=true
-  - run: pnpm dev:app &
-  - run: wait-on http://localhost:5173 # or derive port from BUNDLER matrix
-  - run: pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]" --contains "app-vite"
+  name: Browser smoke
+
+  on:
+    pull_request:
+    workflow_dispatch:
+
+  env:
+    HUSKY: 0
+    BUILD_ENVIRONMENT: development
+    BUNDLER: app-vite
+    CHROME_HEADLESS: 'true'
+
+  jobs:
+    smoke:
+      name: Live app smoke (verify)
+      timeout-minutes: 15
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: pnpm/action-setup@v4
+        - uses: actions/setup-node@v5
+          with:
+            node-version: 24
+            cache: pnpm
+        - run: pnpm install --frozen-lockfile
+
+        - name: Start Chrome (headless)
+          run: pnpm chrome:debug
+
+        - name: Wait for DevTools endpoint
+          run: |
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              curl -sS http://localhost:9222/json/version > /dev/null 2>&1 && exit 0
+              sleep 1
+            done
+            echo "::error::Chrome DevTools not ready within 10s"
+            exit 1
+
+        - name: Start dev server
+          run: pnpm dev:app &
+          env:
+            BUNDLER: app-vite
+
+        - name: Wait for app
+          run: |
+            for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+              curl -sS http://localhost:5173 > /dev/null 2>&1 && exit 0
+              sleep 2
+            done
+            echo "::error::App not ready on :5173 within 60s"
+            exit 1
+
+        - name: Assert app header renders
+          run: |
+            pnpm browser:validate \
+              --url http://localhost:5173 \
+              --selector "[data-testid=app-header]"
+
+        - name: Cleanup
+          if: always()
+          run: pnpm chrome:debug:stop || true
   ```
 
 ### Verification checkpoint
@@ -367,8 +482,16 @@ node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
 ```bash
 # Simulate CI locally
 CHROME_HEADLESS=true pnpm chrome:debug
-BUNDLER=app-vite pnpm dev:app &
+BUNDLER=app-vite BUILD_ENVIRONMENT=staging pnpm dev:app &
+# wait for :5173, then:
 pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
+# exit 0
+
+# Storybook agent path (separate from smoke — Chromatic handles CI)
+pnpm dev:ui &
+pnpm browser:read \
+  --url "http://localhost:6006/iframe.html?id=example-dynamiclist--default" \
+  --selector ".DynamicList" --json
 # exit 0
 ```
 
@@ -397,4 +520,6 @@ pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-h
 | `packages/automation/`                          | RENAME dir → `packages/browser-capture/`                        |      4       |
 | `packages/browser-capture/package.json`         | UPDATE — name: @repo/browser-capture                            |      4       |
 | `packages/browser-capture/README.md`            | UPDATE — capture-only framing                                   |      4       |
-| `.github/workflows/browser-smoke.yml`           | CREATE — headless CI smoke test                                 | 5 (optional) |
+| `docs/browser-validation.md`                    | UPDATE — Storybook subsection (Chromatic vs browser:read)       | 5 (optional) |
+| `skills/browser-validation/SKILL.md`            | UPDATE — browser:read Storybook canvas URL example              | 5 (optional) |
+| `.github/workflows/browser-smoke.yml`           | CREATE — headless live-app smoke (selector only, app-vite)      | 5 (optional) |

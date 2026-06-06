@@ -48,6 +48,7 @@ that fits.
 | Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot` | `record_trace`, `record_performance` |
 | Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                           | Raw one-off Playwright scripts       |
 | Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                | `chrome-devtools` MCP (wrong tier)   |
+| CI live app smoke (PR)                                   | `.github/workflows/browser-smoke.yml`                                       | Storybook paths, artifact capture    |
 | CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/devtools.yml`                   | MCP (not available in CI)            |
 
 ---
@@ -241,6 +242,57 @@ See `docs/component-validation-contract.md` for the full convention (added in Ph
 
 ---
 
+## Storybook validation
+
+Storybook (`pnpm dev:ui`, port `6006`) and the live bundler app are **different verification
+targets**. Do not use `browser-smoke.yml` for Storybook.
+
+| Target                          | CI / regression                                                            | Agent / local spot-check                        |
+| ------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` is wired in `apps/ui-storybook` | `pnpm browser:read` against canvas URLs (below) |
+| `packages/app-core` in live app | `.github/workflows/browser-smoke.yml`                                      | `pnpm browser:validate`                         |
+
+**Chromatic** is the production Storybook CI path: visual baselines, PR diffs, all stories.
+`browser:read` is not a Chromatic replacement — it is the lightweight verify tier for agents when
+Storybook is already running locally.
+
+**Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live app
+(`browser:validate` or `browser-smoke.yml`), not Storybook URLs. See
+`docs/component-validation-contract.md`.
+
+### Storybook URL (agents)
+
+Do not store Storybook URLs in `.env` — port `6006` is fixed in `apps/ui-storybook/package.json`.
+Always pass `--url` explicitly.
+
+`browser:validate` / `browser:read` query the **top-level page** — they do not pierce Storybook's
+manager iframe. Use the **canvas URL** (Storybook's official E2E pattern), not the manager UI:
+
+```text
+http://localhost:6006/iframe.html?id=<story-id>
+```
+
+Do **not** use `?path=/story/…` for CLI verification — that loads the manager shell.
+
+Story IDs derive from the story `title` and export name: `Example/DynamicList` + `Default` →
+`example-dynamiclist--default`.
+
+```bash
+# 1. Start Storybook
+pnpm dev:ui
+
+# 2. Start Chrome (if not already running)
+pnpm chrome:debug
+
+# 3. Read a story canvas (packages/ui — use class or data-testid from story args)
+pnpm browser:read \
+  --url "http://localhost:6006/iframe.html?id=example-dynamiclist--default" \
+  --selector ".DynamicList" \
+  --json
+```
+
+---
+
 ## Related Files
 
 | File                                         | Purpose                                      |
@@ -250,3 +302,4 @@ See `docs/component-validation-contract.md` for the full convention (added in Ph
 | `docs/component-validation-contract.md`      | `data-testid` convention (Phase 3)           |
 | `.cursor/mcp.json`                           | MCP server configuration                     |
 | `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                     |
+| `.github/workflows/browser-smoke.yml`        | CI live-app smoke (verify tier)              |
