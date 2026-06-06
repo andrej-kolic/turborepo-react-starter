@@ -4,7 +4,11 @@ import './styles.css';
 
 export function ResourceCards() {
   return (
-    <div className="ResourceCards">
+    <section
+      className="ResourceCards"
+      aria-label="Resources"
+      data-testid="resource-cards"
+    >
       <Card title="Embedded image">
         <div>{"import Icon from 'pic.svg'"}</div>
       </Card>
@@ -31,6 +35,6 @@ export function ResourceCards() {
           Readme
         </a>
       </Card>
-    </div>
+    </section>
   );
 }

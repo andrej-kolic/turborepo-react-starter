@@ -245,20 +245,42 @@ pnpm browser:read --url http://localhost:5173 --selector body --json
 
 **Priority:** Medium · **Effort:** Low · **Depends on:** Phase 2b (to run verify commands)
 
+> **Architecture note:** `packages/app-core` components are **not** added to Storybook.
+> Storybook covers `packages/ui` primitives only (pure, prop-driven, no env or data coupling).
+> Verification for `app-core` components runs via `browser:validate` against the live app.
+
 ### Tasks
 
-- [ ] Add `data-testid="app-header"` to the root element of
-      `packages/app-core/src/components/Header/index.tsx`
-- [ ] Add `data-testid="resource-cards"` to the root element of
-      `packages/app-core/src/components/ResourceCards/index.tsx`
-- [ ] Add `data-testid="scroller"` to the root element of
-      `packages/app-core/src/components/Scroller/index.tsx`
-- [ ] Create `docs/component-validation-contract.md`:
-  - Prefer `data-testid` (kebab-case) on user-visible and agent-checkable regions
-  - Prefer accessible name (`aria-label`) as second choice
-  - CSS class selectors are last resort — documented as less stable
-  - Storybook stories must use the same `data-testid` values as the app
-- [ ] Verify Storybook stories for all three updated components expose the same `data-testid`
+- [ ] Upgrade `Header`'s root from `<div className="Header">` to `<header className="Header">` and
+      add `data-testid="app-header"` —
+      file: `packages/app-core/src/components/Header/index.tsx`
+- [ ] Upgrade `ResourceCards`'s root from `<div className="ResourceCards">` to
+      `<section className="ResourceCards" aria-label="Resources">` and add
+      `data-testid="resource-cards"` —
+      file: `packages/app-core/src/components/ResourceCards/index.tsx`
+- [ ] Add `data-testid?: string` prop to `DynamicList` (`packages/ui/src/DynamicList/index.tsx`),
+      forwarded to `<div className="DynamicList">`. Pass `data-testid="scroller"` from
+      `Scroller/index.tsx`. Do **not** wrap `Scroller` in an extra div — the prop threads through
+      `DynamicList`'s existing root element (no extra DOM node).
+  - Optionally add `data-testid` to the `DynamicList` Storybook story args to document the prop.
+- [ ] Create `docs/component-validation-contract.md` covering:
+  - **Scope**: this contract governs agent CLI verification of page regions, not unit-test
+    selectors. `data-testid` is first-choice here because region anchors need a stable
+    machine-readable handle regardless of visible text changes. For unit/integration tests use
+    role-based locators (`getByRole`, `getByLabel`) per Playwright/Testing Library best practices.
+  - **Selector hierarchy for agent verification**: `data-testid` (kebab-case) → `aria-label` →
+    CSS class (last resort, documented as unstable)
+  - **Semantic HTML alongside testids**: prefer landmark elements (`<header>`, `<section>`,
+    `<main>`) wherever applicable — they provide free ARIA roles without extra attributes
+  - **Which components get a testid**: any top-level, user-visible page region that an agent or
+    smoke test should independently assert on. Sub-elements within a region do not get testids
+    unless they are independently checkable features.
+  - **Production build**: `data-testid` attributes are intentionally present in production builds.
+    This project is a public frontend starter; they carry no security risk and allow agents and CI
+    smoke tests to run against deployed URLs.
+  - **Naming**: kebab-case, scoped to describe the region (`app-header`, `resource-cards`,
+    `scroller`). Do not namespace by package — names must be unique within a rendered page, not
+    globally across packages.
 
 ### Verification checkpoint
 
@@ -367,10 +389,11 @@ pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-h
 | `packages/browser-tools/bin/browser-verify.js`  | CREATE — verify CLI                                             |      2b      |
 | `packages/browser-tools/src/cdp/verify.js`      | CREATE — CDP verify helpers                                     |      2b      |
 | `package.json` (root)                           | UPDATE — chrome:debug\* paths + browser:read + browser:validate |   2a + 2b    |
-| `packages/app-core/.../Header/index.tsx`        | UPDATE — add data-testid="app-header"                           |      3       |
-| `packages/app-core/.../ResourceCards/index.tsx` | UPDATE — add data-testid="resource-cards"                       |      3       |
-| `packages/app-core/.../Scroller/index.tsx`      | UPDATE — add data-testid="scroller"                             |      3       |
-| `docs/component-validation-contract.md`         | CREATE — selector stability convention                          |      3       |
+| `packages/app-core/.../Header/index.tsx`        | UPDATE — `<div>` → `<header>`, add data-testid="app-header"     |      3       |
+| `packages/app-core/.../ResourceCards/index.tsx` | UPDATE — `<div>` → `<section aria-label>`, add data-testid      |      3       |
+| `packages/ui/src/DynamicList/index.tsx`         | UPDATE — add optional data-testid prop, forward to root div     |      3       |
+| `packages/app-core/.../Scroller/index.tsx`      | UPDATE — pass data-testid="scroller" to DynamicList prop        |      3       |
+| `docs/component-validation-contract.md`         | CREATE — agent verification contract, scope, naming, hierarchy  |      3       |
 | `packages/automation/`                          | RENAME dir → `packages/browser-capture/`                        |      4       |
 | `packages/browser-capture/package.json`         | UPDATE — name: @repo/browser-capture                            |      4       |
 | `packages/browser-capture/README.md`            | UPDATE — capture-only framing                                   |      4       |
