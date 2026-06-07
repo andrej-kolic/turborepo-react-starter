@@ -1,10 +1,14 @@
 import path from 'node:path';
+import { createRequire } from 'module';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
+
+const _require = createRequire(import.meta.url);
+const pkg = _require('../package.json') as { devPort: number };
 
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 const distPath = path.resolve('dist');
@@ -120,6 +124,7 @@ const webpackConfig = (
     },
 
     devServer: {
+      port: Number(process.env.PORT) || pkg.devPort,
       historyApiFallback: true, // proxy requests through a specified index page (enable reload without 404)
       hot: true,
       open: false,

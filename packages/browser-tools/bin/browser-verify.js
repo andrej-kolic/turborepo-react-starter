@@ -15,17 +15,33 @@
  *   3. Error with port table
  */
 
+import { readFileSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import {
   assertSelectorExists,
   assertTextVisible,
   readSelector,
 } from '../src/cdp/verify.js';
 
-const BUNDLER_PORTS = {
-  'app-vite': 5173,
-  'app-webpack': 8080,
-  'app-esbuild': 8000,
-};
+const WORKSPACE_ROOT = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../..',
+);
+const BUNDLER_APPS = ['app-vite', 'app-webpack', 'app-esbuild'];
+
+/** Ports are declared as `devPort` in each app's package.json — single source of truth. */
+const BUNDLER_PORTS = Object.fromEntries(
+  BUNDLER_APPS.map((app) => {
+    const pkg = JSON.parse(
+      readFileSync(
+        resolve(WORKSPACE_ROOT, 'apps', app, 'package.json'),
+        'utf8',
+      ),
+    );
+    return [app, pkg.devPort];
+  }),
+);
 
 const PORT_TABLE = Object.entries(BUNDLER_PORTS)
   .map(([b, p]) => `  ${b.padEnd(12)} → http://localhost:${p}`)

@@ -33,12 +33,15 @@ pnpm --filter @repo/commons build
 
 ### Services (local dev)
 
-| Service                | Port | Start                                         |
-| ---------------------- | ---- | --------------------------------------------- |
-| **app-vite** (default) | 5173 | `pnpm dev:app`                                |
-| app-webpack            | 8080 | set `BUNDLER=app-webpack` then `pnpm dev:app` |
-| app-esbuild            | 8000 | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
-| ui-storybook           | 6006 | `pnpm dev:ui`                                 |
+Ports are declared as `devPort` / `previewPort` in each app's `package.json` — that is the
+single source of truth. Bundler configs and browser tooling all read from it.
+
+| Service                | Dev port | Preview port | Start                                         |
+| ---------------------- | -------- | ------------ | --------------------------------------------- |
+| **app-vite** (default) | 5173     | 4173         | `pnpm dev:app`                                |
+| app-webpack            | 8080     | 8080         | set `BUNDLER=app-webpack` then `pnpm dev:app` |
+| app-esbuild            | 8000     | 8000         | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
+| ui-storybook           | 6006     | 6007         | `pnpm dev:ui`                                 |
 
 Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch at once; it is heavy.
 

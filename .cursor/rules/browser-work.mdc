@@ -17,6 +17,6 @@ Read the **browser-validation** skill first. Two tiers — never mix them:
 - CI smoke (verify): `.github/workflows/browser-smoke.yml`
 - CI artifacts (capture): `.github/workflows/devtools.yml`
 
-App URL port follows `BUNDLER` (5173 / 8080 / 8000). Always pass `--url` explicitly in examples and CI.
+App URL port is declared as `devPort` in each app's `package.json` (5173 / 8080 / 8000). Always pass `--url` explicitly in examples and CI.
 
 Full decision tree: [`docs/browser-validation.md`](../../docs/browser-validation.md)

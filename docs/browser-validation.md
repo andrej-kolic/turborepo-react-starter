@@ -55,19 +55,23 @@ that fits.
 
 ## App URL
 
-Do not store the app URL in `.env`. It depends on which bundler is running (`BUNDLER` in `.env`):
+Do not store the app URL in `.env`. It depends on which bundler is running (`BUNDLER` in `.env`).
 
-| `BUNDLER`     | Dev port |
-| ------------- | -------- |
-| `app-vite`    | 5173     |
-| `app-webpack` | 8080     |
-| `app-esbuild` | 8000     |
+Each bundler app declares its own port as `devPort` / `previewPort` in its `package.json`
+(e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs and
+browser tooling all read from it.
+
+| `BUNDLER`     | Dev port | Preview port |
+| ------------- | -------- | ------------ |
+| `app-vite`    | 5173     | 4173         |
+| `app-webpack` | 8080     | 8080         |
+| `app-esbuild` | 8000     | 8000         |
 
 **Always pass `--url` explicitly** in `browser:validate` / `browser:read` examples and CI.
 Use `http://localhost:<port>` for local dev, or a full deployed preview URL when validating remotely.
 
-Phase 2b CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL` env var
-(CI/deployed only) → derive `http://localhost:<port>` from `BUNDLER` → error with port table.
+CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL` env var
+(CI/deployed only) → derive `http://localhost:<devPort>` from `BUNDLER` → error with port table.
 
 ---
 
@@ -262,8 +266,8 @@ Storybook is already running locally.
 
 ### Storybook URL (agents)
 
-Do not store Storybook URLs in `.env` — port `6006` is fixed in `apps/ui-storybook/package.json`.
-Always pass `--url` explicitly.
+Do not store Storybook URLs in `.env` — port `6006` is declared as `devPort` in
+`apps/ui-storybook/package.json`. Always pass `--url` explicitly.
 
 `browser:validate` / `browser:read` query the **top-level page** — they do not pierce Storybook's
 manager iframe. Use the **canvas URL** (Storybook's official E2E pattern), not the manager UI:

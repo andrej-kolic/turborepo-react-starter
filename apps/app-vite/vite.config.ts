@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import util from 'util';
+import { createRequire } from 'module';
 
 const debuglog = util.debuglog('app-vite');
+const _require = createRequire(import.meta.url);
+const pkg = _require('./package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
 import { createPaths } from '@repo/dev-tools/config/paths';
 
@@ -36,6 +42,9 @@ export default defineConfig((configEnv) => {
         process.env.BUILD_ENVIRONMENT,
       ),
     },
+
+    server: { port: Number(process.env.PORT) || pkg.devPort },
+    preview: { port: Number(process.env.PORT) || pkg.previewPort },
 
     plugins: [react()],
 

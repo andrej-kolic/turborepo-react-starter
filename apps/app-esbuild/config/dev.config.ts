@@ -1,9 +1,13 @@
 import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
+import { createRequire } from 'module';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import util from 'util';
 import path from 'path';
+
+const _require = createRequire(import.meta.url);
+const pkg = _require('../package.json') as { devPort: number };
 
 const debuglog = util.debuglog('app-esbuild');
 
@@ -62,6 +66,7 @@ async function dev() {
 
   const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
+    port: Number(process.env.PORT) || pkg.devPort,
   });
 
   debuglog(`Dev server running at: http://${hosts[0]}:${String(port)}`);

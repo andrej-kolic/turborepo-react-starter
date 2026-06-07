@@ -4,6 +4,8 @@
   "description": "",
   "type": "module",
   "main": "index.js",
+  "devPort": 6006,
+  "previewPort": 6007,
   "scripts": {
     "lint": "eslint .",
     "check:type": "tsc --noEmit",

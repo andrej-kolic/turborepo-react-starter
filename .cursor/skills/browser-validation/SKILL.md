@@ -25,7 +25,8 @@ Pick the **lightest** tier that answers the question. Work top to bottom; stop a
 
 ## App URL
 
-The port follows `BUNDLER` in `.env`: `app-vite` → 5173, `app-webpack` → 8080, `app-esbuild` → 8000.
+Each app declares its port as `devPort` in its `package.json`. The mapping is:
+`app-vite` → 5173, `app-webpack` → 8080, `app-esbuild` → 8000.
 Build `http://localhost:<port>`, or pass a full deployed URL. Always pass `--url` explicitly.
 
 ## CLI quick reference (no MCP — Cloud Agent / SSH / CI)
