@@ -159,8 +159,8 @@ pnpm chrome:debug
 
 # Run any command
 node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000 --duration 10
-node packages/browser-capture/bin/copilot-devtools.js record-interactions https://localhost:3000 --duration 15
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration 10
+node packages/browser-capture/bin/copilot-devtools.js record-interactions http://localhost:5173 --duration 15
 
 # View Playwright traces
 npx playwright show-trace packages/browser-capture/artifacts/trace-*/trace.zip

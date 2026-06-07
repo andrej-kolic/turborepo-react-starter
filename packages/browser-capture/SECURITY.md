@@ -97,7 +97,7 @@ After sanitization, `metadata.json` is updated with:
 Pass `--no-sanitize` to any capture command to skip sanitization:
 
 ```bash
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000 --no-sanitize
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --no-sanitize
 ```
 
 > ⚠️ **Never use `--no-sanitize` in CI.** The CI workflow does not pass

@@ -21,25 +21,28 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 
 ## Usage
 
+App URL examples use `http://localhost:5173` (default `BUNDLER=app-vite`). For other bundlers,
+use the `devPort` from `apps/<BUNDLER>/package.json` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+
 ```bash
 # Prerequisites: Chrome running on port 9222
 pnpm chrome:debug
 
 # From repo root
 node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000
-node packages/browser-capture/bin/copilot-devtools.js record-performance https://localhost:3000
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173
+node packages/browser-capture/bin/copilot-devtools.js record-performance http://localhost:5173
 node packages/browser-capture/bin/copilot-devtools.js record-console
-node packages/browser-capture/bin/copilot-devtools.js record-interactions https://localhost:3000
+node packages/browser-capture/bin/copilot-devtools.js record-interactions http://localhost:5173
 node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts packages/browser-capture/artifacts/trace-<timestamp>
 node packages/browser-capture/bin/copilot-devtools.js upload-artifacts
 
 # Duration control (default: 10s)
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000 --duration 5
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000 --duration-ms 3000
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration 5
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration-ms 3000
 
 # Skip automatic sanitization (e.g. for local debugging — never do this in CI)
-node packages/browser-capture/bin/copilot-devtools.js record-trace https://localhost:3000 --no-sanitize
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --no-sanitize
 ```
 
 ## MCP Server
