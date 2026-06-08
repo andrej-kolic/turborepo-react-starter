@@ -11,8 +11,8 @@
  *
  * URL resolution when --url is omitted:
  *   1. APP_URL env var
- *   2. http://localhost:<port> derived from BUNDLER env var
- *   3. Error with port table
+ *   2. http://localhost:<devPort> from apps/<BUNDLER>/package.json
+ *   3. Error — pass --url, APP_URL, or BUNDLER
  */
 
 import { readFileSync } from 'fs';
@@ -28,24 +28,26 @@ const WORKSPACE_ROOT = resolve(
   dirname(fileURLToPath(import.meta.url)),
   '../../..',
 );
-const BUNDLER_APPS = ['app-vite', 'app-webpack', 'app-esbuild'];
 
-/** Ports are declared as `devPort` in each app's package.json — single source of truth. */
-const BUNDLER_PORTS = Object.fromEntries(
-  BUNDLER_APPS.map((app) => {
-    const pkg = JSON.parse(
-      readFileSync(
-        resolve(WORKSPACE_ROOT, 'apps', app, 'package.json'),
-        'utf8',
-      ),
+/** `devPort` in apps/<BUNDLER>/package.json is the single source of truth. */
+function resolveBundlerDevPort(bundler) {
+  const pkgPath = resolve(WORKSPACE_ROOT, 'apps', bundler, 'package.json');
+  let pkg;
+  try {
+    pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+  } catch {
+    throw new Error(
+      `Could not read apps/${bundler}/package.json. Check BUNDLER or pass --url.`,
     );
-    return [app, pkg.devPort];
-  }),
-);
-
-const PORT_TABLE = Object.entries(BUNDLER_PORTS)
-  .map(([b, p]) => `  ${b.padEnd(12)} → http://localhost:${p}`)
-  .join('\n');
+  }
+  const port = pkg.devPort;
+  if (typeof port !== 'number') {
+    throw new Error(
+      `apps/${bundler}/package.json has no devPort. Pass --url instead.`,
+    );
+  }
+  return port;
+}
 
 function parseArgs(argv) {
   const positionals = [];
@@ -77,11 +79,11 @@ function resolveUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
   if (process.env.APP_URL) return process.env.APP_URL;
   const bundler = process.env.BUNDLER;
-  if (bundler && BUNDLER_PORTS[bundler]) {
-    return `http://localhost:${BUNDLER_PORTS[bundler]}`;
+  if (bundler) {
+    return `http://localhost:${resolveBundlerDevPort(bundler)}`;
   }
   throw new Error(
-    `Could not resolve app URL. Provide --url, set APP_URL env var, or set BUNDLER.\n\nBundler port table:\n${PORT_TABLE}`,
+    'Could not resolve app URL. Provide --url, set APP_URL, or set BUNDLER (devPort from apps/<BUNDLER>/package.json).',
   );
 }
 

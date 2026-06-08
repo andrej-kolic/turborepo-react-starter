@@ -74,7 +74,7 @@ Use `http://localhost:<devPort>` for local dev (`pnpm dev:app`), `http://localho
 `pnpm preview:app`, or a full deployed preview URL when validating remotely.
 
 CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL` env var
-(CI/deployed only) → derive `http://localhost:<devPort>` from `BUNDLER` → error with port table.
+(CI/deployed only) → derive `http://localhost:<devPort>` from `apps/<BUNDLER>/package.json` → error.
 
 ---
 

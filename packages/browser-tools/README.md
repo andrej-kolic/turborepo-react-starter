@@ -43,7 +43,7 @@ When `--url` is omitted, the CLI resolves in order:
 
 1. `APP_URL` env var (CI / deployed previews)
 2. `http://localhost:<devPort>` from `BUNDLER` in `.env`
-3. Error with bundler port table
+3. Error — pass `--url`, `APP_URL`, or `BUNDLER`
 
 **Agents:** pass `--url` explicitly. Port comes from `devPort` in `apps/<BUNDLER>/package.json` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
