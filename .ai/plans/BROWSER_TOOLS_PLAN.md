@@ -29,7 +29,7 @@ that fits.
 | Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot` | `record_trace`, `record_performance` |
 | Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                           | Raw one-off Playwright scripts       |
 | Record HAR, network, Web Vitals, trace for debugging     | `@repo/browser-capture` `record-trace` / `record-performance`               | `chrome-devtools` MCP (wrong tier)   |
-| CI artifact, PR comment workflow                         | `@repo/browser-capture` + `.github/workflows/devtools.yml`                  | MCP (not available in CI)            |
+| CI artifact, PR comment workflow                         | `@repo/browser-capture` + `.github/workflows/capture-devtools.yml`          | MCP (not available in CI)            |
 
 ---
 
@@ -353,9 +353,9 @@ node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
 | Target                          | CI / regression                                                                                         | Agent / local spot-check                            |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | `packages/ui` in Storybook      | **Chromatic** (`@chromatic-com/storybook` already wired in `ui-storybook`) — visual baselines, PR diffs | `pnpm browser:read` against canvas URLs (see below) |
-| `packages/app-core` in live app | `browser-smoke.yml` — selector smoke on bundler dev server                                              | `pnpm browser:validate` (Phase 2b)                  |
+| `packages/app-core` in live app | `verify-browser-smoke.yml` — selector smoke on bundler dev server                                       | `pnpm browser:validate` (Phase 2b)                  |
 
-Do **not** use `browser-smoke.yml` for Storybook or treat `browser:read` as a Chromatic replacement.
+Do **not** use `verify-browser-smoke.yml` for Storybook or treat `browser:read` as a Chromatic replacement.
 Chromatic is the production Storybook CI path; `browser:read` is the lightweight verify tier for agents.
 
 **No Storybook URL in `.env`:** Same rule as app URLs in `docs/browser-validation.md` — pass
@@ -380,7 +380,7 @@ Do **not** document `?path=/story/…` for CLI verification — that is the mana
   - Chromatic = CI visual regression for `packages/ui` (link to Storybook addon already in repo)
   - Agent path: `pnpm dev:ui` → canvas URL → `pnpm browser:read --url … --selector …`
   - Scope reminder: `app-core` components are **not** in Storybook; assert them via live app
-    (`browser:validate` / `browser-smoke.yml`), not Storybook URLs
+    (`browser:validate` / `verify-browser-smoke.yml`), not Storybook URLs
 - [ ] Add `pnpm browser:read` Storybook example to `skills/browser-validation/SKILL.md`:
   ```bash
   pnpm dev:ui
@@ -390,9 +390,9 @@ Do **not** document `?path=/story/…` for CLI verification — that is the mana
     --json
   ```
   (Use `.DynamicList` or add `data-testid` to a story args — stories do not ship testids by default.)
-- [ ] Create `.github/workflows/browser-smoke.yml` — full workflow, not step stubs:
+- [ ] Create `.github/workflows/verify-browser-smoke.yml` — full workflow, not step stubs:
   - **Triggers:** `pull_request` + `workflow_dispatch` (manual re-run without a PR)
-  - **Separate from** `devtools.yml` (verify smoke, no artifacts) and `build-auto.yaml` (lint/test/build)
+  - **Separate from** `capture-devtools.yml` (verify smoke, no artifacts) and `build-auto.yaml` (lint/test/build)
   - **Pin bundler:** `BUNDLER=app-vite` only for v1 — avoid matrix until needed; document why in workflow comment
   - **Required env** (job-level):
     ```yaml
@@ -402,19 +402,19 @@ Do **not** document `?path=/story/…` for CLI verification — that is the mana
     CHROME_HEADLESS: 'true'
     CHROME_DEBUG_PORT: 9222
     ```
-  - **Do not add `wait-on`** — reuse the curl retry loop from `devtools.yml` for both `:9222` (Chrome) and `:5173` (app)
+  - **Do not add `wait-on`** — reuse the curl retry loop from `capture-devtools.yml` for both `:9222` (Chrome) and `:5173` (app)
   - **Assertion:** selector only — no `--contains` (bundler-specific text breaks if matrix is added later):
     ```bash
     pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
     ```
   - **`timeout-minutes: 15`** (match other workflows)
   - **Cleanup** (`if: always()`): `pnpm chrome:debug:stop` + kill background dev-server PID
-  - **Install:** `pnpm install --frozen-lockfile` (match `devtools.yml`)
+  - **Install:** `pnpm install --frozen-lockfile` (match `capture-devtools.yml`)
 
-  Sketch (fill in checkout/setup-pnpm/setup-node steps to match `devtools.yml`):
+  Sketch (fill in checkout/setup-pnpm/setup-node steps to match `capture-devtools.yml`):
 
   ```yaml
-  name: Browser smoke
+  name: 'Verify: Browser smoke'
 
   on:
     pull_request:
@@ -522,4 +522,4 @@ pnpm browser:read \
 | `packages/browser-capture/README.md`            | UPDATE — capture-only framing                                   |      4       |
 | `docs/browser-validation.md`                    | UPDATE — Storybook subsection (Chromatic vs browser:read)       | 5 (optional) |
 | `skills/browser-validation/SKILL.md`            | UPDATE — browser:read Storybook canvas URL example              | 5 (optional) |
-| `.github/workflows/browser-smoke.yml`           | CREATE — headless live-app smoke (selector only, app-vite)      | 5 (optional) |
+| `.github/workflows/verify-browser-smoke.yml`    | CREATE — headless live-app smoke (selector only, app-vite)      | 5 (optional) |

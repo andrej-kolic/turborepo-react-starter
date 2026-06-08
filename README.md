@@ -93,4 +93,4 @@ Two packages — do not mix verify and capture:
   - **Local:** `pnpm chrome:debug` then `node packages/browser-capture/bin/copilot-devtools.js <command>`
   - **Commands:** `capture-snapshot`, `record-trace`, `record-performance`, `record-console`, `record-interactions`, `upload-artifacts`, `mcp-server`
   - **Docs:** `packages/browser-capture/README.md`, `.cursor/skills/browser-capture/SKILL.md`
-  - **CI:** `.github/workflows/devtools.yml` — `/capture-trace` PR comment runs a headless `capture-snapshot` health check (not a full trace)
+  - **CI:** `.github/workflows/capture-devtools.yml` — `/capture-trace` PR comment runs a headless `capture-snapshot` health check (not a full trace)

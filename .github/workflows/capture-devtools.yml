@@ -1,4 +1,4 @@
-name: DevTools artifact capture
+name: 'Capture: DevTools'
 
 on:
   workflow_dispatch:
@@ -201,7 +201,7 @@ jobs:
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
             await core.summary
               .addHeading('❌ DevTools capture failed')
-              .addRaw(`The \`devtools.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
+              .addRaw(`The \`capture-devtools.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
               .addBreak()
               .addRaw(`**Trigger:** \`${{ github.event_name }}\` | **Actor:** \`${{ github.actor }}\``)
               .addBreak()

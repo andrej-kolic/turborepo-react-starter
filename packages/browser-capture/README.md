@@ -159,7 +159,7 @@ test('recorded: localhost/', async ({ page }) => {
 
 ## CI Integration
 
-The included GitHub Actions workflow (`.github/workflows/devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. Despite the comment name, the workflow runs a headless `capture-snapshot` health check (not a full `record-trace`). It starts Chrome via `pnpm chrome:debug`, uploads artifacts to the Actions run, and posts a comment with a link. For full traces locally, run `record-trace` via CLI or the `devtools-capture` MCP.
+The included GitHub Actions workflow (`.github/workflows/capture-devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. Despite the comment name, the workflow runs a headless `capture-snapshot` health check (not a full `record-trace`). It starts Chrome via `pnpm chrome:debug`, uploads artifacts to the Actions run, and posts a comment with a link. For full traces locally, run `record-trace` via CLI or the `devtools-capture` MCP.
 
 ## Security
 

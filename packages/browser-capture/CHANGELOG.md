@@ -8,7 +8,7 @@ All notable changes to the DevTools automation CLI are documented here.
 
 - CI caching: pnpm deps + Chrome binary cached in GitHub Actions
 - Monitoring: capture time, artifact size, Chrome startup time tracked in ops reports
-- Alerts: failure notifications on devtools.yml job failures + PR comments
+- Alerts: failure notifications on capture-devtools.yml job failures + PR comments
 - Sanitization: secrets redaction in HAR/console artifacts integrated into CI workflow
 
 ### Phase 5 — Security (Completed)
@@ -103,7 +103,7 @@ All notable changes to the DevTools automation CLI are documented here.
 
 #### CI Integration
 
-- Updated `.github/workflows/devtools.yml` to cache Chrome binary + pnpm deps
+- Updated `.github/workflows/capture-devtools.yml` to cache Chrome binary + pnpm deps
 - Metrics tracking: Chrome startup time, capture duration, artifact size
 - Job summary: ops report with metrics + retention policy
 
@@ -124,7 +124,7 @@ All notable changes to the DevTools automation CLI are documented here.
 
 #### CI Workflow
 
-- GitHub Actions: `.github/workflows/devtools.yml`
+- GitHub Actions: `.github/workflows/capture-devtools.yml`
   - Triggers: manual dispatch (`workflow_dispatch`) + PR comment (`/capture-trace`)
   - Steps: checkout → pnpm install → start headless Chrome → capture → upload artifacts → PR comment with run link
   - Artifact retention: 30 days (GitHub Actions default)

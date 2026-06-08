@@ -41,15 +41,15 @@ flowchart TD
 Pick the **lightest** path that answers the question. Work top to bottom and stop at the first row
 that fits.
 
-| Goal                                                     | Use                                                                                                                                  | Avoid                                |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| Component logic, hooks, pure functions                   | `pnpm test` (Vitest + RTL)                                                                                                           | Any browser process                  |
-| Component UI in isolation                                | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                    | Full app unless integration matters  |
-| Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                          | `record_trace`, `record_performance` |
-| Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                                                                                    | Raw one-off Playwright scripts       |
-| Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                                                                         | `chrome-devtools` MCP (wrong tier)   |
-| CI live app smoke (PR)                                   | `.github/workflows/browser-smoke.yml`                                                                                                | Storybook paths, artifact capture    |
-| CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
+| Goal                                                     | Use                                                                                                                                          | Avoid                                |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Component logic, hooks, pure functions                   | `pnpm test` (Vitest + RTL)                                                                                                                   | Any browser process                  |
+| Component UI in isolation                                | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                            | Full app unless integration matters  |
+| Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                                  | `record_trace`, `record_performance` |
+| Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                                                                                            | Raw one-off Playwright scripts       |
+| Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                                                                                 | `chrome-devtools` MCP (wrong tier)   |
+| CI live app smoke (PR)                                   | `.github/workflows/verify-browser-smoke.yml`                                                                                                 | Storybook paths, artifact capture    |
+| CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/capture-devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
 
 ---
 
@@ -252,19 +252,19 @@ See `docs/component-validation-contract.md` for the full convention.
 ## Storybook validation
 
 Storybook (`pnpm dev:ui`, port `6006`) and the live bundler app are **different verification
-targets**. Do not use `browser-smoke.yml` for Storybook.
+targets**. Do not use `verify-browser-smoke.yml` for Storybook.
 
 | Target                          | CI / regression                                                                                                                        | Agent / local spot-check                        |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` addon in `apps/ui-storybook` (no CI workflow yet; run Chromatic manually or add a workflow) | `pnpm browser:read` against canvas URLs (below) |
-| `packages/app-core` in live app | `.github/workflows/browser-smoke.yml`                                                                                                  | `pnpm browser:validate`                         |
+| `packages/app-core` in live app | `.github/workflows/verify-browser-smoke.yml`                                                                                           | `pnpm browser:validate`                         |
 
 The Chromatic addon is installed for visual regression when you wire it up; there is no automated
 Chromatic job in `.github/workflows/` today. `browser:read` is not a Chromatic replacement — it is the
 lightweight verify tier for agents when Storybook is already running locally.
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live app
-(`browser:validate` or `browser-smoke.yml`), not Storybook URLs. See
+(`browser:validate` or `verify-browser-smoke.yml`), not Storybook URLs. See
 `docs/component-validation-contract.md`.
 
 ### Storybook URL (agents)
@@ -313,5 +313,5 @@ pnpm browser:read \
 | `.cursor/mcp.json`                           | MCP server configuration                                |
 | `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync |
 | `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                                |
-| `.github/workflows/browser-smoke.yml`        | CI live-app smoke (verify tier)                         |
-| `.github/workflows/devtools.yml`             | CI capture-snapshot (capture tier)                      |
+| `.github/workflows/verify-browser-smoke.yml` | CI live-app smoke (verify tier)                         |
+| `.github/workflows/capture-devtools.yml`     | CI capture-snapshot (capture tier)                      |

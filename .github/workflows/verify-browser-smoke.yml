@@ -1,11 +1,11 @@
 # Fast headless smoke test — verify tier only (no artifacts).
 # Validates the live app renders a key page region; not a replacement for unit tests.
-# Separate from devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
+# Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
 #
 # Pins BUNDLER=app-vite. Port is derived at runtime from apps/$BUNDLER/package.json devPort.
 # Add a matrix when webpack/esbuild smoke is needed.
 
-name: Browser smoke
+name: 'Verify: Browser smoke'
 
 on:
   pull_request:
