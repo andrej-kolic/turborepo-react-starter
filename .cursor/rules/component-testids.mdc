@@ -13,7 +13,8 @@ Full spec: [`docs/component-validation-contract.md`](../../docs/component-valida
 
 1. `data-testid` (kebab-case) — top-level page regions agents assert on
 2. `aria-label` — when no testid
-3. CSS class — last resort
+3. Role + accessible name — e.g. `[role=button][aria-label=…]`
+4. CSS class — last resort
 
 ## When adding a testid
 

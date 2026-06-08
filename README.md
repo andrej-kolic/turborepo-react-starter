@@ -11,7 +11,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 #### Apps
 
-- `app-esbild`: ESBuild bundler for main app
+- `app-esbuild`: ESBuild bundler for main app
 - `app-vite`: Vite bundler for main app
 - `app-webpack`: Webpack bundler for main app
 - `ui-storybook`: Storybook as dev server for ui package
@@ -24,6 +24,8 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser:validate`, `pnpm browser:read`)
+- `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
 
@@ -68,26 +70,27 @@ To lint all apps and packages, run the following command:
 pnpm lint
 ```
 
-### Debug
+### Debug & browser tooling
 
-To open Chrome in debug mode with automatic lifecycle management:
+Start Chrome with remote debugging (required for browser CLI and MCP tools):
 
 ```bash
-pnpm chrome:debug
+pnpm chrome:debug          # start (port 9222)
+pnpm chrome:debug:status   # check
+pnpm chrome:debug:stop     # stop
 ```
 
-This automatically:
+**Canonical agent docs:** [`AGENTS.md`](AGENTS.md) — setup, ports, commands, and browser-validation overview.
 
-- Detects Chrome on your machine
-- Starts it with remote debugging enabled
-- Manages the session (start/stop/status)
+Two packages — do not mix verify and capture:
 
-See [copilot-instructions.md](.github/copilot-instructions.md#chrome-remote-debugging-for-agents--browser-inspection) for full details and agent integration examples.
+- **`packages/browser-tools`** (verify) — DOM assertions over CDP; no artifacts.
+  - `pnpm browser:validate --url <url> --selector <css> [--contains <text>]`
+  - `pnpm browser:read --url <url> --selector <css> [--json]`
+  - **Docs:** `packages/browser-tools/README.md`, [`docs/browser-validation.md`](docs/browser-validation.md)
 
-This repository includes a lightweight Copilot DevTools helper:
-
-- **`packages/browser-capture`** — CLI to capture DevTools artifacts (HAR, traces, performance, console, interactions) from any page. Capture/instrumentation only — not for routine DOM verification. Includes CI workflow and MCP tool exposure.
+- **`packages/browser-capture`** (capture) — HAR, traces, performance, console, interactions.
   - **Local:** `pnpm chrome:debug` then `node packages/browser-capture/bin/copilot-devtools.js <command>`
   - **Commands:** `capture-snapshot`, `record-trace`, `record-performance`, `record-console`, `record-interactions`, `upload-artifacts`, `mcp-server`
-  - **Docs:** `packages/browser-capture/README.md` and the `.cursor/skills/browser-capture/SKILL.md` agent skill
-  - **CI:** `.github/workflows/devtools.yml` — triggered by `/capture-trace` PR comment or manual dispatch
+  - **Docs:** `packages/browser-capture/README.md`, `.cursor/skills/browser-capture/SKILL.md`
+  - **CI:** `.github/workflows/devtools.yml` — `/capture-trace` PR comment runs a headless `capture-snapshot` health check (not a full trace)

@@ -35,11 +35,11 @@ Prefer landmark elements wherever applicable. They provide ARIA roles for free, 
 accessibility, and let role-based selectors (unit tests, screen readers) target the same
 element without additional attributes.
 
-| Component         | Element                    | Implicit ARIA role |
-| ----------------- | -------------------------- | ------------------ |
-| `Header`          | `<header>`                 | `banner`           |
-| `ResourceCards`   | `<section aria-label="…">` | `region`           |
-| page content area | `<main>`                   | `main`             |
+| Component       | Element                    | Implicit ARIA role |
+| --------------- | -------------------------- | ------------------ |
+| `Header`        | `<header>`                 | `banner`           |
+| `ResourceCards` | `<section aria-label="…">` | `region`           |
+| `AppCore`       | `<main>`                   | `main`             |
 
 Always combine the semantic element with `data-testid` when the region needs external validation:
 

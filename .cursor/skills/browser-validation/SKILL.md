@@ -25,9 +25,10 @@ Pick the **lightest** tier that answers the question. Work top to bottom; stop a
 
 ## App URL
 
-Each app declares its port as `devPort` in its `package.json`. The mapping is:
+Each app declares its port as `devPort` / `previewPort` in its `package.json`. Dev mapping:
 `app-vite` → 5173, `app-webpack` → 8080, `app-esbuild` → 8000.
-Build `http://localhost:<port>`, or pass a full deployed URL. Always pass `--url` explicitly.
+Build `http://localhost:<port>`, or pass a full deployed URL. **Agents:** pass `--url` explicitly;
+CI may omit it and use `APP_URL` or `BUNDLER` derivation.
 
 ## CLI quick reference (no MCP — Cloud Agent / SSH / CI)
 

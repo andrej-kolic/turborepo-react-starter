@@ -47,7 +47,7 @@ node packages/browser-capture/bin/copilot-devtools.js record-trace http://localh
 
 ## MCP Server
 
-The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing all four capture commands as MCP tools that Copilot agents can call directly — no shell access needed.
+The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing six capture MCP tools that Copilot agents can call directly — no shell access needed.
 
 ### Available MCP Tools
 
@@ -93,7 +93,7 @@ All commands write artifacts to `packages/browser-capture/artifacts/<mode>-<time
 
 ### `har.json`
 
-Standard HAR 1.2 format. Open in [Chrome DevTools > Network > Import HAR](chrome://about) or tools like [Insomnia](https://insomnia.rest/), [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/).
+Standard HAR 1.2 format. Open in Chrome DevTools → Network → Import HAR, or tools like [Insomnia](https://insomnia.rest/) and [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/).
 
 ### `trace.zip`
 
@@ -159,7 +159,7 @@ test('recorded: localhost/', async ({ page }) => {
 
 ## CI Integration
 
-The included GitHub Actions workflow (`.github/workflows/devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. It starts headless Chrome via `pnpm chrome:debug`, runs `capture-snapshot`, uploads artifacts to the Actions run, and posts a comment with a link.
+The included GitHub Actions workflow (`.github/workflows/devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. Despite the comment name, the workflow runs a headless `capture-snapshot` health check (not a full `record-trace`). It starts Chrome via `pnpm chrome:debug`, uploads artifacts to the Actions run, and posts a comment with a link. For full traces locally, run `record-trace` via CLI or the `devtools-capture` MCP.
 
 ## Security
 

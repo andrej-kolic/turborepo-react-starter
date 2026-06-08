@@ -41,15 +41,15 @@ flowchart TD
 Pick the **lightest** path that answers the question. Work top to bottom and stop at the first row
 that fits.
 
-| Goal                                                     | Use                                                                         | Avoid                                |
-| -------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------ |
-| Component logic, hooks, pure functions                   | `pnpm test` (Vitest + RTL)                                                  | Any browser process                  |
-| Component UI in isolation                                | `pnpm dev:ui` → Storybook `http://localhost:6006`                           | Full app unless integration matters  |
-| Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot` | `record_trace`, `record_performance` |
-| Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                           | Raw one-off Playwright scripts       |
-| Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                | `chrome-devtools` MCP (wrong tier)   |
-| CI live app smoke (PR)                                   | `.github/workflows/browser-smoke.yml`                                       | Storybook paths, artifact capture    |
-| CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/devtools.yml`                   | MCP (not available in CI)            |
+| Goal                                                     | Use                                                                                                                                  | Avoid                                |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Component logic, hooks, pure functions                   | `pnpm test` (Vitest + RTL)                                                                                                           | Any browser process                  |
+| Component UI in isolation                                | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                    | Full app unless integration matters  |
+| Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                          | `record_trace`, `record_performance` |
+| Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                                                                                    | Raw one-off Playwright scripts       |
+| Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                                                                         | `chrome-devtools` MCP (wrong tier)   |
+| CI live app smoke (PR)                                   | `.github/workflows/browser-smoke.yml`                                                                                                | Storybook paths, artifact capture    |
+| CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
 
 ---
 
@@ -67,8 +67,11 @@ browser tooling all read from it.
 | `app-webpack` | 8080     | 8080         |
 | `app-esbuild` | 8000     | 8000         |
 
-**Always pass `--url` explicitly** in `browser:validate` / `browser:read` examples and CI.
-Use `http://localhost:<port>` for local dev, or a full deployed preview URL when validating remotely.
+**Agents:** pass `--url` explicitly in `browser:validate` / `browser:read` examples.
+**CI/scripts:** may omit `--url` and rely on fallback resolution below.
+
+Use `http://localhost:<devPort>` for local dev (`pnpm dev:app`), `http://localhost:<previewPort>` after
+`pnpm preview:app`, or a full deployed preview URL when validating remotely.
 
 CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL` env var
 (CI/deployed only) → derive `http://localhost:<devPort>` from `BUNDLER` → error with port table.
@@ -242,7 +245,7 @@ Prefer selectors in this order (most stable → least stable):
 3. Role + accessible name (`[role=button][aria-label=…]`)
 4. CSS class — last resort; documented as less stable
 
-See `docs/component-validation-contract.md` for the full convention (added in Phase 3).
+See `docs/component-validation-contract.md` for the full convention.
 
 ---
 
@@ -251,14 +254,14 @@ See `docs/component-validation-contract.md` for the full convention (added in Ph
 Storybook (`pnpm dev:ui`, port `6006`) and the live bundler app are **different verification
 targets**. Do not use `browser-smoke.yml` for Storybook.
 
-| Target                          | CI / regression                                                            | Agent / local spot-check                        |
-| ------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------- |
-| `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` is wired in `apps/ui-storybook` | `pnpm browser:read` against canvas URLs (below) |
-| `packages/app-core` in live app | `.github/workflows/browser-smoke.yml`                                      | `pnpm browser:validate`                         |
+| Target                          | CI / regression                                                                                                                        | Agent / local spot-check                        |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` addon in `apps/ui-storybook` (no CI workflow yet; run Chromatic manually or add a workflow) | `pnpm browser:read` against canvas URLs (below) |
+| `packages/app-core` in live app | `.github/workflows/browser-smoke.yml`                                                                                                  | `pnpm browser:validate`                         |
 
-**Chromatic** is the production Storybook CI path: visual baselines, PR diffs, all stories.
-`browser:read` is not a Chromatic replacement — it is the lightweight verify tier for agents when
-Storybook is already running locally.
+The Chromatic addon is installed for visual regression when you wire it up; there is no automated
+Chromatic job in `.github/workflows/` today. `browser:read` is not a Chromatic replacement — it is the
+lightweight verify tier for agents when Storybook is already running locally.
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live app
 (`browser:validate` or `browser-smoke.yml`), not Storybook URLs. See
@@ -299,11 +302,16 @@ pnpm browser:read \
 
 ## Related Files
 
-| File                                         | Purpose                                      |
-| -------------------------------------------- | -------------------------------------------- |
-| `.cursor/skills/browser-validation/SKILL.md` | Agent entry point — read this first          |
-| `.cursor/skills/browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals) |
-| `docs/component-validation-contract.md`      | `data-testid` convention (Phase 3)           |
-| `.cursor/mcp.json`                           | MCP server configuration                     |
-| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                     |
-| `.github/workflows/browser-smoke.yml`        | CI live-app smoke (verify tier)              |
+| File                                         | Purpose                                                 |
+| -------------------------------------------- | ------------------------------------------------------- |
+| `AGENTS.md`                                  | Canonical agent setup, ports, and commands              |
+| `.cursor/skills/browser-validation/SKILL.md` | Agent entry point — read this first                     |
+| `.cursor/skills/browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)            |
+| `docs/component-validation-contract.md`      | `data-testid` convention                                |
+| `packages/browser-tools/README.md`           | Verify CLI reference (`browser:validate`)               |
+| `packages/browser-capture/README.md`         | Capture CLI and MCP tool reference                      |
+| `.cursor/mcp.json`                           | MCP server configuration                                |
+| `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync |
+| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                                |
+| `.github/workflows/browser-smoke.yml`        | CI live-app smoke (verify tier)                         |
+| `.github/workflows/devtools.yml`             | CI capture-snapshot (capture tier)                      |

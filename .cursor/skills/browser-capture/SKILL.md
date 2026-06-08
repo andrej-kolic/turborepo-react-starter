@@ -42,7 +42,7 @@ devtools-capture MCP → record_performance url="http://localhost:<port>"
 ## CLI (when MCP is unavailable — CI, Cloud Agent, SSH)
 
 ```bash
-node packages/browser-capture/bin/copilot-devtools.js record-trace --url http://localhost:<port>
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:<port>
 ```
 
 Commands: `capture-snapshot`, `record-trace`, `record-performance`, `record-console`,

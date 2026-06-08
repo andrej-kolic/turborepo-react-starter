@@ -4,12 +4,12 @@ All notable changes to the DevTools automation CLI are documented here.
 
 ## [Unreleased]
 
-### Phase 6 — Polish & Operations (In Progress)
+### Phase 6 — Polish & Operations (Completed)
 
 - CI caching: pnpm deps + Chrome binary cached in GitHub Actions
 - Monitoring: capture time, artifact size, Chrome startup time tracked in ops reports
 - Alerts: failure notifications on devtools.yml job failures + PR comments
-- Sanitization: Phase 5 integration — secrets redaction in HAR/console artifacts
+- Sanitization: secrets redaction in HAR/console artifacts integrated into CI workflow
 
 ### Phase 5 — Security (Completed)
 
