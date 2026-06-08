@@ -1,5 +1,8 @@
 import { connectOverCDP } from './connect.js';
 
+/** Default time to wait for a selector after navigation (SPA hydration). */
+const DEFAULT_SELECTOR_TIMEOUT_MS = 30_000;
+
 /**
  * Navigate to a URL and evaluate a JavaScript expression.
  * Disconnects immediately after evaluation.
@@ -49,17 +52,26 @@ export async function takeSnapshot(url, { port, host } = {}) {
  *
  * @param {string} url
  * @param {string} selector
- * @param {{ port?: number, host?: string }} [options]
+ * @param {{ port?: number, host?: string, timeout?: number }} [options]
  * @returns {Promise<boolean>} true if selector matches, false otherwise
  */
-export async function assertSelectorExists(url, selector, { port, host } = {}) {
+export async function assertSelectorExists(
+  url,
+  selector,
+  { port, host, timeout } = {},
+) {
+  const selectorTimeout = timeout ?? DEFAULT_SELECTOR_TIMEOUT_MS;
   const browser = await connectOverCDP(port, host);
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await page.goto(url, { waitUntil: 'load', timeout: 30_000 });
-    const element = await page.$(selector);
-    return element !== null;
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    try {
+      await page.waitForSelector(selector, { timeout: selectorTimeout });
+      return true;
+    } catch {
+      return false;
+    }
   } finally {
     await context.close().catch(() => {});
     await browser.close().catch(() => {});
@@ -74,25 +86,27 @@ export async function assertSelectorExists(url, selector, { port, host } = {}) {
  * @param {string} url
  * @param {string} selector
  * @param {string} text
- * @param {{ port?: number, host?: string }} [options]
+ * @param {{ port?: number, host?: string, timeout?: number }} [options]
  * @returns {Promise<{ selectorFound: boolean, textFound: boolean }>}
  */
 export async function assertTextVisible(
   url,
   selector,
   text,
-  { port, host } = {},
+  { port, host, timeout } = {},
 ) {
+  const selectorTimeout = timeout ?? DEFAULT_SELECTOR_TIMEOUT_MS;
   const browser = await connectOverCDP(port, host);
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await page.goto(url, { waitUntil: 'load', timeout: 30_000 });
-    const element = await page.$(selector);
-    if (!element) {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    try {
+      await page.waitForSelector(selector, { timeout: selectorTimeout });
+    } catch {
       return { selectorFound: false, textFound: false };
     }
-    const content = await element.textContent();
+    const content = await page.locator(selector).textContent();
     return {
       selectorFound: true,
       textFound: (content ?? '').includes(text),
@@ -109,23 +123,30 @@ export async function assertTextVisible(
  *
  * @param {string} url
  * @param {string} selector
- * @param {{ port?: number, host?: string }} [options]
+ * @param {{ port?: number, host?: string, timeout?: number }} [options]
  * @returns {Promise<{ found: boolean, text: string|null, innerHTML: string|null, outerHTML: string|null }>}
  */
-export async function readSelector(url, selector, { port, host } = {}) {
+export async function readSelector(
+  url,
+  selector,
+  { port, host, timeout } = {},
+) {
+  const selectorTimeout = timeout ?? DEFAULT_SELECTOR_TIMEOUT_MS;
   const browser = await connectOverCDP(port, host);
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await page.goto(url, { waitUntil: 'load', timeout: 30_000 });
-    const element = await page.$(selector);
-    if (!element) {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    try {
+      await page.waitForSelector(selector, { timeout: selectorTimeout });
+    } catch {
       return { found: false, text: null, innerHTML: null, outerHTML: null };
     }
+    const locator = page.locator(selector).first();
     const [text, innerHTML, outerHTML] = await Promise.all([
-      element.textContent(),
-      element.innerHTML(),
-      element.evaluate((el) => el.outerHTML),
+      locator.textContent(),
+      locator.innerHTML(),
+      locator.evaluate((el) => el.outerHTML),
     ]);
     return { found: true, text: text ?? null, innerHTML, outerHTML };
   } finally {
