@@ -87,6 +87,31 @@ function resolveUrl(urlArg) {
   );
 }
 
+function printDiagnostics(diagnostics) {
+  if (!diagnostics) return;
+  console.error('--- page diagnostics ---');
+  if (diagnostics.title) console.error(`title: ${diagnostics.title}`);
+  if (diagnostics.url) console.error(`page url: ${diagnostics.url}`);
+  if (diagnostics.hasRoot !== null && diagnostics.hasRoot !== undefined) {
+    console.error(`#root present: ${diagnostics.hasRoot}`);
+  }
+  if (diagnostics.hasViteError) {
+    console.error('vite error overlay detected');
+  }
+  if (diagnostics.rootHtml) {
+    console.error(`#root html (truncated): ${diagnostics.rootHtml}`);
+  }
+  if (diagnostics.bodyText) {
+    console.error(`body text (truncated): ${diagnostics.bodyText}`);
+  }
+  if (diagnostics.pageErrors?.length) {
+    console.error('browser console:');
+    for (const line of diagnostics.pageErrors) {
+      console.error(`  ${line}`);
+    }
+  }
+}
+
 function usage() {
   console.error(`Browser verification CLI
 
@@ -128,6 +153,7 @@ async function runValidate(options) {
     if (!result.selectorFound) {
       console.error(`FAIL: selector not found: ${selector}`);
       console.error(`      url: ${url}`);
+      printDiagnostics(result.diagnostics);
       process.exit(1);
     }
     if (!result.textFound) {
@@ -139,10 +165,11 @@ async function runValidate(options) {
     }
     console.log(`PASS: "${containsText}" found in ${selector} (${url})`);
   } else {
-    const found = await assertSelectorExists(url, selector);
-    if (!found) {
+    const result = await assertSelectorExists(url, selector);
+    if (!result.found) {
       console.error(`FAIL: selector not found: ${selector}`);
       console.error(`      url: ${url}`);
+      printDiagnostics(result.diagnostics);
       process.exit(1);
     }
     console.log(`PASS: ${selector} exists (${url})`);

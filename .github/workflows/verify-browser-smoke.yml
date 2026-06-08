@@ -83,9 +83,13 @@ jobs:
 
       - name: Assert app header renders
         run: |
-          pnpm browser:validate \
+          if ! pnpm browser:validate \
             --url $APP_URL \
-            --selector "[data-testid=app-header]"
+            --selector "[data-testid=app-header]"; then
+            echo "--- dev-app.log ---"
+            cat /tmp/dev-app.log || true
+            exit 1
+          fi
 
       - name: Cleanup
         if: always()
