@@ -314,13 +314,15 @@ async function runEval(options) {
   }
 
   if (asJson) {
-    process.stdout.write(
-      JSON.stringify(
-        { url, selector: selector ?? null, value: result.value },
-        null,
-        2,
-      ) + '\n',
-    );
+    const payload = {
+      url,
+      selector: selector ?? null,
+      value: result.value,
+    };
+    if (expectTruthy) payload.pass = true;
+    process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
+  } else if (expectTruthy) {
+    console.log(`PASS: expression truthy (${url})`);
   } else {
     const out =
       typeof result.value === 'string'
