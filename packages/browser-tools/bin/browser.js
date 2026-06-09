@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 /**
- * Browser verification CLI — lightweight DOM assertions over CDP.
+ * Browser operations CLI — assert, read, and snapshot the live app via CDP.
  *
  * Requires Chrome running with remote debugging (pnpm chrome:debug).
  * Does not produce artifacts — for capture/tracing use @repo/browser-capture.
  *
  * Usage (via pnpm scripts):
- *   pnpm browser:validate --url <url> --selector <css> [--contains <text>] [--no-console-errors]
- *   pnpm browser:read     --url <url> --selector <css> [--json]
- *   pnpm browser:eval     --url <url> --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json]
+ *   pnpm browser:validate  --url <url> --selector <css> [--contains <text>] [--no-console-errors]
+ *   pnpm browser:read      --url <url> --selector <css> [--json]
+ *   pnpm browser:eval      --url <url> --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json]
  *   pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64] [--full-page] [--json]
+ *   pnpm browser:snapshot  --url <url> [--selector <css>] [--json]
  *
  * URL resolution when --url is omitted:
  *   1. APP_URL env var
@@ -25,9 +26,11 @@ import {
   assertTextVisible,
   assertNoConsoleErrors,
   evaluateScript,
+  formatPageSnapshot,
   readSelector,
+  takePageSnapshot,
   takeScreenshot,
-} from '../src/cdp/verify.js';
+} from '../src/cdp/index.js';
 import {
   isTruthyFlag,
   parseArgs,
@@ -98,13 +101,14 @@ function printDiagnostics(diagnostics) {
 }
 
 function usage() {
-  console.error(`Browser verification CLI
+  console.error(`Browser operations CLI
 
 Commands:
   validate     Assert a selector exists (and optionally contains text)
   read         Read selector content from the page
   eval         Evaluate a JavaScript expression in the page context
   screenshot   Capture viewport or element screenshot (stdout/file — not capture-tier artifacts)
+  snapshot     Structured page snapshot (ARIA tree + data-testid regions)
 
 Options (shared):
   --url                 Target URL (optional; falls back to APP_URL or BUNDLER port)
@@ -127,6 +131,9 @@ Options (screenshot):
   --full-page           Capture full scrollable page (viewport only when omitted)
   --format              png (default) or jpeg
 
+Options (snapshot):
+  --json                Output snapshot as JSON (default: human-readable text)
+
 Examples:
   pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
   pnpm browser:validate --url http://localhost:5173 --no-console-errors
@@ -135,6 +142,8 @@ Examples:
     --expr "() => { const s = getComputedStyle(document.querySelector('[data-testid=app-header]')); return s.display !== 'none'; }" --expect
   pnpm browser:screenshot --url http://localhost:5173 --selector "[data-testid=app-header]" --output /tmp/header.png
   pnpm browser:screenshot --url http://localhost:5173 --base64 > /tmp/page.b64
+  pnpm browser:snapshot --url http://localhost:5173
+  pnpm browser:snapshot --url http://localhost:5173 --selector "[data-testid=app-header]" --json
 
 Exit codes: 0 = pass, 1 = assertion failed or error`);
 }
@@ -344,6 +353,43 @@ async function runScreenshot(options) {
   );
 }
 
+async function runSnapshot(options) {
+  const url = resolveUrl(options.url);
+  const { selector } = sharedOptions(options);
+  const asJson = options.json === true;
+
+  const result = await takePageSnapshot(url, { selector });
+
+  if (!result.found || !result.snapshot) {
+    console.error(`Error: could not capture snapshot`);
+    console.error(`       url: ${url}`);
+    if (selector) {
+      console.error(`       selector: ${selector}`);
+    }
+    printDiagnostics(result.diagnostics);
+    process.exit(1);
+  }
+
+  if (asJson) {
+    process.stdout.write(
+      JSON.stringify(
+        {
+          url: result.snapshot.url,
+          title: result.snapshot.title,
+          selector: selector ?? null,
+          testIds: result.snapshot.testIds,
+          ariaYaml: result.snapshot.ariaYaml,
+        },
+        null,
+        2,
+      ) + '\n',
+    );
+    return;
+  }
+
+  process.stdout.write(formatPageSnapshot(result.snapshot) + '\n');
+}
+
 async function main() {
   const cmd = process.argv[2];
   const { options } = parseArgs(process.argv.slice(3));
@@ -362,6 +408,8 @@ async function main() {
       await runEval(options);
     } else if (cmd === 'screenshot') {
       await runScreenshot(options);
+    } else if (cmd === 'snapshot') {
+      await runSnapshot(options);
     } else {
       console.error(`Unknown command: ${cmd}`);
       usage();

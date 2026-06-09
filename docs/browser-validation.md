@@ -301,6 +301,6 @@ pnpm browser:read \
 | `packages/browser-capture/README.md`         | Capture CLI and MCP tool reference                           |
 | `.cursor/mcp.json`                           | MCP server configuration                                     |
 | `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync      |
-| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                                     |
+| `packages/browser-tools/bin/chrome.js`       | Chrome lifecycle manager                                     |
 | `.github/workflows/verify-browser-smoke.yml` | CI live-app smoke (verify tier)                              |
 | `.github/workflows/capture-devtools.yml`     | CI capture-snapshot (capture tier)                           |

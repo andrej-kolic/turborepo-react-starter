@@ -4,7 +4,7 @@
 
 Chrome DevTools artifact capture CLI and MCP server for Copilot workflows, with CI integration and MCP tool exposure for agent-driven debugging.
 
-Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `pnpm chrome:debug` (`packages/browser-tools/bin/chrome-debug.js`) — no bundled browser binary needed.
+Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `pnpm chrome:debug` (`packages/browser-tools/bin/chrome.js`) — no bundled browser binary needed.
 
 ## Commands
 

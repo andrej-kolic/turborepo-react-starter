@@ -8,12 +8,14 @@ Chrome lifecycle + UI verification utilities for `turborepo-react-starter`.
 
 **Verify only.** This package handles:
 
-- Chrome remote debugging lifecycle (`chrome-debug.js`) — start, stop, status
-- Lightweight DOM assertions over CDP (`browser-verify.js`)
+- Chrome remote debugging lifecycle (`chrome.js`) — start, stop, status
+- Browser operations over CDP (`browser.js`) — assert, read, snapshot
 
 It does **not** produce HAR files, traces, or performance artifacts. For capture/instrumentation see `@repo/browser-capture`.
 
 Screenshots from `browser:screenshot` are for agent visual review (stdout/file) — not CI artifact capture.
+
+`snapshot` returns a text or JSON summary of the ARIA tree (via `locator.ariaSnapshot()`) plus any `[data-testid=…]` regions — the verify-tier alternative to MCP `take_snapshot`.
 
 ## Commands
 
@@ -41,6 +43,11 @@ pnpm browser:validate --url http://localhost:<port> --selector <css> --no-consol
 # Read selector content
 pnpm browser:read --url http://localhost:<port> --selector <css>
 pnpm browser:read --url http://localhost:<port> --selector <css> --json
+
+# Structured page snapshot (ARIA tree + data-testid regions)
+pnpm browser:snapshot --url http://localhost:<port>
+pnpm browser:snapshot --url http://localhost:<port> --selector <css>
+pnpm browser:snapshot --url http://localhost:<port> --json
 
 # Evaluate JS in page context (design tokens, custom checks)
 pnpm browser:eval --url http://localhost:<port> --expr "() => document.title" --json

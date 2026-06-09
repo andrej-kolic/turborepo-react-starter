@@ -20,7 +20,7 @@ catalog:
   '@turbo/gen': 2.9.15
 
   # Browser capture
-  playwright-core: 1.44.0
+  playwright-core: 1.60.0
 
   # Testing
   vitest: '4.1.7'

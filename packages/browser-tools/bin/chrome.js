@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Chrome Remote Debugging Lifecycle Manager — CLI entry point
+ * Chrome lifecycle CLI — start, stop, and check Chrome with remote debugging.
  *
  * Usage:
- *   pnpm chrome:debug              # Start Chrome
+ *   pnpm chrome:debug              # Start Chrome on port 9222
  *   pnpm chrome:debug:status       # Check status
  *   pnpm chrome:debug:stop         # Stop Chrome
  *   CHROME_DEBUG_PORT=9223 pnpm chrome:debug  # Custom port
