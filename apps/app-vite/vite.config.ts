@@ -43,16 +43,22 @@ export default defineConfig((configEnv) => {
       ),
     },
 
-    server: { port: Number(process.env.PORT) || pkg.devPort },
+    server: {
+      port: Number(process.env.PORT) || pkg.devPort,
+      watch: {
+        // Re-read @repo/commons when its compiled dist/ changes (pnpm workspace link).
+        ignored: ['!**/node_modules/@repo/commons/**'],
+      },
+    },
     preview: { port: Number(process.env.PORT) || pkg.previewPort },
 
     plugins: [react()],
 
-    // Exclude JIT workspace packages from pre-bundling.
-    // Vite's pre-bundler (Rolldown in Vite 8) cannot process raw .tsx source files —
-    // these packages must flow through Vite's own transform pipeline instead.
+    // Exclude workspace packages from pre-bundling so Vite's transform pipeline handles them.
+    // JIT packages (@repo/ui, @repo/app-core): raw .tsx source.
+    // Compiled package (@repo/commons): dist/ updates from tsup/tsc watch.
     optimizeDeps: {
-      exclude: ['@repo/ui', '@repo/app-core'],
+      exclude: ['@repo/ui', '@repo/app-core', '@repo/commons'],
     },
 
     publicDir: appCorePublic,

@@ -48,11 +48,14 @@ pnpm build
 
 ### Develop
 
-To develop all apps and packages, run the following command:
+Copy `.env.example` to `.env` at the repo root, then use the scoped dev scripts (preferred):
 
 ```
-pnpm dev
+pnpm dev:app   # active bundler (BUNDLER in .env, default app-vite) + dependency watchers
+pnpm dev:ui    # Storybook + dependency watchers
 ```
+
+`pnpm dev` starts every bundler, Storybook, and package watch tasks at once — avoid it unless you need the full matrix.
 
 ### Test
 

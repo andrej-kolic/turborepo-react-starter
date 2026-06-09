@@ -7,6 +7,9 @@
     "build": {
       "outputs": ["storybook-static/**"],
       "env": ["STORYBOOK_OPTIONS"]
+    },
+    "preview": {
+      "dependsOn": ["build"]
     }
   }
 }

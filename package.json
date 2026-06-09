@@ -5,7 +5,7 @@
   "scripts": {
     "build": "dotenv -- turbo run build",
     "build:app": "dotenv -- sh -c 'turbo run build --filter \"$BUNDLER\"... \"$@\"' -- ",
-    "build:ui": "dotenv -- turbo run build --filter ui-storybook",
+    "build:ui": "dotenv -- turbo run build --filter ui-storybook...",
     "dev": "dotenv -- turbo run dev",
     "dev:app": "dotenv -- sh -c 'turbo run dev --filter \"$BUNDLER\"...'",
     "dev:ui": "dotenv -- sh -c 'turbo run dev --filter ui-storybook...'",
