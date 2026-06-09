@@ -46,6 +46,7 @@ pnpm browser:read --url http://localhost:<port> --selector <css> --json
 pnpm browser:eval --url http://localhost:<port> --expr "() => document.title" --json
 pnpm browser:eval --url http://localhost:<port> --selector <css> --expr "<arrow fn>" --expect
 pnpm browser:eval --url http://localhost:<port> --selector <css> --expr "<arrow fn>" --expect --no-console-errors
+# --expect: exit 1 on falsy result; prints PASS on success (or "pass": true with --json)
 
 # Screenshot for agent visual review (not capture-tier artifacts)
 pnpm browser:screenshot --url http://localhost:<port> --selector <css> --output /tmp/shot.png
@@ -65,6 +66,21 @@ When `--url` is omitted, the CLI resolves in order:
 3. Error — pass `--url`, `APP_URL`, or `BUNDLER`
 
 **Agents:** pass `--url` explicitly. Port comes from `devPort` in `apps/<BUNDLER>/package.json` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+
+## Testing
+
+Unit tests cover pure CLI helpers in `src/cli/args.js` (flag parsing, option mapping):
+
+```bash
+pnpm --filter @repo/browser-tools test
+```
+
+CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
+[`.github/workflows/verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml).
+
+## TODO
+
+- **`browser:check-spec`** — run a YAML/JSON design spec in one command (exists, text, styles, console checks). Spec format and manual workflow today: [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md). Should batch checks in a **single page session** (one navigation per spec file), not one `pnpm browser:*` call per row.
 
 ## Environment Variables
 
