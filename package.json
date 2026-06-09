@@ -35,7 +35,9 @@
     "chrome:debug:status": "node packages/browser-tools/bin/chrome-debug.js --status",
     "chrome:debug:stop": "node packages/browser-tools/bin/chrome-debug.js --stop",
     "browser:read": "node packages/browser-tools/bin/browser-verify.js read",
-    "browser:validate": "node packages/browser-tools/bin/browser-verify.js validate"
+    "browser:validate": "node packages/browser-tools/bin/browser-verify.js validate",
+    "browser:eval": "node packages/browser-tools/bin/browser-verify.js eval",
+    "browser:screenshot": "node packages/browser-tools/bin/browser-verify.js screenshot"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

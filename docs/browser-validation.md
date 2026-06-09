@@ -214,25 +214,13 @@ CHROME_HEADLESS=true pnpm chrome:debug
 
 ---
 
-## browser:validate / browser:read Reference
+## browser-tools CLI
 
-```bash
-# Assert selector exists (--url required; <port> from App URL table)
-pnpm browser:validate --url http://localhost:<port> --selector <css>
+Command syntax, flags, env vars, and URL resolution:
+[`packages/browser-tools/README.md`](../packages/browser-tools/README.md).
 
-# Assert selector exists and contains text
-pnpm browser:validate --url http://localhost:<port> --selector <css> --contains <text>
-
-# Read selector content as JSON
-pnpm browser:read --url http://localhost:<port> --selector <css> --json
-
-# Deployed preview — pass the full URL
-pnpm browser:validate --url https://your-preview.netlify.app --selector <css>
-```
-
-When `--url` is omitted: CLI resolves `APP_URL` if set, else derives from `BUNDLER`.
-
-Exit codes: `0` = assertion passed, `1` = assertion failed or error.
+Design token and Figma-adjacent checks:
+[`docs/design-spec-validation.md`](design-spec-validation.md).
 
 ---
 
@@ -302,16 +290,17 @@ pnpm browser:read \
 
 ## Related Files
 
-| File                                         | Purpose                                                 |
-| -------------------------------------------- | ------------------------------------------------------- |
-| `AGENTS.md`                                  | Canonical agent setup, ports, and commands              |
-| `.cursor/skills/browser-validation/SKILL.md` | Agent entry point — read this first                     |
-| `.cursor/skills/browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)            |
-| `docs/component-validation-contract.md`      | `data-testid` convention                                |
-| `packages/browser-tools/README.md`           | Verify CLI reference (`browser:validate`)               |
-| `packages/browser-capture/README.md`         | Capture CLI and MCP tool reference                      |
-| `.cursor/mcp.json`                           | MCP server configuration                                |
-| `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync |
-| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                                |
-| `.github/workflows/verify-browser-smoke.yml` | CI live-app smoke (verify tier)                         |
-| `.github/workflows/capture-devtools.yml`     | CI capture-snapshot (capture tier)                      |
+| File                                         | Purpose                                                      |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| `AGENTS.md`                                  | Canonical agent setup, ports, and commands                   |
+| `.cursor/skills/browser-validation/SKILL.md` | Agent entry point — read this first                          |
+| `.cursor/skills/browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)                 |
+| `docs/component-validation-contract.md`      | `data-testid` convention                                     |
+| `packages/browser-tools/README.md`           | Verify CLI reference (`browser:validate`, `browser:eval`, …) |
+| `docs/design-spec-validation.md`             | Token/layout spec checks via `browser:eval`                  |
+| `packages/browser-capture/README.md`         | Capture CLI and MCP tool reference                           |
+| `.cursor/mcp.json`                           | MCP server configuration                                     |
+| `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync      |
+| `packages/browser-tools/bin/chrome-debug.js` | Chrome lifecycle manager                                     |
+| `.github/workflows/verify-browser-smoke.yml` | CI live-app smoke (verify tier)                              |
+| `.github/workflows/capture-devtools.yml`     | CI capture-snapshot (capture tier)                           |

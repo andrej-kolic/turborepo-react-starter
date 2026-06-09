@@ -75,6 +75,8 @@ Pick the **lightest** path that answers the question:
 | Component UI in isolation                    | `pnpm dev:ui` → Storybook `:6006`             |
 | Assert DOM / text (IDE + MCP available)      | `chrome-devtools` MCP                         |
 | Assert DOM / text (Cloud Agent, SSH, no MCP) | `pnpm browser:validate` / `pnpm browser:read` |
+| Design tokens / custom checks (no MCP)       | `pnpm browser:eval`                           |
+| Visual spot-check vs design (no MCP)         | `pnpm browser:screenshot`                     |
 | HAR / trace / Web Vitals / CI artifact       | `devtools-capture` MCP                        |
 
 **URL convention:** agents should pass `--url` explicitly. CI scripts may omit it and rely on `APP_URL` or `BUNDLER` port derivation (see `docs/browser-validation.md`).

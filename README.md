@@ -24,7 +24,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser:validate`, `pnpm browser:read`)
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser:validate`, `pnpm browser:read`, `pnpm browser:eval`, `pnpm browser:screenshot`)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
@@ -88,9 +88,11 @@ pnpm chrome:debug:stop     # stop
 Two packages — do not mix verify and capture:
 
 - **`packages/browser-tools`** (verify) — DOM assertions over CDP; no artifacts.
-  - `pnpm browser:validate --url <url> --selector <css> [--contains <text>]`
+  - `pnpm browser:validate --url <url> --selector <css> [--contains <text>] [--no-console-errors]`
   - `pnpm browser:read --url <url> --selector <css> [--json]`
-  - **Docs:** `packages/browser-tools/README.md`, [`docs/browser-validation.md`](docs/browser-validation.md)
+  - `pnpm browser:eval --url <url> --expr <js> [--selector <css>] [--expect] [--json]`
+  - `pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64]`
+  - **Docs:** `packages/browser-tools/README.md`, [`docs/browser-validation.md`](docs/browser-validation.md), [`docs/design-spec-validation.md`](docs/design-spec-validation.md)
 
 - **`packages/browser-capture`** (capture) — HAR, traces, performance, console, interactions.
   - **Local:** `pnpm chrome:debug` then `node packages/browser-capture/bin/copilot-devtools.js <command>`
