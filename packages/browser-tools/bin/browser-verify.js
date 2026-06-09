@@ -28,6 +28,12 @@ import {
   readSelector,
   takeScreenshot,
 } from '../src/cdp/verify.js';
+import {
+  isTruthyFlag,
+  parseArgs,
+  screenshotOptions,
+  sharedOptions,
+} from '../src/cli/args.js';
 
 const WORKSPACE_ROOT = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -54,32 +60,6 @@ function resolveBundlerDevPort(bundler) {
   return port;
 }
 
-function parseArgs(argv) {
-  const positionals = [];
-  const options = {};
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (!arg.startsWith('--')) {
-      positionals.push(arg);
-      continue;
-    }
-    const withoutPrefix = arg.slice(2);
-    const [key, inlineValue] = withoutPrefix.split('=', 2);
-    if (inlineValue !== undefined) {
-      options[key] = inlineValue;
-      continue;
-    }
-    const next = argv[i + 1];
-    if (next && !next.startsWith('--')) {
-      options[key] = next;
-      i++;
-    } else {
-      options[key] = true;
-    }
-  }
-  return { positionals, options };
-}
-
 function resolveUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
   if (process.env.APP_URL) return process.env.APP_URL;
@@ -90,10 +70,6 @@ function resolveUrl(urlArg) {
   throw new Error(
     'Could not resolve app URL. Provide --url, set APP_URL, or set BUNDLER (devPort from apps/<BUNDLER>/package.json).',
   );
-}
-
-function isTruthyFlag(value) {
-  return value === true || value === 'true' || value === '1';
 }
 
 function printDiagnostics(diagnostics) {
@@ -161,16 +137,6 @@ Examples:
   pnpm browser:screenshot --url http://localhost:5173 --base64 > /tmp/page.b64
 
 Exit codes: 0 = pass, 1 = assertion failed or error`);
-}
-
-function sharedOptions(options) {
-  return {
-    selector:
-      options.selector && typeof options.selector === 'string'
-        ? options.selector
-        : undefined,
-    noConsoleErrors: isTruthyFlag(options['no-console-errors']),
-  };
 }
 
 async function runValidate(options) {
@@ -340,10 +306,10 @@ async function runScreenshot(options) {
       ? options.output
       : null;
   const asJson = options.json === true;
-  const useBase64 = isTruthyFlag(options.base64) || !outputPath;
-  const fullPage = isTruthyFlag(options['full-page']);
-  const format =
-    options.format === 'jpeg' || options.format === 'jpg' ? 'jpeg' : 'png';
+  const { useBase64, fullPage, format } = screenshotOptions(
+    options,
+    outputPath,
+  );
 
   const result = await takeScreenshot(url, {
     selector,
