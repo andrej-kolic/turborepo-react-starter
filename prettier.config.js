@@ -9,6 +9,14 @@ const config = {
   // trailingComma: "es5",
   // tabWidth: 4,
   // semi: false,
+  overrides: [
+    {
+      // VS Code's jsonc validator warns on trailing commas unless a schema
+      // sets allowTrailingCommas; match strict .json behavior instead.
+      files: ['*.jsonc'],
+      options: { trailingComma: 'none' },
+    },
+  ],
 };
 
 export default config;
