@@ -80,6 +80,8 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 
 ## TODO
 
+- Add session/interaction commands only if you need multi-step behavior specs (open modal → fill form → submit)
+- Add a browser-tools mcp-server exposing the same 5–6 verify commands — one implementation, CLI + IDE both covered
 - **`browser:check-spec`** — run a YAML/JSON design spec in one command (exists, text, styles, console checks). Spec format and manual workflow today: [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md). Should batch checks in a **single page session** (one navigation per spec file), not one `pnpm browser:*` call per row.
 
 ## Environment Variables
