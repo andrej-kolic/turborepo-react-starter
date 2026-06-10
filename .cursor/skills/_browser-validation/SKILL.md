@@ -11,98 +11,68 @@ description: >-
 
 # Browser Validation
 
-## Step 1 — Choose session mode before anything else
+## Step 1 — Are `chrome-devtools` MCP tools callable in this session?
 
-Run `pnpm chrome:debug:status` (or check prior output in the terminal) to determine which mode to use for **every** `browser:*` command in this session:
+Check your available tools — not the environment name. MCP availability depends on what is connected in this specific session, not on whether you're "local" or "remote."
 
-| Chrome status                              | Where                  | Session mode                                                       |
-| ------------------------------------------ | ---------------------- | ------------------------------------------------------------------ |
-| Running, **not** headless                  | Local machine          | **`--attach`** on every inspect command                            |
-| Running, headless (`CHROME_HEADLESS=true`) | Cloud Agent / CI / SSH | Default — no `--attach`                                            |
-| Not running                                | Any                    | Start Chrome first (see bootstrap below), then re-apply this table |
+| `navigate_page` / `take_snapshot` in tool list? | Action                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| **Yes**                                         | Use `chrome-devtools` MCP for all DOM inspection — stop here |
+| **No**                                          | Continue to Step 2                                           |
 
-> **Rule:** Chrome running + not headless + local machine = `--attach` on all `browser:*` commands.
->
-> **Anti-patterns that must NOT change the mode:**
->
-> - "I just started `pnpm dev:app`" — server startup is irrelevant to session mode.
-> - "The app wasn't responding at first" — a transient server state is not a signal to use default mode.
-> - "`--attach` is for auth/navigation scenarios" — it is for **any** local inspection (read, eval, validate, snapshot, screenshot) when Chrome is running visibly.
+**MCP tools:** `navigate_page` · `evaluate_script` · `take_snapshot`
 
-If Chrome is running visibly locally, **always** add `--attach`:
-
-```bash
-pnpm browser:snapshot   --url http://localhost:<port> --attach
-pnpm browser:validate   --url http://localhost:<port> --selector "[data-testid=…]" --attach
-pnpm browser:eval       --url http://localhost:<port> --expr "() => …" --attach
-pnpm browser:read       --url http://localhost:<port> --selector "…" --attach
-pnpm browser:screenshot --url http://localhost:<port> --attach
-```
+For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with verify.
 
 ---
 
-## Step 2 — Pick the lightest tier that answers the question
+## Step 2 — (No MCP) Probe ports, choose session mode
 
-Work top to bottom; stop at the first row that fits.
-
-| Goal                                                        | Tool                                                                          |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Logic / hooks / pure functions                              | `pnpm test` (Vitest + RTL)                                                    |
-| Component UI in isolation                                   | `pnpm dev:ui` → Storybook `:6006`                                             |
-| Drive / click / multi-step UI (MCP available)               | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`   |
-| Any inspection — local, Chrome running visibly (no MCP)     | `pnpm browser:* --attach` (mode set in Step 1)                                |
-| Any inspection — headless / Cloud Agent / SSH / CI (no MCP) | `pnpm browser:validate` / `browser:read` / `browser:snapshot` (no `--attach`) |
-| Design tokens / custom checks (no MCP)                      | `pnpm browser:eval` (session mode from Step 1 applies)                        |
-| Visual spot-check vs design (no MCP)                        | `pnpm browser:screenshot` (session mode from Step 1 applies)                  |
-| HAR / trace / Web Vitals / CI artifact                      | `devtools-capture` MCP → see the `browser-capture` skill                      |
-
-> **Verify vs capture:** never use capture tools (`record_trace`, `record_performance`) for routine
-> DOM/text checks, and never use verify tools when a CI artifact is needed.
-
-## App URL
-
-Each app declares its port as `devPort` / `previewPort` in its `package.json`. Dev mapping:
-`app-vite` → 5173, `app-webpack` → 8080, `app-esbuild` → 8000.
-Build `http://localhost:<port>`, or pass a full deployed URL. **Agents:** pass `--url` explicitly;
-CI may omit it and use `APP_URL` or `BUNDLER` derivation.
-
-## CLI bootstrap (no MCP — Cloud Agent / SSH / CI)
+`chrome:debug:status` uses `kill -0` which is blocked in Cursor's sandbox — **the port is the truth**.
+Always run `chrome:*` lifecycle commands with `required_permissions: ["all"]`.
 
 ```bash
-CHROME_HEADLESS=true pnpm chrome:debug
-pnpm dev:app                             # port follows BUNDLER
-
-pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]"
+# required_permissions: ["all"]
+curl -sf http://localhost:9222/json/version && echo "Chrome UP" || echo "Chrome DOWN"
+curl -sf http://localhost:<devPort>/         && echo "App UP"    || echo "App DOWN"
 ```
 
-## CLI bootstrap (no MCP — local co-dev with visible Chrome)
+| Port 9222        | Where                  | Session mode                                        |
+| ---------------- | ---------------------- | --------------------------------------------------- |
+| UP, not headless | Local machine          | `--attach` on every `browser:*` command             |
+| UP, headless     | Cloud Agent / CI / SSH | No `--attach`                                       |
+| DOWN             | Any                    | `pnpm chrome:debug` (with `["all"]`), then re-probe |
 
-```bash
-pnpm chrome:debug:status                 # already running? → skip next line
-pnpm chrome:debug                        # visible Chrome — do NOT set CHROME_HEADLESS
-pnpm dev:app                             # already running? → skip
-pnpm browser:open --url http://localhost:<port>   # puts the tab in Chrome
-# user: navigate, log in, reach the screen under test
-# → from here every browser:* command gets --attach
-pnpm browser:snapshot --url http://localhost:<port> --attach
-pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=…]" --attach
-# agent edits code → HMR updates the same tab → re-run --attach checks
-```
+**Never stop or restart Chrome when port 9222 responds** — regardless of what `chrome:debug:status` says.
 
-Full command syntax (`browser:open`, `browser:read`, `browser:eval`, `browser:snapshot`, `--attach`):
-[`packages/browser-tools/README.md`](../../../packages/browser-tools/README.md).
+> Anti-patterns:
+>
+> - "Status says stale/not found" → probe port 9222; if it responds, Chrome is running.
+> - "Dev server just started / wasn't responding at first" → irrelevant to session mode.
+> - "`--attach` is for auth/navigation scenarios only" → use it for **any** local inspection when Chrome is running visibly.
 
-Storybook is a separate target — use **canvas URLs** (`iframe.html?id=<story-id>`), not manager URLs.
+---
 
-## Selector stability order
+## Step 3 — (No MCP) Pick the lightest command
 
-1. `[data-testid=…]` (kebab-case) → 2. `[aria-label=…]` → 3. role + accessible name → 4. CSS class (last resort).
+| Goal                                       | Command                                                     |
+| ------------------------------------------ | ----------------------------------------------------------- |
+| Assert selector exists / contains text     | `pnpm browser:validate --url … --selector … [--contains …]` |
+| Read element content                       | `pnpm browser:read --url … --selector …`                    |
+| Evaluate JS / design tokens                | `pnpm browser:eval --url … --expr "() => …"`                |
+| Page snapshot (ARIA tree + testid regions) | `pnpm browser:snapshot --url …`                             |
+| Visual spot-check                          | `pnpm browser:screenshot --url … --selector …`              |
 
-## Full reference
+Add `--attach` or omit it per Step 2. Never use capture tools (`record_trace`, `record_performance`) for DOM checks.
 
-- Decision flowchart, environment scenarios (local / remote / Cloud Agent / SSH tunnel), and Storybook
-  validation: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
-- `data-testid` contract and naming: [`docs/component-validation-contract.md`](../../../docs/component-validation-contract.md)
-- Verify CLI reference: [`packages/browser-tools/README.md`](../../../packages/browser-tools/README.md)
-- Design token / Figma-adjacent checks: [`docs/design-spec-validation.md`](../../../docs/design-spec-validation.md)
-- Artifact capture (HAR, traces, Web Vitals): the `browser-capture` skill
+Storybook canvas URL: `http://localhost:6006/iframe.html?id=<story-id>` — not `?path=/story/…`.
+
+---
+
+## Reference
+
+- Full decision flowchart, all environment scenarios, selector order, Storybook: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
+- CLI flags, `--attach` rules, URL resolution: [`packages/browser-tools/README.md`](../../../packages/browser-tools/README.md)
+- `data-testid` contract: [`docs/component-validation-contract.md`](../../../docs/component-validation-contract.md)
+- Design token checks: [`docs/design-spec-validation.md`](../../../docs/design-spec-validation.md)
+- Artifact capture: [`_browser-capture/SKILL.md`](../_browser-capture/SKILL.md)

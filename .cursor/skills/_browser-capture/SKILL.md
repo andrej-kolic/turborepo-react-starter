@@ -17,8 +17,9 @@ Capture/instrumentation only — produces artifacts. For routine DOM/text verifi
 ## Prerequisites
 
 ```bash
+# required_permissions: ["all"] — chrome:* uses kill -0, blocked in Cursor sandbox
 pnpm chrome:debug          # start Chrome on :9222 (CHROME_HEADLESS=true for CI/VM)
-pnpm chrome:debug:status   # check
+pnpm chrome:debug:status   # check (supplementary — probe localhost:9222/json/version for truth)
 pnpm chrome:debug:stop     # stop
 ```
 

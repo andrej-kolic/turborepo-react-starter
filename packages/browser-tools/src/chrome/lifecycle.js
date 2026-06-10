@@ -75,15 +75,19 @@ function isProcessAlive(pid) {
   }
 }
 
+async function isPortOpen(port) {
+  try {
+    const res = await fetch(`http://localhost:${port}/json/version`);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function waitForChrome(port, timeoutMs = 25_000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
-    try {
-      const res = await fetch(`http://localhost:${port}/json/version`);
-      if (res.ok) return true;
-    } catch {
-      // not ready yet
-    }
+    if (await isPortOpen(port)) return true;
     await new Promise((r) => setTimeout(r, 200));
   }
   return false;
@@ -99,6 +103,17 @@ export async function start({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
   headless,
 } = {}) {
+  // Port-first check: if the debug endpoint is already responding, treat as
+  // already running regardless of PID file (covers Cursor CLI, manual launches,
+  // and sandboxed environments where kill -0 is blocked).
+  if (await isPortOpen(port)) {
+    const pidFile = getPidFile(port);
+    const pid = fs.existsSync(pidFile)
+      ? fs.readFileSync(pidFile, 'utf8').trim()
+      : undefined;
+    return { alreadyRunning: true, pid, port };
+  }
+
   const chromePath = findChromeExecutable();
   const pidFile = getPidFile(port);
 
@@ -183,17 +198,32 @@ export function stop({
 /**
  * Get the status of the Chrome debugging session.
  *
+ * Uses the DevTools port as the authoritative liveness check, with kill -0 as
+ * supplementary info. This makes status reliable in sandboxed environments
+ * (e.g. Cursor agent shell) where kill -0 on foreign PIDs is blocked.
+ *
  * @param {{ port?: number }} options
- * @returns {{ running: boolean, pid?: string, port: number, stale?: boolean }}
+ * @returns {Promise<{ running: boolean, pid?: string, port: number, stale?: boolean, external?: boolean }>}
  */
-export function status({
+export async function status({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
 } = {}) {
+  const portOpen = await isPortOpen(port);
   const pidFile = getPidFile(port);
+
   if (!fs.existsSync(pidFile)) {
-    return { running: false, port };
+    // Port open but no PID file — started externally (Cursor CLI, manual)
+    return { running: portOpen, port, external: portOpen };
   }
+
   const pid = fs.readFileSync(pidFile, 'utf8').trim();
-  const alive = isProcessAlive(pid);
-  return { running: alive, pid, port, stale: !alive };
+  const pidAlive = isProcessAlive(pid);
+
+  if (portOpen) {
+    // Port is the source of truth — Chrome is running
+    return { running: true, pid, port, stale: !pidAlive };
+  }
+
+  // Port not responding — Chrome is down (PID file may be stale)
+  return { running: false, pid, port, stale: true };
 }

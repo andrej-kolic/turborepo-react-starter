@@ -1,6 +1,6 @@
 ---
 description: Browser verify vs capture — which tool tier to use for DOM checks and artifacts
-globs: packages/browser-tools/**,packages/browser-capture/**,.cursor/skills/browser-*/**,docs/browser-validation.md,.github/workflows/verify-browser-smoke.yml,.github/workflows/capture-devtools.yml
+globs: packages/browser-tools/**,packages/browser-capture/**,.cursor/skills/_browser-*/**,docs/browser-validation.md,.github/workflows/verify-browser-smoke.yml,.github/workflows/capture-devtools.yml
 alwaysApply: false
 ---
 
@@ -13,11 +13,6 @@ Read the **browser-validation** skill first. Two tiers — never mix them:
 | **Verify** | `@repo/browser-tools`, `chrome-devtools` MCP | DOM assertions, `browser:eval`, `browser:screenshot` — no capture-tier artifacts |
 | **Capture** | `@repo/browser-capture`, `devtools-capture` MCP | HAR, traces, Web Vitals, console — produces artifacts |
 
-- Routine DOM/text checks: `pnpm browser:validate` / `browser:eval` or `chrome-devtools` MCP — **not** `record_trace`.
-- Design token checks: `pnpm browser:eval` — see [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md).
-- CI smoke (verify): `.github/workflows/verify-browser-smoke.yml`
-- CI artifacts (capture): `.github/workflows/capture-devtools.yml`
+**Sandbox permissions:** `chrome:*` lifecycle commands require `required_permissions: ["all"]` — they use `kill -0` which is blocked by the default sandbox. Regular `browser:*` verify commands connect via CDP over localhost and do **not** need elevated permissions.
 
-App URL port is declared as `devPort` in each app's `package.json` (5173 / 8080 / 8000). Always pass `--url` explicitly in examples and CI.
-
-Full decision tree: [`docs/browser-validation.md`](../../docs/browser-validation.md)
+Full decision tree and environment scenarios: [`docs/browser-validation.md`](../../docs/browser-validation.md)

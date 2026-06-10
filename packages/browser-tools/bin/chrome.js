@@ -28,23 +28,32 @@ try {
       );
     }
   } else if (command === '--status' || command === 'status') {
-    const result = status({ port: PORT });
-    if (!result.running && !result.stale) {
-      console.log(`❌ Chrome is not running on port ${PORT}`);
-    } else if (result.running) {
-      console.log(`✅ Chrome is running (PID: ${result.pid}) on port ${PORT}`);
+    const result = await status({ port: PORT });
+    if (result.running) {
+      const pidLabel = result.pid
+        ? ` (PID: ${result.pid})`
+        : ' (external — no PID file)';
+      const staleNote = result.stale
+        ? ' — PID file stale; run pnpm chrome:debug:stop to clean up'
+        : '';
+      console.log(
+        `✅ Chrome is running${pidLabel} on port ${PORT}${staleNote}`,
+      );
       console.log(`📡 DevTools: http://localhost:${PORT}`);
       console.log(`🔗 WebSocket: ws://localhost:${PORT}/devtools/browser/...`);
     } else {
-      console.log(`❌ Stale PID file (process ${result.pid} not found)`);
-      console.log(`   Run: pnpm chrome:debug:stop`);
+      const pidNote = result.pid
+        ? ` (stale PID file: ${result.pid}; run pnpm chrome:debug:stop)`
+        : '';
+      console.log(`❌ Chrome is not running on port ${PORT}${pidNote}`);
     }
   } else {
     const result = await start({ port: PORT });
     if (result.alreadyRunning) {
-      console.log(
-        `✅ Chrome already running on port ${PORT} (PID: ${result.pid})`,
-      );
+      const pidLabel = result.pid
+        ? ` (PID: ${result.pid})`
+        : ' (external — no PID file)';
+      console.log(`✅ Chrome already running on port ${PORT}${pidLabel}`);
       console.log(`📡 DevTools: http://localhost:${PORT}`);
       console.log(`🔗 WebSocket: ws://localhost:${PORT}/devtools/browser/...`);
     } else {

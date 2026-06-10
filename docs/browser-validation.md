@@ -25,32 +25,14 @@ flowchart TD
     B -- Yes --> C[pnpm test\nVitest + RTL]
     B -- No --> D{Component in\nisolation?}
     D -- Yes --> E[pnpm dev:ui\nStorybook :6006]
-    D -- No --> F{MCP available?\nLocal / IDE session}
+    D -- No --> F{chrome-devtools MCP\ncallable in this session?}
     F -- Yes --> G[chrome-devtools MCP\nnavigate_page · evaluate_script\ntake_snapshot]
-    F -- No --> H{Cloud Agent\nor SSH tunnel?}
-    H -- Yes --> I[pnpm browser:validate\n--selector … --contains …]
+    F -- No --> H{Headless / Cloud Agent\nor SSH tunnel?}
+    H -- Yes --> I[pnpm browser:validate\n--url … --selector …\nno --attach]
     H -- No --> J{Need HAR / trace\nor CI artifact?}
     J -- Yes --> K[devtools-capture MCP\nrecord_trace · record_performance]
-    J -- No --> L[pnpm test · pnpm dev:ui\nor use chrome-devtools MCP]
+    J -- No --> L[Local visible Chrome\npnpm browser:* --attach\nsee Scenario 1b]
 ```
-
----
-
-## Agent Decision Table
-
-Pick the **lightest** path that answers the question. Work top to bottom and stop at the first row
-that fits.
-
-| Goal                                                         | Use                                                                                                                                          | Avoid                                |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Component logic, hooks, pure functions                       | `pnpm test` (Vitest + RTL)                                                                                                                   | Any browser process                  |
-| Component UI in isolation                                    | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                            | Full app unless integration matters  |
-| Assert text / DOM / selector (MCP available)                 | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                                  | `record_trace`, `record_performance` |
-| Co-dev on visible Chrome (no MCP; user navigates/auth)       | `pnpm browser:open` then `pnpm browser:* --attach` — inspects current tab, preserves session                                                 | Default CLI (isolated session)       |
-| Assert text / DOM / selector (no MCP — Cloud Agent, SSH, CI) | `pnpm browser:validate --selector … --contains …` (default — no `--attach`)                                                                  | Raw one-off Playwright scripts       |
-| Record HAR, network, Web Vitals, trace for debugging         | `devtools-capture` MCP `record_trace` / `record_performance`                                                                                 | `chrome-devtools` MCP (wrong tier)   |
-| CI live app smoke (PR)                                       | `.github/workflows/verify-browser-smoke.yml`                                                                                                 | Storybook paths, artifact capture    |
-| CI artifact, PR comment workflow                             | `devtools-capture` MCP + `.github/workflows/capture-devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
 
 ---
 
@@ -81,9 +63,9 @@ CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL
 
 ## Environment Scenarios
 
-### Scenario 1 — Local dev (IDE with MCP)
+### Scenario 1 — MCP available in session
 
-Chrome and the app run on the same machine as the IDE. MCP servers are available.
+`chrome-devtools` MCP tools (`navigate_page`, `evaluate_script`, `take_snapshot`) are callable. Chrome and the app can be local or remote.
 
 ```bash
 # 1. Start the app (port follows BUNDLER — see App URL table above)
@@ -107,18 +89,18 @@ CHROME_DEBUG_HOST=localhost
 
 ---
 
-### Scenario 1b — Local co-dev (visible Chrome, no MCP)
+### Scenario 1b — No MCP, visible Chrome (local co-dev)
 
-You and the agent share one **visible** Chrome window. You navigate and authenticate manually; the
-agent inspects the **current page** without resetting session state. Use when MCP is unavailable but
-a GUI is present (local IDE without MCP, or you want to watch HMR while the agent verifies).
+MCP tools are not available in this session. You and the agent share one visible Chrome window.
+You navigate and authenticate manually; the agent inspects the current page without resetting
+session state.
 
 ```bash
 # 1. Start the app
 pnpm dev:app
 
-# 2. Start visible Chrome (do not set CHROME_HEADLESS)
-pnpm chrome:debug
+# 2. Start visible Chrome only if not already running (required_permissions: ["all"])
+curl -sf http://localhost:9222/json/version || pnpm chrome:debug
 
 # 3. Agent opens the app in that window
 pnpm browser:open --url http://localhost:<port>
@@ -253,6 +235,11 @@ CHROME_DEBUG_PORT=9223 pnpm chrome:debug
 CHROME_HEADLESS=true pnpm chrome:debug
 ```
 
+> **Sandbox note:** `chrome:*` lifecycle commands use `kill -0` internally, which is blocked in
+> Cursor's sandboxed agent shell. Always run them with `required_permissions: ["all"]`. The port
+> (`http://localhost:9222/json/version`) is the authoritative liveness check — `chrome:debug:status`
+> is supplementary and can return a false "stale" result in sandboxed environments.
+
 ---
 
 ## browser-tools CLI
@@ -345,17 +332,17 @@ pnpm browser:read \
 
 ## Related Files
 
-| File                                         | Purpose                                                      |
-| -------------------------------------------- | ------------------------------------------------------------ |
-| `AGENTS.md`                                  | Canonical agent setup, ports, and commands                   |
-| `.cursor/skills/browser-validation/SKILL.md` | Agent entry point — read this first                          |
-| `.cursor/skills/browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)                 |
-| `docs/component-validation-contract.md`      | `data-testid` convention                                     |
-| `packages/browser-tools/README.md`           | Verify CLI reference (`browser:validate`, `browser:eval`, …) |
-| `docs/design-spec-validation.md`             | Token/layout spec checks via `browser:eval`                  |
-| `packages/browser-capture/README.md`         | Capture CLI and MCP tool reference                           |
-| `.cursor/mcp.json`                           | MCP server configuration                                     |
-| `scripts/check-mcp-config.mjs`               | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync      |
-| `packages/browser-tools/bin/chrome.js`       | Chrome lifecycle manager                                     |
-| `.github/workflows/verify-browser-smoke.yml` | CI live-app smoke (verify tier)                              |
-| `.github/workflows/capture-devtools.yml`     | CI capture-snapshot (capture tier)                           |
+| File                                          | Purpose                                                      |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| `AGENTS.md`                                   | Canonical agent setup, ports, and commands                   |
+| `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                          |
+| `.cursor/skills/_browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)                 |
+| `docs/component-validation-contract.md`       | `data-testid` convention                                     |
+| `packages/browser-tools/README.md`            | Verify CLI reference (`browser:validate`, `browser:eval`, …) |
+| `docs/design-spec-validation.md`              | Token/layout spec checks via `browser:eval`                  |
+| `packages/browser-capture/README.md`          | Capture CLI and MCP tool reference                           |
+| `.cursor/mcp.json`                            | MCP server configuration                                     |
+| `scripts/check-mcp-config.mjs`                | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync      |
+| `packages/browser-tools/bin/chrome.js`        | Chrome lifecycle manager                                     |
+| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke (verify tier)                              |
+| `.github/workflows/capture-devtools.yml`      | CI capture-snapshot (capture tier)                           |

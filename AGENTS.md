@@ -63,7 +63,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 ## Browser validation
 
-> **Read the [`browser-validation`](.cursor/skills/browser-validation/SKILL.md) skill first** before
+> **Read the [`browser-validation`](.cursor/skills/_browser-validation/SKILL.md) skill first** before
 > doing any browser-related work. Full decision flowchart and environment scenarios are in
 > [`docs/browser-validation.md`](docs/browser-validation.md).
 
@@ -73,7 +73,7 @@ Pick the **lightest** path that answers the question:
 | ---------------------------------------- | ----------------------------------------------------------------------- |
 | Logic / hooks / pure functions           | `pnpm test`                                                             |
 | Component UI in isolation                | `pnpm dev:ui` → Storybook `:6006`                                       |
-| Assert DOM / text (IDE + MCP available)  | `chrome-devtools` MCP                                                   |
+| Assert DOM / text (MCP callable)         | `chrome-devtools` MCP                                                   |
 | Co-dev on visible Chrome (no MCP)        | `pnpm browser:open` then `pnpm browser:* --attach`                      |
 | Assert DOM / text (Cloud Agent, SSH, CI) | `pnpm browser:validate` / `pnpm browser:read` (default — no `--attach`) |
 | Design tokens / custom checks (no MCP)   | `pnpm browser:eval`                                                     |
@@ -82,11 +82,7 @@ Pick the **lightest** path that answers the question:
 
 **URL convention:** agents should pass `--url` explicitly. CI scripts may omit it and rely on `APP_URL` or `BUNDLER` port derivation (see `docs/browser-validation.md`).
 
-**Cloud Agent note:** MCP servers are not available in Cloud Agent sessions. Use
-`pnpm browser:validate --url <url> --selector "[data-testid=…]"` for DOM assertions instead —
-pass `--url` explicitly (port follows `BUNDLER`; see Services table above). Do **not** use
-`--attach` in headless/Cloud Agent environments — default isolated sessions are correct there.
-For SSH tunnel setup, see Scenario 3 in `docs/browser-validation.md`.
+**MCP availability:** check your tool list — if `navigate_page` / `take_snapshot` are callable, use MCP regardless of environment. If not (Cloud Agent, CI, local without MCP configured, SSH without tunnel), use the CLI path. Do **not** use `--attach` in headless environments — default isolated sessions are correct there. For SSH tunnel and other scenarios, see `docs/browser-validation.md`.
 
 ## Gotchas
 

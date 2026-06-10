@@ -16,7 +16,7 @@ All commands live in `AGENTS.md` ("Common commands") and root `package.json` scr
 
 ## Browser work
 
-Read the [`browser-validation`](../.cursor/skills/browser-validation/SKILL.md) skill first, then
+Read the [`browser-validation`](../.cursor/skills/_browser-validation/SKILL.md) skill first, then
 [`docs/browser-validation.md`](../docs/browser-validation.md) for the full decision tree and
 environment scenarios (local, remote, Cloud Agent, SSH).
 

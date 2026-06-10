@@ -135,4 +135,4 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 - [`docs/browser-validation.md`](../../docs/browser-validation.md) — decision flowchart, environment scenarios
 - [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — token/layout spec checks via `browser:eval`
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` convention
-- [`.cursor/skills/browser-validation/SKILL.md`](../../.cursor/skills/browser-validation/SKILL.md) — agent entry point
+- [`.cursor/skills/_browser-validation/SKILL.md`](../../.cursor/skills/_browser-validation/SKILL.md) — agent entry point
