@@ -43,7 +43,7 @@ export function parseArgs(argv) {
 
 /**
  * @param {Record<string, string | boolean>} options
- * @returns {{ selector?: string, noConsoleErrors: boolean }}
+ * @returns {{ selector?: string, noConsoleErrors: boolean, attach: boolean }}
  */
 export function sharedOptions(options) {
   return {
@@ -52,6 +52,7 @@ export function sharedOptions(options) {
         ? options.selector
         : undefined,
     noConsoleErrors: isTruthyFlag(options['no-console-errors']),
+    attach: isTruthyFlag(options.attach),
   };
 }
 

@@ -58,6 +58,15 @@ describe('sharedOptions', () => {
     ).toEqual({
       selector: 'h1',
       noConsoleErrors: true,
+      attach: false,
+    });
+  });
+
+  it('maps --attach flag', () => {
+    expect(sharedOptions({ attach: true })).toEqual({
+      selector: undefined,
+      noConsoleErrors: false,
+      attach: true,
     });
   });
 });

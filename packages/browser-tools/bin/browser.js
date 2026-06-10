@@ -6,11 +6,12 @@
  * Does not produce artifacts — for capture/tracing use @repo/browser-capture.
  *
  * Usage (via pnpm scripts):
- *   pnpm browser:validate  --url <url> --selector <css> [--contains <text>] [--no-console-errors]
- *   pnpm browser:read      --url <url> --selector <css> [--json]
- *   pnpm browser:eval      --url <url> --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json]
- *   pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64] [--full-page] [--json]
- *   pnpm browser:snapshot  --url <url> [--selector <css>] [--json]
+ *   pnpm browser:open       --url <url>
+ *   pnpm browser:validate  --url <url> --selector <css> [--contains <text>] [--no-console-errors] [--attach]
+ *   pnpm browser:read      --url <url> --selector <css> [--json] [--attach]
+ *   pnpm browser:eval      --url <url> --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json] [--attach]
+ *   pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64] [--full-page] [--json] [--attach]
+ *   pnpm browser:snapshot  --url <url> [--selector <css>] [--json] [--attach]
  *
  * URL resolution when --url is omitted:
  *   1. APP_URL env var
@@ -27,6 +28,7 @@ import {
   assertNoConsoleErrors,
   evaluateScript,
   formatPageSnapshot,
+  openUrl,
   readSelector,
   takePageSnapshot,
   takeScreenshot,
@@ -104,6 +106,7 @@ function usage() {
   console.error(`Browser operations CLI
 
 Commands:
+  open         Navigate the visible Chrome window to a URL (preserves session/auth)
   validate     Assert a selector exists (and optionally contains text)
   read         Read selector content from the page
   eval         Evaluate a JavaScript expression in the page context
@@ -114,6 +117,12 @@ Options (shared):
   --url                 Target URL (optional; falls back to APP_URL or BUNDLER port)
   --selector            CSS selector to query
   --no-console-errors   Fail on console.error or uncaught page exceptions (not warnings)
+  --attach              Run on the existing visible tab instead of a new isolated session.
+                        Preserves authentication and current page state. Requires a tab
+                        already open at that origin (use browser:open first if needed).
+
+Options (open):
+  --url                 URL to navigate to (required)
 
 Options (validate):
   --contains            Text the selector's content must include
@@ -135,8 +144,10 @@ Options (snapshot):
   --json                Output snapshot as JSON (default: human-readable text)
 
 Examples:
+  pnpm browser:open --url http://localhost:5173
   pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
   pnpm browser:validate --url http://localhost:5173 --no-console-errors
+  pnpm browser:snapshot --url http://localhost:5173 --attach
   pnpm browser:eval --url http://localhost:5173 --expr "() => document.title" --json
   pnpm browser:eval --url http://localhost:5173 --selector "[data-testid=app-header]" \\
     --expr "() => { const s = getComputedStyle(document.querySelector('[data-testid=app-header]')); return s.display !== 'none'; }" --expect
@@ -148,9 +159,17 @@ Examples:
 Exit codes: 0 = pass, 1 = assertion failed or error`);
 }
 
+async function runOpen(options) {
+  const url = resolveUrl(options.url);
+  const result = await openUrl(url);
+  console.log(
+    `Opened: ${result.url}${result.navigated ? '' : ' (already loaded)'}`,
+  );
+}
+
 async function runValidate(options) {
   const url = resolveUrl(options.url);
-  const { selector, noConsoleErrors } = sharedOptions(options);
+  const { selector, noConsoleErrors, attach } = sharedOptions(options);
   const containsText =
     options.contains && typeof options.contains === 'string'
       ? options.contains
@@ -165,7 +184,7 @@ async function runValidate(options) {
   }
 
   if (noConsoleErrors && !selector && !containsText) {
-    const result = await assertNoConsoleErrors(url);
+    const result = await assertNoConsoleErrors(url, { attach });
     if (!result.consoleOk) {
       console.error(`FAIL: console errors detected`);
       console.error(`      url: ${url}`);
@@ -185,6 +204,7 @@ async function runValidate(options) {
   if (containsText) {
     const result = await assertTextVisible(url, selector, containsText, {
       noConsoleErrors,
+      attach,
     });
     if (!result.selectorFound) {
       console.error(`FAIL: selector not found: ${selector}`);
@@ -210,6 +230,7 @@ async function runValidate(options) {
   } else {
     const result = await assertSelectorExists(url, selector, {
       noConsoleErrors,
+      attach,
     });
     if (!result.found) {
       console.error(`FAIL: selector not found: ${selector}`);
@@ -230,7 +251,7 @@ async function runValidate(options) {
 
 async function runRead(options) {
   const url = resolveUrl(options.url);
-  const selector = options.selector;
+  const { selector, attach } = sharedOptions(options);
   const asJson = options.json === true;
 
   if (!selector || typeof selector !== 'string') {
@@ -239,7 +260,7 @@ async function runRead(options) {
     process.exit(1);
   }
 
-  const result = await readSelector(url, selector);
+  const result = await readSelector(url, selector, { attach });
 
   if (!result.found) {
     console.error(`Error: selector not found: ${selector}`);
@@ -258,7 +279,7 @@ async function runRead(options) {
 
 async function runEval(options) {
   const url = resolveUrl(options.url);
-  const { selector, noConsoleErrors } = sharedOptions(options);
+  const { selector, noConsoleErrors, attach } = sharedOptions(options);
   const expression = options.expr;
   const asJson = options.json === true;
   const expectTruthy = isTruthyFlag(options.expect);
@@ -269,7 +290,7 @@ async function runEval(options) {
     process.exit(1);
   }
 
-  const result = await evaluateScript(url, expression, { selector });
+  const result = await evaluateScript(url, expression, { selector, attach });
 
   if (noConsoleErrors && result.pageErrors.length > 0) {
     console.error(`FAIL: console errors detected`);
@@ -309,7 +330,7 @@ async function runEval(options) {
 
 async function runScreenshot(options) {
   const url = resolveUrl(options.url);
-  const { selector } = sharedOptions(options);
+  const { selector, attach } = sharedOptions(options);
   const outputPath =
     options.output && typeof options.output === 'string'
       ? options.output
@@ -324,6 +345,7 @@ async function runScreenshot(options) {
     selector,
     fullPage,
     type: format,
+    attach,
   });
 
   if (outputPath) {
@@ -355,10 +377,10 @@ async function runScreenshot(options) {
 
 async function runSnapshot(options) {
   const url = resolveUrl(options.url);
-  const { selector } = sharedOptions(options);
+  const { selector, attach } = sharedOptions(options);
   const asJson = options.json === true;
 
-  const result = await takePageSnapshot(url, { selector });
+  const result = await takePageSnapshot(url, { selector, attach });
 
   if (!result.found || !result.snapshot) {
     console.error(`Error: could not capture snapshot`);
@@ -400,7 +422,9 @@ async function main() {
   }
 
   try {
-    if (cmd === 'validate') {
+    if (cmd === 'open') {
+      await runOpen(options);
+    } else if (cmd === 'validate') {
       await runValidate(options);
     } else if (cmd === 'read') {
       await runRead(options);

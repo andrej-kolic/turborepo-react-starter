@@ -12,6 +12,7 @@ const NAVIGATION_TIMEOUT_MS = 30_000;
  *   waitUntil?: 'load' | 'domcontentloaded' | 'networkidle',
  *   timeout?: number,
  *   selector?: string,
+ *   attach?: boolean,
  * }} SessionOptions
  */
 
@@ -53,7 +54,80 @@ async function createPageSession(port, host) {
 }
 
 /**
+ * Find an open page in Chrome whose origin matches the given URL.
+ * Used by withAttachedSession to locate the visible tab.
+ *
+ * @param {import('playwright-core').Browser} browser
+ * @param {string} url
+ * @returns {Promise<Page | null>}
+ */
+async function findPageAtOrigin(browser, url) {
+  let origin;
+  try {
+    origin = new URL(url).origin;
+  } catch {
+    return null;
+  }
+  for (const context of browser.contexts()) {
+    for (const page of context.pages()) {
+      try {
+        if (new URL(page.url()).origin === origin) {
+          return page;
+        }
+      } catch {
+        // skip chrome://, about:blank, etc.
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Run a callback against an already-open visible tab at the given origin.
+ * Does NOT navigate — preserves the tab's current URL and auth state.
+ * Disconnects when done but does not close the page.
+ *
+ * @template T
+ * @param {string} url
+ * @param {(session: PageSession) => Promise<T>} fn
+ * @param {SessionOptions} [options]
+ * @returns {Promise<T>}
+ */
+export async function withAttachedSession(url, fn, options = {}) {
+  const browser = await connectOverCDP(options.port, options.host);
+  const page = await findPageAtOrigin(browser, url);
+
+  if (!page) {
+    await browser.close().catch(() => {});
+    throw new Error(
+      `No open tab found for ${new URL(url).origin}. Run: pnpm browser:open --url ${url}`,
+    );
+  }
+
+  const pageErrors = [];
+  const onConsole = (msg) => {
+    if (msg.type() === 'error')
+      pageErrors.push(`[console.error] ${msg.text()}`);
+  };
+  const onPageError = (error) => {
+    pageErrors.push(`[pageerror] ${error.message}`);
+  };
+
+  page.on('console', onConsole);
+  page.on('pageerror', onPageError);
+
+  try {
+    return await fn({ page, pageErrors });
+  } finally {
+    page.off('console', onConsole);
+    page.off('pageerror', onPageError);
+    await browser.close().catch(() => {});
+  }
+}
+
+/**
  * Navigate to a URL, run a callback with a console-aware page session, then disconnect.
+ * When options.attach is true, delegates to withAttachedSession instead.
  *
  * @template T
  * @param {string} url
@@ -62,6 +136,9 @@ async function createPageSession(port, host) {
  * @returns {Promise<T>}
  */
 export async function withPageSession(url, fn, options = {}) {
+  if (options.attach) {
+    return withAttachedSession(url, fn, options);
+  }
   const session = await createPageSession(options.port, options.host);
   try {
     await session.page.goto(url, {

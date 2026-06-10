@@ -11,3 +11,5 @@ export {
 export { evaluateScript, readSelector, takeScreenshot } from './read.js';
 
 export { formatPageSnapshot, takePageSnapshot } from './snapshot/index.js';
+
+export { openUrl } from './tabs.js';

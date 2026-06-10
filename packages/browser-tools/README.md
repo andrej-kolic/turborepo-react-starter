@@ -27,6 +27,16 @@ pnpm chrome:debug:status      # Check if Chrome is running
 pnpm chrome:debug:stop        # Stop Chrome
 ```
 
+### Navigate visible Chrome
+
+```bash
+# Open (or navigate to) a URL in the visible Chrome window.
+# Reuses an existing tab at the same origin; opens a new tab otherwise.
+pnpm browser:open --url http://localhost:<port>
+```
+
+Use this before `--attach` commands, or whenever you want the agent's visible browser to land on a specific URL.
+
 ### DOM verification
 
 ```bash
@@ -63,6 +73,23 @@ pnpm browser:screenshot --url http://localhost:<port> --base64
 Exit codes: `0` = pass, `1` = assertion failed or error.
 
 `--no-console-errors` fails on `console.error` and uncaught page exceptions — not `console.warn`.
+
+### `--attach`: operate on the existing visible tab
+
+By default every `browser:*` command opens a **new isolated browser context** (no cookies, no auth). Add `--attach` to reuse the tab that is already open in the visible Chrome window instead — preserving its session, cookies, and current URL.
+
+```bash
+# Snapshot whatever the visible tab currently shows (auth state intact)
+pnpm browser:snapshot --url http://localhost:<port> --attach
+
+# Validate a selector on the currently-open page
+pnpm browser:validate --url http://localhost:<port> --selector <css> --attach
+
+# Read content without navigating away
+pnpm browser:read --url http://localhost:<port> --selector <css> --attach
+```
+
+`--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. The command does **not** navigate; it inspects whatever the tab currently shows. If no tab is found at that origin, the command errors with a hint to run `browser:open` first.
 
 ### URL resolution
 
