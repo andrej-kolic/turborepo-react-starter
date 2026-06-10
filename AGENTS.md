@@ -69,22 +69,24 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 Pick the **lightest** path that answers the question:
 
-| Goal                                         | Tool                                          |
-| -------------------------------------------- | --------------------------------------------- |
-| Logic / hooks / pure functions               | `pnpm test`                                   |
-| Component UI in isolation                    | `pnpm dev:ui` → Storybook `:6006`             |
-| Assert DOM / text (IDE + MCP available)      | `chrome-devtools` MCP                         |
-| Assert DOM / text (Cloud Agent, SSH, no MCP) | `pnpm browser:validate` / `pnpm browser:read` |
-| Design tokens / custom checks (no MCP)       | `pnpm browser:eval`                           |
-| Visual spot-check vs design (no MCP)         | `pnpm browser:screenshot`                     |
-| HAR / trace / Web Vitals / CI artifact       | `devtools-capture` MCP                        |
+| Goal                                     | Tool                                                                    |
+| ---------------------------------------- | ----------------------------------------------------------------------- |
+| Logic / hooks / pure functions           | `pnpm test`                                                             |
+| Component UI in isolation                | `pnpm dev:ui` → Storybook `:6006`                                       |
+| Assert DOM / text (IDE + MCP available)  | `chrome-devtools` MCP                                                   |
+| Co-dev on visible Chrome (no MCP)        | `pnpm browser:open` then `pnpm browser:* --attach`                      |
+| Assert DOM / text (Cloud Agent, SSH, CI) | `pnpm browser:validate` / `pnpm browser:read` (default — no `--attach`) |
+| Design tokens / custom checks (no MCP)   | `pnpm browser:eval`                                                     |
+| Visual spot-check vs design (no MCP)     | `pnpm browser:screenshot`                                               |
+| HAR / trace / Web Vitals / CI artifact   | `devtools-capture` MCP                                                  |
 
 **URL convention:** agents should pass `--url` explicitly. CI scripts may omit it and rely on `APP_URL` or `BUNDLER` port derivation (see `docs/browser-validation.md`).
 
 **Cloud Agent note:** MCP servers are not available in Cloud Agent sessions. Use
 `pnpm browser:validate --url <url> --selector "[data-testid=…]"` for DOM assertions instead —
-pass `--url` explicitly (port follows `BUNDLER`; see Services table above). For SSH tunnel setup,
-see Scenario 3 in `docs/browser-validation.md`.
+pass `--url` explicitly (port follows `BUNDLER`; see Services table above). Do **not** use
+`--attach` in headless/Cloud Agent environments — default isolated sessions are correct there.
+For SSH tunnel setup, see Scenario 3 in `docs/browser-validation.md`.
 
 ## Gotchas
 

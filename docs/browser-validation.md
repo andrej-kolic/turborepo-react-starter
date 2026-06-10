@@ -41,15 +41,16 @@ flowchart TD
 Pick the **lightest** path that answers the question. Work top to bottom and stop at the first row
 that fits.
 
-| Goal                                                     | Use                                                                                                                                          | Avoid                                |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Component logic, hooks, pure functions                   | `pnpm test` (Vitest + RTL)                                                                                                                   | Any browser process                  |
-| Component UI in isolation                                | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                            | Full app unless integration matters  |
-| Assert text / DOM / selector (MCP available)             | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                                  | `record_trace`, `record_performance` |
-| Assert text / DOM / selector (no MCP — Cloud Agent, SSH) | `pnpm browser:validate --selector … --contains …`                                                                                            | Raw one-off Playwright scripts       |
-| Record HAR, network, Web Vitals, trace for debugging     | `devtools-capture` MCP `record_trace` / `record_performance`                                                                                 | `chrome-devtools` MCP (wrong tier)   |
-| CI live app smoke (PR)                                   | `.github/workflows/verify-browser-smoke.yml`                                                                                                 | Storybook paths, artifact capture    |
-| CI artifact, PR comment workflow                         | `devtools-capture` MCP + `.github/workflows/capture-devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
+| Goal                                                         | Use                                                                                                                                          | Avoid                                |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Component logic, hooks, pure functions                       | `pnpm test` (Vitest + RTL)                                                                                                                   | Any browser process                  |
+| Component UI in isolation                                    | `pnpm dev:ui` → Storybook `http://localhost:6006`                                                                                            | Full app unless integration matters  |
+| Assert text / DOM / selector (MCP available)                 | `chrome-devtools` MCP — `navigate_page`, `evaluate_script`, `take_snapshot`                                                                  | `record_trace`, `record_performance` |
+| Co-dev on visible Chrome (no MCP; user navigates/auth)       | `pnpm browser:open` then `pnpm browser:* --attach` — inspects current tab, preserves session                                                 | Default CLI (isolated session)       |
+| Assert text / DOM / selector (no MCP — Cloud Agent, SSH, CI) | `pnpm browser:validate --selector … --contains …` (default — no `--attach`)                                                                  | Raw one-off Playwright scripts       |
+| Record HAR, network, Web Vitals, trace for debugging         | `devtools-capture` MCP `record_trace` / `record_performance`                                                                                 | `chrome-devtools` MCP (wrong tier)   |
+| CI live app smoke (PR)                                       | `.github/workflows/verify-browser-smoke.yml`                                                                                                 | Storybook paths, artifact capture    |
+| CI artifact, PR comment workflow                             | `devtools-capture` MCP + `.github/workflows/capture-devtools.yml` (headless `capture-snapshot`; `/capture-trace` comment name is historical) | MCP (not available in CI)            |
 
 ---
 
@@ -106,6 +107,45 @@ CHROME_DEBUG_HOST=localhost
 
 ---
 
+### Scenario 1b — Local co-dev (visible Chrome, no MCP)
+
+You and the agent share one **visible** Chrome window. You navigate and authenticate manually; the
+agent inspects the **current page** without resetting session state. Use when MCP is unavailable but
+a GUI is present (local IDE without MCP, or you want to watch HMR while the agent verifies).
+
+```bash
+# 1. Start the app
+pnpm dev:app
+
+# 2. Start visible Chrome (do not set CHROME_HEADLESS)
+pnpm chrome:debug
+
+# 3. Agent opens the app in that window
+pnpm browser:open --url http://localhost:<port>
+
+# 4. You navigate — log in, click to the screen under test
+
+# 5. Agent inspects whatever is currently shown (does not navigate)
+pnpm browser:snapshot --url http://localhost:<port> --attach
+pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
+pnpm browser:read --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
+
+# 6. Agent edits components → HMR updates the same tab → re-run --attach checks
+```
+
+**`--attach` rules:**
+
+- Matches by **origin** (`http://localhost:<port>`), not exact path — any tab at that origin qualifies.
+- Does **not** navigate — inspects the tab as the user left it.
+- Requires a tab already open at that origin (`browser:open` or manual navigation). Errors with a
+  hint if none is found.
+- **Do not use in headless/CI/Cloud Agent** — use the default CLI mode instead (Scenario 3a).
+
+**Default CLI (no `--attach`)** still applies for automated checks: each command opens a fresh
+isolated context, navigates to `--url`, and closes. No shared auth.
+
+---
+
 ### Scenario 2 — Remote / deployed URL
 
 The app is deployed (staging, Netlify preview). The _target URL_ is remote, but both MCP servers
@@ -140,7 +180,8 @@ CHROME_DEBUG_HOST=localhost
 ### Scenario 3a — Cloud Agent (headless VM, no MCP)
 
 Everything runs on the same remote VM: the agent, Chrome, and the dev server. MCP is not
-available. Use `pnpm browser:validate` which drives Chrome over CDP directly.
+available. Use `pnpm browser:validate` which drives Chrome over CDP directly. **Do not use
+`--attach`** — there is no shared visible tab; default isolated sessions are correct here.
 
 ```bash
 # All commands run on the Cloud Agent VM:
@@ -218,6 +259,20 @@ CHROME_HEADLESS=true pnpm chrome:debug
 
 Command syntax, flags, env vars, and URL resolution:
 [`packages/browser-tools/README.md`](../packages/browser-tools/README.md).
+
+### Default vs `--attach`
+
+|                                | Default (no `--attach`)                             | `--attach`                                |
+| ------------------------------ | --------------------------------------------------- | ----------------------------------------- |
+| **When**                       | Headless, CI, Cloud Agent, SSH, any automated check | Local co-dev with visible Chrome          |
+| **Session**                    | New isolated context per command                    | Existing visible tab                      |
+| **Navigation**                 | Always goes to `--url`                              | Does not navigate — inspects current page |
+| **Auth / cookies**             | Fresh (empty)                                       | Preserved                                 |
+| **Needs `browser:open` first** | No                                                  | Yes (or user opened the tab manually)     |
+| **Chrome mode**                | `CHROME_HEADLESS=true` OK                           | Visible Chrome (`pnpm chrome:debug`)      |
+
+Commands supporting `--attach`: `validate`, `read`, `eval`, `screenshot`, `snapshot`.
+`browser:open` is separate — it navigates the visible window to a URL.
 
 Design token and Figma-adjacent checks:
 [`docs/design-spec-validation.md`](design-spec-validation.md).
