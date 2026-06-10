@@ -1,5 +1,5 @@
 ---
-name: browser-capture
+name: _browser-capture
 description: >-
   Capture Chrome DevTools artifacts — HAR, Playwright traces, Web Vitals
   (LCP/CLS/INP), console logs, and recorded interactions — via the
