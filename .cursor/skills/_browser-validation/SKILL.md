@@ -26,30 +26,32 @@ For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with veri
 
 ---
 
-## Step 2 — (No MCP) Probe ports, choose session mode
-
-`chrome:debug:status` uses `kill -0` which is blocked in Cursor's sandbox — **the port is the truth**.
-Always run `chrome:*` lifecycle commands with `required_permissions: ["all"]`.
+## Step 2 — (No MCP) Run `browser:probe`, follow its output
 
 ```bash
 # required_permissions: ["all"]
-curl -sf http://localhost:9222/json/version && echo "Chrome UP" || echo "Chrome DOWN"
-curl -sf http://localhost:<devPort>/         && echo "App UP"    || echo "App DOWN"
+pnpm browser:probe
 ```
 
-| Port 9222        | Where                  | Session mode                                        |
-| ---------------- | ---------------------- | --------------------------------------------------- |
-| UP, not headless | Local machine          | `--attach` on every `browser:*` command             |
-| UP, headless     | Cloud Agent / CI / SSH | No `--attach`                                       |
-| DOWN             | Any                    | `pnpm chrome:debug` (with `["all"]`), then re-probe |
+Probes what is actually running right now — Chrome (up? headless or visible?), app server, display — and tells you the mode to use. No guessing.
 
-**Never stop or restart Chrome when port 9222 responds** — regardless of what `chrome:debug:status` says.
+Example outputs:
+
+```
+Chrome:  UP    visible    port=9222     →  use --attach
+Chrome:  UP    headless   port=9222     →  no --attach
+Chrome:  DOWN  port=9222               →  start Chrome first (probe tells you which command)
+```
+
+If Chrome is down, the probe prints the exact start command. Run it (with `required_permissions: ["all"]`), then re-probe.
+
+**Never stop or restart Chrome when it is already UP** — regardless of what `chrome:debug:status` says (it uses `kill -0` which is blocked in Cursor's sandbox and may lie).
 
 > Anti-patterns:
 >
-> - "Status says stale/not found" → probe port 9222; if it responds, Chrome is running.
+> - "Error message or docs mention `CHROME_HEADLESS=true`" → only valid if the probe says `Display: NO`. Never use it just because an error suggested it.
 > - "Dev server just started / wasn't responding at first" → irrelevant to session mode.
-> - "`--attach` is for auth/navigation scenarios only" → use it for **any** local inspection when Chrome is running visibly.
+> - "`--attach` is for auth/navigation scenarios only" → use it for **any** inspection when the probe says `--attach`.
 
 ---
 

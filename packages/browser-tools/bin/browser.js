@@ -450,7 +450,7 @@ async function main() {
         `Error: Could not connect to Chrome on port ${process.env.CHROME_DEBUG_PORT || 9222}.`,
       );
       console.error(
-        `       Start Chrome first: pnpm chrome:debug  (or: CHROME_HEADLESS=true pnpm chrome:debug)`,
+        `       Run: pnpm browser:probe  — checks status and prints the right start command`,
       );
     } else {
       console.error(`Error: ${msg}`);

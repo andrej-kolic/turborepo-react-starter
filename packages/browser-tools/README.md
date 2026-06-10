@@ -19,11 +19,22 @@ Screenshots from `browser:screenshot` are for agent visual review (stdout/file) 
 
 ## Commands
 
+### Environment probe
+
+```bash
+pnpm browser:probe            # Detect Chrome status, app server, display — outputs recommended mode
+pnpm browser:probe --json     # Same, machine-readable JSON
+```
+
+Run this before any `browser:*` command to get the correct session mode (`--attach` or headless).
+Chrome's own `/json/version` response is the source of truth — not `chrome:debug:status` (which
+uses `kill -0`, blocked in sandboxed agent shells).
+
 ### Chrome lifecycle
 
 ```bash
 pnpm chrome:debug             # Start Chrome with remote debugging on port 9222
-pnpm chrome:debug:status      # Check if Chrome is running
+pnpm chrome:debug:status      # Check if Chrome is running (supplementary — probe is more reliable)
 pnpm chrome:debug:stop        # Stop Chrome
 ```
 

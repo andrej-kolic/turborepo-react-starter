@@ -35,6 +35,7 @@
     "chrome:debug": "node packages/browser-tools/bin/chrome.js",
     "chrome:debug:status": "node packages/browser-tools/bin/chrome.js --status",
     "chrome:debug:stop": "node packages/browser-tools/bin/chrome.js --stop",
+    "browser:probe": "node packages/browser-tools/bin/probe.js",
     "browser:open": "node packages/browser-tools/bin/browser.js open",
     "browser:read": "node packages/browser-tools/bin/browser.js read",
     "browser:validate": "node packages/browser-tools/bin/browser.js validate",
