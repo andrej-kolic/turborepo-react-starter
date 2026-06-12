@@ -3,8 +3,8 @@ name: _browser-validation
 description: >-
   Verify the live app or Storybook renders correctly — assert DOM, text, and
   selectors. Use before any browser-related verification in this repo, or when
-  the user mentions browser:open, browser:validate, browser:read, browser:eval,
-  browser:snapshot, browser:screenshot, --attach, chrome-devtools MCP, DOM
+  the user mentions browser open, browser validate, browser read, browser eval,
+  browser snapshot, browser screenshot, --attach, chrome-devtools MCP, DOM
   assertions, or checking rendered UI in local, CLI, remote, or Cloud Agent
   environments.
 ---
@@ -20,13 +20,11 @@ Resolve the URL **before** doing anything else. Do not guess or try other ports.
 
 ## Step 2 — Ensure app is running
 
-Curl only the URL from Step 1. Do not check any other ports.
-
 ```bash
-curl -sf <url> || pnpm dev:app   # required_permissions: network
+curl -sf <url>   # required_permissions: network
 ```
 
-Wait for the app to respond before proceeding.
+If DOWN: run `pnpm dev:app` and wait until curl succeeds. **Do not proceed until the app is up.**
 
 ## Step 3 — Pick browser tier
 
@@ -34,7 +32,7 @@ Wait for the app to respond before proceeding.
 
 **When:** `browser_navigate` is in your tool list. Requires Browser Automation enabled in Cursor IDE settings.
 
-Stop here. Do not run `browser:probe` or check `$CHROME_DEBUG_PORT`.
+Stop here. Do not run `pnpm browser:probe` or check `$CHROME_DEBUG_PORT`.
 
 ---
 
@@ -54,18 +52,18 @@ Retry `navigate_page`. Do not fall back to CLI.
 
 ### C — CLI (no MCP)
 
-Only run probe after Step 2 has confirmed the app is responding. Do not run probe in parallel with `pnpm dev:app`.
+**App must be UP before running probe** (Step 2 must have succeeded).
 
 ```bash
 pnpm browser:probe   # required_permissions: all
 ```
 
-| Probe output                           | Action                                                                      |
-| -------------------------------------- | --------------------------------------------------------------------------- |
-| `Chrome: UP  visible`                  | `pnpm browser:* --url <url> --attach`                                       |
-| `Chrome: UP  headless`                 | `pnpm browser:* --url <url>` (no `--attach`)                                |
-| `Chrome: DOWN` → `→ Mode: --attach`    | three steps — see below                                                     |
-| `Chrome: DOWN` → `→ Mode: no --attach` | `CHROME_HEADLESS=true pnpm chrome:debug`, then `pnpm browser:* --url <url>` |
+| Probe output                           | Action                                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------------------------- |
+| `Chrome: UP  visible`                  | `pnpm browser <subcommand> --url <url> --attach`                                       |
+| `Chrome: UP  headless`                 | `pnpm browser <subcommand> --url <url>` (no `--attach`)                                |
+| `Chrome: DOWN` → `→ Mode: --attach`    | three steps — see below                                                                |
+| `Chrome: DOWN` → `→ Mode: no --attach` | `CHROME_HEADLESS=true pnpm chrome:debug`, then `pnpm browser <subcommand> --url <url>` |
 
 **Chrome DOWN + display (→ Mode: --attach) — follow all three steps in order:**
 
@@ -74,23 +72,23 @@ pnpm browser:probe   # required_permissions: all
 pnpm chrome:debug                              # required_permissions: all
 
 # 2. Open ONE visible tab (required before --attach will work)
-pnpm browser:open --url <url>
+pnpm browser open --url <url>
 
 # 3. ALL checks reuse that tab — every command gets --attach
-pnpm browser:* --url <url> --attach
+pnpm browser <subcommand> --url <url> --attach
 ```
 
 Skipping step 2 or omitting `--attach` in step 3 opens a new session per command.
 
-**Never stop or restart Chrome that is already UP** — `chrome:debug:status` uses `kill -0`, which is blocked in Cursor's sandbox and may lie.
+**Never stop or restart Chrome that is already UP** — `pnpm chrome:debug --status` uses `kill -0`, which is blocked in Cursor's sandbox and may lie.
 
 | Goal                   | Visible Chrome (`→ Mode: --attach`)                                  | Headless (`→ Mode: no --attach`) |
 | ---------------------- | -------------------------------------------------------------------- | -------------------------------- |
-| Assert selector / text | `pnpm browser:validate --url … --selector … [--contains …] --attach` | same, no `--attach`              |
-| Read element content   | `pnpm browser:read --url … --selector … --attach`                    | same, no `--attach`              |
-| Evaluate JS            | `pnpm browser:eval --url … --expr "() => …" --attach`                | same, no `--attach`              |
-| Page snapshot          | `pnpm browser:snapshot --url … --attach`                             | same, no `--attach`              |
-| Visual spot-check      | `pnpm browser:screenshot --url … --selector … --attach`              | same, no `--attach`              |
+| Assert selector / text | `pnpm browser validate --url … --selector … [--contains …] --attach` | same, no `--attach`              |
+| Read element content   | `pnpm browser read --url … --selector … --attach`                    | same, no `--attach`              |
+| Evaluate JS            | `pnpm browser eval --url … --expr "() => …" --attach`                | same, no `--attach`              |
+| Page snapshot          | `pnpm browser snapshot --url … --attach`                             | same, no `--attach`              |
+| Visual spot-check      | `pnpm browser screenshot --url … --selector … --attach`              | same, no `--attach`              |
 
 Storybook canvas URL: `http://localhost:6006/iframe.html?id=<story-id>` — not `?path=/story/…`.
 

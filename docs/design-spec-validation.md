@@ -10,9 +10,9 @@ Use this when verifying a component matches design **tokens and layout constrain
 
 | Layer                  | Question                              | Tool                                                     |
 | ---------------------- | ------------------------------------- | -------------------------------------------------------- |
-| **1. Renders**         | Does the region exist?                | `pnpm browser:validate --selector …`                     |
-| **2. Token spec**      | Are colors/spacing/fonts correct?     | `pnpm browser:eval --expr … --expect`                    |
-| **3. Visual likeness** | Does it look like the design overall? | `pnpm browser:screenshot` + agent vision vs Figma export |
+| **1. Renders**         | Does the region exist?                | `pnpm browser validate --selector …`                     |
+| **2. Token spec**      | Are colors/spacing/fonts correct?     | `pnpm browser eval --expr … --expect`                    |
+| **3. Visual likeness** | Does it look like the design overall? | `pnpm browser screenshot` + agent vision vs Figma export |
 
 Layer 2 is automatable and lightweight. Layer 3 is agent-assisted (subjective). Do not use `browser-capture` for routine checks.
 
@@ -44,7 +44,7 @@ http://localhost:6006/iframe.html?id=example-dynamiclist--default
 
 ### Style values
 
-`browser:eval` reads **computed styles** (`getComputedStyle`). Browsers normalize values:
+`pnpm browser eval` reads **computed styles** (`getComputedStyle`). Browsers normalize values:
 
 - Colors → `rgb(r, g, b)` or `rgba(...)`
 - Sizes → `px` strings
@@ -58,11 +58,11 @@ Extract expected values from Figma dev mode or inspect a reference build once, t
 ### Exists + text (layer 1)
 
 ```bash
-pnpm browser:validate \
+pnpm browser validate \
   --url http://localhost:5173 \
   --selector "[data-testid=app-header]"
 
-pnpm browser:validate \
+pnpm browser validate \
   --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --contains "Turborepo" \
@@ -72,7 +72,7 @@ pnpm browser:validate \
 ### Token check (layer 2)
 
 ```bash
-pnpm browser:eval \
+pnpm browser eval \
   --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --expr "() => {
@@ -90,7 +90,7 @@ pnpm browser:eval \
 Assert a single property with `--expect`:
 
 ```bash
-pnpm browser:eval \
+pnpm browser eval \
   --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --expr "() => {
@@ -105,7 +105,7 @@ pnpm browser:eval \
 When the component renders inline SVG:
 
 ```bash
-pnpm browser:eval \
+pnpm browser eval \
   --url "http://localhost:6006/iframe.html?id=icons--default" \
   --selector "[data-testid=icon]" \
   --expr "() => {
@@ -120,7 +120,7 @@ Compare path data only when designs are stable; prefer viewBox + fill/color toke
 ### Visual review (layer 3)
 
 ```bash
-pnpm browser:screenshot \
+pnpm browser screenshot \
   --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --output /tmp/app-header.png
@@ -137,20 +137,20 @@ CHROME_HEADLESS=true pnpm chrome:debug
 pnpm dev:app   # or pnpm dev:ui for Storybook
 
 # 1. Smoke — region renders, no console errors
-pnpm browser:validate --url <url> --selector "[data-testid=…]" --no-console-errors
+pnpm browser validate --url <url> --selector "[data-testid=…]" --no-console-errors
 
 # 2. Token spec — computed styles match design
-pnpm browser:eval --url <url> --selector "[data-testid=…]" --expr "<fn>" --expect
+pnpm browser eval --url <url> --selector "[data-testid=…]" --expr "<fn>" --expect
 
 # 3. Visual spot-check — screenshot for comparison
-pnpm browser:screenshot --url <url> --selector "[data-testid=…]" --output /tmp/check.png
+pnpm browser screenshot --url <url> --selector "[data-testid=…]" --output /tmp/check.png
 ```
 
 ---
 
-## Future: `browser:check-spec`
+## Future: `browser check-spec`
 
-A `browser:check-spec specs/app-header.spec.yaml` runner may be added later. Until then, agents run the `browser:validate` / `browser:eval` commands implied by each spec row.
+A `pnpm browser check-spec specs/app-header.spec.yaml` runner may be added later. Until then, agents run the `pnpm browser validate` / `pnpm browser eval` commands implied by each spec row.
 
 ---
 

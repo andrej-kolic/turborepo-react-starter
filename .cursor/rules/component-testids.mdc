@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Component validation contract
 
-Governs **agent CLI verification** (`pnpm browser:validate`, CI smoke) — not unit-test selectors.
+Governs **agent CLI verification** (`pnpm browser validate`, CI smoke) — not unit-test selectors.
 Full spec: [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md)
 
 ## Selector priority (agent verification)

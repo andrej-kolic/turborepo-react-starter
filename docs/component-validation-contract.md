@@ -7,7 +7,7 @@ Rules for adding agent-checkable identifiers to components in this monorepo.
 ## Scope
 
 This contract governs **agent CLI verification of page regions** — assertions run by
-`pnpm browser:validate` and CI smoke tests against the live app.
+`pnpm browser validate` and CI smoke tests against the live app.
 
 It does **not** govern unit or integration test selectors. For those, follow the
 [Playwright / Testing Library best practices](https://playwright.dev/docs/best-practices):
@@ -97,9 +97,9 @@ stripped via a Babel plugin or custom bundler transform.
 
 ```bash
 # Requires app running and Chrome on port 9222
-pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
-pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=resource-cards]"
-pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=scroller]"
+pnpm browser validate --url http://localhost:5173 --selector "[data-testid=app-header]"
+pnpm browser validate --url http://localhost:5173 --selector "[data-testid=resource-cards]"
+pnpm browser validate --url http://localhost:5173 --selector "[data-testid=scroller]"
 # all three: exit 0
 ```
 

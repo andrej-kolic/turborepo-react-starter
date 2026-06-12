@@ -1,6 +1,6 @@
 # @repo/browser-capture
 
-**Capture/instrumentation only — not for routine verification.** Records HAR files, Playwright traces, Web Vitals, and console logs from any URL. For DOM/text assertions use `@repo/browser-tools` (`pnpm browser:validate`) or the `chrome-devtools` MCP — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+**Capture/instrumentation only — not for routine verification.** Records HAR files, Playwright traces, Web Vitals, and console logs from any URL. For DOM/text assertions use `@repo/browser-tools` (`pnpm browser validate`) or the `chrome-devtools` MCP — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
 Chrome DevTools artifact capture CLI and MCP server for Copilot workflows, with CI integration and MCP tool exposure for agent-driven debugging.
 

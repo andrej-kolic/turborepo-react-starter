@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "browser-tools": "./bin/browser.js",
+    "browser-tools-chrome": "./bin/chrome.js",
+    "browser-tools-probe": "./bin/probe.js"
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest"

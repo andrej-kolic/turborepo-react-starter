@@ -59,6 +59,9 @@ importers:
 
   .:
     devDependencies:
+      '@repo/browser-tools':
+        specifier: workspace:*
+        version: link:packages/browser-tools
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config

@@ -68,8 +68,8 @@ try {
       console.log(`💾 Session: ${result.userDataDir}`);
       console.log(``);
       console.log(`Next steps:`);
-      console.log(`  - pnpm chrome:debug:status`);
-      console.log(`  - pnpm chrome:debug:stop`);
+      console.log(`  - browser-tools-chrome --status`);
+      console.log(`  - browser-tools-chrome --stop`);
     }
   }
 } catch (err) {

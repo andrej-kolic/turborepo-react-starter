@@ -24,7 +24,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser:validate`, `pnpm browser:read`, `pnpm browser:eval`, `pnpm browser:screenshot`)
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser validate`, `pnpm browser read`, `pnpm browser eval`, `pnpm browser screenshot`)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
@@ -78,9 +78,9 @@ pnpm lint
 Start Chrome with remote debugging (required for browser CLI and MCP tools):
 
 ```bash
-pnpm chrome:debug          # start (port 9222)
-pnpm chrome:debug:status   # check
-pnpm chrome:debug:stop     # stop
+pnpm chrome:debug           # start (port 9222)
+pnpm chrome:debug --status  # check
+pnpm chrome:debug --stop    # stop
 ```
 
 **Canonical agent docs:** [`AGENTS.md`](AGENTS.md) — setup, ports, commands, and browser-validation overview.
@@ -88,10 +88,10 @@ pnpm chrome:debug:stop     # stop
 Two packages — do not mix verify and capture:
 
 - **`packages/browser-tools`** (verify) — DOM assertions over CDP; no artifacts.
-  - `pnpm browser:validate --url <url> --selector <css> [--contains <text>] [--no-console-errors]`
-  - `pnpm browser:read --url <url> --selector <css> [--json]`
-  - `pnpm browser:eval --url <url> --expr <js> [--selector <css>] [--expect] [--json]`
-  - `pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64]`
+  - `pnpm browser validate --url <url> --selector <css> [--contains <text>] [--no-console-errors]`
+  - `pnpm browser read --url <url> --selector <css> [--json]`
+  - `pnpm browser eval --url <url> --expr <js> [--selector <css>] [--expect] [--json]`
+  - `pnpm browser screenshot --url <url> [--selector <css>] [--output <path>] [--base64]`
   - **Docs:** `packages/browser-tools/README.md`, [`docs/browser-validation.md`](docs/browser-validation.md), [`docs/design-spec-validation.md`](docs/design-spec-validation.md)
 
 - **`packages/browser-capture`** (capture) — HAR, traces, performance, console, interactions.

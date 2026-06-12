@@ -135,7 +135,7 @@ console.log(
 
 if (!chrome.up) {
   const startCmd = display
-    ? 'pnpm chrome:debug'
-    : 'CHROME_HEADLESS=true pnpm chrome:debug';
+    ? 'browser-tools-chrome'
+    : 'CHROME_HEADLESS=true browser-tools-chrome';
   console.log(`\nChrome is down — start it: ${startCmd}`);
 }

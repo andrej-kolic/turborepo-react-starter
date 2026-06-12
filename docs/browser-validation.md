@@ -11,7 +11,7 @@ These are two separate concerns with separate tools — pick the right tier.
 
 | Concept     | Industry terms                             | Role                                   | Artifacts | Tools                                                                                |
 | ----------- | ------------------------------------------ | -------------------------------------- | --------- | ------------------------------------------------------------------------------------ |
-| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `cursor-ide-browser` MCP (preferred), `chrome-devtools` MCP, `pnpm browser:validate` |
+| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `cursor-ide-browser` MCP (preferred), `chrome-devtools` MCP, `pnpm browser validate` |
 | **Capture** | instrumentation, tracing, DevTools capture | HAR, traces, Web Vitals, console dumps | Yes (CI)  | `devtools-capture` MCP, `copilot-devtools.js` CLI                                    |
 
 > **Rule:** Never use capture tools for routine verification. Never use verify tools when a CI
@@ -35,7 +35,7 @@ browser tooling all read from it.
 | `app-webpack` | 8080     | 8080         |
 | `app-esbuild` | 8000     | 8000         |
 
-**Agents:** pass `--url` explicitly in `browser:validate` / `browser:read` examples.
+**Agents:** pass `--url` explicitly in `browser validate` / `browser read` examples.
 **CI/scripts:** may omit `--url` and rely on fallback resolution below.
 
 Use `http://localhost:<devPort>` for local dev (`pnpm dev:app`), `http://localhost:<previewPort>` after
@@ -75,7 +75,7 @@ This is the preferred path — it works automatically in the Cursor IDE and requ
 
 **What NOT to do in this scenario:**
 
-- Do **not** run `pnpm browser:probe` — the probe only checks port 9222 and will report "Chrome: DOWN" regardless.
+- Do **not** run `pnpm browser:probe` — it only checks port 9222 and will report "Chrome: DOWN" regardless.
 - Do **not** run `pnpm chrome:debug` — no external Chrome is needed.
 - Do **not** confuse `browser_navigate` (this scenario) with `navigate_page` (Scenario 1 — requires port 9222).
 
@@ -121,14 +121,14 @@ pnpm dev:app
 curl -sf http://localhost:9222/json/version || pnpm chrome:debug
 
 # 3. Agent opens the app in that window
-pnpm browser:open --url http://localhost:<port>
+pnpm browser open --url http://localhost:<port>
 
 # 4. You navigate — log in, click to the screen under test
 
 # 5. Agent inspects whatever is currently shown (does not navigate)
-pnpm browser:snapshot --url http://localhost:<port> --attach
-pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
-pnpm browser:read --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
+pnpm browser snapshot --url http://localhost:<port> --attach
+pnpm browser validate --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
+pnpm browser read --url http://localhost:<port> --selector "[data-testid=app-header]" --attach
 
 # 6. Agent edits components → HMR updates the same tab → re-run --attach checks
 ```
@@ -137,7 +137,7 @@ pnpm browser:read --url http://localhost:<port> --selector "[data-testid=app-hea
 
 - Matches by **origin** (`http://localhost:<port>`), not exact path — any tab at that origin qualifies.
 - Does **not** navigate — inspects the tab as the user left it.
-- Requires a tab already open at that origin (`browser:open` or manual navigation). Errors with a
+- Requires a tab already open at that origin (`pnpm browser open` or manual navigation). Errors with a
   hint if none is found.
 - **Do not use in headless/CI/Cloud Agent** — use the default CLI mode instead (Scenario 3a).
 
@@ -165,7 +165,7 @@ pnpm chrome:debug                 # opens Chrome on port 9222
 Pass the deployed URL directly — no `.env` URL variable needed:
 
 ```bash
-pnpm browser:validate --url https://your-preview.netlify.app --selector body
+pnpm browser validate --url https://your-preview.netlify.app --selector body
 ```
 
 Relevant `.env` variables (Chrome only):
@@ -180,7 +180,7 @@ CHROME_DEBUG_HOST=localhost
 ### Scenario 3a — Cloud Agent (headless VM, no MCP)
 
 Everything runs on the same remote VM: the agent, Chrome, and the dev server. MCP is not
-available. Use `pnpm browser:validate` which drives Chrome over CDP directly. **Do not use
+available. Use `pnpm browser validate` which drives Chrome over CDP directly. **Do not use
 `--attach`** — there is no shared visible tab; default isolated sessions are correct here.
 
 ```bash
@@ -193,13 +193,13 @@ CHROME_HEADLESS=true pnpm chrome:debug
 pnpm dev:app
 
 # 3. Assert selectors (exit 0 = pass, exit 1 = fail)
-pnpm browser:validate --url http://localhost:<port> --selector "[data-testid=app-header]"
+pnpm browser validate --url http://localhost:<port> --selector "[data-testid=app-header]"
 
 # 4. Assert visible text
-pnpm browser:validate --url http://localhost:<port> --selector "h1" --contains "Welcome"
+pnpm browser validate --url http://localhost:<port> --selector "h1" --contains "Welcome"
 
 # 5. Read DOM content as JSON
-pnpm browser:read --url http://localhost:<port> --selector "body" --json
+pnpm browser read --url http://localhost:<port> --selector "body" --json
 ```
 
 Environment variables (set on the VM):
@@ -215,7 +215,7 @@ CHROME_HEADLESS=true
 
 ### Scenario 3b — SSH tunnel (Chrome on remote, commands from local)
 
-Chrome runs on a remote machine; you want to run `browser:validate` assertions from your local
+Chrome runs on a remote machine; you want to run `browser validate` assertions from your local
 machine through an SSH tunnel. MCP may or may not be available locally.
 
 ```bash
@@ -227,7 +227,7 @@ ssh -L 9222:localhost:9222 user@remote-host
 
 # Now run assertions locally — they connect through the tunnel to the remote Chrome.
 # Use the URL where the app is reachable from your machine (remote host + app port):
-pnpm browser:validate --url http://<remote-host>:<port> --selector "[data-testid=app-header]"
+pnpm browser validate --url http://<remote-host>:<port> --selector "[data-testid=app-header]"
 ```
 
 Environment variables (local machine, after tunnel is open):
@@ -242,9 +242,9 @@ CHROME_DEBUG_PORT=9222
 ## Chrome Debug Commands
 
 ```bash
-pnpm chrome:debug            # start Chrome with remote debugging on port 9222
-pnpm chrome:debug:status     # check if Chrome is running
-pnpm chrome:debug:stop       # stop Chrome
+pnpm chrome:debug             # start Chrome with remote debugging on port 9222
+pnpm chrome:debug --status    # check if Chrome is running
+pnpm chrome:debug --stop      # stop Chrome
 
 # Custom port
 CHROME_DEBUG_PORT=9223 pnpm chrome:debug
@@ -255,7 +255,7 @@ CHROME_HEADLESS=true pnpm chrome:debug
 
 > **Sandbox note:** `chrome:*` lifecycle commands use `kill -0` internally, which is blocked in
 > Cursor's sandboxed agent shell. Always run them with `required_permissions: ["all"]`. The port
-> (`http://localhost:9222/json/version`) is the authoritative liveness check — `chrome:debug:status`
+> (`http://localhost:9222/json/version`) is the authoritative liveness check — `pnpm chrome:debug --status`
 > is supplementary and can return a false "stale" result in sandboxed environments.
 
 ---
@@ -267,17 +267,17 @@ Command syntax, flags, env vars, and URL resolution:
 
 ### Default vs `--attach`
 
-|                                | Default (no `--attach`)                             | `--attach`                                |
-| ------------------------------ | --------------------------------------------------- | ----------------------------------------- |
-| **When**                       | Headless, CI, Cloud Agent, SSH, any automated check | Local co-dev with visible Chrome          |
-| **Session**                    | New isolated context per command                    | Existing visible tab                      |
-| **Navigation**                 | Always goes to `--url`                              | Does not navigate — inspects current page |
-| **Auth / cookies**             | Fresh (empty)                                       | Preserved                                 |
-| **Needs `browser:open` first** | No                                                  | Yes (or user opened the tab manually)     |
-| **Chrome mode**                | `CHROME_HEADLESS=true` OK                           | Visible Chrome (`pnpm chrome:debug`)      |
+|                                     | Default (no `--attach`)                             | `--attach`                                |
+| ----------------------------------- | --------------------------------------------------- | ----------------------------------------- |
+| **When**                            | Headless, CI, Cloud Agent, SSH, any automated check | Local co-dev with visible Chrome          |
+| **Session**                         | New isolated context per command                    | Existing visible tab                      |
+| **Navigation**                      | Always goes to `--url`                              | Does not navigate — inspects current page |
+| **Auth / cookies**                  | Fresh (empty)                                       | Preserved                                 |
+| **Needs `pnpm browser open` first** | No                                                  | Yes (or user opened the tab manually)     |
+| **Chrome mode**                     | `CHROME_HEADLESS=true` OK                           | Visible Chrome (`pnpm chrome:debug`)      |
 
 Commands supporting `--attach`: `validate`, `read`, `eval`, `screenshot`, `snapshot`.
-`browser:open` is separate — it navigates the visible window to a URL.
+`pnpm browser open` is separate — it navigates the visible window to a URL.
 
 Design token and Figma-adjacent checks:
 [`docs/design-spec-validation.md`](design-spec-validation.md).
@@ -304,15 +304,15 @@ targets**. Do not use `verify-browser-smoke.yml` for Storybook.
 
 | Target                          | CI / regression                                                                                                                        | Agent / local spot-check                        |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` addon in `apps/ui-storybook` (no CI workflow yet; run Chromatic manually or add a workflow) | `pnpm browser:read` against canvas URLs (below) |
-| `packages/app-core` in live app | `.github/workflows/verify-browser-smoke.yml`                                                                                           | `pnpm browser:validate`                         |
+| `packages/ui` in Storybook      | **Chromatic** — `@chromatic-com/storybook` addon in `apps/ui-storybook` (no CI workflow yet; run Chromatic manually or add a workflow) | `pnpm browser read` against canvas URLs (below) |
+| `packages/app-core` in live app | `.github/workflows/verify-browser-smoke.yml`                                                                                           | `pnpm browser validate`                         |
 
 The Chromatic addon is installed for visual regression when you wire it up; there is no automated
-Chromatic job in `.github/workflows/` today. `browser:read` is not a Chromatic replacement — it is the
+Chromatic job in `.github/workflows/` today. `pnpm browser read` is not a Chromatic replacement — it is the
 lightweight verify tier for agents when Storybook is already running locally.
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live app
-(`browser:validate` or `verify-browser-smoke.yml`), not Storybook URLs. See
+(`pnpm browser validate` or `verify-browser-smoke.yml`), not Storybook URLs. See
 `docs/component-validation-contract.md`.
 
 ### Storybook URL (agents)
@@ -320,7 +320,7 @@ lightweight verify tier for agents when Storybook is already running locally.
 Do not store Storybook URLs in `.env` — port `6006` is declared as `devPort` in
 `apps/ui-storybook/package.json`. Always pass `--url` explicitly.
 
-`browser:validate` / `browser:read` query the **top-level page** — they do not pierce Storybook's
+`pnpm browser validate` / `pnpm browser read` query the **top-level page** — they do not pierce Storybook's
 manager iframe. Use the **canvas URL** (Storybook's official E2E pattern), not the manager UI:
 
 ```text
@@ -340,7 +340,7 @@ pnpm dev:ui
 pnpm chrome:debug
 
 # 3. Read a story canvas (packages/ui — use class or data-testid from story args)
-pnpm browser:read \
+pnpm browser read \
   --url "http://localhost:6006/iframe.html?id=example-dynamiclist--default" \
   --selector ".DynamicList" \
   --json
@@ -356,8 +356,8 @@ pnpm browser:read \
 | `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                          |
 | `.cursor/skills/_browser-capture/SKILL.md`    | Capture-only skill (HAR, traces, Web Vitals)                 |
 | `docs/component-validation-contract.md`       | `data-testid` convention                                     |
-| `packages/browser-tools/README.md`            | Verify CLI reference (`browser:validate`, `browser:eval`, …) |
-| `docs/design-spec-validation.md`              | Token/layout spec checks via `browser:eval`                  |
+| `packages/browser-tools/README.md`            | Verify CLI reference (`browser validate`, `browser eval`, …) |
+| `docs/design-spec-validation.md`              | Token/layout spec checks via `browser eval`                  |
 | `packages/browser-capture/README.md`          | Capture CLI and MCP tool reference                           |
 | `.cursor/mcp.json`                            | MCP server configuration                                     |
 | `scripts/check-mcp-config.mjs`                | Keeps `.cursor/mcp.json` and `.vscode/mcp.json` in sync      |

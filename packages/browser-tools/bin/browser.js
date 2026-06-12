@@ -119,7 +119,7 @@ Options (shared):
   --no-console-errors   Fail on console.error or uncaught page exceptions (not warnings)
   --attach              Run on the existing visible tab instead of a new isolated session.
                         Preserves authentication and current page state. Requires a tab
-                        already open at that origin (use browser:open first if needed).
+                        already open at that origin (use browser-tools open first if needed).
 
 Options (open):
   --url                 URL to navigate to (required)
@@ -144,17 +144,17 @@ Options (snapshot):
   --json                Output snapshot as JSON (default: human-readable text)
 
 Examples:
-  pnpm browser:open --url http://localhost:5173
-  pnpm browser:validate --url http://localhost:5173 --selector "[data-testid=app-header]"
-  pnpm browser:validate --url http://localhost:5173 --no-console-errors
-  pnpm browser:snapshot --url http://localhost:5173 --attach
-  pnpm browser:eval --url http://localhost:5173 --expr "() => document.title" --json
-  pnpm browser:eval --url http://localhost:5173 --selector "[data-testid=app-header]" \\
+  browser-tools open --url http://localhost:5173
+  browser-tools validate --url http://localhost:5173 --selector "[data-testid=app-header]"
+  browser-tools validate --url http://localhost:5173 --no-console-errors
+  browser-tools snapshot --url http://localhost:5173 --attach
+  browser-tools eval --url http://localhost:5173 --expr "() => document.title" --json
+  browser-tools eval --url http://localhost:5173 --selector "[data-testid=app-header]" \\
     --expr "() => { const s = getComputedStyle(document.querySelector('[data-testid=app-header]')); return s.display !== 'none'; }" --expect
-  pnpm browser:screenshot --url http://localhost:5173 --selector "[data-testid=app-header]" --output /tmp/header.png
-  pnpm browser:screenshot --url http://localhost:5173 --base64 > /tmp/page.b64
-  pnpm browser:snapshot --url http://localhost:5173
-  pnpm browser:snapshot --url http://localhost:5173 --selector "[data-testid=app-header]" --json
+  browser-tools screenshot --url http://localhost:5173 --selector "[data-testid=app-header]" --output /tmp/header.png
+  browser-tools screenshot --url http://localhost:5173 --base64 > /tmp/page.b64
+  browser-tools snapshot --url http://localhost:5173
+  browser-tools snapshot --url http://localhost:5173 --selector "[data-testid=app-header]" --json
 
 Exit codes: 0 = pass, 1 = assertion failed or error`);
 }
@@ -450,7 +450,7 @@ async function main() {
         `Error: Could not connect to Chrome on port ${process.env.CHROME_DEBUG_PORT || 9222}.`,
       );
       console.error(
-        `       Run: pnpm browser:probe  — checks status and prints the right start command`,
+        `       Run: browser-tools-probe  — checks status and prints the right start command`,
       );
     } else {
       console.error(`Error: ${msg}`);
