@@ -69,20 +69,14 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 Pick the **lightest** path that answers the question:
 
-| Goal                                     | Tool                                                                    |
-| ---------------------------------------- | ----------------------------------------------------------------------- |
-| Logic / hooks / pure functions           | `pnpm test`                                                             |
-| Component UI in isolation                | `pnpm dev:ui` → Storybook `:6006`                                       |
-| Assert DOM / text (MCP callable)         | `chrome-devtools` MCP                                                   |
-| Co-dev on visible Chrome (no MCP)        | `pnpm browser:open` then `pnpm browser:* --attach`                      |
-| Assert DOM / text (Cloud Agent, SSH, CI) | `pnpm browser:validate` / `pnpm browser:read` (default — no `--attach`) |
-| Design tokens / custom checks (no MCP)   | `pnpm browser:eval`                                                     |
-| Visual spot-check vs design (no MCP)     | `pnpm browser:screenshot`                                               |
-| HAR / trace / Web Vitals / CI artifact   | `devtools-capture` MCP                                                  |
+| Goal                                   | Tool                                              |
+| -------------------------------------- | ------------------------------------------------- |
+| Logic / hooks / pure functions         | `pnpm test`                                       |
+| Component UI in isolation              | `pnpm dev:ui` → Storybook `:6006`                 |
+| Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C |
+| HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                            |
 
-**URL convention:** agents should pass `--url` explicitly. CI scripts may omit it and rely on `APP_URL` or `BUNDLER` port derivation (see `docs/browser-validation.md`).
-
-**MCP availability:** check your tool list — if `navigate_page` / `take_snapshot` are callable, use MCP regardless of environment. If not (Cloud Agent, CI, local without MCP configured, SSH without tunnel), use the CLI path. Do **not** use `--attach` in headless environments — default isolated sessions are correct there. For SSH tunnel and other scenarios, see `docs/browser-validation.md`.
+See the **[browser-validation skill](.cursor/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
 
 ## Gotchas
 

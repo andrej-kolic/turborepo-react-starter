@@ -1,5 +1,7 @@
 # Browser Validation
 
+> **Agents:** follow the **[browser-validation skill](../.cursor/skills/_browser-validation/SKILL.md)** — it has the full decision graph (URL resolution, app startup, tier A/B/C). This document is the reference for detailed scenarios, `--attach` rules, SSH tunnel, Storybook, and selector conventions.
+
 How to check that the app renders correctly and how to capture DevTools artifacts.
 These are two separate concerns with separate tools — pick the right tier.
 
@@ -7,32 +9,15 @@ These are two separate concerns with separate tools — pick the right tier.
 
 ## Verify vs Capture
 
-| Concept     | Industry terms                             | Role                                   | Artifacts | Tools                                             |
-| ----------- | ------------------------------------------ | -------------------------------------- | --------- | ------------------------------------------------- |
-| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `chrome-devtools` MCP, `pnpm browser:validate`    |
-| **Capture** | instrumentation, tracing, DevTools capture | HAR, traces, Web Vitals, console dumps | Yes (CI)  | `devtools-capture` MCP, `copilot-devtools.js` CLI |
+| Concept     | Industry terms                             | Role                                   | Artifacts | Tools                                                                                |
+| ----------- | ------------------------------------------ | -------------------------------------- | --------- | ------------------------------------------------------------------------------------ |
+| **Verify**  | drive + verify, live UI checks, assertions | Read DOM, assert text, check selector  | None      | `cursor-ide-browser` MCP (preferred), `chrome-devtools` MCP, `pnpm browser:validate` |
+| **Capture** | instrumentation, tracing, DevTools capture | HAR, traces, Web Vitals, console dumps | Yes (CI)  | `devtools-capture` MCP, `copilot-devtools.js` CLI                                    |
 
 > **Rule:** Never use capture tools for routine verification. Never use verify tools when a CI
 > artifact is needed.
 
 ---
-
-## Decision Flowchart
-
-```mermaid
-flowchart TD
-    A([Start: need to check the app]) --> B{Logic only?\nNo browser needed}
-    B -- Yes --> C[pnpm test\nVitest + RTL]
-    B -- No --> D{Component in\nisolation?}
-    D -- Yes --> E[pnpm dev:ui\nStorybook :6006]
-    D -- No --> F{chrome-devtools MCP\ncallable in this session?}
-    F -- Yes --> G[chrome-devtools MCP\nnavigate_page · evaluate_script\ntake_snapshot]
-    F -- No --> H{Headless / Cloud Agent\nor SSH tunnel?}
-    H -- Yes --> I[pnpm browser:validate\n--url … --selector …\nno --attach]
-    H -- No --> J{Need HAR / trace\nor CI artifact?}
-    J -- Yes --> K[devtools-capture MCP\nrecord_trace · record_performance]
-    J -- No --> L[Local visible Chrome\npnpm browser:* --attach\nsee Scenario 1b]
-```
 
 ---
 
@@ -63,9 +48,42 @@ CLI URL resolution (when `--url` is omitted): `--url` flag → optional `APP_URL
 
 ## Environment Scenarios
 
-### Scenario 1 — MCP available in session
+### Scenario 0 — Cursor built-in browser (`cursor-ide-browser` MCP)
 
-`chrome-devtools` MCP tools (`navigate_page`, `evaluate_script`, `take_snapshot`) are callable. Chrome and the app can be local or remote.
+Cursor exposes its own internal browser as the **`cursor-ide-browser`** MCP server. When this server is available in your agent session (tool list contains `browser_navigate` / `browser_snapshot`), you can inspect the app **without any external Chrome process or port 9222**.
+
+This is the preferred path — it works automatically in the Cursor IDE and requires no project setup.
+
+```
+# No shell commands needed. Use MCP tools directly:
+# browser_navigate url="http://localhost:<port>"
+# browser_snapshot
+# browser_cdp method="Runtime.evaluate" params={"expression": "..."}
+```
+
+**`cursor-ide-browser` tool names** (distinct from `chrome-devtools`):
+
+| Tool                      | Purpose                                          |
+| ------------------------- | ------------------------------------------------ |
+| `browser_navigate`        | Navigate to URL (reuses existing tab by default) |
+| `browser_snapshot`        | Accessibility snapshot of current page           |
+| `browser_click`           | Click an element                                 |
+| `browser_fill`            | Fill a form field                                |
+| `browser_cdp`             | Raw CDP command                                  |
+| `browser_take_screenshot` | Screenshot                                       |
+| `browser_tabs`            | List open tabs                                   |
+
+**What NOT to do in this scenario:**
+
+- Do **not** run `pnpm browser:probe` — the probe only checks port 9222 and will report "Chrome: DOWN" regardless.
+- Do **not** run `pnpm chrome:debug` — no external Chrome is needed.
+- Do **not** confuse `browser_navigate` (this scenario) with `navigate_page` (Scenario 1 — requires port 9222).
+
+---
+
+### Scenario 1 — External Chrome via `chrome-devtools` MCP (port 9222)
+
+`chrome-devtools` MCP tools (`navigate_page`, `evaluate_script`, `take_snapshot`) connect through an external Chrome process on `localhost:9222` (configured in `.cursor/mcp.json` with `--browserUrl`). Use this when `cursor-ide-browser` is not available in your session.
 
 ```bash
 # 1. Start the app (port follows BUNDLER — see App URL table above)

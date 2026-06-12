@@ -13,6 +13,13 @@ Read the **browser-validation** skill first. Two tiers — never mix them:
 | **Verify** | `@repo/browser-tools`, `chrome-devtools` MCP | DOM assertions, `browser:eval`, `browser:screenshot` — no capture-tier artifacts |
 | **Capture** | `@repo/browser-capture`, `devtools-capture` MCP | HAR, traces, Web Vitals, console — produces artifacts |
 
+**Two separate MCP browser surfaces — check in priority order:**
+
+1. **`cursor-ide-browser`** (Cursor's built-in): tools are `browser_navigate`, `browser_snapshot`, `browser_cdp`. No port 9222. Use this first.
+2. **`chrome-devtools`** (external Chrome): tools are `navigate_page`, `take_snapshot`, `evaluate_script`. Always needs port 9222.
+
+If neither MCP surface is callable, use the CLI path: `pnpm browser:probe` → follow its output → `pnpm browser:validate` / `browser:read`.
+
 **Sandbox permissions:** `chrome:*` lifecycle commands require `required_permissions: ["all"]` — they use `kill -0` which is blocked by the default sandbox. Regular `browser:*` verify commands connect via CDP over localhost and do **not** need elevated permissions.
 
 Full decision tree and environment scenarios: [`docs/browser-validation.md`](../../docs/browser-validation.md)

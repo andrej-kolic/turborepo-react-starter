@@ -11,70 +11,91 @@ description: >-
 
 # Browser Validation
 
-## Step 1 — Are `chrome-devtools` MCP tools callable in this session?
+## Step 1 — Get URL
 
-Check your available tools — not the environment name. MCP availability depends on what is connected in this specific session, not on whether you're "local" or "remote."
+Resolve the URL **before** doing anything else. Do not guess or try other ports.
 
-| `navigate_page` / `take_snapshot` in tool list? | Action                                                       |
-| ----------------------------------------------- | ------------------------------------------------------------ |
-| **Yes**                                         | Use `chrome-devtools` MCP for all DOM inspection — stop here |
-| **No**                                          | Continue to Step 2                                           |
+1. Check `.env` for `APP_URL` — if set, that is the URL. Done.
+2. Otherwise read `BUNDLER` from `.env`, then read `devPort` from `apps/<BUNDLER>/package.json`. URL is `http://localhost:<devPort>`.
 
-**MCP tools:** `navigate_page` · `evaluate_script` · `take_snapshot`
+## Step 2 — Ensure app is running
+
+Curl only the URL from Step 1. Do not check any other ports.
+
+```bash
+curl -sf <url> || pnpm dev:app   # required_permissions: network
+```
+
+Wait for the app to respond before proceeding.
+
+## Step 3 — Pick browser tier
+
+### A — `cursor-ide-browser` (Cursor built-in automation)
+
+**When:** `browser_navigate` is in your tool list. Requires Browser Automation enabled in Cursor IDE settings.
+
+Stop here. Do not run `browser:probe` or check `$CHROME_DEBUG_PORT`.
+
+---
+
+### B — `chrome-devtools` MCP
+
+**When:** `navigate_page` is in your tool list. Call it immediately — the result tells you if Chrome is running.
+
+If the call fails with "connection refused" (Chrome not on `$CHROME_DEBUG_HOST:$CHROME_DEBUG_PORT`):
+
+```bash
+pnpm chrome:debug   # required_permissions: all
+```
+
+Retry `navigate_page`. Do not fall back to CLI.
+
+---
+
+### C — CLI (no MCP)
+
+Only run probe after Step 2 has confirmed the app is responding. Do not run probe in parallel with `pnpm dev:app`.
+
+```bash
+pnpm browser:probe   # required_permissions: all
+```
+
+| Probe output                           | Action                                                                      |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| `Chrome: UP  visible`                  | `pnpm browser:* --url <url> --attach`                                       |
+| `Chrome: UP  headless`                 | `pnpm browser:* --url <url>` (no `--attach`)                                |
+| `Chrome: DOWN` → `→ Mode: --attach`    | three steps — see below                                                     |
+| `Chrome: DOWN` → `→ Mode: no --attach` | `CHROME_HEADLESS=true pnpm chrome:debug`, then `pnpm browser:* --url <url>` |
+
+**Chrome DOWN + display (→ Mode: --attach) — follow all three steps in order:**
+
+```bash
+# 1. Start Chrome
+pnpm chrome:debug                              # required_permissions: all
+
+# 2. Open ONE visible tab (required before --attach will work)
+pnpm browser:open --url <url>
+
+# 3. ALL checks reuse that tab — every command gets --attach
+pnpm browser:* --url <url> --attach
+```
+
+Skipping step 2 or omitting `--attach` in step 3 opens a new session per command.
+
+**Never stop or restart Chrome that is already UP** — `chrome:debug:status` uses `kill -0`, which is blocked in Cursor's sandbox and may lie.
+
+| Goal                   | Visible Chrome (`→ Mode: --attach`)                                  | Headless (`→ Mode: no --attach`) |
+| ---------------------- | -------------------------------------------------------------------- | -------------------------------- |
+| Assert selector / text | `pnpm browser:validate --url … --selector … [--contains …] --attach` | same, no `--attach`              |
+| Read element content   | `pnpm browser:read --url … --selector … --attach`                    | same, no `--attach`              |
+| Evaluate JS            | `pnpm browser:eval --url … --expr "() => …" --attach`                | same, no `--attach`              |
+| Page snapshot          | `pnpm browser:snapshot --url … --attach`                             | same, no `--attach`              |
+| Visual spot-check      | `pnpm browser:screenshot --url … --selector … --attach`              | same, no `--attach`              |
+
+Storybook canvas URL: `http://localhost:6006/iframe.html?id=<story-id>` — not `?path=/story/…`.
 
 For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with verify.
 
 ---
 
-## Step 2 — (No MCP) Run `browser:probe`, follow its output
-
-```bash
-# required_permissions: ["all"]
-pnpm browser:probe
-```
-
-Probes what is actually running right now — Chrome (up? headless or visible?), app server, display — and tells you the mode to use. No guessing.
-
-Example outputs:
-
-```
-Chrome:  UP    visible    port=9222     →  use --attach
-Chrome:  UP    headless   port=9222     →  no --attach
-Chrome:  DOWN  port=9222               →  start Chrome first (probe tells you which command)
-```
-
-If Chrome is down, the probe prints the exact start command. Run it (with `required_permissions: ["all"]`), then re-probe.
-
-**Never stop or restart Chrome when it is already UP** — regardless of what `chrome:debug:status` says (it uses `kill -0` which is blocked in Cursor's sandbox and may lie).
-
-> Anti-patterns:
->
-> - "Error message or docs mention `CHROME_HEADLESS=true`" → only valid if the probe says `Display: NO`. Never use it just because an error suggested it.
-> - "Dev server just started / wasn't responding at first" → irrelevant to session mode.
-> - "`--attach` is for auth/navigation scenarios only" → use it for **any** inspection when the probe says `--attach`.
-
----
-
-## Step 3 — (No MCP) Pick the lightest command
-
-| Goal                                       | Command                                                     |
-| ------------------------------------------ | ----------------------------------------------------------- |
-| Assert selector exists / contains text     | `pnpm browser:validate --url … --selector … [--contains …]` |
-| Read element content                       | `pnpm browser:read --url … --selector …`                    |
-| Evaluate JS / design tokens                | `pnpm browser:eval --url … --expr "() => …"`                |
-| Page snapshot (ARIA tree + testid regions) | `pnpm browser:snapshot --url …`                             |
-| Visual spot-check                          | `pnpm browser:screenshot --url … --selector …`              |
-
-Add `--attach` or omit it per Step 2. Never use capture tools (`record_trace`, `record_performance`) for DOM checks.
-
-Storybook canvas URL: `http://localhost:6006/iframe.html?id=<story-id>` — not `?path=/story/…`.
-
----
-
-## Reference
-
-- Full decision flowchart, all environment scenarios, selector order, Storybook: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
-- CLI flags, `--attach` rules, URL resolution: [`packages/browser-tools/README.md`](../../../packages/browser-tools/README.md)
-- `data-testid` contract: [`docs/component-validation-contract.md`](../../../docs/component-validation-contract.md)
-- Design token checks: [`docs/design-spec-validation.md`](../../../docs/design-spec-validation.md)
-- Artifact capture: [`_browser-capture/SKILL.md`](../_browser-capture/SKILL.md)
+> Full details and edge cases: [`docs/browser-validation.md`](../../../docs/browser-validation.md)

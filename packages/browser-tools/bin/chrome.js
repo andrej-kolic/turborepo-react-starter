@@ -68,9 +68,8 @@ try {
       console.log(`💾 Session: ${result.userDataDir}`);
       console.log(``);
       console.log(`Next steps:`);
-      console.log(`  - Use pnpm chrome:debug:status to check status`);
-      console.log(`  - Connect with Chrome DevTools MCP or Puppeteer`);
-      console.log(`  - Run pnpm chrome:debug:stop to cleanly stop`);
+      console.log(`  - pnpm chrome:debug:status`);
+      console.log(`  - pnpm chrome:debug:stop`);
     }
   }
 } catch (err) {
