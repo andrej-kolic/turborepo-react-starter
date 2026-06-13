@@ -75,8 +75,8 @@ This is the preferred path — it works automatically in the Cursor IDE and requ
 
 **What NOT to do in this scenario:**
 
-- Do **not** run `pnpm browser:probe` — it only checks port 9222 and will report "Chrome: DOWN" regardless.
 - Do **not** run `pnpm chrome:debug` — no external Chrome is needed.
+- Do **not** run `pnpm browser:setup` — `cursor-ide-browser` handles everything internally.
 - Do **not** confuse `browser_navigate` (this scenario) with `navigate_page` (Scenario 1 — requires port 9222).
 
 ---

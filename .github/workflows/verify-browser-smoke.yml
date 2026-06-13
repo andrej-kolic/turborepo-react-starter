@@ -83,7 +83,7 @@ jobs:
 
       - name: Assert app header renders
         run: |
-          if ! pnpm browser:validate \
+          if ! pnpm browser validate \
             --url $APP_URL \
             --selector "[data-testid=app-header]" \
             --no-console-errors; then

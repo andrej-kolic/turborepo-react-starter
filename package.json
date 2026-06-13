@@ -33,8 +33,9 @@
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
     "chrome:debug": "browser-tools-chrome",
-    "browser:probe": "dotenv -- browser-tools-probe",
-    "browser": "dotenv -- browser-tools"
+    "browser:setup": "dotenv -- node scripts/with-app-url.js browser-tools-setup",
+    "browser:ensure-app": "dotenv -- node scripts/with-app-url.js node scripts/ensure-app.js",
+    "browser": "dotenv -- node scripts/with-app-url.js browser-tools"
   },
   "devDependencies": {
     "@repo/browser-tools": "workspace:*",

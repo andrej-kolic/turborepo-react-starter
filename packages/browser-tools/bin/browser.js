@@ -14,14 +14,11 @@
  *   pnpm browser:snapshot  --url <url> [--selector <css>] [--json] [--attach]
  *
  * URL resolution when --url is omitted:
- *   1. APP_URL env var
- *   2. http://localhost:<devPort> from apps/<BUNDLER>/package.json
- *   3. Error — pass --url, APP_URL, or BUNDLER
+ *   1. APP_URL env var (injected by pnpm scripts via with-app-url.js)
+ *   2. Error — pass --url or run via pnpm browser
  */
 
-import { readFileSync, writeFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { writeFileSync } from 'fs';
 import {
   assertSelectorExists,
   assertTextVisible,
@@ -40,40 +37,13 @@ import {
   sharedOptions,
 } from '../src/cli/args.js';
 
-const WORKSPACE_ROOT = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  '../../..',
-);
-
-/** `devPort` in apps/<BUNDLER>/package.json is the single source of truth. */
-function resolveBundlerDevPort(bundler) {
-  const pkgPath = resolve(WORKSPACE_ROOT, 'apps', bundler, 'package.json');
-  let pkg;
-  try {
-    pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-  } catch {
-    throw new Error(
-      `Could not read apps/${bundler}/package.json. Check BUNDLER or pass --url.`,
-    );
-  }
-  const port = pkg.devPort;
-  if (typeof port !== 'number') {
-    throw new Error(
-      `apps/${bundler}/package.json has no devPort. Pass --url instead.`,
-    );
-  }
-  return port;
-}
-
 function resolveUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
   if (process.env.APP_URL) return process.env.APP_URL;
-  const bundler = process.env.BUNDLER;
-  if (bundler) {
-    return `http://localhost:${resolveBundlerDevPort(bundler)}`;
-  }
   throw new Error(
-    'Could not resolve app URL. Provide --url, set APP_URL, or set BUNDLER (devPort from apps/<BUNDLER>/package.json).',
+    'No URL. Provide --url or set APP_URL.\n' +
+      '  Run via: pnpm browser (resolves URL automatically from BUNDLER)\n' +
+      '  Or pass: pnpm browser <subcommand> --url http://localhost:<port>',
   );
 }
 
@@ -450,7 +420,7 @@ async function main() {
         `Error: Could not connect to Chrome on port ${process.env.CHROME_DEBUG_PORT || 9222}.`,
       );
       console.error(
-        `       Run: browser-tools-probe  — checks status and prints the right start command`,
+        `       Run: pnpm browser:setup --url <url>  — starts Chrome and opens a tab`,
       );
     } else {
       console.error(`Error: ${msg}`);

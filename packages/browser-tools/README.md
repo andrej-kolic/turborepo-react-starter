@@ -19,22 +19,22 @@ Screenshots from `pnpm browser screenshot` are for agent visual review (stdout/f
 
 ## Commands
 
-### Environment probe
+### Browser setup
 
 ```bash
-pnpm browser:probe            # Detect Chrome status, app server, display — outputs recommended mode
-pnpm browser:probe --json     # Same, machine-readable JSON
+pnpm browser:setup --url http://localhost:<port>   # Start Chrome + open tab (required_permissions: all)
+pnpm browser:ensure-app                            # Ensure dev server is running (starts it if needed)
 ```
 
-Run this before any `pnpm browser` command to get the correct session mode (`--attach` or headless).
-Chrome's own `/json/version` response is the source of truth — not `pnpm chrome:debug --status` (which
-uses `kill -0`, blocked in sandboxed agent shells).
+`browser:setup` is idempotent — safe to call when Chrome is already running or tab already open. Output
+says `Ready. Use --attach.` or `Ready. No --attach.` — use that flag for all subsequent `pnpm browser`
+commands. Chrome's `/json/version` endpoint is the authoritative liveness check.
 
 ### Chrome lifecycle
 
 ```bash
 pnpm chrome:debug             # Start Chrome with remote debugging on port 9222
-pnpm chrome:debug --status    # Check if Chrome is running (supplementary — probe is more reliable)
+pnpm chrome:debug --status    # Check if Chrome is running
 pnpm chrome:debug --stop      # Stop Chrome
 ```
 

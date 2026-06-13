@@ -6,7 +6,7 @@
   "bin": {
     "browser-tools": "./bin/browser.js",
     "browser-tools-chrome": "./bin/chrome.js",
-    "browser-tools-probe": "./bin/probe.js"
+    "browser-tools-setup": "./bin/setup.js"
   },
   "scripts": {
     "test": "vitest run",
