@@ -19,7 +19,7 @@
 
 import { start } from '../src/chrome/lifecycle.js';
 import { openUrl } from '../src/cdp/tabs.js';
-import { parseArgs } from '../src/cli/args.js';
+import { parseArgs, resolveUrl } from '../src/cli/args.js';
 
 function hasDisplay() {
   if (
@@ -29,16 +29,6 @@ function hasDisplay() {
     return false;
   if (process.platform === 'darwin') return true;
   return Boolean(process.env.DISPLAY);
-}
-
-function resolveUrl(urlArg) {
-  if (urlArg && typeof urlArg === 'string') return urlArg;
-  if (process.env.APP_URL) return process.env.APP_URL;
-  throw new Error(
-    'No URL. Provide --url or set APP_URL.\n' +
-      '  Run via: pnpm browser:setup (resolves URL automatically from BUNDLER)\n' +
-      '  Or pass: pnpm browser:setup --url http://localhost:<port>',
-  );
 }
 
 const { options } = parseArgs(process.argv.slice(2));

@@ -33,19 +33,10 @@ import {
 import {
   isTruthyFlag,
   parseArgs,
+  resolveUrl,
   screenshotOptions,
   sharedOptions,
 } from '../src/cli/args.js';
-
-function resolveUrl(urlArg) {
-  if (urlArg && typeof urlArg === 'string') return urlArg;
-  if (process.env.APP_URL) return process.env.APP_URL;
-  throw new Error(
-    'No URL. Provide --url or set APP_URL.\n' +
-      '  Run via: pnpm browser (resolves URL automatically from BUNDLER)\n' +
-      '  Or pass: pnpm browser <subcommand> --url http://localhost:<port>',
-  );
-}
 
 function printDiagnostics(diagnostics) {
   if (!diagnostics) return;
