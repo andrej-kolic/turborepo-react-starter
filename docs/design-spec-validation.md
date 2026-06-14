@@ -24,7 +24,7 @@ Store specs next to the component or story they validate. Example:
 
 ```yaml
 # specs/app-header.spec.yaml
-url: http://localhost:5173
+url: <url> # e.g. http://localhost:5173 or a Storybook canvas URL
 checks:
   - selector: '[data-testid=app-header]'
     exists: true
@@ -55,15 +55,16 @@ Extract expected values from Figma dev mode or inspect a reference build once, t
 
 ## Running checks manually
 
+> **URL:** run `pnpm browser:ensure-app` first — it prints the resolved URL and the `pnpm browser`
+> commands below will pick it up automatically. Pass `--url <url>` explicitly only to override.
+
 ### Exists + text (layer 1)
 
 ```bash
 pnpm browser validate \
-  --url http://localhost:5173 \
   --selector "[data-testid=app-header]"
 
 pnpm browser validate \
-  --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --contains "Turborepo" \
   --no-console-errors
@@ -73,7 +74,6 @@ pnpm browser validate \
 
 ```bash
 pnpm browser eval \
-  --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --expr "() => {
     const el = document.querySelector('[data-testid=app-header]');
@@ -91,7 +91,6 @@ Assert a single property with `--expect`:
 
 ```bash
 pnpm browser eval \
-  --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --expr "() => {
     const s = getComputedStyle(document.querySelector('[data-testid=app-header]'));
@@ -121,7 +120,6 @@ Compare path data only when designs are stable; prefer viewBox + fill/color toke
 
 ```bash
 pnpm browser screenshot \
-  --url http://localhost:5173 \
   --selector "[data-testid=app-header]" \
   --output /tmp/app-header.png
 ```
@@ -133,17 +131,17 @@ Agents with vision compare `/tmp/app-header.png` to a Figma export or pasted ref
 ## Agent workflow (no MCP)
 
 ```bash
-CHROME_HEADLESS=true pnpm chrome:debug
-pnpm dev:app   # or pnpm dev:ui for Storybook
+pnpm browser:ensure-app   # starts dev server if needed; resolves URL
+pnpm browser:setup        # required_permissions: all
 
 # 1. Smoke — region renders, no console errors
-pnpm browser validate --url <url> --selector "[data-testid=…]" --no-console-errors
+pnpm browser validate --selector "[data-testid=…]" --no-console-errors
 
 # 2. Token spec — computed styles match design
-pnpm browser eval --url <url> --selector "[data-testid=…]" --expr "<fn>" --expect
+pnpm browser eval --selector "[data-testid=…]" --expr "<fn>" --expect
 
 # 3. Visual spot-check — screenshot for comparison
-pnpm browser screenshot --url <url> --selector "[data-testid=…]" --output /tmp/check.png
+pnpm browser screenshot --selector "[data-testid=…]" --output /tmp/check.png
 ```
 
 ---
@@ -157,5 +155,5 @@ A `pnpm browser check-spec specs/app-header.spec.yaml` runner may be added later
 ## Related
 
 - [`docs/component-validation-contract.md`](component-validation-contract.md) — `data-testid` naming
-- [`docs/browser-validation.md`](browser-validation.md) — verify vs capture, environment scenarios
+- [`docs/browser-validation.md`](browser-validation.md) — URL derivation, edge-case scenarios, Storybook
 - [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI reference

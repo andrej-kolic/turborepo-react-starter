@@ -68,8 +68,10 @@ Output tells you the flag to use for all subsequent browser commands:
 
 Storybook: pass `--url http://localhost:6006/iframe.html?id=<story-id>` explicitly — not `?path=/story/…`.
 
+The script detects display availability and starts Chrome accordingly — just follow the output.
+
 For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with verify.
 
 ---
 
-> Full details and edge cases: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
+> Edge-case scenarios (`--attach`, SSH tunnel, remote URL), Storybook, and URL derivation: [`docs/browser-validation.md`](../../../docs/browser-validation.md)

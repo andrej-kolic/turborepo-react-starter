@@ -75,27 +75,10 @@ pnpm lint
 
 ### Debug & browser tooling
 
-Start Chrome with remote debugging (required for browser CLI and MCP tools):
-
 ```bash
-pnpm chrome:debug           # start (port 9222)
+pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
 pnpm chrome:debug --status  # check
 pnpm chrome:debug --stop    # stop
 ```
 
-**Canonical agent docs:** [`AGENTS.md`](AGENTS.md) — setup, ports, commands, and browser-validation overview.
-
-Two packages — do not mix verify and capture:
-
-- **`packages/browser-tools`** (verify) — DOM assertions over CDP; no artifacts.
-  - `pnpm browser validate --url <url> --selector <css> [--contains <text>] [--no-console-errors]`
-  - `pnpm browser read --url <url> --selector <css> [--json]`
-  - `pnpm browser eval --url <url> --expr <js> [--selector <css>] [--expect] [--json]`
-  - `pnpm browser screenshot --url <url> [--selector <css>] [--output <path>] [--base64]`
-  - **Docs:** `packages/browser-tools/README.md`, [`docs/browser-validation.md`](docs/browser-validation.md), [`docs/design-spec-validation.md`](docs/design-spec-validation.md)
-
-- **`packages/browser-capture`** (capture) — HAR, traces, performance, console, interactions.
-  - **Local:** `pnpm chrome:debug` then `node packages/browser-capture/bin/copilot-devtools.js <command>`
-  - **Commands:** `capture-snapshot`, `record-trace`, `record-performance`, `record-console`, `record-interactions`, `upload-artifacts`, `mcp-server`
-  - **Docs:** `packages/browser-capture/README.md`, `.cursor/skills/_browser-capture/SKILL.md`
-  - **CI:** `.github/workflows/capture-devtools.yml` — `/capture-trace` PR comment runs a headless `capture-snapshot` health check (not a full trace)
+Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).

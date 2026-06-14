@@ -6,12 +6,12 @@
  * Does not produce artifacts — for capture/tracing use @repo/browser-capture.
  *
  * Usage (via pnpm scripts):
- *   pnpm browser:open       --url <url>
- *   pnpm browser:validate  --url <url> --selector <css> [--contains <text>] [--no-console-errors] [--attach]
- *   pnpm browser:read      --url <url> --selector <css> [--json] [--attach]
- *   pnpm browser:eval      --url <url> --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json] [--attach]
- *   pnpm browser:screenshot --url <url> [--selector <css>] [--output <path>] [--base64] [--full-page] [--json] [--attach]
- *   pnpm browser:snapshot  --url <url> [--selector <css>] [--json] [--attach]
+ *   pnpm browser open       --url <url>
+ *   pnpm browser validate   [--url <url>] --selector <css> [--contains <text>] [--no-console-errors] [--attach]
+ *   pnpm browser read       [--url <url>] --selector <css> [--json] [--attach]
+ *   pnpm browser eval       [--url <url>] --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json] [--attach]
+ *   pnpm browser screenshot [--url <url>] [--selector <css>] [--output <path>] [--base64] [--full-page] [--json] [--attach]
+ *   pnpm browser snapshot   [--url <url>] [--selector <css>] [--json] [--attach]
  *
  * URL resolution when --url is omitted:
  *   1. APP_URL env var (injected by pnpm scripts via with-app-url.js)
@@ -75,7 +75,7 @@ Commands:
   snapshot     Structured page snapshot (ARIA tree + data-testid regions)
 
 Options (shared):
-  --url                 Target URL (optional; falls back to APP_URL or BUNDLER port)
+  --url                 Target URL (optional; falls back to APP_URL from pnpm scripts)
   --selector            CSS selector to query
   --no-console-errors   Fail on console.error or uncaught page exceptions (not warnings)
   --attach              Run on the existing visible tab instead of a new isolated session.

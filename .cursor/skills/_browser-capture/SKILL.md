@@ -18,7 +18,8 @@ Capture/instrumentation only — produces artifacts. For routine DOM/text verifi
 
 ```bash
 # Start Chrome and open a tab (idempotent) — required_permissions: all
-pnpm browser:setup --url <url>
+# URL auto-resolves from BUNDLER via with-app-url.js; pass --url to override
+pnpm browser:setup
 
 # Check / stop Chrome if needed
 pnpm chrome:debug --status  # check (probes localhost:9222/json/version)
