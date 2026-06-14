@@ -81,6 +81,7 @@ Options (shared):
   --attach              Run on the existing visible tab instead of a new isolated session.
                         Preserves authentication and current page state. Requires a tab
                         already open at that origin (use browser-tools open first if needed).
+  --timeout             Selector wait timeout in milliseconds (default: 30000)
 
 Options (open):
   --url                 URL to navigate to (required)
@@ -130,7 +131,7 @@ async function runOpen(options) {
 
 async function runValidate(options) {
   const url = resolveUrl(options.url);
-  const { selector, noConsoleErrors, attach } = sharedOptions(options);
+  const { selector, noConsoleErrors, attach, timeout } = sharedOptions(options);
   const containsText =
     options.contains && typeof options.contains === 'string'
       ? options.contains
@@ -145,7 +146,7 @@ async function runValidate(options) {
   }
 
   if (noConsoleErrors && !selector && !containsText) {
-    const result = await assertNoConsoleErrors(url, { attach });
+    const result = await assertNoConsoleErrors(url, { attach, timeout });
     if (!result.consoleOk) {
       console.error(`FAIL: console errors detected`);
       console.error(`      url: ${url}`);
@@ -166,6 +167,7 @@ async function runValidate(options) {
     const result = await assertTextVisible(url, selector, containsText, {
       noConsoleErrors,
       attach,
+      timeout,
     });
     if (!result.selectorFound) {
       console.error(`FAIL: selector not found: ${selector}`);
@@ -192,6 +194,7 @@ async function runValidate(options) {
     const result = await assertSelectorExists(url, selector, {
       noConsoleErrors,
       attach,
+      timeout,
     });
     if (!result.found) {
       console.error(`FAIL: selector not found: ${selector}`);
@@ -212,7 +215,7 @@ async function runValidate(options) {
 
 async function runRead(options) {
   const url = resolveUrl(options.url);
-  const { selector, attach } = sharedOptions(options);
+  const { selector, attach, timeout } = sharedOptions(options);
   const asJson = options.json === true;
 
   if (!selector || typeof selector !== 'string') {
@@ -221,7 +224,7 @@ async function runRead(options) {
     process.exit(1);
   }
 
-  const result = await readSelector(url, selector, { attach });
+  const result = await readSelector(url, selector, { attach, timeout });
 
   if (!result.found) {
     console.error(`Error: selector not found: ${selector}`);
@@ -240,7 +243,7 @@ async function runRead(options) {
 
 async function runEval(options) {
   const url = resolveUrl(options.url);
-  const { selector, noConsoleErrors, attach } = sharedOptions(options);
+  const { selector, noConsoleErrors, attach, timeout } = sharedOptions(options);
   const expression = options.expr;
   const asJson = options.json === true;
   const expectTruthy = isTruthyFlag(options.expect);
@@ -251,7 +254,11 @@ async function runEval(options) {
     process.exit(1);
   }
 
-  const result = await evaluateScript(url, expression, { selector, attach });
+  const result = await evaluateScript(url, expression, {
+    selector,
+    attach,
+    timeout,
+  });
 
   if (noConsoleErrors && result.pageErrors.length > 0) {
     console.error(`FAIL: console errors detected`);
@@ -291,7 +298,7 @@ async function runEval(options) {
 
 async function runScreenshot(options) {
   const url = resolveUrl(options.url);
-  const { selector, attach } = sharedOptions(options);
+  const { selector, attach, timeout } = sharedOptions(options);
   const outputPath =
     options.output && typeof options.output === 'string'
       ? options.output
@@ -307,6 +314,7 @@ async function runScreenshot(options) {
     fullPage,
     type: format,
     attach,
+    timeout,
   });
 
   if (outputPath) {
@@ -338,10 +346,10 @@ async function runScreenshot(options) {
 
 async function runSnapshot(options) {
   const url = resolveUrl(options.url);
-  const { selector, attach } = sharedOptions(options);
+  const { selector, attach, timeout } = sharedOptions(options);
   const asJson = options.json === true;
 
-  const result = await takePageSnapshot(url, { selector, attach });
+  const result = await takePageSnapshot(url, { selector, attach, timeout });
 
   if (!result.found || !result.snapshot) {
     console.error(`Error: could not capture snapshot`);

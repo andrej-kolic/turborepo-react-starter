@@ -33,6 +33,16 @@ describe('parseArgs', () => {
     const { positionals } = parseArgs(['spec.yaml', '--url', 'http://x.test']);
     expect(positionals).toEqual(['spec.yaml']);
   });
+
+  it('stores --timeout value as string', () => {
+    const { options } = parseArgs(['--timeout', '5000']);
+    expect(options.timeout).toBe('5000');
+  });
+
+  it('stores bare --timeout as true', () => {
+    const { options } = parseArgs(['--timeout', '--selector', 'h1']);
+    expect(options.timeout).toBe(true);
+  });
 });
 
 describe('isTruthyFlag', () => {
@@ -59,6 +69,7 @@ describe('sharedOptions', () => {
       selector: 'h1',
       noConsoleErrors: true,
       attach: false,
+      timeout: undefined,
     });
   });
 
@@ -67,7 +78,25 @@ describe('sharedOptions', () => {
       selector: undefined,
       noConsoleErrors: false,
       attach: true,
+      timeout: undefined,
     });
+  });
+
+  it('parses --timeout as a number', () => {
+    expect(sharedOptions({ timeout: '5000' })).toEqual({
+      selector: undefined,
+      noConsoleErrors: false,
+      attach: false,
+      timeout: 5000,
+    });
+  });
+
+  it('ignores non-numeric --timeout', () => {
+    expect(sharedOptions({ timeout: 'abc' }).timeout).toBeUndefined();
+  });
+
+  it('accepts --timeout 0', () => {
+    expect(sharedOptions({ timeout: '0' }).timeout).toBe(0);
   });
 });
 

@@ -55,7 +55,7 @@ export function resolveUrl(urlArg) {
 
 /**
  * @param {Record<string, string | boolean>} options
- * @returns {{ selector?: string, noConsoleErrors: boolean, attach: boolean }}
+ * @returns {{ selector?: string, noConsoleErrors: boolean, attach: boolean, timeout?: number }}
  */
 export function sharedOptions(options) {
   return {
@@ -65,6 +65,11 @@ export function sharedOptions(options) {
         : undefined,
     noConsoleErrors: isTruthyFlag(options['no-console-errors']),
     attach: isTruthyFlag(options.attach),
+    timeout: Number.isNaN(
+      typeof options.timeout === 'string' ? Number(options.timeout) : NaN,
+    )
+      ? undefined
+      : Number(options.timeout),
   };
 }
 
