@@ -2,20 +2,20 @@
 /**
  * Browser operations CLI — assert, read, and snapshot the live app via CDP.
  *
- * Requires Chrome running with remote debugging (pnpm chrome:debug).
+ * Requires Chrome running with remote debugging (browser-tools-chrome).
  * Does not produce artifacts — for capture/tracing use @repo/browser-capture.
  *
- * Usage (via pnpm scripts):
- *   pnpm browser open       --url <url>
- *   pnpm browser validate   [--url <url>] --selector <css> [--contains <text>] [--no-console-errors] [--attach]
- *   pnpm browser read       [--url <url>] --selector <css> [--json] [--attach]
- *   pnpm browser eval       [--url <url>] --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json] [--attach]
- *   pnpm browser screenshot [--url <url>] [--selector <css>] [--output <path>] [--base64] [--full-page] [--json] [--attach]
- *   pnpm browser snapshot   [--url <url>] [--selector <css>] [--json] [--attach]
+ * Usage:
+ *   browser-tools open       --url <url>
+ *   browser-tools validate   [--url <url>] --selector <css> [--contains <text>] [--no-console-errors] [--attach]
+ *   browser-tools read       [--url <url>] --selector <css> [--json] [--attach]
+ *   browser-tools eval       [--url <url>] --expr <js> [--selector <css>] [--expect] [--no-console-errors] [--json] [--attach]
+ *   browser-tools screenshot [--url <url>] [--selector <css>] [--output <path>] [--base64] [--full-page] [--json] [--attach]
+ *   browser-tools snapshot   [--url <url>] [--selector <css>] [--json] [--attach]
  *
  * URL resolution when --url is omitted:
- *   1. APP_URL env var (injected by pnpm scripts via with-app-url.js)
- *   2. Error — pass --url or run via pnpm browser
+ *   1. APP_URL env var
+ *   2. Error — pass --url or set APP_URL
  */
 
 import { writeFileSync } from 'fs';
@@ -37,6 +37,7 @@ import {
   screenshotOptions,
   sharedOptions,
 } from '../src/cli/args.js';
+import { SETUP_BIN } from '../src/cli/bin-names.js';
 
 function printDiagnostics(diagnostics) {
   if (!diagnostics) return;
@@ -75,7 +76,7 @@ Commands:
   snapshot     Structured page snapshot (ARIA tree + data-testid regions)
 
 Options (shared):
-  --url                 Target URL (optional; falls back to APP_URL from pnpm scripts)
+  --url                 Target URL (optional; falls back to APP_URL env var)
   --selector            CSS selector to query
   --no-console-errors   Fail on console.error or uncaught page exceptions (not warnings)
   --attach              Run on the existing visible tab instead of a new isolated session.
@@ -419,7 +420,7 @@ async function main() {
         `Error: Could not connect to Chrome on port ${process.env.CHROME_DEBUG_PORT || 9222}.`,
       );
       console.error(
-        `       Run: pnpm browser:setup --url <url>  — starts Chrome and opens a tab`,
+        `       Run: ${SETUP_BIN} --url <url>  — starts Chrome and opens a tab`,
       );
     } else {
       console.error(`Error: ${msg}`);

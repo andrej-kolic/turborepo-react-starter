@@ -3,12 +3,13 @@
  * Chrome lifecycle CLI — start, stop, and check Chrome with remote debugging.
  *
  * Usage:
- *   pnpm chrome:debug              # Start Chrome on port 9222
- *   pnpm chrome:debug:status       # Check status
- *   pnpm chrome:debug:stop         # Stop Chrome
- *   CHROME_DEBUG_PORT=9223 pnpm chrome:debug  # Custom port
+ *   browser-tools-chrome              # Start Chrome on port 9222
+ *   browser-tools-chrome --status     # Check status
+ *   browser-tools-chrome --stop       # Stop Chrome
+ *   CHROME_DEBUG_PORT=9223 browser-tools-chrome  # Custom port
  */
 
+import { CHROME_BIN } from '../src/cli/bin-names.js';
 import { start, stop, status } from '../src/chrome/lifecycle.js';
 
 const PORT = Number(process.env.CHROME_DEBUG_PORT || 9222);
@@ -34,7 +35,7 @@ try {
         ? ` (PID: ${result.pid})`
         : ' (external — no PID file)';
       const staleNote = result.stale
-        ? ' — PID file stale; run pnpm chrome:debug:stop to clean up'
+        ? ` — PID file stale; run ${CHROME_BIN} --stop to clean up`
         : '';
       console.log(
         `✅ Chrome is running${pidLabel} on port ${PORT}${staleNote}`,
@@ -43,7 +44,7 @@ try {
       console.log(`🔗 WebSocket: ws://localhost:${PORT}/devtools/browser/...`);
     } else {
       const pidNote = result.pid
-        ? ` (stale PID file: ${result.pid}; run pnpm chrome:debug:stop)`
+        ? ` (stale PID file: ${result.pid}; run ${CHROME_BIN} --stop)`
         : '';
       console.log(`❌ Chrome is not running on port ${PORT}${pidNote}`);
     }
@@ -68,8 +69,8 @@ try {
       console.log(`💾 Session: ${result.userDataDir}`);
       console.log(``);
       console.log(`Next steps:`);
-      console.log(`  - browser-tools-chrome --status`);
-      console.log(`  - browser-tools-chrome --stop`);
+      console.log(`  - ${CHROME_BIN} --status`);
+      console.log(`  - ${CHROME_BIN} --stop`);
     }
   }
 } catch (err) {

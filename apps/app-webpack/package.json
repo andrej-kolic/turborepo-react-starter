@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "devPort": 8080,
-  "previewPort": 8080,
+  "previewPort": 8081,
   "scripts": {
     "dev": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=development webpack serve --mode development --config config/webpack.config.ts",
     "build": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack --mode production --config config/webpack.config.ts",

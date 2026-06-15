@@ -44,13 +44,17 @@ export default defineConfig((configEnv) => {
     },
 
     server: {
-      port: Number(process.env.PORT) || pkg.devPort,
+      port: pkg.devPort,
+      strictPort: true,
       watch: {
         // Re-read @repo/commons when its compiled dist/ changes (pnpm workspace link).
         ignored: ['!**/node_modules/@repo/commons/**'],
       },
     },
-    preview: { port: Number(process.env.PORT) || pkg.previewPort },
+    preview: {
+      port: pkg.previewPort,
+      strictPort: true,
+    },
 
     plugins: [react()],
 

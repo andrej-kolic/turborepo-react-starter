@@ -9,8 +9,10 @@
 Do not store the app URL in `.env`. It depends on which bundler is running (`BUNDLER` in `.env`).
 
 Each bundler app declares its own port as `devPort` / `previewPort` in its `package.json`
-(e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs and
-browser tooling all read from it.
+(e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs,
+`@repo/dev-tools/config/app-port.js`, and browser tooling all read from it. Vite uses
+`strictPort: true` so the declared port matches the listening port. Port overrides are not
+supported via `PORT`; set `APP_URL` instead.
 
 | `BUNDLER`     | Dev port | Preview port |
 | ------------- | -------- | ------------ |
@@ -23,7 +25,8 @@ Use `http://localhost:<devPort>` for local dev, `http://localhost:<previewPort>`
 
 ### Agent bootstrap
 
-Root `pnpm browser:*` scripts inject `APP_URL` automatically via `scripts/with-app-url.js`:
+Root `pnpm browser:*` scripts inject `APP_URL` automatically via `scripts/with-app-url.js`
+(using `@repo/dev-tools/config/app-port.js`):
 
 ```bash
 pnpm browser:ensure-app   # ensure dev server is up; prints "App: UP  <url>"
@@ -31,8 +34,8 @@ pnpm browser:setup        # ensure Chrome + tab (CLI tier; required_permissions:
 pnpm browser validate --selector "[data-testid=app-header]"   # --url auto-resolved
 ```
 
-Resolution order in `with-app-url.js`: `APP_URL` already set → use as-is; else derive
-`http://localhost:<devPort>` from `apps/<BUNDLER>/package.json`.
+Resolution order: `APP_URL` already set → use as-is; else derive `http://localhost:<devPort>`
+from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` / `resolveAppUrl()` in `@repo/dev-tools/config/app-port.js`.
 
 Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
@@ -40,7 +43,20 @@ Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
 When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
 `BUNDLER` is **not** read by the CLI directly — only by the `with-app-url.js` wrapper.
-CI sets `APP_URL` explicitly (see `verify-browser-smoke.yml`).
+
+### CI bootstrap
+
+[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) runs the same
+helper path as local agents, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`, `app-esbuild`):
+
+```bash
+pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
+pnpm browser:setup
+pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
+```
+
+`APP_URL` is derived from `BUNDLER` via `with-app-url.js` — CI does not set it explicitly.
+`--log-file` captures dev-server output for CI failures (startup timeout or validate step).
 
 ---
 
@@ -176,6 +192,7 @@ pnpm browser read \
 | `docs/component-validation-contract.md`       | `data-testid` convention                                       |
 | `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
 | `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                  |
-| `scripts/with-app-url.js`                     | Injects `APP_URL` from `BUNDLER`                               |
-| `scripts/ensure-app.js`                       | Starts dev server if down (`pnpm browser:ensure-app`)          |
-| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test                                         |
+| `packages/dev-tools/config/app-port.js`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
+| `scripts/with-app-url.js`                     | Injects `APP_URL` via `app-port.js`                            |
+| `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI        |
+| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                  |

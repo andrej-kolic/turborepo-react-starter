@@ -1,4 +1,5 @@
 import { connectOverCDP } from './connect.js';
+import { BROWSER_BIN } from '../cli/bin-names.js';
 
 export const DEFAULT_SELECTOR_TIMEOUT_MS = 30_000;
 const NAVIGATION_TIMEOUT_MS = 30_000;
@@ -100,7 +101,7 @@ export async function withAttachedSession(url, fn, options = {}) {
   if (!page) {
     await browser.close().catch(() => {});
     throw new Error(
-      `No open tab found for ${new URL(url).origin}. Run: pnpm browser:open --url ${url}`,
+      `No open tab found for ${new URL(url).origin}. Run: ${BROWSER_BIN} open --url ${url}`,
     );
   }
 

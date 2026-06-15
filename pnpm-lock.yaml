@@ -243,6 +243,9 @@ importers:
       '@chromatic-com/storybook':
         specifier: 5.2.1
         version: 5.2.1(storybook@10.4.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@testing-library/dom@10.4.1)(@types/react@19.2.15)(prettier@3.8.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config

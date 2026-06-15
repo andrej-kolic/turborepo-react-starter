@@ -2,9 +2,9 @@
 /**
  * Resolve APP_URL from BUNDLER and inject it into a child command's environment.
  *
- * Resolution order:
+ * Resolution order (see @repo/dev-tools/config/app-port.js):
  *   1. APP_URL already set → use as-is (allows CI / remote override)
- *   2. BUNDLER set → read devPort from apps/<BUNDLER>/package.json → derive URL
+ *   2. BUNDLER set → devUrl from apps/<BUNDLER>/package.json via resolveAppTargets()
  *   3. Neither set → spawn child without APP_URL (child handles the missing URL)
  *
  * Usage (via pnpm scripts only — do not invoke directly):
@@ -13,40 +13,8 @@
  *   node scripts/with-app-url.js browser-tools-setup --url <url>
  */
 
-import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
-
-const WORKSPACE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-
-function resolveAppUrl() {
-  if (process.env.APP_URL) return process.env.APP_URL;
-
-  const bundler = process.env.BUNDLER;
-  if (!bundler) return null;
-
-  const pkgPath = resolve(WORKSPACE_ROOT, 'apps', bundler, 'package.json');
-  let pkg;
-  try {
-    pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-  } catch {
-    console.warn(
-      `Warning: could not read apps/${bundler}/package.json — APP_URL not set.`,
-    );
-    return null;
-  }
-
-  const port = pkg.devPort;
-  if (!Number.isInteger(port) || port <= 0) {
-    console.warn(
-      `Warning: apps/${bundler}/package.json has no valid devPort — APP_URL not set.`,
-    );
-    return null;
-  }
-
-  return `http://localhost:${port}`;
-}
+import { resolveAppUrl } from '../packages/dev-tools/config/app-port.js';
 
 const [cmd, ...args] = process.argv.slice(2);
 if (!cmd) {
@@ -54,7 +22,13 @@ if (!cmd) {
   process.exit(1);
 }
 
-const appUrl = resolveAppUrl();
+const appUrl = resolveAppUrl(process.env);
+if (!appUrl && process.env.BUNDLER) {
+  console.warn(
+    `Warning: could not resolve APP_URL for BUNDLER=${process.env.BUNDLER} — APP_URL not set.`,
+  );
+}
+
 const env = appUrl ? { ...process.env, APP_URL: appUrl } : process.env;
 
 const child = spawn(cmd, args, { stdio: 'inherit', env });

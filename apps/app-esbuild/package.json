@@ -8,7 +8,7 @@
   "license": "ISC",
   "main": "index.js",
   "devPort": 8000,
-  "previewPort": 8000,
+  "previewPort": 8001,
   "scripts": {
     "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
     "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
@@ -17,7 +17,7 @@
     "build": "pnpm _copy-html-build && pnpm _bundle_build",
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
     "lint": "eslint .",
-    "preview": "serve ./dist -p 8000",
+    "preview": "node ./scripts/preview.js",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist ./dev"

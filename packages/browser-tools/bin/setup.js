@@ -10,11 +10,10 @@
  *   "Ready. No --attach."     → omit --attach (headless mode)
  *
  * URL resolution: --url flag → APP_URL env var → error.
- * APP_URL is injected automatically when run via pnpm browser:setup.
  *
  * Usage:
- *   pnpm browser:setup                          # required_permissions: all
- *   pnpm browser:setup --url http://localhost:5173
+ *   browser-tools-setup                          # required_permissions: all
+ *   browser-tools-setup --url http://localhost:5173
  */
 
 import { start } from '../src/chrome/lifecycle.js';

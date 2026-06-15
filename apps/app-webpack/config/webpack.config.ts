@@ -8,7 +8,10 @@ import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 
 const _require = createRequire(import.meta.url);
-const pkg = _require('../package.json') as { devPort: number };
+const pkg = _require('../package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 const distPath = path.resolve('dist');
@@ -124,7 +127,7 @@ const webpackConfig = (
     },
 
     devServer: {
-      port: Number(process.env.PORT) || pkg.devPort,
+      port: options.mode === 'production' ? pkg.previewPort : pkg.devPort,
       historyApiFallback: true, // proxy requests through a specified index page (enable reload without 404)
       hot: true,
       open: false,

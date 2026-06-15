@@ -7,7 +7,10 @@ import util from 'util';
 import path from 'path';
 
 const _require = createRequire(import.meta.url);
-const pkg = _require('../package.json') as { devPort: number };
+const pkg = _require('../package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
 const debuglog = util.debuglog('app-esbuild');
 
@@ -66,7 +69,7 @@ async function dev() {
 
   const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
-    port: Number(process.env.PORT) || pkg.devPort,
+    port: pkg.devPort,
   });
 
   debuglog(`Dev server running at: http://${hosts[0]}:${String(port)}`);

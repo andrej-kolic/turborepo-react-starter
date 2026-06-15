@@ -2,8 +2,7 @@
 # Validates the live app renders a key page region; not a replacement for unit tests.
 # Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
 #
-# Pins BUNDLER=app-vite. Port is derived at runtime from apps/$BUNDLER/package.json devPort.
-# Add a matrix when webpack/esbuild smoke is needed.
+# Matrix: all bundler apps. Port/URL derived via scripts/with-app-url.js → app-port.js.
 
 name: 'Verify: Browser smoke'
 
@@ -14,15 +13,22 @@ on:
 env:
   HUSKY: 0
   BUILD_ENVIRONMENT: development
-  BUNDLER: app-vite
   CHROME_HEADLESS: 'true'
   CHROME_DEBUG_PORT: 9222
 
 jobs:
   smoke:
-    name: Live app smoke (verify)
+    name: Live app smoke (${{ matrix.bundler }})
     timeout-minutes: 15
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler: [app-vite, app-webpack, app-esbuild]
+
+    env:
+      BUNDLER: ${{ matrix.bundler }}
 
     steps:
       - name: Checkout
@@ -40,51 +46,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start Chrome (headless)
-        run: pnpm chrome:debug
+      - name: Ensure dev app is running
+        run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
 
-      - name: Wait for DevTools endpoint
-        run: |
-          for i in 1 2 3 4 5 6 7 8 9 10; do
-            if curl -sS http://localhost:9222/json/version > /dev/null 2>&1; then
-              echo "DevTools ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "::error::Chrome DevTools endpoint did not become ready within 10s"
-          exit 1
-
-      - name: Resolve app URL
-        run: |
-          PORT=$(node -e "process.stdout.write(String(JSON.parse(require('fs').readFileSync('./apps/' + process.env.BUNDLER + '/package.json', 'utf8')).devPort))")
-          echo "APP_URL=http://localhost:${PORT}" >> $GITHUB_ENV
-          echo "APP_PORT=${PORT}" >> $GITHUB_ENV
-
-      - name: Start dev server
-        id: dev-server
-        run: |
-          pnpm dev:app > /tmp/dev-app.log 2>&1 &
-          echo "pid=$!" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for app
-        run: |
-          for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
-            if curl -sS $APP_URL > /dev/null 2>&1; then
-              echo "App ready on :${APP_PORT}"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "::error::App not ready on :${APP_PORT} within 60s"
-          echo "--- dev-app.log ---"
-          cat /tmp/dev-app.log || true
-          exit 1
+      - name: Setup Chrome (headless)
+        run: pnpm browser:setup
 
       - name: Assert app header renders
         run: |
           if ! pnpm browser validate \
-            --url $APP_URL \
             --selector "[data-testid=app-header]" \
             --no-console-errors; then
             echo "--- dev-app.log ---"
@@ -95,10 +65,7 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          pnpm chrome:debug:stop || true
-          if [ -n "${{ steps.dev-server.outputs.pid }}" ]; then
-            kill "${{ steps.dev-server.outputs.pid }}" 2>/dev/null || true
-          fi
-          if command -v lsof > /dev/null 2>&1; then
-            lsof -ti:${APP_PORT:-5173} | xargs -r kill 2>/dev/null || true
-          fi
+          pnpm chrome:debug --stop || true
+          APP_PORT=$(node --input-type=module -pe \
+            "import { resolveAppTargets } from './packages/dev-tools/config/app-port.js'; console.log(resolveAppTargets(process.env)?.port ?? '5173')")
+          lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
