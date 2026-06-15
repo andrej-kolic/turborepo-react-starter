@@ -66,6 +66,6 @@ jobs:
         if: always()
         run: |
           pnpm chrome:debug --stop || true
-          APP_PORT=$(node --input-type=module -pe \
+          APP_PORT=$(node --input-type=module -e \
             "import { resolveAppTargets } from './packages/dev-tools/config/app-port.js'; console.log(resolveAppTargets(process.env)?.port ?? '5173')")
           lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
