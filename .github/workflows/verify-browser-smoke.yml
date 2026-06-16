@@ -66,6 +66,6 @@ jobs:
         if: always()
         run: |
           pnpm chrome:debug --stop || true
-          if APP_PORT=$(dev-tools-print-app-port); then
+          if APP_PORT=$(pnpm exec dev-tools-print-app-port); then
             lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
           fi
