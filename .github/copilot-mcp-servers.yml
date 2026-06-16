@@ -5,9 +5,10 @@ servers:
     name: Storybook
     description: >
       Starts Storybook dev for ui-storybook. Dev port is apps/ui-storybook/package.json
-      devPort (SSOT). Resolve via loadStorybookEndpoints() or storybookCanvasUrl() in
+      devPort (SSOT). Resolve via loadAppEndpoints('ui-storybook') in
       packages/dev-tools/config/app-port.js — same pattern as bundler dev ports.
-      Canvas URL for browser CLI: storybookCanvasUrl('<story-id>').
+      Canvas URL for browser CLI:
+      ${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>.
     # Command used to start the dev server. Uses pnpm workspace filter to scope to the package.
     start:
       command: 'pnpm --filter ui-storybook dev'

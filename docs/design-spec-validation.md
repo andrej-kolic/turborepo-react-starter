@@ -36,7 +36,9 @@ checks:
   - console_errors: false
 ```
 
-For Storybook: `url` from `storybookCanvasUrl('<story-id>')` in `app-port.js` — not `?path=/story/…`.
+For Storybook: `url` from
+`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.js` — not
+`?path=/story/…`.
 
 ### Style values
 
@@ -101,8 +103,9 @@ When the component renders inline SVG:
 
 ```bash
 ICON_CANVAS_URL=$(node --input-type=module -e \
-  "import { storybookCanvasUrl } from './packages/dev-tools/config/app-port.js'; \
-  console.log(storybookCanvasUrl('icons--default'))")
+  "import { loadAppEndpoints } from './packages/dev-tools/config/app-port.js'; \
+  const { devUrl } = loadAppEndpoints('ui-storybook'); \
+  console.log(\`\${devUrl}/iframe.html?id=icons--default\`)")
 
 pnpm browser eval \
   --url "$ICON_CANVAS_URL" \

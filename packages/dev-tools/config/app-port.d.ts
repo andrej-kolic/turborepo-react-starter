@@ -21,12 +21,3 @@ export function loadAppEndpoints(
 export function resolveAppTargets(env?: NodeJS.ProcessEnv): AppTargets | null;
 
 export function resolveAppUrl(env?: NodeJS.ProcessEnv): string | null;
-
-export const STORYBOOK_APP_DIR: string;
-
-export function loadStorybookEndpoints(workspaceRoot?: string): AppEndpoints;
-
-export function storybookCanvasUrl(
-  storyId: string,
-  workspaceRoot?: string,
-): string;

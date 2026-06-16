@@ -152,8 +152,9 @@ app, not Storybook URLs. See `docs/component-validation-contract.md`.
 
 ### Canvas URL (agents)
 
-`pnpm browser …` does not pierce Storybook's manager iframe. Pass `--url` from
-`storybookCanvasUrl('<story-id>')` in `app-port.js` — not `?path=/story/…`.
+`pnpm browser …` does not pierce Storybook's manager iframe. Pass `--url` as
+`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` from `app-port.js` — not
+`?path=/story/…`.
 
 Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 
@@ -161,16 +162,16 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 
 ## Related files
 
-| File                                          | Purpose                                                                                                  |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                                                                      |
-| `.cursor/skills/_browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                                                                  |
-| `AGENTS.md`                                   | Canonical agent setup, commands, service start                                                           |
-| `packages/browser-tools/README.md`            | Full CLI reference (`browser-tools validate`, flags, env vars)                                           |
-| `docs/component-validation-contract.md`       | `data-testid` convention                                                                                 |
-| `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                                                                   |
-| `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                                                            |
-| `packages/dev-tools/config/app-port.js`       | `loadAppEndpoints`, `loadStorybookEndpoints`, `storybookCanvasUrl`, `resolveAppTargets`, `resolveAppUrl` |
-| `scripts/with-app-url.js`                     | Injects `APP_URL` via `app-port.js`                                                                      |
-| `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI                                                  |
-| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                                                            |
+| File                                          | Purpose                                                        |
+| --------------------------------------------- | -------------------------------------------------------------- |
+| `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                            |
+| `.cursor/skills/_browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
+| `AGENTS.md`                                   | Canonical agent setup, commands, service start                 |
+| `packages/browser-tools/README.md`            | Full CLI reference (`browser-tools validate`, flags, env vars) |
+| `docs/component-validation-contract.md`       | `data-testid` convention                                       |
+| `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
+| `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                  |
+| `packages/dev-tools/config/app-port.js`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
+| `scripts/with-app-url.js`                     | Injects `APP_URL` via `app-port.js`                            |
+| `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI        |
+| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                  |

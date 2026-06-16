@@ -7,8 +7,6 @@
  *   loadAppEndpoints(appDirName) — read apps/<app>/package.json → ports + localhost URLs
  *   resolveAppTargets(env)       — APP_URL override, else BUNDLER dev targets (url + port)
  *   resolveAppUrl(env)           — resolveAppTargets(env)?.url (browser wrapper convenience)
- *   loadStorybookEndpoints()       — ui-storybook ports/URLs from apps/ui-storybook/package.json
- *   storybookCanvasUrl(storyId)   — canvas URL for browser CLI / MCP
  *
  * Bundler configs already load their package.json — use pkg.devPort / pkg.previewPort directly.
  */
@@ -20,10 +18,6 @@ import { fileURLToPath } from 'node:url';
 const DEV_TOOLS_CONFIG_DIR = dirname(fileURLToPath(import.meta.url));
 // TODO: extract to paths.ts
 const WORKSPACE_ROOT = resolve(DEV_TOOLS_CONFIG_DIR, '../../..');
-
-// TODO: extract app names to constants.ts
-/** App dir under apps/ for Storybook (ports in apps/ui-storybook/package.json). */
-export const STORYBOOK_APP_DIR = 'ui-storybook';
 
 /** @typedef {'devPort' | 'previewPort'} AppPortField */
 
@@ -128,26 +122,4 @@ export function resolveAppTargets(env = process.env) {
  */
 export function resolveAppUrl(env = process.env) {
   return resolveAppTargets(env)?.url ?? null;
-}
-
-/**
- * Storybook dev/preview ports and URLs from apps/ui-storybook/package.json.
- *
- * @param {string} [workspaceRoot]
- * @returns {AppEndpoints}
- */
-export function loadStorybookEndpoints(workspaceRoot = WORKSPACE_ROOT) {
-  return loadAppEndpoints(STORYBOOK_APP_DIR, workspaceRoot);
-}
-
-/**
- * Storybook canvas URL for `pnpm browser … --url` (official E2E pattern).
- *
- * @param {string} storyId  e.g. example-dynamiclist--default
- * @param {string} [workspaceRoot]
- * @returns {string}
- */
-export function storybookCanvasUrl(storyId, workspaceRoot = WORKSPACE_ROOT) {
-  const { devUrl } = loadStorybookEndpoints(workspaceRoot);
-  return `${devUrl}/iframe.html?id=${storyId}`;
 }
