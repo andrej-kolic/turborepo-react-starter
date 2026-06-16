@@ -4,8 +4,8 @@
  * Covers .md and .mdc files; skips http/https URLs and anchor-only links.
  *
  * Usage:
- *   node scripts/check-links.mjs              # check all markdown files
- *   node scripts/check-links.mjs file.md ...  # check specific files (lint-staged mode)
+ *   node scripts/check-links.js              # check all markdown files
+ *   node scripts/check-links.js file.md ...  # check specific files (lint-staged mode)
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname, extname } from 'node:path';
