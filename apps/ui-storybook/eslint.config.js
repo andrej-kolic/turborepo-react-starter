@@ -14,7 +14,7 @@ export default [
     ignores: ['storybook-static/'],
   },
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.ts'],
     languageOptions: {
       globals: {
         process: 'readonly',

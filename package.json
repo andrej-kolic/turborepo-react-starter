@@ -33,12 +33,13 @@
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
     "chrome:debug": "browser-tools-chrome",
-    "browser:setup": "dotenv -- node scripts/with-app-url.js browser-tools-setup",
-    "browser:ensure-app": "dotenv -- node scripts/with-app-url.js node scripts/ensure-app.js",
-    "browser": "dotenv -- node scripts/with-app-url.js browser-tools"
+    "browser:setup": "dotenv -- dev-tools-with-app-url browser-tools-setup",
+    "browser:ensure-app": "dotenv -- dev-tools-with-app-url node scripts/ensure-app.js",
+    "browser": "dotenv -- dev-tools-with-app-url browser-tools"
   },
   "devDependencies": {
     "@repo/browser-tools": "workspace:*",
+    "@repo/dev-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260527.2",
     "dotenv-cli": "11.0.0",

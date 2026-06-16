@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadAppEndpoints } from '@repo/dev-tools/config/app-port.js';
+import { loadAppEndpoints } from '@repo/dev-tools/config/app-port';
 
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { previewPort } = loadAppEndpoints('app-esbuild');

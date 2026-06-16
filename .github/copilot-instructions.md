@@ -26,7 +26,7 @@ Both MCP servers require Chrome on port 9222 (`pnpm chrome:debug`):
 - `devtools-capture` — artifact capture (HAR, traces, Web Vitals); see the
   [`browser-capture`](../.cursor/skills/_browser-capture/SKILL.md) skill
 
-Copilot can also start Storybook via [`.github/copilot-mcp-servers.yml`](copilot-mcp-servers.yml).
+For Storybook, use `pnpm dev:ui` (port and URLs in [`AGENTS.md`](../AGENTS.md)).
 
 ## Assistant behavior
 

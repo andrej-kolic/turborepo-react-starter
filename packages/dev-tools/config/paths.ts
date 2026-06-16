@@ -1,5 +1,11 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+
+const DEV_TOOLS_CONFIG_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+/** Monorepo root (`packages/dev-tools/config` → three levels up). */
+export const workspaceRoot = path.resolve(DEV_TOOLS_CONFIG_DIR, '../../..');
 
 /**
  * Creates resolved paths for @repo/app-core using the caller's module resolution context.

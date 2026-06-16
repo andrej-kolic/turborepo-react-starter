@@ -6,7 +6,7 @@ export default [
   ...esbuildConfig,
   globalIgnores(['dev/']),
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.ts'],
     languageOptions: {
       globals: {
         process: 'readonly',

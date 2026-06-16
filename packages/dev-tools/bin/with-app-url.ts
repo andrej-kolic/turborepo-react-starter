@@ -1,32 +1,30 @@
-#!/usr/bin/env node
 /**
  * Resolve APP_URL from BUNDLER and inject it into a child command's environment.
  *
- * Resolution order (see @repo/dev-tools/config/app-port.js):
+ * Resolution order (see ../config/app-port):
  *   1. APP_URL already set → use as-is (allows CI / remote override)
  *   2. BUNDLER set → devUrl from apps/<BUNDLER>/package.json via resolveAppTargets()
  *   3. Neither set → spawn child without APP_URL (child handles the missing URL)
  *
- * Usage (via pnpm scripts only — do not invoke directly):
- *   node scripts/with-app-url.js <command> [args...]
- *   node scripts/with-app-url.js node scripts/ensure-app.js
- *   node scripts/with-app-url.js browser-tools-setup --url <url>
+ * Invoked via `dev-tools-with-app-url` (bin/with-app-url.js → run-ts.js).
  */
 
 import { spawn } from 'node:child_process';
-import { resolveAppUrl } from '../packages/dev-tools/config/app-port.js';
+import { resolveAppUrl } from '../config/app-port';
 
 const [cmd, ...args] = process.argv.slice(2);
 if (!cmd) {
-  console.error('Usage: node scripts/with-app-url.js <command> [args...]');
+  console.error('Usage: dev-tools-with-app-url <command> [args...]');
   process.exit(1);
 }
 
-const appUrl = resolveAppUrl(process.env);
-if (!appUrl && process.env.BUNDLER) {
-  console.warn(
-    `Warning: could not resolve APP_URL for BUNDLER=${process.env.BUNDLER} — APP_URL not set.`,
-  );
+let appUrl: string | null;
+try {
+  appUrl = resolveAppUrl(process.env);
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`Error: ${message}`);
+  process.exit(1);
 }
 
 const env = appUrl ? { ...process.env, APP_URL: appUrl } : process.env;

@@ -15,7 +15,7 @@ catalog:
 
   # Build tools
   vite: '8.0.14'
-  ts-node: '10.9.2'
+  tsx: '4.22.4'
   serve: 14.2.6
   '@turbo/gen': 2.9.15
 

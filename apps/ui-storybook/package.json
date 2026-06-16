@@ -10,9 +10,9 @@
     "lint": "eslint .",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
-    "dev": "node ./scripts/dev.js",
+    "dev": "tsx ./scripts/dev.ts",
     "build": "storybook build ${STORYBOOK_OPTIONS}",
-    "preview": "node ./scripts/preview.js",
+    "preview": "tsx ./scripts/preview.ts",
     "clear:output": "rm -rf ./storybook-static"
   },
   "keywords": [],
@@ -36,6 +36,7 @@
     "eslint-plugin-storybook": "10.4.1",
     "serve": "catalog:",
     "storybook": "10.4.1",
+    "tsx": "catalog:",
     "vite": "catalog:"
   }
 }

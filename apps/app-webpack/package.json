@@ -6,9 +6,11 @@
   "devPort": 8080,
   "previewPort": 8081,
   "scripts": {
-    "dev": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=development webpack serve --mode development --config config/webpack.config.ts",
-    "build": "NODE_OPTIONS='--loader ts-node/esm' NODE_ENV=production webpack --mode production --config config/webpack.config.ts",
-    "preview": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./scripts/preview.ts",
+    "_bundle_dev": "tsx node_modules/webpack-cli/bin/cli.js serve --mode development --config config/webpack.config.ts",
+    "_bundle_build": "tsx node_modules/webpack-cli/bin/cli.js --mode production --config config/webpack.config.ts",
+    "dev": "NODE_ENV=development pnpm _bundle_dev",
+    "build": "NODE_ENV=production pnpm _bundle_build",
+    "preview": "tsx ./scripts/preview.ts",
     "lint": "eslint .",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
@@ -32,7 +34,7 @@
     "mini-css-extract-plugin": "2.10.2",
     "ts-loader": "9.5.7",
     "serve": "catalog:",
-    "ts-node": "catalog:",
+    "tsx": "catalog:",
     "webpack": "5.107.2",
     "webpack-cli": "7.0.2",
     "webpack-dev-server": "5.2.4"

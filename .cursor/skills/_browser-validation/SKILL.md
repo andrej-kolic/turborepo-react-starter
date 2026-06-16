@@ -67,7 +67,7 @@ Output tells you the flag to use for all subsequent browser commands:
 | Visual spot-check      | `pnpm browser screenshot --selector … [--attach]`              |
 
 Storybook: `--url` from
-`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.js` — not
+`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.ts` — not
 `?path=/story/…`.
 
 The script detects display availability and starts Chrome accordingly — just follow the output.

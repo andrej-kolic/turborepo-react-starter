@@ -6,16 +6,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "types": ["node"],
-
     "strictNullChecks": true
   },
-
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "logError": true,
-    "pretty": true
-  },
-
   "include": ["config/**/*.ts", "scripts/**/*.ts", "../../@types"]
 }

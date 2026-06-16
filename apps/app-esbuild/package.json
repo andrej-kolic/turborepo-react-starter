@@ -12,12 +12,12 @@
   "scripts": {
     "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
     "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
-    "_bundle_build": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/build.config.ts",
-    "_bundle_dev": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/dev.config.ts",
+    "_bundle_build": "tsx ./config/build.config.ts",
+    "_bundle_dev": "tsx ./config/dev.config.ts",
     "build": "pnpm _copy-html-build && pnpm _bundle_build",
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
     "lint": "eslint .",
-    "preview": "node ./scripts/preview.js",
+    "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist ./dev"
@@ -36,6 +36,6 @@
     "esbuild": "0.28.0",
     "esbuild-plugin-copy": "2.1.1",
     "serve": "catalog:",
-    "ts-node": "catalog:"
+    "tsx": "catalog:"
   }
 }
