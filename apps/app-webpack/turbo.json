@@ -8,6 +8,9 @@
     "dev": {
       "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
       "passThroughEnv": ["BUNDLER", "MODE"]
+    },
+    "preview": {
+      "dependsOn": ["build"]
     }
   }
 }

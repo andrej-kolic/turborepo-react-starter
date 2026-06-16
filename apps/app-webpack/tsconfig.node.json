@@ -5,9 +5,17 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
+    "types": ["node"],
 
     "strictNullChecks": true
   },
 
-  "include": ["config/**/*.ts", "../../@types"]
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "logError": true,
+    "pretty": true
+  },
+
+  "include": ["config/**/*.ts", "scripts/**/*.ts", "../../@types"]
 }
