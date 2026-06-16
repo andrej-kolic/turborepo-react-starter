@@ -17,4 +17,4 @@ Two tiers — never mix them:
 
 **Sandbox:** `chrome:*` and `browser:setup` need `required_permissions: ["all"]`. Regular `pnpm browser validate` / `read` / `eval` connect over localhost CDP and do not.
 
-Scenarios, `--attach`, Storybook, selectors: [`docs/browser-validation.md`](../../docs/browser-validation.md). CLI flags: [`packages/browser-tools/README.md`](../../packages/browser-tools/README.md).
+**More detail:** edge cases (`--attach`, remote URL, SSH tunnel), Storybook, and selectors → [`docs/browser-validation.md`](../../docs/browser-validation.md). CLI flags → [`packages/browser-tools/README.md`](../../packages/browser-tools/README.md).

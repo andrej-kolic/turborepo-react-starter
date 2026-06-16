@@ -1,57 +1,32 @@
 # Copilot instructions for turborepo-react-starter
 
-> **Canonical guidance lives in [`AGENTS.md`](../AGENTS.md).** Read it first.
-> It is the single, tool-agnostic source for the project overview, environment setup, Node
-> version, build/test/lint commands, the services/ports table, and conventions. This file only
-> adds the few things that are specific to GitHub Copilot and not covered there.
+> **Canonical guidance lives in [`AGENTS.md`](../AGENTS.md).** Read it first for setup, commands,
+> ports, and conventions. For browser work, follow the
+> [`browser-validation`](../.cursor/skills/_browser-validation/SKILL.md) skill and
+> [`docs/browser-validation.md`](../docs/browser-validation.md).
 
-## Quick command reference
+This file only covers GitHub Copilot–specific setup not in `AGENTS.md`.
 
-All commands live in `AGENTS.md` ("Common commands") and root `package.json` scripts. The essentials:
+## MCP setup for the Copilot CLI
 
-- Install: `pnpm install`
-- Lint / test / type-check: `pnpm lint` · `pnpm test` · `pnpm check:type`
-- Dev one app: `BUNDLER=app-vite pnpm dev:app` (or `pnpm --filter app-vite dev`)
-- Scope to one package: `pnpm --filter <pkg> <script>` (internal packages use the `@repo/` prefix)
+IDE users already have `.vscode/mcp.json` and `.cursor/mcp.json`. For the **Copilot CLI**, create
+`~/.copilot/mcp-config.json` (not committed):
 
-## Browser work
+1. Copy the `servers` block from [`.vscode/mcp.json`](../.vscode/mcp.json) into an `mcpServers`
+   object (Copilot uses that key name).
+2. Replace the `devtools-capture` script path with an **absolute** path to
+   `packages/browser-capture/bin/copilot-devtools.js` in your clone.
 
-Read the [`browser-validation`](../.cursor/skills/_browser-validation/SKILL.md) skill first, then
-[`docs/browser-validation.md`](../docs/browser-validation.md) for the full decision tree and
-environment scenarios (local, remote, Cloud Agent, SSH).
+Full example and tool reference:
+[`packages/browser-capture/README.md`](../packages/browser-capture/README.md#copilot-cli-setup-user-level--not-committed-to-repo).
 
-## MCP setup for the Copilot CLI (Copilot-specific)
+Both MCP servers require Chrome on port 9222 (`pnpm chrome:debug`):
 
-IDE users already have `.vscode/mcp.json` and `.cursor/mcp.json`. For the **Copilot CLI**, create a
-user-level `~/.copilot/mcp-config.json` (not committed):
+- `chrome-devtools` — DOM verification (`navigate_page`, `evaluate_script`, `take_snapshot`)
+- `devtools-capture` — artifact capture (HAR, traces, Web Vitals); see the
+  [`browser-capture`](../.cursor/skills/_browser-capture/SKILL.md) skill
 
-```json
-{
-  "mcpServers": {
-    "chrome-devtools": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@1.1.1",
-        "--browserUrl",
-        "http://localhost:9222"
-      ]
-    },
-    "devtools-capture": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/turborepo-react-starter/packages/browser-capture/bin/copilot-devtools.js",
-        "mcp-server"
-      ],
-      "env": { "CHROME_DEBUG_PORT": "9222" }
-    }
-  }
-}
-```
-
-`chrome-devtools` = DOM verification (`navigate_page`, `evaluate_script`, `take_snapshot`).
-`devtools-capture` = artifact capture (`record_trace`, `record_performance`, HAR, Web Vitals).
-Both require Chrome running: `pnpm chrome:debug` (see `AGENTS.md` and the skills above).
+Copilot can also start Storybook via [`.github/copilot-mcp-servers.yml`](copilot-mcp-servers.yml).
 
 ## Assistant behavior
 
