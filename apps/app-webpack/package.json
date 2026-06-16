@@ -6,8 +6,10 @@
   "devPort": 8080,
   "previewPort": 8081,
   "scripts": {
-    "dev": "NODE_OPTIONS='--import tsx' NODE_ENV=development webpack serve --mode development --config config/webpack.config.ts",
-    "build": "NODE_OPTIONS='--import tsx' NODE_ENV=production webpack --mode production --config config/webpack.config.ts",
+    "_bundle_dev": "tsx node_modules/webpack-cli/bin/cli.js serve --mode development --config config/webpack.config.ts",
+    "_bundle_build": "tsx node_modules/webpack-cli/bin/cli.js --mode production --config config/webpack.config.ts",
+    "dev": "NODE_ENV=development pnpm _bundle_dev",
+    "build": "NODE_ENV=production pnpm _bundle_build",
     "preview": "tsx ./scripts/preview.ts",
     "lint": "eslint .",
     "check:type": "tsc --noEmit",

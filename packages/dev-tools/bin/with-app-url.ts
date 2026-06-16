@@ -10,7 +10,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { resolveAppUrl } from '../config/app-port.js';
+import { resolveAppUrl } from '../config/app-port';
 
 const [cmd, ...args] = process.argv.slice(2);
 if (!cmd) {

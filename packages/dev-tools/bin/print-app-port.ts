@@ -7,7 +7,7 @@
  * Invoked via `dev-tools-print-app-port` (bin/print-app-port.js → run-ts.js).
  */
 
-import { resolveAppTargets } from '../config/app-port.js';
+import { resolveAppTargets } from '../config/app-port';
 
 let targets;
 try {
