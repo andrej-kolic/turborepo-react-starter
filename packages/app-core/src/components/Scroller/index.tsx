@@ -9,6 +9,7 @@ export function Scroller() {
 
   return (
     <DynamicList
+      data-testid="scroller"
       items={state.items.map(
         (item: ItemDto) =>
           ({

@@ -1,0 +1,71 @@
+# Fast headless smoke test — verify tier only (no artifacts).
+# Validates the live app renders a key page region; not a replacement for unit tests.
+# Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
+#
+# Matrix: all bundler apps. Port/URL derived via dev-tools-with-app-url → app-port.ts.
+
+name: 'Verify: Browser smoke'
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  HUSKY: 0
+  BUILD_ENVIRONMENT: development
+  CHROME_HEADLESS: 'true'
+  CHROME_DEBUG_PORT: 9222
+
+jobs:
+  smoke:
+    name: Live app smoke (${{ matrix.bundler }})
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler: [app-vite, app-webpack, app-esbuild]
+
+    env:
+      BUNDLER: ${{ matrix.bundler }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Ensure dev app is running
+        run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
+
+      - name: Setup Chrome (headless)
+        run: pnpm browser:setup
+
+      - name: Assert app header renders
+        run: |
+          if ! pnpm browser validate \
+            --selector "[data-testid=app-header]" \
+            --no-console-errors; then
+            echo "--- dev-app.log ---"
+            cat /tmp/dev-app.log || true
+            exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pnpm chrome:debug --stop || true
+          if APP_PORT=$(pnpm exec dev-tools-print-app-port); then
+            lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
+          fi

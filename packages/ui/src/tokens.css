@@ -1,0 +1,10 @@
+:root {
+  /* Typography */
+  --font-family-body:
+    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
+    Arial, sans-serif;
+
+  /* Brand colors */
+  --color-text-primary: #333;
+  --color-accent: royalblue;
+}

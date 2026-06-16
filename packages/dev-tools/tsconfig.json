@@ -11,6 +11,6 @@
     "strictNullChecks": true
   },
 
-  "include": ["config/**/*.ts", "../../@types"],
+  "include": ["config/**/*.ts", "bin/**/*.ts", "../../@types"],
   "exclude": ["build", "node_modules"]
 }

@@ -1,0 +1,23 @@
+{
+  "servers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@1.1.1",
+        "--browserUrl",
+        "http://localhost:9222"
+      ]
+    },
+    "devtools-capture": {
+      "command": "node",
+      "args": [
+        "packages/browser-capture/bin/copilot-devtools.js",
+        "mcp-server"
+      ],
+      "env": {
+        "CHROME_DEBUG_PORT": "9222"
+      }
+    }
+  }
+}

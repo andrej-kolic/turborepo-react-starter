@@ -11,7 +11,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 #### Apps
 
-- `app-esbild`: ESBuild bundler for main app
+- `app-esbuild`: ESBuild bundler for main app
 - `app-vite`: Vite bundler for main app
 - `app-webpack`: Webpack bundler for main app
 - `ui-storybook`: Storybook as dev server for ui package
@@ -24,6 +24,8 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser validate`, `pnpm browser read`, `pnpm browser eval`, `pnpm browser screenshot`)
+- `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
 
@@ -46,11 +48,14 @@ pnpm build
 
 ### Develop
 
-To develop all apps and packages, run the following command:
+Copy `.env.example` to `.env` at the repo root, then use the scoped dev scripts (preferred):
 
 ```
-pnpm dev
+pnpm dev:app   # active bundler (BUNDLER in .env, default app-vite) + dependency watchers
+pnpm dev:ui    # Storybook + dependency watchers
 ```
+
+`pnpm dev` starts every bundler, Storybook, and package watch tasks at once — avoid it unless you need the full matrix.
 
 ### Test
 
@@ -68,14 +73,12 @@ To lint all apps and packages, run the following command:
 pnpm lint
 ```
 
-### Debug
+### Debug & browser tooling
 
-https://code.visualstudio.com/docs/nodejs/reactjs-tutorial#_debugging-react
-
-To open chrome in debug mode run:
-
-```
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=remote-debug-profile
+```bash
+pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
+pnpm chrome:debug --status  # check
+pnpm chrome:debug --stop    # stop
 ```
 
-(lot's of data will be saved to 'remote-debug-profile' dir)
+Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).

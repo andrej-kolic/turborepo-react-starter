@@ -1,15 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import util from 'util';
+import { createRequire } from 'module';
 
 const debuglog = util.debuglog('app-vite');
+const _require = createRequire(import.meta.url);
+const pkg = _require('./package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
-// TODO: fix import when fix is available
-// must be local path, or vite complains (for now). See https://github.com/vitejs/vite/issues/5370
-import {
-  appCorePublic,
-  appCoreEnvDir,
-} from './node_modules/@repo/dev-tools/config/paths';
+import { createPaths } from '@repo/dev-tools/config/paths';
+
+const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 
 // NOTE on environments: Vite's mode should be set to the same as BUILD_ENVIRONMENT
 
@@ -40,7 +43,27 @@ export default defineConfig((configEnv) => {
       ),
     },
 
+    server: {
+      port: pkg.devPort,
+      strictPort: true,
+      watch: {
+        // Re-read @repo/commons when its compiled dist/ changes (pnpm workspace link).
+        ignored: ['!**/node_modules/@repo/commons/**'],
+      },
+    },
+    preview: {
+      port: pkg.previewPort,
+      strictPort: true,
+    },
+
     plugins: [react()],
+
+    // Exclude workspace packages from pre-bundling so Vite's transform pipeline handles them.
+    // JIT packages (@repo/ui, @repo/app-core): raw .tsx source.
+    // Compiled package (@repo/commons): dist/ updates from tsup/tsc watch.
+    optimizeDeps: {
+      exclude: ['@repo/ui', '@repo/app-core', '@repo/commons'],
+    },
 
     publicDir: appCorePublic,
 

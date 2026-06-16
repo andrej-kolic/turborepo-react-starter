@@ -2,8 +2,6 @@
   "name": "@repo/commons",
   "version": "0.0.0",
   "type": "module",
-  "_main": "./src/index.ts",
-  "_types": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -13,7 +11,6 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "compile": "tsc",
     "bundle": "tsup-node",
     "bundle:watch": "tsup-node --watch",
     "type:gen": "tsc --emitDeclarationOnly",
@@ -22,21 +19,21 @@
     "build": "pnpm clear:output && run-p bundle type:gen",
     "dev": "run-p bundle:watch type:gen:watch",
     "lint": "eslint .",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "check:type": "tsc --noEmit"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "check:type:go": "tsgo --noEmit && tsgo --noEmit -p tsconfig.test.json",
+    "publint": "pnpm dlx publint"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "2.6.0",
-    "@types/jest": "30.0.0",
-    "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
-    "@types/react-dom": "19.2.0",
-    "jest": "30.2.0",
-    "npm-run-all": "4.1.5",
-    "ts-jest": "29.4.4",
-    "tsup": "8.5.0"
+    "@turbo/gen": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "npm-run-all2": "7.0.2",
+    "tsup": "8.5.1",
+    "vitest": "catalog:"
   }
 }

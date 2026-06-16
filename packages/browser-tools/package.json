@@ -1,0 +1,21 @@
+{
+  "name": "@repo/browser-tools",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "browser-tools": "./bin/browser.js",
+    "browser-tools-chrome": "./bin/chrome.js",
+    "browser-tools-setup": "./bin/setup.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "playwright-core": "catalog:"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
+}

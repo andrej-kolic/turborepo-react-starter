@@ -1,13 +1,19 @@
+import path from 'node:path';
+import { createRequire } from 'module';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
-import {
-  appCorePublic,
-  appCoreEnvDir,
-  distPath,
-} from '@repo/dev-tools/config/paths';
+import { createPaths } from '@repo/dev-tools/config/paths';
+
+const _require = createRequire(import.meta.url);
+const pkg = _require('../package.json') as {
+  devPort: number;
+};
+
+const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
+const distPath = path.resolve('dist');
 
 import 'webpack-dev-server';
 import util from 'util';
@@ -62,7 +68,12 @@ const webpackConfig = (
 
     plugins: [
       new webpack.DefinePlugin({
-        'import.meta.env': JSON.stringify(environmentVariables),
+        'import.meta.env': Object.fromEntries(
+          Object.entries(environmentVariables).map(([key, value]) => [
+            key,
+            JSON.stringify(value),
+          ]),
+        ),
       }),
 
       new HtmlWebpackPlugin({
@@ -91,7 +102,7 @@ const webpackConfig = (
         {
           test: /\.tsx?$/,
           use: 'ts-loader',
-          exclude: /node_modules/,
+          exclude: /node_modules\/(?!@repo)/,
         },
         {
           test: /\.css$/i,
@@ -115,6 +126,7 @@ const webpackConfig = (
     },
 
     devServer: {
+      port: pkg.devPort,
       historyApiFallback: true, // proxy requests through a specified index page (enable reload without 404)
       hot: true,
       open: false,

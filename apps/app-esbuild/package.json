@@ -7,32 +7,35 @@
   "type": "module",
   "license": "ISC",
   "main": "index.js",
+  "devPort": 8000,
+  "previewPort": 8001,
   "scripts": {
     "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
     "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
-    "_bundle_build": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/build.config.ts",
-    "_bundle_dev": "TS_NODE_PROJECT=tsconfig.node.json node --loader ts-node/esm ./config/dev.config.ts",
+    "_bundle_build": "tsx ./config/build.config.ts",
+    "_bundle_dev": "tsx ./config/dev.config.ts",
     "build": "pnpm _copy-html-build && pnpm _bundle_build",
     "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
     "lint": "eslint .",
-    "preview": "serve ./dist",
+    "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
-    "@types/react-dom": "19.2.0",
-    "esbuild": "0.25.10",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "esbuild": "0.28.0",
     "esbuild-plugin-copy": "2.1.1",
-    "serve": "14.2.5",
-    "ts-node": "10.9.2"
+    "serve": "catalog:",
+    "tsx": "catalog:"
   }
 }

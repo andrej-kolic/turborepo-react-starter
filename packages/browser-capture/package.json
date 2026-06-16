@@ -1,0 +1,15 @@
+{
+  "name": "@repo/browser-capture",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "copilot-devtools": "./bin/copilot-devtools.js"
+  },
+  "dependencies": {
+    "@jridgewell/trace-mapping": "0.3.25",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "playwright-core": "catalog:",
+    "zod": "3.25.76"
+  }
+}

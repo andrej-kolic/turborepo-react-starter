@@ -1,10 +1,16 @@
 import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
+import { createRequire } from 'module';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
-import { appCoreEnvDir } from '@repo/dev-tools/config/paths';
+import { createPaths } from '@repo/dev-tools/config/paths';
 import util from 'util';
-import { fileURLToPath } from 'url';
 import path from 'path';
+
+const _require = createRequire(import.meta.url);
+const pkg = _require('../package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
 const debuglog = util.debuglog('app-esbuild');
 
@@ -17,14 +23,8 @@ if (!process.env.BUILD_ENVIRONMENT) {
 }
 
 const DEV_DIR = 'dev';
-const publicDir = path.join(
-  path.dirname(
-    path.dirname(fileURLToPath(import.meta.resolve('@repo/app-core'))),
-  ),
-  'public',
-  '**',
-  '*',
-);
+const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
+const publicDir = path.join(appCorePublic, '**', '*');
 
 const environmentVariables = loadEnvironmentVariables({
   envDir: appCoreEnvDir,
@@ -69,6 +69,7 @@ async function dev() {
 
   const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
+    port: pkg.devPort,
   });
 
   debuglog(`Dev server running at: http://${hosts[0]}:${String(port)}`);

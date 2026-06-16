@@ -331,10 +331,6 @@ To change the Response Header Policy of the site:
 1. Make your changes by editing ResponseHeadersPolicy in `templates/cloudfront-site.yaml`. Here you can modify any of the headers for Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, and Referrer-Policy.
 2. Deploy the solution using one of described methods
 
-## Contributing
-
-Contributions are welcome. Please read the [code of conduct](CODE_OF_CONDUCT.md) and the [contributing guidelines](CONTRIBUTING.md).
-
 ## License Summary
 
 This project is licensed under the Apache-2.0 License.

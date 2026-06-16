@@ -3,27 +3,30 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "devPort": 5173,
+  "previewPort": 4173,
   "scripts": {
-    "dev": "vite --mode ${BUILD_ENVIRONMENT}",
-    "build": "tsc && vite build --mode ${BUILD_ENVIRONMENT}",
+    "dev": "vite --configLoader runner --mode ${BUILD_ENVIRONMENT}",
+    "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
     "@repo/app-core": "workspace:*",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
-    "@types/react-dom": "19.2.0",
-    "@vitejs/plugin-react": "5.0.4",
-    "vite": "7.1.9"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "6.0.2",
+    "vite": "catalog:"
   },
   "_devDependencies": {
     "eslint-plugin-react-refresh": "^0.4.12"

@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.tsx",
     "./utils": "./src/utils.ts",
+    "./package.json": "./package.json",
     "./*": "./src/*"
   },
   "private": true,
@@ -14,28 +15,25 @@
   "scripts": {
     "lint": "eslint .",
     "generate:component": "turbo gen react-component",
-    "compile": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "check:type": "tsc --noEmit",
-    "clear:cache": "jest --clearCache"
+    "check:type:go": "tsgo --noEmit"
   },
   "devDependencies": {
     "@repo/commons": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@testing-library/dom": "10.4.1",
-    "@testing-library/jest-dom": "6.9.1",
-    "@testing-library/react": "16.3.0",
-    "@testing-library/user-event": "14.6.1",
-    "@turbo/gen": "2.6.0",
-    "@types/jest": "30.0.0",
-    "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
-    "@types/react-dom": "19.2.0",
-    "jest": "30.2.0",
-    "jest-environment-jsdom": "30.2.0",
-    "react": "19.2.0",
-    "ts-jest": "29.4.4"
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@turbo/gen": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "vitest": "catalog:"
   }
 }

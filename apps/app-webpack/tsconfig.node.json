@@ -5,9 +5,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-
+    "types": ["node"],
     "strictNullChecks": true
   },
-
-  "include": ["config/**/*.ts", "../../@types"]
+  "include": ["config/**/*.ts", "scripts/**/*.ts", "../../@types"]
 }
