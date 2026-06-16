@@ -19,6 +19,9 @@ catalog:
   serve: 14.2.6
   '@turbo/gen': 2.9.15
 
+  # Browser capture
+  playwright-core: 1.60.0
+
   # Testing
   vitest: '4.1.7'
   jsdom: 29.1.1
@@ -33,7 +36,7 @@ allowBuilds:
   esbuild: true
   netlify-cli: true
   sharp: true
-  unix-dgram: true
+  unix-dgram: false
   unrs-resolver: true
 
 onlyBuiltDependencies:
@@ -43,7 +46,6 @@ onlyBuiltDependencies:
   - esbuild
   - netlify-cli
   - sharp
-  - unix-dgram
   - unrs-resolver
 
 minimumReleaseAgeExclude:

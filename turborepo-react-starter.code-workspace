@@ -33,6 +33,14 @@
 			"path": "packages/app-core"
 		},
 		{
+			"name": "📦 @repo/browser-capture",
+			"path": "packages/browser-capture"
+		},
+		{
+			"name": "📦 @repo/browser-tools",
+			"path": "packages/browser-tools"
+		},
+		{
 			"name": "📦 @repo/commons",
 			"path": "packages/commons"
 		},

@@ -11,7 +11,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 #### Apps
 
-- `app-esbild`: ESBuild bundler for main app
+- `app-esbuild`: ESBuild bundler for main app
 - `app-vite`: Vite bundler for main app
 - `app-webpack`: Webpack bundler for main app
 - `ui-storybook`: Storybook as dev server for ui package
@@ -24,6 +24,8 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser validate`, `pnpm browser read`, `pnpm browser eval`, `pnpm browser screenshot`)
+- `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
 
@@ -46,11 +48,14 @@ pnpm build
 
 ### Develop
 
-To develop all apps and packages, run the following command:
+Copy `.env.example` to `.env` at the repo root, then use the scoped dev scripts (preferred):
 
 ```
-pnpm dev
+pnpm dev:app   # active bundler (BUNDLER in .env, default app-vite) + dependency watchers
+pnpm dev:ui    # Storybook + dependency watchers
 ```
+
+`pnpm dev` starts every bundler, Storybook, and package watch tasks at once — avoid it unless you need the full matrix.
 
 ### Test
 
@@ -68,26 +73,12 @@ To lint all apps and packages, run the following command:
 pnpm lint
 ```
 
-### Debug
-
-To open Chrome in debug mode with automatic lifecycle management:
+### Debug & browser tooling
 
 ```bash
-pnpm chrome:debug
+pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
+pnpm chrome:debug --status  # check
+pnpm chrome:debug --stop    # stop
 ```
 
-This automatically:
-
-- Detects Chrome on your machine
-- Starts it with remote debugging enabled
-- Manages the session (start/stop/status)
-
-See [copilot-instructions.md](.github/copilot-instructions.md#chrome-remote-debugging-for-agents--browser-inspection) for full details and agent integration examples.
-
-This repository includes a lightweight Copilot DevTools helper:
-
-- **`packages/automation`** — CLI to capture DevTools artifacts (HAR, traces, performance, console, interactions) from any page. Includes CI automation and MCP tool exposure.
-  - **Local:** `pnpm chrome:debug` then `node packages/automation/bin/copilot-devtools.js <command>`
-  - **Commands:** `capture-snapshot`, `record-trace`, `record-performance`, `record-console`, `record-interactions`, `upload-artifacts`, `mcp-server`
-  - **Docs:** `packages/automation/README.md` and `skills/chrome-devtools/SKILL.md`
-  - **CI:** `.github/workflows/devtools.yml` — triggered by `/capture-trace` PR comment or manual dispatch
+Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).

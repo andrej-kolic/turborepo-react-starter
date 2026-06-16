@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "dev": {
+      // Watch must not start until build finishes (build runs clear:output).
+      "dependsOn": ["$TURBO_EXTENDS$", "build"]
+    }
+  }
+}

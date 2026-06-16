@@ -1,8 +1,10 @@
-# @repo/automation
+# @repo/browser-capture
 
-Chrome DevTools artifact capture CLI and MCP server for Copilot workflows. Captures network traffic (HAR), Playwright traces, Web Vitals, and console logs from any URL, with CI integration and MCP tool exposure for agent-driven workflows.
+**Capture/instrumentation only — not for routine verification.** Records HAR files, Playwright traces, Web Vitals, and console logs from any URL. For DOM/text assertions use `@repo/browser-tools` (`pnpm browser validate`) or the `chrome-devtools` MCP — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
-Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `scripts/chrome-debug.js` — no bundled browser binary needed.
+Chrome DevTools artifact capture CLI and MCP server for Copilot workflows, with CI integration and MCP tool exposure for agent-driven debugging.
+
+Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `pnpm chrome:debug` (`packages/browser-tools/bin/chrome.js`) — no bundled browser binary needed.
 
 ## Commands
 
@@ -19,30 +21,33 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 
 ## Usage
 
+App URL examples use `http://localhost:5173` (default `BUNDLER=app-vite`). For other bundlers,
+use the `devPort` from `apps/<BUNDLER>/package.json` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+
 ```bash
 # Prerequisites: Chrome running on port 9222
 pnpm chrome:debug
 
 # From repo root
-node packages/automation/bin/copilot-devtools.js capture-snapshot
-node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000
-node packages/automation/bin/copilot-devtools.js record-performance https://localhost:3000
-node packages/automation/bin/copilot-devtools.js record-console
-node packages/automation/bin/copilot-devtools.js record-interactions https://localhost:3000
-node packages/automation/bin/copilot-devtools.js sanitize-artifacts packages/automation/artifacts/trace-<timestamp>
-node packages/automation/bin/copilot-devtools.js upload-artifacts
+node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173
+node packages/browser-capture/bin/copilot-devtools.js record-performance http://localhost:5173
+node packages/browser-capture/bin/copilot-devtools.js record-console
+node packages/browser-capture/bin/copilot-devtools.js record-interactions http://localhost:5173
+node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts packages/browser-capture/artifacts/trace-<timestamp>
+node packages/browser-capture/bin/copilot-devtools.js upload-artifacts
 
 # Duration control (default: 10s)
-node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration 5
-node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --duration-ms 3000
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration 5
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration-ms 3000
 
 # Skip automatic sanitization (e.g. for local debugging — never do this in CI)
-node packages/automation/bin/copilot-devtools.js record-trace https://localhost:3000 --no-sanitize
+node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --no-sanitize
 ```
 
 ## MCP Server
 
-The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing all four capture commands as MCP tools that Copilot agents can call directly — no shell access needed.
+The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing six capture MCP tools that Copilot agents can call directly — no shell access needed.
 
 ### Available MCP Tools
 
@@ -59,7 +64,7 @@ Each tool returns both a human-readable text summary and structured JSON (`artif
 
 ### VS Code Setup (already configured in `.vscode/mcp.json`)
 
-The `automation` MCP server is pre-configured in `.vscode/mcp.json`. It starts automatically when your agent session loads. Requires Chrome running on port 9222 (`pnpm chrome:debug`).
+The `devtools-capture` MCP server is pre-configured in `.vscode/mcp.json` and `.cursor/mcp.json`. It starts automatically when your agent session loads. Requires Chrome running on port 9222 (`pnpm chrome:debug`).
 
 ### Copilot CLI Setup (user-level — not committed to repo)
 
@@ -68,10 +73,10 @@ Add to `~/.copilot/mcp-config.json`:
 ```json
 {
   "mcpServers": {
-    "automation": {
+    "devtools-capture": {
       "command": "node",
       "args": [
-        "/absolute/path/to/turborepo-react-starter/packages/automation/bin/copilot-devtools.js",
+        "/absolute/path/to/turborepo-react-starter/packages/browser-capture/bin/copilot-devtools.js",
         "mcp-server"
       ],
       "env": { "CHROME_DEBUG_PORT": "9222" }
@@ -80,22 +85,22 @@ Add to `~/.copilot/mcp-config.json`:
 }
 ```
 
-> See `skills/chrome-devtools/SKILL.md` for full MCP tool reference and example agent workflows.
+> Agents: see the [`browser-capture`](../../.cursor/skills/_browser-capture/SKILL.md) skill for a quick-start entry point. This README is the full tool reference.
 
 ## Artifacts
 
-All commands write artifacts to `packages/automation/artifacts/<mode>-<timestamp>/`.
+All commands write artifacts to `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
 
 ### `har.json`
 
-Standard HAR 1.2 format. Open in [Chrome DevTools > Network > Import HAR](chrome://about) or tools like [Insomnia](https://insomnia.rest/), [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/).
+Standard HAR 1.2 format. Open in Chrome DevTools → Network → Import HAR, or tools like [Insomnia](https://insomnia.rest/) and [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/).
 
 ### `trace.zip`
 
 Playwright trace format. View with:
 
 ```bash
-npx playwright show-trace packages/automation/artifacts/trace-*/trace.zip
+npx playwright show-trace packages/browser-capture/artifacts/trace-*/trace.zip
 ```
 
 ### `performance.json`
@@ -154,7 +159,7 @@ test('recorded: localhost/', async ({ page }) => {
 
 ## CI Integration
 
-The included GitHub Actions workflow (`.github/workflows/devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. It starts headless Chrome via `scripts/chrome-debug.js`, runs `capture-snapshot`, uploads artifacts to the Actions run, and posts a comment with a link.
+The included GitHub Actions workflow (`.github/workflows/capture-devtools.yml`) runs when you comment `/capture-trace` on a PR or when manually dispatched. Despite the comment name, the workflow runs a headless `capture-snapshot` health check (not a full `record-trace`). It starts Chrome via `pnpm chrome:debug`, uploads artifacts to the Actions run, and posts a comment with a link. For full traces locally, run `record-trace` via CLI or the `devtools-capture` MCP.
 
 ## Security
 

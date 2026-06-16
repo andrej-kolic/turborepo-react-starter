@@ -5,10 +5,10 @@
   "scripts": {
     "build": "dotenv -- turbo run build",
     "build:app": "dotenv -- sh -c 'turbo run build --filter \"$BUNDLER\"... \"$@\"' -- ",
-    "build:ui": "dotenv -- turbo run build --filter ui-storybook",
+    "build:ui": "dotenv -- turbo run build --filter ui-storybook...",
     "dev": "dotenv -- turbo run dev",
-    "dev:app": "dotenv -- sh -c 'turbo run dev --filter \"$BUNDLER\"'",
-    "dev:ui": "dotenv -- sh -c 'turbo run dev --filter ui-storybook'",
+    "dev:app": "dotenv -- sh -c 'turbo run dev --filter \"$BUNDLER\"...'",
+    "dev:ui": "dotenv -- sh -c 'turbo run dev --filter ui-storybook...'",
     "preview": "dotenv -- turbo run preview",
     "preview:app": "dotenv -- sh -c 'turbo run preview --filter \"$BUNDLER\"'",
     "preview:ui": "dotenv -- turbo run preview --filter ui-storybook",
@@ -21,20 +21,24 @@
     "check:type": "dotenv -- turbo run check:type",
     "check:type:go": "dotenv -- turbo run check:type:go",
     "check:format": "dotenv -- prettier . --check",
+    "check:mcp-config": "node scripts/check-mcp-config.js",
+    "check:links": "node scripts/check-links.js",
     "clear:cache": "pnpm cache delete && rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clear:output": "turbo run clear:output",
     "format:code": "dotenv -- prettier . --write",
     "format:dependencies": "dotenv -- pnpm dlx sherif@latest -f",
-    "quality-checks": "dotenv -- pnpm check:dependencies && pnpm turbo check:type lint test",
+    "quality-checks": "dotenv -- pnpm check:dependencies && pnpm check:mcp-config && pnpm check:links && pnpm turbo check:type lint test",
     "deploy:aws": "dotenv -- sh -c 'pnpm build:app && ./infra/aws/scripts/deploy.sh content \"$BUILD_ENVIRONMENT\"'",
     "deploy:netlify": "dotenv -- sh -c 'pnpm build:app && pnpm run --filter @repo/infra-netlify deploy'",
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
-    "chrome:debug": "node scripts/chrome-debug.js",
-    "chrome:debug:status": "node scripts/chrome-debug.js --status",
-    "chrome:debug:stop": "node scripts/chrome-debug.js --stop"
+    "chrome:debug": "browser-tools-chrome",
+    "browser:setup": "dotenv -- node scripts/with-app-url.js browser-tools-setup",
+    "browser:ensure-app": "dotenv -- node scripts/with-app-url.js node scripts/ensure-app.js",
+    "browser": "dotenv -- node scripts/with-app-url.js browser-tools"
   },
   "devDependencies": {
+    "@repo/browser-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260527.2",
     "dotenv-cli": "11.0.0",
@@ -45,6 +49,9 @@
     "syncpack": "15.3.1",
     "turbo": "2.9.15",
     "typescript": "6.0.3"
+  },
+  "lint-staged": {
+    "*.{md,mdc}": "node scripts/check-links.js"
   },
   "packageManager": "pnpm@11.1.3",
   "name": "turborepo-react-starter"

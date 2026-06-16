@@ -12,10 +12,17 @@ type DynamicListProps = {
   listStatus: 'idle' | 'loading' | 'aborted' | 'error' | 'done';
   fetchNext: () => Promise<void>;
   abortFetch: () => void;
+  'data-testid'?: string;
 };
 
 export function DynamicList(props: DynamicListProps) {
-  const { items, listStatus, fetchNext, abortFetch } = props;
+  const {
+    items,
+    listStatus,
+    fetchNext,
+    abortFetch,
+    'data-testid': dataTestId,
+  } = props;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -70,7 +77,7 @@ export function DynamicList(props: DynamicListProps) {
     <>
       {/* <div>status: {listStatus}</div> */}
 
-      <div className="DynamicList" ref={containerRef}>
+      <div className="DynamicList" ref={containerRef} data-testid={dataTestId}>
         <ol>
           {items.map((item: ListItem) => (
             <li key={item.id} className="DynamicList__item">

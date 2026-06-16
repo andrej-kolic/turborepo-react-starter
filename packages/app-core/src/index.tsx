@@ -30,13 +30,13 @@ export function AppCore(props: {
   debugLog();
 
   return (
-    <div className="AppCore">
+    <main className="AppCore">
       <Header title={props.title} />
 
       <ResourceCards />
 
       <Scroller />
-    </div>
+    </main>
   );
 }
 

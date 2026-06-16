@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import util from 'util';
+import { createRequire } from 'module';
 
 const debuglog = util.debuglog('app-vite');
+const _require = createRequire(import.meta.url);
+const pkg = _require('./package.json') as {
+  devPort: number;
+  previewPort: number;
+};
 
 import { createPaths } from '@repo/dev-tools/config/paths';
 
@@ -37,13 +43,26 @@ export default defineConfig((configEnv) => {
       ),
     },
 
+    server: {
+      port: pkg.devPort,
+      strictPort: true,
+      watch: {
+        // Re-read @repo/commons when its compiled dist/ changes (pnpm workspace link).
+        ignored: ['!**/node_modules/@repo/commons/**'],
+      },
+    },
+    preview: {
+      port: pkg.previewPort,
+      strictPort: true,
+    },
+
     plugins: [react()],
 
-    // Exclude JIT workspace packages from pre-bundling.
-    // Vite's pre-bundler (Rolldown in Vite 8) cannot process raw .tsx source files —
-    // these packages must flow through Vite's own transform pipeline instead.
+    // Exclude workspace packages from pre-bundling so Vite's transform pipeline handles them.
+    // JIT packages (@repo/ui, @repo/app-core): raw .tsx source.
+    // Compiled package (@repo/commons): dist/ updates from tsup/tsc watch.
     optimizeDeps: {
-      exclude: ['@repo/ui', '@repo/app-core'],
+      exclude: ['@repo/ui', '@repo/app-core', '@repo/commons'],
     },
 
     publicDir: appCorePublic,

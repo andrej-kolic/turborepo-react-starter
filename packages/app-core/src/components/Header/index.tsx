@@ -11,7 +11,7 @@ export function Header({ title }: { title: string }): React.ReactNode {
   const { APP_REACT_VERSION, BUILD_ENVIRONMENT } = getEnvironmentVariables();
 
   return (
-    <div className="Header">
+    <header className="Header" data-testid="app-header">
       <img className="Header__logo" alt="Logo" src={LogoIcon} />
       <div className="Header__title" onClick={handleClick}>
         {title}
@@ -19,6 +19,6 @@ export function Header({ title }: { title: string }): React.ReactNode {
           v{APP_REACT_VERSION} - {BUILD_ENVIRONMENT}
         </span>
       </div>
-    </div>
+    </header>
   );
 }

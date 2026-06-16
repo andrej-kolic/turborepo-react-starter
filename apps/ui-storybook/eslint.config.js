@@ -13,5 +13,13 @@ export default [
   {
     ignores: ['storybook-static/'],
   },
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+      },
+    },
+  },
   ...storybook.configs['flat/recommended'],
 ];
