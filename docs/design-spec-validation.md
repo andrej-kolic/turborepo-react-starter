@@ -36,11 +36,7 @@ checks:
   - console_errors: false
 ```
 
-For Storybook, point `url` at a canvas URL:
-
-```text
-http://localhost:6006/iframe.html?id=example-dynamiclist--default
-```
+For Storybook: `url` from `storybookCanvasUrl('<story-id>')` in `app-port.js` — not `?path=/story/…`.
 
 ### Style values
 
@@ -104,8 +100,12 @@ pnpm browser eval \
 When the component renders inline SVG:
 
 ```bash
+ICON_CANVAS_URL=$(node --input-type=module -e \
+  "import { storybookCanvasUrl } from './packages/dev-tools/config/app-port.js'; \
+  console.log(storybookCanvasUrl('icons--default'))")
+
 pnpm browser eval \
-  --url "http://localhost:6006/iframe.html?id=icons--default" \
+  --url "$ICON_CANVAS_URL" \
   --selector "[data-testid=icon]" \
   --expr "() => {
     const svg = document.querySelector('[data-testid=icon] svg');

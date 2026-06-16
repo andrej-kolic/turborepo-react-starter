@@ -3,7 +3,11 @@
 servers:
   - id: storybook
     name: Storybook
-    description: 'Starts Storybook dev for the ui-storybook package on port 6006'
+    description: >
+      Starts Storybook dev for ui-storybook. Dev port is apps/ui-storybook/package.json
+      devPort (SSOT). Resolve via loadStorybookEndpoints() or storybookCanvasUrl() in
+      packages/dev-tools/config/app-port.js — same pattern as bundler dev ports.
+      Canvas URL for browser CLI: storybookCanvasUrl('<story-id>').
     # Command used to start the dev server. Uses pnpm workspace filter to scope to the package.
     start:
       command: 'pnpm --filter ui-storybook dev'
@@ -15,8 +19,3 @@ servers:
     # Command to preview built static Storybook
     preview:
       command: 'pnpm --filter ui-storybook preview'
-    # Healthcheck Copilot can use to verify server readiness
-    healthcheck:
-      url: 'http://127.0.0.1:6006/'
-      timeout_seconds: 60
-    port: 6006
