@@ -41,14 +41,18 @@ Ports are declared as `devPort` / `previewPort` in each app's `package.json` —
 single source of truth. Bundler configs, `@repo/dev-tools/config/app-port.js`, and browser
 tooling all read from it. Override the target URL with `APP_URL` only (not `PORT`).
 
-| Service                | Dev port | Preview port | Start                                         |
-| ---------------------- | -------- | ------------ | --------------------------------------------- |
-| **app-vite** (default) | 5173     | 4173         | `pnpm dev:app`                                |
-| app-webpack            | 8080     | 8080         | set `BUNDLER=app-webpack` then `pnpm dev:app` |
-| app-esbuild            | 8000     | 8000         | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
-| ui-storybook           | 6006     | 6007         | `pnpm dev:ui`                                 |
+| Service                | Start                                         |
+| ---------------------- | --------------------------------------------- |
+| **app-vite** (default) | `pnpm dev:app`                                |
+| app-webpack            | set `BUNDLER=app-webpack` then `pnpm dev:app` |
+| app-esbuild            | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
+| ui-storybook           | `pnpm dev:ui`                                 |
 
-To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook) and use the `previewPort` in `--url`.
+Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser validation,
+`pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
+
+To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)
+and pass `--url` with the `previewUrl` from that app's `package.json` (or set `APP_URL`).
 
 Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch at once; it is heavy.
 
@@ -70,12 +74,12 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 Pick the **lightest** path that answers the question:
 
-| Goal                                   | Tool                                              |
-| -------------------------------------- | ------------------------------------------------- |
-| Logic / hooks / pure functions         | `pnpm test`                                       |
-| Component UI in isolation              | `pnpm dev:ui` → Storybook `:6006`                 |
-| Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C |
-| HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                            |
+| Goal                                   | Tool                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| Logic / hooks / pure functions         | `pnpm test`                                                          |
+| Component UI in isolation              | `pnpm dev:ui` → Storybook (port in `apps/ui-storybook/package.json`) |
+| Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C                    |
+| HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                                               |
 
 See the **[browser-validation skill](.cursor/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
 

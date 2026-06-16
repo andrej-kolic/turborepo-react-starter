@@ -14,14 +14,9 @@ Each bundler app declares its own port as `devPort` / `previewPort` in its `pack
 `strictPort: true` so the declared port matches the listening port. Port overrides are not
 supported via `PORT`; set `APP_URL` instead.
 
-| `BUNDLER`     | Dev port | Preview port |
-| ------------- | -------- | ------------ |
-| `app-vite`    | 5173     | 4173         |
-| `app-webpack` | 8080     | 8080         |
-| `app-esbuild` | 8000     | 8000         |
-
-Use `http://localhost:<devPort>` for local dev, `http://localhost:<previewPort>` after
-`pnpm preview:app`, or a full deployed preview URL when validating remotely.
+For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`). After
+`pnpm preview:app`, pass `--url` with `previewUrl` from `apps/<BUNDLER>/package.json`, or set
+`APP_URL`. For deployed previews, pass the full remote URL.
 
 ### Agent bootstrap
 
@@ -144,8 +139,8 @@ CHROME_DEBUG_PORT=9222
 
 ## Storybook validation
 
-Storybook (`pnpm dev:ui`, port `6006`) and the live bundler app are **different targets** — do not
-use `verify-browser-smoke.yml` for Storybook.
+Storybook (`pnpm dev:ui`; port in `apps/ui-storybook/package.json`) and the live bundler app are
+**different targets** — do not use `verify-browser-smoke.yml` for Storybook.
 
 | Target                          | CI / regression                                          | Agent / local spot-check                |
 | ------------------------------- | -------------------------------------------------------- | --------------------------------------- |
@@ -187,7 +182,7 @@ pnpm browser read \
 | --------------------------------------------- | -------------------------------------------------------------- |
 | `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                            |
 | `.cursor/skills/_browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
-| `AGENTS.md`                                   | Canonical agent setup, ports, commands                         |
+| `AGENTS.md`                                   | Canonical agent setup, commands, service start                 |
 | `packages/browser-tools/README.md`            | Full CLI reference (`browser-tools validate`, flags, env vars) |
 | `docs/component-validation-contract.md`       | `data-testid` convention                                       |
 | `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
