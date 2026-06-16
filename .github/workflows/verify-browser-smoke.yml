@@ -2,7 +2,7 @@
 # Validates the live app renders a key page region; not a replacement for unit tests.
 # Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
 #
-# Matrix: all bundler apps. Port/URL derived via scripts/with-app-url.js → app-port.js.
+# Matrix: all bundler apps. Port/URL derived via dev-tools-with-app-url → app-port.ts.
 
 name: 'Verify: Browser smoke'
 
@@ -66,6 +66,6 @@ jobs:
         if: always()
         run: |
           pnpm chrome:debug --stop || true
-          APP_PORT=$(node --input-type=module -e \
-            "import { resolveAppTargets } from './packages/dev-tools/config/app-port.js'; console.log(resolveAppTargets(process.env)?.port ?? '5173')")
-          lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
+          if APP_PORT=$(dev-tools-print-app-port); then
+            lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
+          fi

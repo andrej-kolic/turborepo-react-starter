@@ -37,7 +37,7 @@ checks:
 ```
 
 For Storybook: `url` from
-`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.js` — not
+`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.ts` — not
 `?path=/story/…`.
 
 ### Style values
@@ -102,8 +102,8 @@ pnpm browser eval \
 When the component renders inline SVG:
 
 ```bash
-ICON_CANVAS_URL=$(node --input-type=module -e \
-  "import { loadAppEndpoints } from './packages/dev-tools/config/app-port.js'; \
+ICON_CANVAS_URL=$(tsx -e \
+  "import { loadAppEndpoints } from '@repo/dev-tools/config/app-port'; \
   const { devUrl } = loadAppEndpoints('ui-storybook'); \
   console.log(\`\${devUrl}/iframe.html?id=icons--default\`)")
 

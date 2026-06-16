@@ -10,7 +10,7 @@ Do not store the app URL in `.env`. It depends on which bundler is running (`BUN
 
 Each bundler app declares its own port as `devPort` / `previewPort` in its `package.json`
 (e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs,
-`@repo/dev-tools/config/app-port.js`, and browser tooling all read from it. Vite uses
+`@repo/dev-tools/config/app-port`, and browser tooling all read from it. Vite uses
 `strictPort: true` so the declared port matches the listening port. Port overrides are not
 supported via `PORT`; set `APP_URL` instead.
 
@@ -20,8 +20,8 @@ For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`
 
 ### Agent bootstrap
 
-Root `pnpm browser:*` scripts inject `APP_URL` automatically via `scripts/with-app-url.js`
-(using `@repo/dev-tools/config/app-port.js`):
+Root `pnpm browser:*` scripts inject `APP_URL` automatically via **`dev-tools-with-app-url`**
+(using `@repo/dev-tools/config/app-port`):
 
 ```bash
 pnpm browser:ensure-app   # ensure dev server is up; prints "App: UP  <url>"
@@ -30,14 +30,14 @@ pnpm browser validate --selector "[data-testid=app-header]"   # --url auto-resol
 ```
 
 Resolution order: `APP_URL` already set → use as-is; else derive `http://localhost:<devPort>`
-from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` / `resolveAppUrl()` in `@repo/dev-tools/config/app-port.js`.
+from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` / `resolveAppUrl()` in `@repo/dev-tools/config/app-port`.
 
 Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
 ### CLI URL resolution
 
 When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
-`BUNDLER` is **not** read by the CLI directly — only by the `with-app-url.js` wrapper.
+`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-with-app-url` wrapper.
 
 ### CI bootstrap
 
@@ -50,7 +50,7 @@ pnpm browser:setup
 pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
 ```
 
-`APP_URL` is derived from `BUNDLER` via `with-app-url.js` — CI does not set it explicitly.
+`APP_URL` is derived from `BUNDLER` via `dev-tools-with-app-url` — CI does not set it explicitly.
 `--log-file` captures dev-server output for CI failures (startup timeout or validate step).
 
 ---
@@ -153,7 +153,7 @@ app, not Storybook URLs. See `docs/component-validation-contract.md`.
 ### Canvas URL (agents)
 
 `pnpm browser …` does not pierce Storybook's manager iframe. Pass `--url` as
-`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` from `app-port.js` — not
+`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` from `app-port.ts` — not
 `?path=/story/…`.
 
 Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
@@ -171,7 +171,8 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 | `docs/component-validation-contract.md`       | `data-testid` convention                                       |
 | `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
 | `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                  |
-| `packages/dev-tools/config/app-port.js`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
-| `scripts/with-app-url.js`                     | Injects `APP_URL` via `app-port.js`                            |
+| `packages/dev-tools/config/app-port.ts`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
+| `packages/dev-tools/bin/with-app-url.ts`      | `dev-tools-with-app-url` — injects `APP_URL` via `app-port.ts` |
+| `packages/dev-tools/bin/print-app-port.ts`    | `dev-tools-print-app-port` — resolved port for CI shell        |
 | `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI        |
 | `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                  |

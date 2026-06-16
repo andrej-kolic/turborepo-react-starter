@@ -38,8 +38,10 @@ pnpm --filter @repo/commons build
 ## Services (local dev)
 
 Ports are declared as `devPort` / `previewPort` in each app's `package.json` — that is the
-single source of truth. Bundler configs, `@repo/dev-tools/config/app-port.js`, and browser
+single source of truth. Bundler configs, `@repo/dev-tools/config/app-port`, and browser
 tooling all read from it. Override the target URL with `APP_URL` only (not `PORT`).
+
+Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-with-app-url`, `dev-tools-print-app-port`). Root `/scripts` holds plain-Node workflow scripts only.
 
 | Service                | Start                                         |
 | ---------------------- | --------------------------------------------- |

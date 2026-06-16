@@ -42,7 +42,7 @@ const config = {
         '@types/react-dom',
         '@types/node',
         'vite',
-        'ts-node',
+        'tsx',
         'serve',
         '@turbo/gen',
         'vitest',
