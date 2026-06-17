@@ -2,7 +2,7 @@
 
 > **Canonical guidance lives in [`AGENTS.md`](../AGENTS.md).** Read it first for setup, commands,
 > ports, and conventions. For browser work, follow the
-> [`browser-validation`](../.claude/skills/_browser-validation/SKILL.md) skill and
+> [`browser-validation`](../.claude/skills/x-browser-validation/SKILL.md) skill and
 > [`docs/browser-validation.md`](../docs/browser-validation.md).
 
 This file only covers GitHub Copilot–specific setup not in `AGENTS.md`.
@@ -24,7 +24,7 @@ Both MCP servers require Chrome on port 9222 (`pnpm chrome:debug`):
 
 - `chrome-devtools` — DOM verification (`navigate_page`, `evaluate_script`, `take_snapshot`)
 - `devtools-capture` — artifact capture (HAR, traces, Web Vitals); see the
-  [`browser-capture`](../.claude/skills/_browser-capture/SKILL.md) skill
+  [`browser-capture`](../.claude/skills/x-browser-capture/SKILL.md) skill
 
 For Storybook, use `pnpm dev:ui` (port and URLs in [`AGENTS.md`](../AGENTS.md)).
 

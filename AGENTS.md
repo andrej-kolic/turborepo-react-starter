@@ -80,11 +80,11 @@ This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate to
 After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI runs `pnpm check:agents`.
 
 Skills are generated to `.claude/skills/` (Cursor, Claude Code, and Copilot all discover that path). Browser work: read the
-[`browser-validation`](.claude/skills/_browser-validation/SKILL.md) skill first.
+[`browser-validation`](.claude/skills/x-browser-validation/SKILL.md) skill first.
 
 ## Browser validation
 
-> **Read the [`browser-validation`](.claude/skills/_browser-validation/SKILL.md) skill first** before
+> **Read the [`browser-validation`](.claude/skills/x-browser-validation/SKILL.md) skill first** before
 > doing any browser-related work. Full decision flowchart and environment scenarios are in
 > [`docs/browser-validation.md`](docs/browser-validation.md).
 
@@ -97,7 +97,7 @@ Pick the **lightest** path that answers the question:
 | Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C                    |
 | HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                                               |
 
-See the **[browser-validation skill](.claude/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
+See the **[browser-validation skill](.claude/skills/x-browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
 
 ## Gotchas
 

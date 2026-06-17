@@ -8,7 +8,7 @@ description: >-
 globs:
   - packages/browser-tools/**
   - packages/browser-capture/**
-  - .claude/skills/_browser-*/**
+  - .claude/skills/x-browser-*/**
   - docs/browser-validation.md
   - .github/workflows/verify-browser-smoke.yml
   - .github/workflows/capture-devtools.yml
@@ -20,7 +20,7 @@ cursor:
   globs:
     - packages/browser-tools/**
     - packages/browser-capture/**
-    - .claude/skills/_browser-*/**
+    - .claude/skills/x-browser-*/**
     - docs/browser-validation.md
     - .github/workflows/verify-browser-smoke.yml
     - .github/workflows/capture-devtools.yml
@@ -28,7 +28,7 @@ cursor:
 
 # Browser work
 
-Read the **[browser-validation skill](../../.claude/skills/_browser-validation/SKILL.md)** first — it has the tier A/B/C decision graph and bootstrap commands.
+Read the **[browser-validation skill](../../.claude/skills/x-browser-validation/SKILL.md)** first — it has the tier A/B/C decision graph and bootstrap commands.
 
 Two tiers — never mix them:
 

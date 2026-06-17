@@ -1,5 +1,5 @@
 ---
-name: _browser-validation
+name: x-browser-validation
 description: >-
   Verify the live app or Storybook renders correctly — assert DOM, text, and
   selectors. Use before any browser-related verification in this repo, or when

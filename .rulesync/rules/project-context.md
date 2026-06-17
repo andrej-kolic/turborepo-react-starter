@@ -38,6 +38,6 @@ commands, ports, and conventions. Do not duplicate that content in tool-specific
 
 ## Agent skills and docs
 
-- Browser verification: `.claude/skills/_browser-validation/SKILL.md` → `docs/browser-validation.md`
-- Browser capture: `.claude/skills/_browser-capture/SKILL.md` → `packages/browser-capture/README.md`
+- Browser verification: `.claude/skills/x-browser-validation/SKILL.md` → `docs/browser-validation.md`
+- Browser capture: `.claude/skills/x-browser-capture/SKILL.md` → `packages/browser-capture/README.md`
 - Component testids: `docs/component-validation-contract.md`

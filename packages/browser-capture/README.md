@@ -85,7 +85,7 @@ Add to `~/.copilot/mcp-config.json`:
 }
 ```
 
-> Agents: see the [`browser-capture`](../../.claude/skills/_browser-capture/SKILL.md) skill for a quick-start entry point. This README is the full tool reference.
+> Agents: see the [`browser-capture`](../../.claude/skills/x-browser-capture/SKILL.md) skill for a quick-start entry point. This README is the full tool reference.
 
 ## Artifacts
 
