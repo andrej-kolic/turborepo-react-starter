@@ -7,7 +7,7 @@
     "copilot-devtools": "./bin/copilot-devtools.js"
   },
   "dependencies": {
-    "@jridgewell/trace-mapping": "0.3.25",
+    "@jridgewell/trace-mapping": "0.3.31",
     "@modelcontextprotocol/sdk": "1.29.0",
     "playwright-core": "catalog:",
     "zod": "3.25.76"
