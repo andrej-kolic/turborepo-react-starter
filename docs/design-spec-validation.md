@@ -131,21 +131,7 @@ Agents with vision compare `/tmp/app-header.png` to a Figma export or pasted ref
 
 ---
 
-## Agent workflow (no MCP)
-
-```bash
-pnpm browser:ensure-app   # starts dev server if needed; resolves URL
-pnpm browser:setup        # required_permissions: all
-
-# 1. Smoke — region renders, no console errors
-pnpm browser validate --selector "[data-testid=…]" --no-console-errors
-
-# 2. Token spec — computed styles match design
-pnpm browser eval --selector "[data-testid=…]" --expr "<fn>" --expect
-
-# 3. Visual spot-check — screenshot for comparison
-pnpm browser screenshot --selector "[data-testid=…]" --output /tmp/check.png
-```
+Bootstrap via the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** (Step 1 + Tier C), then run the layer commands in the sections above.
 
 ---
 

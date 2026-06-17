@@ -14,16 +14,6 @@ globs:
   - .github/workflows/capture-devtools.yml
 cursor:
   alwaysApply: false
-  description: >-
-    Browser verify vs capture — which tool tier to use for DOM checks and
-    artifacts
-  globs:
-    - packages/browser-tools/**
-    - packages/browser-capture/**
-    - .claude/skills/x-browser-*/**
-    - docs/browser-validation.md
-    - .github/workflows/verify-browser-smoke.yml
-    - .github/workflows/capture-devtools.yml
 ---
 
 # Browser work

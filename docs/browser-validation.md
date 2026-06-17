@@ -18,21 +18,15 @@ For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`
 `pnpm preview:app`, pass `--url` with `previewUrl` from `apps/<BUNDLER>/package.json`, or set
 `APP_URL`. For deployed previews, pass the full remote URL.
 
-### Agent bootstrap
+### URL resolution
 
-Root `pnpm browser:*` scripts inject `APP_URL` automatically via **`dev-tools-with-app-url`**
-(using `@repo/dev-tools/config/app-port`):
+Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-with-app-url`**
+(`@repo/dev-tools/config/app-port`). Resolution order: `APP_URL` already set → use as-is; else
+derive `http://localhost:<devPort>` from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` /
+`resolveAppUrl()`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
-```bash
-pnpm browser:ensure-app   # ensure dev server is up; prints "App: UP  <url>"
-pnpm browser:setup        # ensure Chrome + tab (CLI tier; required_permissions: all)
-pnpm browser validate --selector "[data-testid=app-header]"   # --url auto-resolved
-```
-
-Resolution order: `APP_URL` already set → use as-is; else derive `http://localhost:<devPort>`
-from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` / `resolveAppUrl()` in `@repo/dev-tools/config/app-port`.
-
-Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
+For bootstrap commands (ensure-app, setup, tier selection), follow the
+**[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)**.
 
 ### CLI URL resolution
 
@@ -160,19 +154,8 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 
 ---
 
-## Related files
+## Related
 
-| File                                           | Purpose                                                        |
-| ---------------------------------------------- | -------------------------------------------------------------- |
-| `.claude/skills/x-browser-validation/SKILL.md` | Agent entry point — read this first                            |
-| `.claude/skills/x-browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
-| `AGENTS.md`                                    | Canonical agent setup, commands, service start                 |
-| `packages/browser-tools/README.md`             | Full CLI reference (`browser-tools validate`, flags, env vars) |
-| `docs/component-validation-contract.md`        | `data-testid` convention                                       |
-| `docs/design-spec-validation.md`               | Token/layout checks via `browser eval`                         |
-| `packages/browser-capture/README.md`           | Capture CLI and MCP reference                                  |
-| `packages/dev-tools/config/app-port.ts`        | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
-| `packages/dev-tools/bin/with-app-url.ts`       | `dev-tools-with-app-url` — injects `APP_URL` via `app-port.ts` |
-| `packages/dev-tools/bin/print-app-port.ts`     | `dev-tools-print-app-port` — resolved port for CI shell        |
-| `scripts/ensure-app.js`                        | Starts dev server if down; optional `--log-file` for CI        |
-| `.github/workflows/verify-browser-smoke.yml`   | CI live-app smoke test (matrix: all bundlers)                  |
+- [`AGENTS.md`](../AGENTS.md) — documentation map and setup
+- [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI flags and env vars
+- [`packages/dev-tools/config/app-port.ts`](../packages/dev-tools/config/app-port.ts) — `loadAppEndpoints`, `resolveAppUrl`

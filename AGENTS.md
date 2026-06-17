@@ -6,6 +6,13 @@ Canonical instructions for AI agents working in this repository.
 
 Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/app-core` served by one of three bundler apps (`app-vite`, `app-webpack`, `app-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
 
+## Monorepo conventions
+
+- Scope work with `pnpm --filter <pkg> <script>`.
+- Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
+- Extend `@repo/typescript-config` and `@repo/eslint-config`.
+- Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:agents` · `pnpm quality-checks`
+
 ## Environment file
 
 Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.example` if missing. Important variables:
@@ -68,6 +75,20 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
 
+## Documentation map
+
+| Doc                                                                                            | Purpose                                                                  |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`README.md`](README.md)                                                                       | Human-oriented package inventory and basic commands                      |
+| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md) | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
+| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
+| [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
+| [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
+| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Token/layout checks via `browser eval`                                   |
+
+Pick the **lightest** tool for the question: `pnpm test` (logic) · Storybook (isolated UI) ·
+browser-validation skill (DOM/text) · browser-capture skill (artifacts).
+
 ## Agent config (rulesync)
 
 This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate tool-specific files from `.rulesync/`:
@@ -77,32 +98,10 @@ This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate to
 | `AGENTS.md` (canonical)                                       | —                                                                                                                           |
 | `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.claude/skills/`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/mcp.json`, `.vscode/mcp.json` |
 
-After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI and pre-commit run `pnpm check:agents` when agent config files change.
-
-Skills are generated to `.claude/skills/` (Cursor, Claude Code, and Copilot all discover that path). Browser work: read the
-[`browser-validation`](.claude/skills/x-browser-validation/SKILL.md) skill first.
-
-## Browser validation
-
-> **Read the [`browser-validation`](.claude/skills/x-browser-validation/SKILL.md) skill first** before
-> doing any browser-related work. Full decision flowchart and environment scenarios are in
-> [`docs/browser-validation.md`](docs/browser-validation.md).
-
-Pick the **lightest** path that answers the question:
-
-| Goal                                   | Tool                                                                 |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| Logic / hooks / pure functions         | `pnpm test`                                                          |
-| Component UI in isolation              | `pnpm dev:ui` → Storybook (port in `apps/ui-storybook/package.json`) |
-| Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C                    |
-| HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                                               |
-
-See the **[browser-validation skill](.claude/skills/x-browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
+After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI and pre-commit run `pnpm check:agents` when agent config files change. Skills sync to `.claude/skills/` (discovered by Cursor, Claude Code, and Copilot).
 
 ## Gotchas
 
-- **MCP config:** `.rulesync/mcp.json` is the source; `pnpm sync:agents` writes `.cursor/mcp.json`
-  (`mcpServers`) and `.vscode/mcp.json` (`servers`). CI validates via `pnpm check:agents`.
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

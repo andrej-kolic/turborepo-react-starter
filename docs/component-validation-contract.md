@@ -95,15 +95,9 @@ stripped via a Babel plugin or custom bundler transform.
 
 ## Verification
 
-```bash
-# Requires app running and Chrome on port 9222
-pnpm browser validate --url http://localhost:5173 --selector "[data-testid=app-header]"
-pnpm browser validate --url http://localhost:5173 --selector "[data-testid=resource-cards]"
-pnpm browser validate --url http://localhost:5173 --selector "[data-testid=scroller]"
-# all three: exit 0
-```
-
-See `docs/browser-validation.md` for environment setup (Chrome port, headless mode, SSH tunnel).
+Run against the live app URL from `pnpm browser:ensure-app`. See
+[`docs/browser-validation.md`](browser-validation.md) for URL setup and
+[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) for CI.
 
 ---
 
