@@ -1,6 +1,6 @@
 # Browser Validation
 
-> **Agents:** follow the **[browser-validation skill](../.cursor/skills/_browser-validation/SKILL.md)** — it has the tier A → B → C decision graph and covers 95% of cases. This document is the reference for URL derivation and the three edge-case scenarios: `--attach` with session, remote URL, and SSH tunnel. Storybook is also here because it spans multiple packages.
+> **Agents:** follow the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** — it has the tier A → B → C decision graph and covers 95% of cases. This document is the reference for URL derivation and the three edge-case scenarios: `--attach` with session, remote URL, and SSH tunnel. Storybook is also here because it spans multiple packages.
 
 ---
 
@@ -57,7 +57,7 @@ pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
 
 ## Edge-case scenarios
 
-> The **[skill](../.cursor/skills/_browser-validation/SKILL.md)** covers the common paths (cursor-ide-browser, chrome-devtools MCP, CLI with headless). The sections below require additional context.
+> The **[skill](../.claude/skills/x-browser-validation/SKILL.md)** covers the common paths (cursor-ide-browser, chrome-devtools MCP, CLI with headless). The sections below require additional context.
 
 ### Visible Chrome with session (`--attach`)
 
@@ -162,17 +162,17 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 
 ## Related files
 
-| File                                          | Purpose                                                        |
-| --------------------------------------------- | -------------------------------------------------------------- |
-| `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                            |
-| `.cursor/skills/_browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
-| `AGENTS.md`                                   | Canonical agent setup, commands, service start                 |
-| `packages/browser-tools/README.md`            | Full CLI reference (`browser-tools validate`, flags, env vars) |
-| `docs/component-validation-contract.md`       | `data-testid` convention                                       |
-| `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
-| `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                  |
-| `packages/dev-tools/config/app-port.ts`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
-| `packages/dev-tools/bin/with-app-url.ts`      | `dev-tools-with-app-url` — injects `APP_URL` via `app-port.ts` |
-| `packages/dev-tools/bin/print-app-port.ts`    | `dev-tools-print-app-port` — resolved port for CI shell        |
-| `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI        |
-| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                  |
+| File                                           | Purpose                                                        |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| `.claude/skills/x-browser-validation/SKILL.md` | Agent entry point — read this first                            |
+| `.claude/skills/x-browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
+| `AGENTS.md`                                    | Canonical agent setup, commands, service start                 |
+| `packages/browser-tools/README.md`             | Full CLI reference (`browser-tools validate`, flags, env vars) |
+| `docs/component-validation-contract.md`        | `data-testid` convention                                       |
+| `docs/design-spec-validation.md`               | Token/layout checks via `browser eval`                         |
+| `packages/browser-capture/README.md`           | Capture CLI and MCP reference                                  |
+| `packages/dev-tools/config/app-port.ts`        | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
+| `packages/dev-tools/bin/with-app-url.ts`       | `dev-tools-with-app-url` — injects `APP_URL` via `app-port.ts` |
+| `packages/dev-tools/bin/print-app-port.ts`     | `dev-tools-print-app-port` — resolved port for CI shell        |
+| `scripts/ensure-app.js`                        | Starts dev server if down; optional `--log-file` for CI        |
+| `.github/workflows/verify-browser-smoke.yml`   | CI live-app smoke test (matrix: all bundlers)                  |

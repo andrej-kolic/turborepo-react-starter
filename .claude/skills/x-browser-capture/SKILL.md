@@ -1,18 +1,18 @@
 ---
-name: _browser-capture
+name: x-browser-capture
 description: >-
   Capture Chrome DevTools artifacts — HAR, Playwright traces, Web Vitals
   (LCP/CLS/INP), console logs, and recorded interactions — via the
   devtools-capture MCP server or the copilot-devtools CLI. Use when the user
   asks to record a trace, profile performance, capture network/HAR, dump
   console, or produce a CI debugging artifact. For routine DOM/text checks, use
-  the browser-validation skill instead.
+  the x-browser-validation skill instead.
 ---
 
 # Browser Capture
 
 Capture/instrumentation only — produces artifacts. For routine DOM/text verification, use the
-**browser-validation** skill first.
+**x-browser-validation** skill first.
 
 ## Prerequisites
 
