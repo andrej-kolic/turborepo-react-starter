@@ -36,6 +36,7 @@ allowBuilds:
   esbuild: true
   netlify-cli: true
   sharp: true
+  tldjs: true
   unix-dgram: false
   unrs-resolver: true
 
@@ -57,3 +58,4 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260527.2'
   - '@typescript/native-preview-win32-x64@7.0.0-dev.20260527.2'
   - '@typescript/native-preview@7.0.0-dev.20260527.2'
+  - rulesync@8.29.0

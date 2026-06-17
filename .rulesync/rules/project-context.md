@@ -1,7 +1,19 @@
 ---
-alwaysApply: true
-description: Canonical project context — AGENTS.md, pnpm/turbo conventions, single source of truth
-globs: **/*
+root: false
+targets:
+  - cursor
+description: >-
+  Canonical project context — AGENTS.md, pnpm/turbo conventions, single source
+  of truth
+globs:
+  - '**/*'
+cursor:
+  alwaysApply: true
+  description: >-
+    Canonical project context — AGENTS.md, pnpm/turbo conventions, single source
+    of truth
+  globs:
+    - '**/*'
 ---
 
 # Project context

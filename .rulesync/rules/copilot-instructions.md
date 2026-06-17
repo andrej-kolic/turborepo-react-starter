@@ -1,3 +1,9 @@
+---
+root: true
+targets:
+  - copilot
+---
+
 # Copilot instructions for turborepo-react-starter
 
 > **Canonical guidance lives in [`AGENTS.md`](../AGENTS.md).** Read it first for setup, commands,

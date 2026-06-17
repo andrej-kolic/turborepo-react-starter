@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Ensures MCP server definitions stay in sync between Cursor and VS Code configs.
- * .cursor/mcp.json uses "mcpServers"; .vscode/mcp.json uses "servers" — same payloads.
+ * Legacy MCP parity check (.cursor/mcp.json ↔ .vscode/mcp.json).
+ * Prefer `pnpm check:agents`, which validates the full rulesync output including MCP.
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

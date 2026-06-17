@@ -68,9 +68,23 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
 
+## Agent config (rulesync)
+
+This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate tool-specific files from `.rulesync/`:
+
+| Edit                                                          | Do not edit directly                                                                                                        |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` (canonical)                                       | —                                                                                                                           |
+| `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.claude/skills/`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/mcp.json`, `.vscode/mcp.json` |
+
+After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI runs `pnpm check:agents`.
+
+Skills are generated to `.claude/skills/` (Cursor, Claude Code, and Copilot all discover that path). Browser work: read the
+[`browser-validation`](.claude/skills/_browser-validation/SKILL.md) skill first.
+
 ## Browser validation
 
-> **Read the [`browser-validation`](.cursor/skills/_browser-validation/SKILL.md) skill first** before
+> **Read the [`browser-validation`](.claude/skills/_browser-validation/SKILL.md) skill first** before
 > doing any browser-related work. Full decision flowchart and environment scenarios are in
 > [`docs/browser-validation.md`](docs/browser-validation.md).
 
@@ -83,13 +97,12 @@ Pick the **lightest** path that answers the question:
 | Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C                    |
 | HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                                               |
 
-See the **[browser-validation skill](.cursor/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
+See the **[browser-validation skill](.claude/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
 
 ## Gotchas
 
-- **MCP config:** `.cursor/mcp.json` (`mcpServers`) and `.vscode/mcp.json` (`servers`) must stay
-  identical — run `pnpm check:mcp-config` (also in `quality-checks` and pre-commit when either file
-  changes).
+- **MCP config:** `.rulesync/mcp.json` is the source; `pnpm sync:agents` writes `.cursor/mcp.json`
+  (`mcpServers`) and `.vscode/mcp.json` (`servers`). CI validates via `pnpm check:agents`.
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

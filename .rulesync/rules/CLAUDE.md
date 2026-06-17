@@ -1,3 +1,9 @@
+---
+root: true
+targets:
+  - claudecode
+---
+
 # CLAUDE.md
 
 This project keeps a single, tool-agnostic source of agent guidance.
