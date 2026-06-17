@@ -93,10 +93,10 @@ browser-validation skill (DOM/text) · browser-capture skill (artifacts).
 
 This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate tool-specific files from `.rulesync/`:
 
-| Edit                                                          | Do not edit directly                                                                                                        |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md` (canonical)                                       | —                                                                                                                           |
-| `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.claude/skills/`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/mcp.json`, `.vscode/mcp.json` |
+| Edit                                                          | Do not edit directly                                                                                                             |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` (canonical)                                       | —                                                                                                                                |
+| `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.claude/rules/`, `.claude/skills/`, `.github/copilot-instructions.md`, `.cursor/mcp.json`, `.vscode/mcp.json` |
 
 After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI and pre-commit run `pnpm check:agents` when agent config files change. Skills sync to `.claude/skills/` (discovered by Cursor, Claude Code, and Copilot).
 

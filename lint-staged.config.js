@@ -11,6 +11,6 @@ export default {
   '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json,jsonc}': ['prettier --write'],
   '.rulesync/**/*': () => 'node scripts/check-agents.js',
-  '{CLAUDE.md,.github/copilot-instructions.md,.cursor/rules/*.mdc,.claude/skills/**/SKILL.md,.cursor/mcp.json,.vscode/mcp.json}':
+  '{.github/copilot-instructions.md,.cursor/rules/*.mdc,.claude/rules/**/*.md,.claude/skills/**/SKILL.md,.cursor/mcp.json,.vscode/mcp.json}':
     () => 'node scripts/check-agents.js',
 };
