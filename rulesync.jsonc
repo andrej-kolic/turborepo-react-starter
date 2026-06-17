@@ -1,9 +1,9 @@
 {
   "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
   "targets": {
-    "cursor": ["rules", "mcp"],
-    "claudecode": ["rules", "skills"],
-    "copilot": ["rules", "mcp"]
+    "cursor": ["rules", "mcp", "commands"],
+    "claudecode": ["rules", "skills", "commands"],
+    "copilot": ["rules", "mcp", "commands"]
   },
   "outputRoots": ["."],
   "delete": true,
