@@ -1,14 +1,7 @@
 ---
-root: false
-targets:
-  - cursor
-  - claudecode
-description: data-testid and semantic HTML for agent-checkable page regions
-globs:
+paths:
   - packages/app-core/**/*.tsx
   - packages/ui/**/*.tsx
-cursor:
-  alwaysApply: false
 ---
 
 # Component validation contract
