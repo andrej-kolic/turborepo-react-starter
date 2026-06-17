@@ -34,7 +34,7 @@ commands, ports, and conventions. Do not duplicate that content in tool-specific
 
 - **Canonical project context:** [`AGENTS.md`](../../AGENTS.md) — edit by hand.
 - **Generated tool files:** `.rulesync/` is the source; run `pnpm sync:agents` after changes.
-- **CI:** `pnpm check:agents` verifies generated files match `.rulesync/`.
+- **CI / pre-commit:** `pnpm check:agents` verifies generated files match `.rulesync/`.
 
 ## Agent skills and docs
 

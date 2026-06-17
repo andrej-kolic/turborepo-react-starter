@@ -77,7 +77,7 @@ This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate to
 | `AGENTS.md` (canonical)                                       | —                                                                                                                           |
 | `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.claude/skills/`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/mcp.json`, `.vscode/mcp.json` |
 
-After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI runs `pnpm check:agents`.
+After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI and pre-commit run `pnpm check:agents` when agent config files change.
 
 Skills are generated to `.claude/skills/` (Cursor, Claude Code, and Copilot all discover that path). Browser work: read the
 [`browser-validation`](.claude/skills/x-browser-validation/SKILL.md) skill first.
