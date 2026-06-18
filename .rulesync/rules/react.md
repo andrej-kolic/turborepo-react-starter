@@ -1,0 +1,32 @@
+---
+root: false
+targets:
+  - cursor
+  - claudecode
+  - copilot
+description: React component and hook conventions. Auto-attaches to .ts and .tsx files.
+globs:
+  - '**/*.ts'
+  - '**/*.tsx'
+cursor:
+  alwaysApply: false
+---
+
+# React
+
+- Named exports only. No default exports for components.
+- Props type defined directly above the component.
+- Derive state from props — don't sync with `useEffect`.
+- Keep hooks single-purpose. If the name needs "and", split it.
+- `ref` as a prop directly (React 19) — no `forwardRef`.
+- `use(MyContext)` instead of `useContext`.
+- `useActionState` for form/async state instead of `useState` + handler pair.
+
+```tsx
+// ✅ Derive, don't sync
+const isValid = email.length > 0 && email.includes('@');
+
+// ❌ Redundant state sync
+const [isValid, setIsValid] = useState(false);
+useEffect(() => setIsValid(email.includes('@')), [email]);
+```

@@ -3,7 +3,6 @@ paths:
   - packages/app-core/**/*.tsx
   - packages/ui/**/*.tsx
 ---
-
 # Component validation contract
 
 Agent CLI verification (`pnpm browser validate`, CI smoke) — not unit-test selectors.
