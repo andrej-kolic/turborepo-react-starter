@@ -10,5 +10,7 @@ export default {
 
   '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json,jsonc}': ['prettier --write'],
-  '{.cursor,.vscode}/mcp.json': () => 'node scripts/check-mcp-config.js',
+  '.rulesync/**/*': [() => 'pnpm sync:agents', () => 'pnpm check:agents'],
+  '{.github/copilot-instructions.md,.github/prompts/**/*.md,.cursor/rules/*.mdc,.cursor/commands/**/*.md,.claude/rules/**/*.md,.claude/skills/**/SKILL.md,.claude/commands/**/*.md,.cursor/mcp.json,.vscode/mcp.json}':
+    () => 'pnpm check:agents',
 };

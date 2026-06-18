@@ -24,3 +24,15 @@ pnpm-lock.yaml
 
 # netlify
 infra/netlify/deploy_output.json
+
+# rulesync — generated outputs (edit .rulesync/ only; run pnpm sync:agents)
+.cursor/
+.claude/
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.vscode/mcp.json
+
+# rulesync sources — excluded from commit-time prettier to avoid racing sync:agents;
+# format manually: prettier --write '.rulesync/**/*.{md,json}' && pnpm sync:agents
+.rulesync/

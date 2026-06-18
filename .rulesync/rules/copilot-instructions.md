@@ -1,3 +1,9 @@
+---
+root: true
+targets:
+  - copilot
+---
+
 @AGENTS.md
 
 ## MCP setup for the Copilot CLI

@@ -1,5 +1,5 @@
 ---
-name: _browser-capture
+name: x-browser-capture
 description: >-
   Capture Chrome DevTools artifacts — HAR, Playwright traces, Web Vitals
   (LCP/CLS/INP), console logs, and recorded interactions — via the
@@ -7,6 +7,8 @@ description: >-
   asks to record a trace, profile performance, capture network/HAR, dump
   console, or produce a CI debugging artifact. For routine DOM/text checks, use
   the browser-validation skill instead.
+targets:
+  - claudecode
 ---
 
 # Browser Capture

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  "targets": {
+    "cursor": ["rules", "mcp", "commands"],
+    "claudecode": ["rules", "skills", "commands"],
+    "copilot": ["rules", "mcp", "commands"]
+  },
+  "outputRoots": ["."],
+  "delete": true,
+  "verbose": false,
+  "silent": false,
+  "global": false,
+  "gitignoreTargetsOnly": true
+}
