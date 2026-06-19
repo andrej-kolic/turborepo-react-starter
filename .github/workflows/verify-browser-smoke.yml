@@ -1,6 +1,7 @@
-# Fast headless smoke test — verify tier only (no artifacts).
+# Headless smoke test — verify tier with optional capture on failure.
 # Validates the live app renders a key page region; not a replacement for unit tests.
-# Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
+# On smoke failure, record-trace captures HAR + Playwright trace + console for debugging.
+# Separate from capture-devtools.yml (on-demand capture) and build-auto.yaml (lint/test/build).
 #
 # Matrix: all bundler apps. Port/URL derived via dev-tools-with-app-url → app-port.ts.
 
@@ -61,6 +62,31 @@ jobs:
             cat /tmp/dev-app.log || true
             exit 1
           fi
+
+      - name: Capture trace on smoke failure
+        if: failure()
+        run: |
+          APP_URL="http://localhost:$(pnpm exec dev-tools-print-app-port)"
+          node packages/browser-capture/bin/copilot-devtools.js record-trace "$APP_URL" --duration 5
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+
+      - name: Sanitize capture artifacts
+        if: failure()
+        run: |
+          for dir in packages/browser-capture/artifacts/*/; do
+            [ -d "$dir" ] && node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
+          done
+
+      - name: Upload capture artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-failure-trace-${{ matrix.bundler }}-${{ github.run_id }}
+          path: packages/browser-capture/artifacts/**
+          retention-days: 30
+          if-no-files-found: ignore
 
       - name: Cleanup
         if: always()
