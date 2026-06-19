@@ -43,7 +43,7 @@ jobs:
 
       # ── pnpm + Node setup with dependency cache ───────────────────────────────
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js (with pnpm cache)
         uses: actions/setup-node@v5
