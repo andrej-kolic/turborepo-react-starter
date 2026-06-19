@@ -54,14 +54,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Resolve trace URL
+        id: trace-url
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          URL=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.url }}" ]; then
+            URL="${{ inputs.url }}"
+          elif [ "${{ github.event_name }}" = "issue_comment" ] && [ -n "$COMMENT_BODY" ]; then
+            URL=$(printf '%s\n' "$COMMENT_BODY" | grep -oE 'https?://[^[:space:>)]+' | head -1 || true)
+          fi
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          if [ -n "$URL" ]; then
+            echo "Trace target: ${URL}"
+          else
+            echo "Trace target: local dev app"
+          fi
+
       - name: Ensure dev app is running
-        if: github.event_name != 'workflow_dispatch' || inputs.url == ''
+        if: steps.trace-url.outputs.url == ''
         run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
 
       - name: Setup Chrome (headless)
         run: |
-          if [ -n "${{ inputs.url }}" ]; then
-            pnpm browser:setup -- --url "${{ inputs.url }}"
+          if [ -n "${{ steps.trace-url.outputs.url }}" ]; then
+            pnpm browser:setup -- --url "${{ steps.trace-url.outputs.url }}"
           else
             pnpm browser:setup
           fi
@@ -70,8 +88,8 @@ jobs:
         id: capture
         run: |
           CAPTURE_START_MS=$(date +%s%3N)
-          if [ -n "${{ inputs.url }}" ]; then
-            APP_URL="${{ inputs.url }}"
+          if [ -n "${{ steps.trace-url.outputs.url }}" ]; then
+            APP_URL="${{ steps.trace-url.outputs.url }}"
           else
             APP_URL="http://localhost:$(pnpm exec dev-tools-print-app-port)"
           fi
@@ -80,6 +98,7 @@ jobs:
           DURATION_MS=$((CAPTURE_END_MS - CAPTURE_START_MS))
           echo "Trace recorded in ${DURATION_MS}ms (${APP_URL})"
           echo "capture_duration_ms=${DURATION_MS}" >> "$GITHUB_OUTPUT"
+          echo "app_url=${APP_URL}" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -114,6 +133,7 @@ jobs:
         if: always()
         run: |
           CAPTURE="${{ steps.capture.outputs.capture_duration_ms }}"
+          TRACE_URL="${{ steps.capture.outputs.app_url }}"
           SIZE="${{ steps.artifact-size.outputs.artifact_size_bytes }}"
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
@@ -134,6 +154,7 @@ jobs:
           | Actor | \`${{ github.actor }}\` |
           | Trigger | \`${{ github.event_name }}\` |
           | Branch | \`${{ github.ref_name }}\` |
+          | Trace URL | ${TRACE_URL:-local dev app} |
           | Capture duration | ${CAPTURE:-n/a} ms |
           | Artifact size | ${SIZE_HUMAN} (${SIZE:-n/a} bytes) |
           | Retention | 30 days |
@@ -147,6 +168,7 @@ jobs:
         uses: actions/github-script@v9
         env:
           CAPTURE_DURATION_MS: ${{ steps.capture.outputs.capture_duration_ms }}
+          TRACE_URL: ${{ steps.capture.outputs.app_url }}
           ARTIFACT_SIZE_BYTES: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
         with:
           script: |
@@ -159,6 +181,7 @@ jobs:
               '',
               '| Metric | Value |',
               '|--------|-------|',
+              `| Trace URL | ${process.env.TRACE_URL ?? 'local dev app'} |`,
               `| Capture duration | ${process.env.CAPTURE_DURATION_MS ?? 'n/a'} ms |`,
               `| Artifact size | ${sizeKb} |`,
               `| Retention | 30 days |`,
