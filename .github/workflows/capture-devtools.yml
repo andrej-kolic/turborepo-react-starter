@@ -9,6 +9,11 @@ on:
   issue_comment:
     types: [created]
 
+# issue_comment uses the default GITHUB_TOKEN; needs issues:write to reply on the PR.
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   # ─── Main capture job ────────────────────────────────────────────────────────
   capture:
