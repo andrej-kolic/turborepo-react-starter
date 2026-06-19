@@ -39,14 +39,14 @@ jobs:
     steps:
       # ── Checkout ─────────────────────────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # ── pnpm + Node setup with dependency cache ───────────────────────────────
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js (with pnpm cache)
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: 'pnpm'
@@ -86,11 +86,12 @@ jobs:
 
       # ── Upload artifacts ──────────────────────────────────────────────────────
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: devtools-artifacts-${{ github.run_id }}
           path: packages/browser-capture/artifacts/**
           retention-days: 30
+          if-no-files-found: ignore
 
       # ── Measure artifact size ─────────────────────────────────────────────────
       - name: Compute artifact size
@@ -143,7 +144,7 @@ jobs:
       # ── Comment on PR with run link + metrics ─────────────────────────────────
       - name: Comment on PR with run link
         if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           CAPTURE_DURATION_MS: ${{ steps.capture.outputs.capture_duration_ms }}
           ARTIFACT_SIZE_BYTES: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
@@ -184,7 +185,7 @@ jobs:
 
     steps:
       - name: Post failure summary
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
@@ -199,7 +200,7 @@ jobs:
 
       - name: Comment failure on PR
         if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
