@@ -56,7 +56,7 @@ jobs:
       - name: Assert app header renders
         run: |
           if ! pnpm browser validate \
-            --selector "[data-testid=app-header]" \
+            --selector "[data-testid=__app-header]" \
             --no-console-errors; then
             echo "--- dev-app.log ---"
             cat /tmp/dev-app.log || true
