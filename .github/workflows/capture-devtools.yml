@@ -94,16 +94,9 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
 
-      # ── Sanitize artifacts (Phase 5 defense-in-depth) ────────────────────────
-      - name: Sanitize artifacts
-        run: |
-          for dir in packages/browser-capture/artifacts/*/; do
-            node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
-          done
-
       # ── Upload artifacts ──────────────────────────────────────────────────────
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: devtools-artifacts-${{ github.run_id }}
           path: packages/browser-capture/artifacts/**
