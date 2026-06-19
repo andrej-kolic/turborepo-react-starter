@@ -11,7 +11,8 @@
   },
   "bin": {
     "dev-tools-with-app-url": "./bin/with-app-url.js",
-    "dev-tools-print-app-port": "./bin/print-app-port.js"
+    "dev-tools-print-app-port": "./bin/print-app-port.js",
+    "dev-tools-print-preview-port": "./bin/print-preview-port.js"
   },
   "scripts": {
     "check:type": "tsc --noEmit",

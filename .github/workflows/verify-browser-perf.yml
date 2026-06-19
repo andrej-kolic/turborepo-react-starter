@@ -1,0 +1,144 @@
+# Production-preview perf gate — capture tier.
+# Builds the app, serves preview, records Web Vitals, and fails when LCP exceeds budget.
+# Separate from verify-browser-smoke.yml (dev-server smoke) and capture-devtools.yml (on-demand trace).
+#
+# Matrix: all bundler apps. Preview port derived via dev-tools-print-preview-port → app-port.ts.
+
+name: 'Verify: Browser perf'
+
+on:
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+env:
+  HUSKY: 0
+  BUILD_ENVIRONMENT: development
+  CHROME_HEADLESS: 'true'
+  CHROME_DEBUG_PORT: 9222
+  PERF_LCP_BUDGET_MS: 2500
+
+jobs:
+  perf:
+    name: Browser perf (${{ matrix.bundler }})
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler: [app-vite, app-webpack, app-esbuild]
+
+    env:
+      BUNDLER: ${{ matrix.bundler }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve preview URL
+        id: preview
+        run: |
+          PREVIEW_PORT=$(node packages/dev-tools/bin/print-preview-port.js)
+          PREVIEW_URL="http://localhost:${PREVIEW_PORT}"
+          echo "port=${PREVIEW_PORT}" >> "$GITHUB_OUTPUT"
+          echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+          echo "Preview target: ${PREVIEW_URL}"
+
+      - name: Build app
+        run: pnpm build:app
+
+      - name: Start preview server
+        run: |
+          pnpm preview:app &
+          for i in $(seq 1 60); do
+            curl -sf "${{ steps.preview.outputs.url }}" && exit 0
+            sleep 1
+          done
+          echo "Preview did not respond at ${{ steps.preview.outputs.url }}"
+          exit 1
+
+      - name: Setup Chrome (headless)
+        run: pnpm chrome:debug
+
+      - name: Wait for Chrome CDP
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:9222/json/version && exit 0
+            sleep 1
+          done
+          exit 1
+
+      - name: Record performance
+        run: |
+          node packages/browser-capture/bin/copilot-devtools.js record-performance "${{ steps.preview.outputs.url }}"
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+
+      - name: Assert LCP budget
+        run: |
+          PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
+          if [ -z "$PERF_DIR" ]; then
+            echo "No performance artifacts found"
+            exit 1
+          fi
+          LCP=$(node -e "const p=require(process.argv[1]); console.log(p.webVitals.lcp ?? 99999)" "$PERF_DIR/performance.json")
+          echo "LCP=${LCP}ms (budget: ${PERF_LCP_BUDGET_MS}ms)"
+          if [ "$(echo "$LCP <= $PERF_LCP_BUDGET_MS" | bc)" -ne 1 ]; then
+            echo "LCP exceeded budget"
+            exit 1
+          fi
+
+      - name: Sanitize artifacts
+        if: always()
+        run: |
+          for dir in packages/browser-capture/artifacts/*/; do
+            [ -d "$dir" ] && node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
+          done
+
+      - name: Upload performance artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-perf-${{ matrix.bundler }}-${{ github.run_id }}
+          path: packages/browser-capture/artifacts/**
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Write job summary
+        if: always()
+        run: |
+          PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
+          if [ -n "$PERF_DIR" ] && [ -f "$PERF_DIR/performance.json" ]; then
+            node -e "
+              const p = require(process.argv[1]);
+              const v = p.webVitals;
+              console.log('## Browser perf — ${{ matrix.bundler }}');
+              console.log('');
+              console.log('| Metric | Value | Budget |');
+              console.log('|--------|-------|--------|');
+              console.log('| LCP | ' + (v.lcp ?? 'n/a') + ' ms | ${PERF_LCP_BUDGET_MS} ms |');
+              console.log('| CLS | ' + (v.cls ?? 'n/a') + ' | — |');
+              console.log('| INP | ' + (v.inp ?? 'n/a') + ' ms | — |');
+            " "$PERF_DIR/performance.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pnpm chrome:debug --stop || true
+          lsof -ti:"${{ steps.preview.outputs.port }}" | xargs -r kill 2>/dev/null || true
