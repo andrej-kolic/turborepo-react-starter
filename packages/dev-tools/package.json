@@ -10,13 +10,13 @@
     "./config/paths": "./config/paths.ts"
   },
   "bin": {
-    "dev-tools-with-app-url": "./bin/with-app-url.js",
-    "dev-tools-print-app-port": "./bin/print-app-port.js",
-    "dev-tools-print-preview-port": "./bin/print-preview-port.js"
+    "dev-tools-app-target": "./bin/app-target.js"
   },
   "scripts": {
-    "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit"
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "check:type:go": "tsgo --noEmit && tsgo --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "vitest": "catalog:"
   }
 }

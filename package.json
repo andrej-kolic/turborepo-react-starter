@@ -33,9 +33,9 @@
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
     "chrome:debug": "browser-tools-chrome",
-    "browser:setup": "dotenv -- dev-tools-with-app-url browser-tools-setup",
-    "browser:ensure-app": "dotenv -- dev-tools-with-app-url node scripts/ensure-app.js",
-    "browser": "dotenv -- dev-tools-with-app-url browser-tools",
+    "browser:setup": "dotenv -- dev-tools-app-target run browser-tools-setup",
+    "browser:ensure-app": "dotenv -- dev-tools-app-target run node scripts/ensure-app.js",
+    "browser": "dotenv -- dev-tools-app-target run browser-tools",
     "sync:agents": "rulesync generate"
   },
   "devDependencies": {

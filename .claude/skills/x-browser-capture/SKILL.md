@@ -8,7 +8,6 @@ description: >-
   console, or produce a CI debugging artifact. For routine DOM/text checks, use
   the browser-validation skill instead.
 ---
-
 # Browser Capture
 
 Capture/instrumentation only — produces artifacts. For routine DOM/text verification, use the
@@ -18,7 +17,7 @@ Capture/instrumentation only — produces artifacts. For routine DOM/text verifi
 
 ```bash
 # Start Chrome and open a tab (idempotent) — required_permissions: all
-# URL auto-resolves from BUNDLER via dev-tools-with-app-url; pass --url to override
+# URL auto-resolves from BUNDLER via dev-tools-app-target run; pass --url to override
 pnpm browser:setup
 
 # Check / stop Chrome if needed

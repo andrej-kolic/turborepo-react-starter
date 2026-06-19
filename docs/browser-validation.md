@@ -20,10 +20,11 @@ For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`
 
 ### URL resolution
 
-Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-with-app-url`**
-(`@repo/dev-tools/config/app-port`). Resolution order: `APP_URL` already set → use as-is; else
+Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-app-target run`**
+(`@repo/dev-tools/config/app-port`). Dev resolution: `APP_URL` already set → use as-is; else
 derive `http://localhost:<devPort>` from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` /
-`resolveAppUrl()`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
+`resolveAppUrl()`. Preview resolution (`--preview`) always uses `BUNDLER` + `previewPort` and
+ignores `APP_URL`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
 For bootstrap commands (ensure-app, setup, tier selection), follow the
 **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)**.
@@ -31,7 +32,7 @@ For bootstrap commands (ensure-app, setup, tier selection), follow the
 ### CLI URL resolution
 
 When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
-`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-with-app-url` wrapper.
+`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-app-target run` wrapper.
 
 ### CI bootstrap
 
@@ -44,7 +45,7 @@ pnpm browser:setup
 pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
 ```
 
-`APP_URL` is derived from `BUNDLER` via `dev-tools-with-app-url` — CI does not set it explicitly.
+`APP_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
 `--log-file` captures dev-server output for CI failures (startup timeout or validate step).
 
 ---

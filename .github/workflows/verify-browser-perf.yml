@@ -2,7 +2,7 @@
 # Builds the app, serves preview, records Web Vitals, and fails when LCP exceeds budget.
 # Separate from verify-browser-smoke.yml (dev-server smoke) and capture-devtools.yml (on-demand trace).
 #
-# Matrix: all bundler apps. Preview port derived via dev-tools-print-preview-port → app-port.ts.
+# Matrix: all bundler apps. Preview URL/port via dev-tools-app-target → app-port.ts.
 
 name: 'Verify: Browser perf'
 
@@ -52,8 +52,7 @@ jobs:
       - name: Resolve preview URL
         id: preview
         run: |
-          PREVIEW_PORT=$(node packages/dev-tools/bin/print-preview-port.js)
-          PREVIEW_URL="http://localhost:${PREVIEW_PORT}"
+          IFS=$'\t' read -r PREVIEW_URL PREVIEW_PORT <<< "$(pnpm exec dev-tools-app-target resolve --preview)"
           echo "port=${PREVIEW_PORT}" >> "$GITHUB_OUTPUT"
           echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
           echo "Preview target: ${PREVIEW_URL}"

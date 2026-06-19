@@ -46,7 +46,7 @@ steps:
 Resolve URL in shell:
 
 ```bash
-APP_URL="${APP_URL:-$(pnpm exec dev-tools-with-app-url node -e "import { resolveAppUrl } from '@repo/dev-tools/config/app-port'; console.log(resolveAppUrl(process.env))")}"
+APP_URL="${APP_URL:-$(pnpm exec dev-tools-app-target url)}"
 ```
 
 Or hardcode preview: `APP_URL=http://localhost:4173`.
@@ -85,7 +85,7 @@ Upload artifacts (always sanitize first — capture commands do it too, but CI r
 - name: Capture trace on smoke failure
   if: failure()
   run: |
-    APP_URL=$(pnpm exec dev-tools-with-app-url node -p "process.env.APP_URL")
+    APP_URL=$(pnpm exec dev-tools-app-target url)
     node packages/browser-capture/bin/copilot-devtools.js record-trace "$APP_URL" --duration 5
   env:
     GITHUB_ACTOR: ${{ github.actor }}
@@ -164,7 +164,7 @@ on:
     URL="${{ inputs.url }}"
     if [ -z "$URL" ]; then
       pnpm browser:ensure-app
-      URL=$(pnpm exec dev-tools-with-app-url node -p "process.env.APP_URL")
+      URL=$(pnpm exec dev-tools-app-target url)
     fi
     node packages/browser-capture/bin/copilot-devtools.js record-trace "$URL" --duration 10
 ```

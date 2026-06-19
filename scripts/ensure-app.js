@@ -2,7 +2,7 @@
 /**
  * Ensure the dev app is running.
  *
- * Reads APP_URL from env (injected by dev-tools-with-app-url via pnpm browser:ensure-app).
+ * Reads APP_URL from env (injected by dev-tools-app-target via pnpm browser:ensure-app).
  * If the app is DOWN, starts `pnpm dev:app` and polls until it responds (60 s).
  * Exits 0 when live, exits 1 on timeout or immediate server crash.
  *
