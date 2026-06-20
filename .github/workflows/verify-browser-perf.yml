@@ -113,22 +113,28 @@ jobs:
 
       - name: Write job summary
         if: always()
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
         run: |
-          PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
-          if [ -n "$PERF_DIR" ] && [ -f "$PERF_DIR/performance.json" ]; then
-            PERF_FILE="${PERF_DIR%/}/performance.json"
-            node -e "
-              const p = JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8'));
-              const v = p.webVitals;
-              console.log('## Browser perf — ${{ matrix.bundler }}');
-              console.log('');
-              console.log('| Metric | Value | Budget |');
-              console.log('|--------|-------|--------|');
-              console.log('| LCP | ' + (v.lcp ?? 'n/a') + ' ms | ${PERF_LCP_BUDGET_MS} ms |');
-              console.log('| CLS | ' + (v.cls ?? 'n/a') + ' | — |');
-              console.log('| INP | ' + (v.inp ?? 'n/a') + ' ms | — |');
-            " "$PERF_FILE" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          {
+            echo "## Browser perf — ${{ matrix.bundler }}"
+            echo ""
+            echo "| Metric | Value | Budget |"
+            echo "|--------|-------|--------|"
+            echo "| Preview URL | ${PREVIEW_URL:-n/a} | — |"
+
+            PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
+            if [ -n "$PERF_DIR" ] && [ -f "$PERF_DIR/performance.json" ]; then
+              PERF_FILE="${PERF_DIR%/}/performance.json"
+              node -e "
+                const p = JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8'));
+                const v = p.webVitals;
+                console.log('| LCP | ' + (v.lcp ?? 'n/a') + ' ms | ${PERF_LCP_BUDGET_MS} ms |');
+                console.log('| CLS | ' + (v.cls ?? 'n/a') + ' | — |');
+                console.log('| INP | ' + (v.inp ?? 'n/a') + ' ms | — |');
+              " "$PERF_FILE"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup
         if: always()
