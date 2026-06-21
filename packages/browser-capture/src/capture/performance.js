@@ -1,6 +1,6 @@
-import { buildMetadata } from '../artifacts/metadata.js';
-import { ensureArtifactsDirectory } from '../artifacts/paths.js';
-import { writeJson } from '../artifacts/write.js';
+import { buildMetadata } from '../artifact-io/metadata.js';
+import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
+import { writeJson } from '../artifact-io/write.js';
 import { requireUrl, resolveDurationMs } from '../cli/args.js';
 import { connectCDP } from '../cdp/connect.js';
 import { httpGetJson } from '../cdp/http.js';

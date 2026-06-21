@@ -9,7 +9,7 @@ import { recordConsole } from '../src/capture/console.js';
 import { recordInteractions } from '../src/capture/interactions.js';
 import { recordPerformance } from '../src/capture/performance.js';
 import { recordTrace } from '../src/capture/trace.js';
-import { uploadArtifacts } from '../src/artifacts/upload.js';
+import { uploadArtifacts } from '../src/artifact-io/upload.js';
 import { startMcpServer } from '../src/mcp/server.js';
 import { sanitizeArtifacts } from '../src/sanitize/index.js';
 
