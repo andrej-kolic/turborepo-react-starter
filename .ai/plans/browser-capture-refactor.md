@@ -15,7 +15,7 @@ Attach or `@`-mention this file — no need to paste instructions separately.
 **Minimal prompt:**
 
 ```text
-Execute .ai/plans/browser-capture-refactor.md — start at Phase 4.
+Execute .ai/plans/browser-capture-refactor.md — start at Phase 5.
 ```
 
 **Full agent instructions** (also at top so the file is self-contained):
@@ -28,7 +28,7 @@ Implement this plan. Read AGENTS.md first.
   add --attach to capture, root pnpm capture:* scripts, MCP via .rulesync/mcp.json + pnpm sync:agents.
 - Do NOT replace packages with external npm tools.
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
-- Start with Phase 4 unless I specify a different phase.
+- Start with Phase 5 unless I specify a different phase.
 
 If the plan is already partially done, read git status and skip completed tasks.
 ```
