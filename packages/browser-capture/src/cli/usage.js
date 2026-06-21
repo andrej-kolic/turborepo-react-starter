@@ -1,0 +1,36 @@
+export function usage() {
+  console.log('copilot-devtools CLI');
+  console.log(
+    'Usage: copilot-devtools <command> [url] [--duration <seconds>] [--duration-ms <ms>]',
+  );
+  console.log('Commands:');
+  console.log(
+    '  capture-snapshot                   Fetch browser metadata and page list',
+  );
+  console.log(
+    '  record-trace <url>                 Full trace: HAR + Playwright trace + console + Web Vitals',
+  );
+  console.log(
+    '  record-performance <url>           Web Vitals: LCP, CLS, INP and CDP browser metrics',
+  );
+  console.log(
+    '  record-console                     Console messages from current page',
+  );
+  console.log(
+    '  record-interactions <url>          Record user interactions and generate a Playwright test',
+  );
+  console.log(
+    '  upload-artifacts                   Package artifacts/  as tar.gz',
+  );
+  console.log(
+    '  sanitize-artifacts <dir>           Sanitize artifact directory: strip secrets and PII',
+  );
+  console.log(
+    '  mcp-server                         Start an MCP server (stdio) exposing capture tools',
+  );
+  console.log('');
+  console.log('Options:');
+  console.log(
+    '  --no-sanitize                      Skip automatic artifact sanitization',
+  );
+}
