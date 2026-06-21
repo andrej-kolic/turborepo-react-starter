@@ -24,6 +24,7 @@ Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: 
 - Be concise — skip filler ("Sure, I can help with that").
 - Go straight to the explanation, solution, or execution.
 - In code blocks, show only changed segments — not hundreds of unchanged lines.
+- Rules, AGENTS.md, instructions: one idea per bullet; no examples unless they disambiguate; one sentence over a paragraph.
 
 ## Code style
 
@@ -32,3 +33,7 @@ Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: 
 ## Before calling it done
 
 Run `pnpm lint`, `pnpm test`, and `pnpm check:type`.
+
+## Git
+
+Never `git add`, commit, or push unless the user explicitly asks.
