@@ -5,7 +5,7 @@
 **Created:** 2026-06-20  
 **Phase 1 completed:** 2026-06-21  
 **Phase 2 completed:** 2026-06-21  
-**Phase 3 completed:** 2026-06-20
+**Phase 3 completed:** 2026-06-21
 
 ## How to run (new chat)
 
@@ -73,15 +73,15 @@ packages/browser-tools/
   src/cdp/assert.js, read.js, snapshot/
 ```
 
-### `@repo/browser-capture` (after Phase 2)
+### `@repo/browser-capture` (after Phase 3)
 
 ```
 packages/browser-capture/
-  bin/copilot-devtools.js   # thin router (~97 lines) — rename in Phase 3
+  bin/browser-capture.js    # thin router (~97 lines)
   src/                      # modular capture, sanitize, cli, mcp, inject, artifact-io, …
   __tests__/                # 36 unit tests (vitest)
   vitest.config.ts
-  package.json              # bin: copilot-devtools (rename in Phase 3)
+  package.json              # bin: browser-capture
   README.md, SECURITY.md, CHANGELOG.md
   artifacts/                # gitignored capture output
 ```
