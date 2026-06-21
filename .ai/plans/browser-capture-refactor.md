@@ -1,9 +1,10 @@
 # Plan: Refactor `@repo/browser-capture` + shared CDP (Option A)
 
-**Status:** Phase 1 done — continue at Phase 2  
+**Status:** Phase 2 done — continue at Phase 3  
 **Branch:** `develop`  
 **Created:** 2026-06-20  
-**Phase 1 completed:** 2026-06-21
+**Phase 1 completed:** 2026-06-21  
+**Phase 2 completed:** 2026-06-21
 
 ## How to run (new chat)
 
@@ -12,7 +13,7 @@ Attach or `@`-mention this file — no need to paste instructions separately.
 **Minimal prompt:**
 
 ```text
-Execute .ai/plans/browser-capture-refactor.md — start at Phase 2.
+Execute .ai/plans/browser-capture-refactor.md — start at Phase 3.
 ```
 
 **Full agent instructions** (also at top so the file is self-contained):
@@ -25,7 +26,7 @@ Implement this plan. Read AGENTS.md first.
   add --attach to capture, root pnpm capture:* scripts, MCP via .rulesync/mcp.json + pnpm sync:agents.
 - Do NOT replace packages with external npm tools.
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
-- Start with Phase 2 unless I specify a different phase.
+- Start with Phase 3 unless I specify a different phase.
 
 If the plan is already partially done, read git status and skip completed tasks.
 ```
@@ -71,12 +72,12 @@ packages/browser-tools/
   src/cdp/assert.js, read.js, snapshot/
 ```
 
-### `@repo/browser-capture` (after Phase 1)
+### `@repo/browser-capture` (after Phase 2)
 
 ```
 packages/browser-capture/
-  bin/copilot-devtools.js   # thin router (~97 lines)
-  src/                      # modular capture, sanitize, cdp, cli, mcp, inject, artifact-io, …
+  bin/copilot-devtools.js   # thin router (~97 lines) — rename in Phase 3
+  src/                      # modular capture, sanitize, cli, mcp, inject, artifact-io, …
   __tests__/                # 36 unit tests (vitest)
   vitest.config.ts
   package.json              # bin: copilot-devtools (rename in Phase 3)
@@ -88,8 +89,7 @@ packages/browser-capture/
 
 - `src/artifact-io/` instead of `src/artifacts/` — avoids `.gitignore` collision with output `artifacts/`
 - `src/inject/*.inject.js` + `paths.js` — file-based `addInitScript({ path })`, not template-literal strings
-
-No workspace dependency on `@repo/browser-tools` yet (Phase 2).
+- No local `src/cdp/` — CDP via `@repo/browser-tools/cdp` (Phase 2)
 
 ### Tier model (do not break)
 
@@ -224,33 +224,27 @@ pnpm lint && pnpm test && pnpm check:type  # green
 
 ---
 
-### Phase 2 — Shared CDP in `@repo/browser-tools`
+### Phase 2 — Shared CDP in `@repo/browser-tools` ✅ DONE
 
 **Goal:** Remove duplication; capture imports from tools.
 
-**Tasks:**
+**Completed:**
 
-1. Add `src/cdp/http.js`, `pages.js`, `console.js`.
-2. Update `src/cdp/index.js` exports.
-3. Add `exports` field to `browser-tools/package.json`.
-4. Refactor `browser-tools` internals to use new modules (no CLI behavior change).
-5. Add `@repo/browser-tools: workspace:*` to `browser-capture/package.json`.
-6. Replace in capture:
-   - local `parseArgs` → `import { parseArgs } from '@repo/browser-tools/cli/args'`
-   - local `connectCDP` → `import { connectOverCDP, fetchCdpJson, ... } from '@repo/browser-tools/cdp'`
-   - local `httpGetJson` → `fetchCdpJson`
-   - local `getExistingPage` → `findRecentPage`
-7. Add unit tests in `browser-tools` for `http.js` and `pages.js` (mock fetch / minimal fixtures).
-8. Remove duplicate code from capture.
+1. ✅ Added `src/cdp/http.js`, `pages.js`, `console.js`, `constants.js`
+2. ✅ Updated `src/cdp/index.js` exports
+3. ✅ Added `exports` field to `browser-tools/package.json` (`./cdp`, `./cli/args`)
+4. ✅ Refactored `session.js`, `tabs.js` to use shared modules (CLI behavior unchanged)
+5. ✅ Added `@repo/browser-tools: workspace:*` to `browser-capture/package.json`
+6. ✅ Capture imports: `parseArgs`, `connectOverCDP`, `fetchCdpJson`, `findRecentPage`, `attachConsoleListeners`
+7. ✅ Unit tests in `browser-tools` for `http.js` and `pages.js` (33 tests total)
+8. ✅ Removed `browser-capture/src/cdp/connect.js` and `http.js`
 
-**Verification:**
+**Verification (passed):**
 
 ```bash
-pnpm --filter @repo/browser-tools test
-pnpm --filter @repo/browser-capture test
+pnpm --filter @repo/browser-tools test   # 33 passed
+pnpm --filter @repo/browser-capture test # 36 passed
 pnpm lint && pnpm test && pnpm check:type
-# Re-run capture CLI smoke commands from Phase 1
-pnpm --filter @repo/browser-tools test  # existing args tests still pass
 ```
 
 ---
