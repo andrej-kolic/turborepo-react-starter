@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { parseArgs, requireUrl, resolveDurationMs } from '../src/cli/args.js';
+import {
+  captureOptions,
+  parseArgs,
+  requireUrl,
+  resolveDurationMs,
+} from '../src/cli/args.js';
 import {
   getDefaultDurationMs,
   validateCaptureDuration,
@@ -22,6 +27,34 @@ describe('parseArgs', () => {
   it('parses inline --key=value', () => {
     const { options } = parseArgs(['--duration-ms=3000']);
     expect(options['duration-ms']).toBe('3000');
+  });
+
+  it('parses --attach flag', () => {
+    const { options } = parseArgs(['http://localhost:5173', '--attach']);
+    expect(options.attach).toBe(true);
+  });
+});
+
+describe('captureOptions', () => {
+  beforeEach(() => {
+    validateCaptureDuration(true);
+  });
+
+  it('maps attach and sanitize flags', () => {
+    expect(
+      captureOptions({ attach: true, duration: '3', 'no-sanitize': true }),
+    ).toEqual({
+      durationMs: 3000,
+      attach: true,
+      sanitize: false,
+    });
+  });
+
+  it('defaults attach to false', () => {
+    expect(captureOptions({})).toMatchObject({
+      attach: false,
+      sanitize: true,
+    });
   });
 });
 

@@ -43,7 +43,30 @@ node packages/browser-capture/bin/browser-capture.js record-trace http://localho
 
 # Skip automatic sanitization (e.g. for local debugging — never do this in CI)
 node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --no-sanitize
+
+# Attach to the existing visible tab (preserves auth/session; does not navigate)
+pnpm browser:setup
+pnpm browser open --url http://localhost:5173
+node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --attach --duration 5
+node packages/browser-capture/bin/browser-capture.js record-performance http://localhost:5173 --attach
+node packages/browser-capture/bin/browser-capture.js record-interactions http://localhost:5173 --attach --duration 10
+node packages/browser-capture/bin/browser-capture.js record-console http://localhost:5173 --attach --duration 3
 ```
+
+### `--attach`: record on the existing visible tab
+
+By default, navigate-based capture commands open a **new isolated browser context** (no cookies, no auth). Add `--attach` to record on the tab already open in the visible Chrome window — preserving its session, cookies, and current URL.
+
+`--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. The command does **not** navigate; it records whatever the tab currently shows. If no tab is found at that origin, the error hints to run `browser-tools open --url <url>` first.
+
+|                       | Default (no `--attach`)           | `--attach`                                    |
+| --------------------- | --------------------------------- | --------------------------------------------- |
+| `record-trace`        | New context + navigate + full HAR | Existing tab; HAR covers capture window only  |
+| `record-performance`  | New context + navigate            | Existing tab; no navigation                   |
+| `record-interactions` | New context + navigate            | Existing tab; interact during capture window  |
+| `record-console`      | Most recent open tab              | With URL: match by origin; without URL: no-op |
+
+Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console` (with URL).
 
 ## MCP Server
 
@@ -51,14 +74,14 @@ The `mcp-server` command starts a [Model Context Protocol](https://modelcontextp
 
 ### Available MCP Tools
 
-| Tool                  | Inputs                                           | Description                                                                   |
-| --------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| `capture_snapshot`    | —                                                | Capture browser metadata and open page list                                   |
-| `record_trace`        | `url` (required), `duration` (optional, seconds) | Full trace: HAR + Playwright trace + console + Web Vitals                     |
-| `record_performance`  | `url` (required), `duration` (optional, seconds) | Web Vitals + CDP browser metrics                                              |
-| `record_console`      | `duration` (optional, seconds)                   | Console messages from current tab                                             |
-| `record_interactions` | `url` (required), `duration` (optional, seconds) | Record user interactions and generate a Playwright test (`generated.test.ts`) |
-| `sanitize_artifacts`  | `dir` (required, absolute path)                  | Strip secrets & PII from an artifact directory (safe to re-run)               |
+| Tool                  | Inputs                                                                | Description                                                                   |
+| --------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `capture_snapshot`    | —                                                                     | Capture browser metadata and open page list                                   |
+| `record_trace`        | `url` (required), `duration` (optional, seconds), `attach` (optional) | Full trace: HAR + Playwright trace + console + Web Vitals                     |
+| `record_performance`  | `url` (required), `duration` (optional, seconds), `attach` (optional) | Web Vitals + CDP browser metrics                                              |
+| `record_console`      | `duration` (optional, seconds), `url` (optional), `attach` (optional) | Console messages from current tab                                             |
+| `record_interactions` | `url` (required), `duration` (optional, seconds), `attach` (optional) | Record user interactions and generate a Playwright test (`generated.test.ts`) |
+| `sanitize_artifacts`  | `dir` (required, absolute path)                                       | Strip secrets & PII from an artifact directory (safe to re-run)               |
 
 Each tool returns both a human-readable text summary and structured JSON (`artifactsDir`, `webVitals`, `requestCount`, etc.).
 

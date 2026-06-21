@@ -9,6 +9,17 @@ import { recordPerformance } from '../capture/performance.js';
 import { recordTrace } from '../capture/trace.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+function mcpCaptureOptions(args) {
+  const options = {};
+  if (args.duration !== undefined) {
+    options.duration = String(args.duration);
+  }
+  if (args.attach === true) {
+    options.attach = true;
+  }
+  return options;
+}
+
 export async function startMcpServer() {
   const pkg = JSON.parse(
     fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
@@ -59,7 +70,7 @@ export async function startMcpServer() {
     {
       title: 'Record Trace',
       description:
-        'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222.',
+        'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record the existing visible tab at the URL origin without navigating.',
       inputSchema: z.object({
         url: z.string().url().describe('URL to navigate to and record'),
         duration: z
@@ -68,16 +79,18 @@ export async function startMcpServer() {
           .describe(
             'Capture duration in seconds after page load (default: 10)',
           ),
+        attach: z
+          .boolean()
+          .optional()
+          .describe(
+            'Record on the existing visible tab at the URL origin (no navigation)',
+          ),
       }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async (args) => {
       try {
-        const options =
-          args.duration !== undefined
-            ? { duration: String(args.duration) }
-            : {};
-        const result = await recordTrace(args.url, options);
+        const result = await recordTrace(args.url, mcpCaptureOptions(args));
         const { lcp, cls, inp } = result.webVitals;
         return {
           content: [
@@ -122,7 +135,7 @@ export async function startMcpServer() {
     {
       title: 'Record Performance',
       description:
-        'Navigate to a URL and collect Web Vitals (LCP, CLS, INP) plus 36 CDP browser metrics. Requires Chrome running with --remote-debugging-port=9222.',
+        'Navigate to a URL and collect Web Vitals (LCP, CLS, INP) plus 36 CDP browser metrics. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to measure the existing visible tab at the URL origin without navigating.',
       inputSchema: z.object({
         url: z.string().url().describe('URL to navigate to and measure'),
         duration: z
@@ -131,16 +144,21 @@ export async function startMcpServer() {
           .describe(
             'Observation duration in seconds after page load (default: 10)',
           ),
+        attach: z
+          .boolean()
+          .optional()
+          .describe(
+            'Measure the existing visible tab at the URL origin (no navigation)',
+          ),
       }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async (args) => {
       try {
-        const options =
-          args.duration !== undefined
-            ? { duration: String(args.duration) }
-            : {};
-        const result = await recordPerformance(args.url, options);
+        const result = await recordPerformance(
+          args.url,
+          mcpCaptureOptions(args),
+        );
         const { lcp, cls, inp } = result.webVitals;
         return {
           content: [
@@ -177,22 +195,29 @@ export async function startMcpServer() {
     {
       title: 'Record Console',
       description:
-        'Listen to console output of the currently open Chrome tab for a specified duration. Requires Chrome running with --remote-debugging-port=9222 and at least one open tab. For navigating to a URL, use record_trace instead.',
+        'Listen to console output of the currently open Chrome tab for a specified duration. Requires Chrome running with --remote-debugging-port=9222 and at least one open tab. For navigating to a URL, use record_trace instead. Set attach=true with url to match a tab by origin.',
       inputSchema: z.object({
         duration: z
           .number()
           .optional()
           .describe('Duration to listen in seconds (default: 10)'),
+        url: z
+          .string()
+          .url()
+          .optional()
+          .describe('When attach=true, match the open tab by this URL origin'),
+        attach: z
+          .boolean()
+          .optional()
+          .describe(
+            'With url: match tab by origin. Without url: no-op (uses most recent tab).',
+          ),
       }),
       annotations: { readOnlyHint: true, destructiveHint: false },
     },
     async (args) => {
       try {
-        const options =
-          args.duration !== undefined
-            ? { duration: String(args.duration) }
-            : {};
-        const result = await recordConsole(options);
+        const result = await recordConsole(mcpCaptureOptions(args), args.url);
         return {
           content: [
             {
@@ -230,7 +255,7 @@ export async function startMcpServer() {
     {
       title: 'Record Interactions',
       description:
-        'Navigate to a URL, record user interactions (clicks, form fills, navigation) for a given duration, and generate a ready-to-run Playwright test file. React component source locations are included when available (requires the app to be running in dev mode). Requires Chrome running with --remote-debugging-port=9222.',
+        'Navigate to a URL, record user interactions (clicks, form fills, navigation) for a given duration, and generate a ready-to-run Playwright test file. React component source locations are included when available (requires the app to be running in dev mode). Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record on the existing visible tab at the URL origin without navigating.',
       inputSchema: z.object({
         url: z
           .string()
@@ -242,16 +267,21 @@ export async function startMcpServer() {
           .describe(
             'Recording duration in seconds — interact with the page during this window (default: 10)',
           ),
+        attach: z
+          .boolean()
+          .optional()
+          .describe(
+            'Record on the existing visible tab at the URL origin (no navigation)',
+          ),
       }),
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async (args) => {
       try {
-        const options =
-          args.duration !== undefined
-            ? { duration: String(args.duration) }
-            : {};
-        const result = await recordInteractions(args.url, options);
+        const result = await recordInteractions(
+          args.url,
+          mcpCaptureOptions(args),
+        );
         return {
           content: [
             {

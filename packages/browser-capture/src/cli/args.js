@@ -1,3 +1,4 @@
+import { isTruthyFlag } from '@repo/browser-tools/cli/args';
 import { getDefaultDurationMs } from '../config/env.js';
 
 export { parseArgs } from '@repo/browser-tools/cli/args';
@@ -35,7 +36,7 @@ export function resolveDurationMs(options) {
 export function captureOptions(options) {
   return {
     durationMs: resolveDurationMs(options),
-    attach: options.attach === true,
+    attach: isTruthyFlag(options.attach),
     sanitize: options['no-sanitize'] !== true,
   };
 }

@@ -40,7 +40,22 @@ The `devtools-capture` MCP server is configured in `.cursor/mcp.json` and `.vsco
 ```text
 devtools-capture MCP → record_trace url="http://localhost:<port>" duration=5
 devtools-capture MCP → record_performance url="http://localhost:<port>"
+devtools-capture MCP → record_trace url="http://localhost:<port>" attach=true duration=5
 ```
+
+## `--attach` (preserve auth/session)
+
+Navigate-based capture opens a **new isolated context** by default. Add `--attach` (CLI) or `attach=true` (MCP) to record on the tab already open in visible Chrome — same semantics as `browser-tools --attach`:
+
+1. `pnpm browser:setup` then `pnpm browser open --url <url>` to land on the page first
+2. Run capture with `--attach` — matches tab by **origin**, does **not** navigate
+
+```bash
+node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:<port> --attach --duration 5
+node packages/browser-capture/bin/browser-capture.js record-console http://localhost:<port> --attach --duration 3
+```
+
+Commands: `record-trace`, `record-performance`, `record-interactions`, `record-console` (with URL).
 
 ## CLI (when MCP is unavailable — CI, Cloud Agent, SSH)
 

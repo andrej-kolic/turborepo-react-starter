@@ -66,7 +66,7 @@ async function main() {
     }
 
     if (cmd === 'record-console') {
-      await recordConsole(options);
+      await recordConsole(options, url);
       return;
     }
 

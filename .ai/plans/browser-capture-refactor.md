@@ -1,11 +1,12 @@
 # Plan: Refactor `@repo/browser-capture` + shared CDP (Option A)
 
-**Status:** Phase 3 done — continue at Phase 4  
+**Status:** Phase 4 done — continue at Phase 5  
 **Branch:** `develop`  
 **Created:** 2026-06-20  
 **Phase 1 completed:** 2026-06-21  
 **Phase 2 completed:** 2026-06-21  
-**Phase 3 completed:** 2026-06-21
+**Phase 3 completed:** 2026-06-21  
+**Phase 4 completed:** 2026-06-21
 
 ## How to run (new chat)
 
@@ -274,48 +275,25 @@ node packages/browser-capture/bin/browser-capture.js mcp-server  # stdio — Ctr
 
 ---
 
-### Phase 4 — `--attach` for capture
+### Phase 4 — `--attach` for capture ✅ DONE
 
 **Goal:** Navigate-based capture commands can attach to the visible tab (preserve auth/session).
 
-**Commands to support `--attach`:**
+**Completed:**
 
-| Command               | Default today                     | With `--attach`                                                                                        |
-| --------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `record-trace`        | `browser.newContext()` + navigate | `withAttachedSession` — **do not navigate**; record on current page OR navigate only if explicit flag? |
-| `record-performance`  | new context + navigate            | same                                                                                                   |
-| `record-interactions` | new context + navigate            | same                                                                                                   |
-| `record-console`      | already uses existing tab         | `--attach` optional/no-op or match by origin                                                           |
-| `capture-snapshot`    | HTTP only                         | N/A                                                                                                    |
+1. ✅ `captureOptions()` maps `--attach` via `isTruthyFlag` (aligned with browser-tools)
+2. ✅ `record-trace`, `record-performance`, `record-interactions` — attach branch uses `withAttachedSession`; isolated branch unchanged
+3. ✅ `record-console` — `--attach` with URL matches tab by origin; without URL uses most recent tab
+4. ✅ `HarRecorder` for attach-mode HAR (capture-window requests only); `injectScript` for loaded-page injection
+5. ✅ README + usage docs; MCP tools accept optional `attach: boolean` (+ `url` on `record_console`)
+6. ✅ `.rulesync/skills/x-browser-capture/SKILL.md` + `pnpm sync:agents`
+7. ✅ Unit tests: `captureOptions`, `HarRecorder` (40 tests total)
 
-**Align with browser-tools semantics** (from `packages/browser-tools/README.md`):
-
-- `--attach` matches tab by **origin** of URL
-- Does **not** navigate — inspects/records current page
-- Error hint: run `browser-tools open --url <url>` first
-
-**Implementation:**
-
-1. Add `--attach` to capture CLI args (`src/cli/args.js` → `captureOptions()`).
-2. For `record-trace`, `record-performance`, `record-interactions`:
-   - **Without `--attach`:** keep current isolated `newContext()` behavior (CI-friendly).
-   - **With `--attach`:** use `withAttachedSession(url, fn)` from `@repo/browser-tools/cdp`; skip `page.goto` when attaching; still run duration wait + artifact write.
-3. Document in `packages/browser-capture/README.md`.
-4. MCP tools: add optional `attach: boolean` to zod schemas where relevant (default `false`).
-5. Update `.rulesync/skills/x-browser-capture/SKILL.md` + `pnpm sync:agents`.
-
-**Edge cases:**
-
-- HAR/trace on attach: use existing context's page; tracing/HAR may need context from attached page's browser context — test manually with authenticated tab.
-- If attach + URL origin mismatch → same error as browser-tools.
-
-**Verification:**
+**Verification (passed):**
 
 ```bash
-pnpm browser:setup
-pnpm browser open --url "$(pnpm exec dev-tools-app-target url)"
-pnpm browser-capture record-console --attach --duration 3   # after root scripts exist
-# Or: node packages/browser-capture/bin/browser-capture.js record-performance URL --attach --duration 3
+pnpm --filter @repo/browser-capture test   # 40 passed
+pnpm lint && pnpm test && pnpm check:type && pnpm check:agents
 ```
 
 ---
