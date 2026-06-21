@@ -1,8 +1,9 @@
 # Plan: Refactor `@repo/browser-capture` + shared CDP (Option A)
 
-**Status:** Approved — ready to execute  
+**Status:** Phase 1 done — continue at Phase 2  
 **Branch:** `develop`  
-**Created:** 2026-06-20
+**Created:** 2026-06-20  
+**Phase 1 completed:** 2026-06-21
 
 ## How to run (new chat)
 
@@ -11,7 +12,7 @@ Attach or `@`-mention this file — no need to paste instructions separately.
 **Minimal prompt:**
 
 ```text
-Execute .ai/plans/browser-capture-refactor.md — start at Phase 1.
+Execute .ai/plans/browser-capture-refactor.md — start at Phase 2.
 ```
 
 **Full agent instructions** (also at top so the file is self-contained):
@@ -24,7 +25,7 @@ Implement this plan. Read AGENTS.md first.
   add --attach to capture, root pnpm capture:* scripts, MCP via .rulesync/mcp.json + pnpm sync:agents.
 - Do NOT replace packages with external npm tools.
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
-- Start with Phase 1 unless I specify a different phase.
+- Start with Phase 2 unless I specify a different phase.
 
 If the plan is already partially done, read git status and skip completed tasks.
 ```
@@ -70,17 +71,25 @@ packages/browser-tools/
   src/cdp/assert.js, read.js, snapshot/
 ```
 
-### `@repo/browser-capture` (today)
+### `@repo/browser-capture` (after Phase 1)
 
 ```
 packages/browser-capture/
-  bin/copilot-devtools.js   # ~1,737 lines — CLI + MCP + all logic
-  package.json              # bin: copilot-devtools
+  bin/copilot-devtools.js   # thin router (~97 lines)
+  src/                      # modular capture, sanitize, cdp, cli, mcp, inject, artifact-io, …
+  __tests__/                # 36 unit tests (vitest)
+  vitest.config.ts
+  package.json              # bin: copilot-devtools (rename in Phase 3)
   README.md, SECURITY.md, CHANGELOG.md
-  artifacts/                # gitignored output
+  artifacts/                # gitignored capture output
 ```
 
-**No tests.** No `src/`. No workspace dependency on `@repo/browser-tools`.
+**Deviations from original target layout (intentional):**
+
+- `src/artifact-io/` instead of `src/artifacts/` — avoids `.gitignore` collision with output `artifacts/`
+- `src/inject/*.inject.js` + `paths.js` — file-based `addInitScript({ path })`, not template-literal strings
+
+No workspace dependency on `@repo/browser-tools` yet (Phase 2).
 
 ### Tier model (do not break)
 
@@ -132,20 +141,16 @@ packages/browser-capture/
       performance.js
       console.js
       interactions.js
+    artifact-io/                  # was artifacts/ — avoids gitignore collision
+      paths.js, metadata.js, write.js, upload.js
     inject/
-      performance-observer.js     # PERFORMANCE_OBSERVER_SOURCE string
-      interaction-recorder.js     # INTERACTION_RECORDER_SOURCE string
+      performance-observer.inject.js
+      interaction-recorder.inject.js
+      paths.js
     performance/
-      metrics.js                  # getPerformanceMetrics
+      metrics.js
     interactions/
-      source-map.js               # resolveSourceLocation
-      locator.js                  # interactionToLocator
-      test-generator.js           # generatePlaywrightTest
-    artifacts/
-      paths.js                    # ensureArtifactsDirectory, timestamps
-      metadata.js                 # buildMetadata, git helpers
-      write.js                    # writeJson
-      upload.js
+      source-map.js, locator.js, test-generator.js
     sanitize/
       index.js
       har.js
@@ -196,41 +201,26 @@ Env resolution: export constants or helper for `CHROME_DEBUG_PORT` (default 9222
 
 Execute as **separate PRs** when possible. Each phase ends with quality gate.
 
-### Phase 1 — Decompose monolith (no shared deps yet)
+### Phase 1 — Decompose monolith (no shared deps yet) ✅ DONE
 
 **Goal:** Same behavior, modular files, unit tests. Binary name can stay `copilot-devtools` temporarily to reduce diff noise, or rename in Phase 3 only — **prefer rename in Phase 3** so Phase 1 is pure refactor.
 
-**Tasks:**
+**Completed:**
 
-1. Create `src/` tree; move functions from `bin/copilot-devtools.js` into modules (preserve behavior exactly).
-2. Leave `bin/copilot-devtools.js` as thin import + dispatch (or rename stub that re-exports).
-3. Add `vitest.config.ts` + `__tests__/` for pure functions:
-   - `sanitize/*` — header allowlist, PII redaction, sensitive field names
-   - `cli/args.js` — `resolveDurationMs` validation
-   - `interactions/locator.js` — locator priority chain
-   - `interactions/test-generator.js` — snapshot output shape
-4. Add to `packages/browser-capture/package.json`:
-   ```json
-   "scripts": {
-     "test": "vitest run",
-     "test:watch": "vitest"
-   },
-   "devDependencies": {
-     "vitest": "catalog:"
-   }
-   ```
-5. MCP server name/version strings stay functional; update only if moving files breaks paths.
+1. ✅ `src/` tree; monolith split into modules (behavior preserved)
+2. ✅ `bin/copilot-devtools.js` thin router
+3. ✅ `vitest.config.ts` + `__tests__/` (sanitize, args, locator, test-generator) — 36 tests
+4. ✅ `package.json` test scripts + vitest devDependency
+5. ✅ MCP server paths updated; functional
+6. ✅ Post-Phase-1 fixes: `src/artifact-io/` (gitignore-safe), inject as `*.inject.js` files
 
-**Verification:**
+**Verification (passed):**
 
 ```bash
-pnpm --filter @repo/browser-capture test
-pnpm chrome:debug   # required_permissions: all
-node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
-node packages/browser-capture/bin/copilot-devtools.js record-trace "$(pnpm exec dev-tools-app-target url)" --duration 3
+pnpm --filter @repo/browser-capture test   # 36 passed
+pnpm lint && pnpm test && pnpm check:type  # green
+# Manual: capture-snapshot / record-trace with chrome:debug + dotenv URL resolution
 ```
-
-Compare artifact structure under `packages/browser-capture/artifacts/` to pre-refactor (same filenames: `metadata.json`, `har.json`, `trace.zip`, etc.).
 
 ---
 
