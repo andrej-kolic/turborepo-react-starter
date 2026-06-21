@@ -15,7 +15,7 @@ export async function startMcpServer() {
   );
 
   const server = new McpServer({
-    name: 'copilot-devtools',
+    name: 'browser-capture',
     version: pkg.version,
   });
 
@@ -331,7 +331,7 @@ export async function startMcpServer() {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  process.stderr.write('copilot-devtools MCP server started (stdio)\n');
+  process.stderr.write('browser-capture MCP server started (stdio)\n');
 
   process.once('SIGINT', async () => {
     await server.close();

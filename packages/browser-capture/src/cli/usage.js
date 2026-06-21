@@ -1,7 +1,7 @@
 export function usage() {
-  console.log('copilot-devtools CLI');
+  console.log('browser-capture CLI');
   console.log(
-    'Usage: copilot-devtools <command> [url] [--duration <seconds>] [--duration-ms <ms>]',
+    'Usage: browser-capture <command> [url] [--duration <seconds>] [--duration-ms <ms>]',
   );
   console.log('Commands:');
   console.log(

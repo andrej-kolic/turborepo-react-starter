@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "copilot-devtools": "./bin/copilot-devtools.js"
+    "browser-capture": "./bin/browser-capture.js"
   },
   "scripts": {
     "test": "vitest run",

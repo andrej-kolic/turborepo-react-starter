@@ -75,7 +75,7 @@ jobs:
 
       - name: Record performance
         run: |
-          node packages/browser-capture/bin/copilot-devtools.js record-performance "${{ steps.preview.outputs.url }}"
+          node packages/browser-capture/bin/browser-capture.js record-performance "${{ steps.preview.outputs.url }}"
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -99,7 +99,7 @@ jobs:
         if: always()
         run: |
           for dir in packages/browser-capture/artifacts/*/; do
-            [ -d "$dir" ] && node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
+            [ -d "$dir" ] && node packages/browser-capture/bin/browser-capture.js sanitize-artifacts "$dir"
           done
 
       - name: Upload performance artifacts

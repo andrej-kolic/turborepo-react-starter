@@ -6,7 +6,7 @@ export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
 /**
  * Connect to an existing Chrome instance over CDP.
  *
- * Follows the same connection pattern as packages/browser-capture/bin/copilot-devtools.js:
+ * Follows the same connection pattern as packages/browser-capture/bin/browser-capture.js:
  * uses chromium.connectOverCDP with the DevTools HTTP endpoint.
  *
  * The caller is responsible for calling browser.close() after use — this helper

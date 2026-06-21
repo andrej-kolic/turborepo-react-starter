@@ -56,7 +56,7 @@ Upload artifacts (always sanitize first — capture commands do it too, but CI r
 ```yaml
 - run: |
     for dir in packages/browser-capture/artifacts/*/; do
-      [ -d "$dir" ] && node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts "$dir"
+      [ -d "$dir" ] && node packages/browser-capture/bin/browser-capture.js sanitize-artifacts "$dir"
     done
 - uses: actions/upload-artifact@v4
   if: always()
@@ -86,7 +86,7 @@ Upload artifacts (always sanitize first — capture commands do it too, but CI r
   if: failure()
   run: |
     APP_URL=$(pnpm exec dev-tools-app-target url)
-    node packages/browser-capture/bin/copilot-devtools.js record-trace "$APP_URL" --duration 5
+    node packages/browser-capture/bin/browser-capture.js record-trace "$APP_URL" --duration 5
   env:
     GITHUB_ACTOR: ${{ github.actor }}
     GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -128,7 +128,7 @@ jobs:
 
       - name: Record performance
         run: |
-          node packages/browser-capture/bin/copilot-devtools.js record-performance http://localhost:4173
+          node packages/browser-capture/bin/browser-capture.js record-performance http://localhost:4173
 
       - name: Assert LCP budget
         run: |
@@ -166,7 +166,7 @@ on:
       pnpm browser:ensure-app
       URL=$(pnpm exec dev-tools-app-target url)
     fi
-    node packages/browser-capture/bin/copilot-devtools.js record-trace "$URL" --duration 10
+    node packages/browser-capture/bin/browser-capture.js record-trace "$URL" --duration 10
 ```
 
 For Netlify previews: pass the deploy URL via `workflow_dispatch` or read it from a PR comment bot / deploy status check.
@@ -182,7 +182,7 @@ For Netlify previews: pass the deploy URL via `workflow_dispatch` or read it fro
 ```yaml
 - name: Record trace
   run: |
-    node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:4173 --duration 5
+    node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:4173 --duration 5
 
 - name: Assert expected API calls
   run: |
@@ -214,7 +214,7 @@ Replace assertions with your real endpoints. A small `scripts/assert-har.js` kee
 - name: Capture trace on E2E failure
   if: failure()
   run: |
-    node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:4173 --duration 15
+    node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:4173 --duration 15
 
 - uses: actions/upload-artifact@v4
   if: failure()

@@ -120,7 +120,7 @@ All notable changes to the DevTools automation CLI are documented here.
 
 - **`capture-snapshot`** — Fetch Chrome metadata + open tabs list
 - **`upload-artifacts`** — Package artifacts as tar.gz
-- CLI entry point: `packages/browser-capture/bin/copilot-devtools.js`
+- CLI entry point: `packages/browser-capture/bin/browser-capture.js`
 
 #### CI Workflow
 
@@ -158,9 +158,9 @@ All notable changes to the DevTools automation CLI are documented here.
 pnpm chrome:debug
 
 # Run any command
-node packages/browser-capture/bin/copilot-devtools.js capture-snapshot
-node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --duration 10
-node packages/browser-capture/bin/copilot-devtools.js record-interactions http://localhost:5173 --duration 15
+node packages/browser-capture/bin/browser-capture.js capture-snapshot
+node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --duration 10
+node packages/browser-capture/bin/browser-capture.js record-interactions http://localhost:5173 --duration 15
 
 # View Playwright traces
 npx playwright show-trace packages/browser-capture/artifacts/trace-*/trace.zip
@@ -176,7 +176,7 @@ Add to `~/.copilot/mcp-config.json`:
     "devtools-capture": {
       "command": "node",
       "args": [
-        "/path/to/turborepo-react-starter/packages/browser-capture/bin/copilot-devtools.js",
+        "/path/to/turborepo-react-starter/packages/browser-capture/bin/browser-capture.js",
         "mcp-server"
       ]
     }
@@ -246,7 +246,7 @@ All changes to `packages/browser-capture/` should:
 1. Update this CHANGELOG.md
 2. Update `packages/browser-capture/README.md` and `.claude/skills/x-browser-capture/SKILL.md` if adding/modifying commands
 3. Add unit tests in `packages/browser-capture/__tests__/` (future)
-4. Validate in CI: run `pnpm chrome:debug && node packages/browser-capture/bin/copilot-devtools.js <command>`
+4. Validate in CI: run `pnpm chrome:debug && node packages/browser-capture/bin/browser-capture.js <command>`
 
 ---
 
