@@ -1,6 +1,6 @@
 # Plan: Refactor `@repo/browser-capture` + shared CDP (Option A)
 
-**Status:** Phase 5 done  
+**Status:** Complete — all phases done (1–5)  
 **Branch:** `develop`  
 **Created:** 2026-06-20  
 **Phase 1 completed:** 2026-06-21  
@@ -16,7 +16,7 @@ Attach or `@`-mention this file — no need to paste instructions separately.
 **Minimal prompt:**
 
 ```text
-Execute .ai/plans/browser-capture-refactor.md — start at Phase 5 (or later follow-ups).
+This plan is complete. See Optional follow-ups below if extending further.
 ```
 
 **Full agent instructions** (also at top so the file is self-contained):
@@ -29,7 +29,7 @@ Implement this plan. Read AGENTS.md first.
   add --attach to capture, root pnpm capture script, MCP via .rulesync/mcp.json + pnpm sync:agents.
 - Do NOT replace packages with external npm tools.
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
-- Start with Phase 5 unless I specify a different phase.
+- All phases (1–5) are done — use Optional follow-ups for new work only.
 
 If the plan is already partially done, read git status and skip completed tasks.
 ```
