@@ -3,8 +3,11 @@ import { buildMetadata } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import { requireUrl, resolveDurationMs } from '../cli/args.js';
-import { connectCDP, createConsoleListener } from '../cdp/connect.js';
-import { httpGetJson } from '../cdp/http.js';
+import {
+  attachConsoleListeners,
+  connectOverCDP,
+  fetchCdpJson,
+} from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { performanceObserverInject } from '../inject/paths.js';
@@ -15,11 +18,11 @@ export async function recordTrace(url, options = {}) {
   const targetUrl = requireUrl('record-trace', url);
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('trace');
-  const browserInfo = await httpGetJson('/json/version');
+  const browserInfo = await fetchCdpJson('/json/version');
   const harPath = path.join(artifactsDir, 'har.json');
   const tracePath = path.join(artifactsDir, 'trace.zip');
 
-  const browser = await connectCDP();
+  const browser = await connectOverCDP();
   const context = await browser.newContext({
     recordHar: { path: harPath, content: 'omit' },
   });
@@ -33,7 +36,7 @@ export async function recordTrace(url, options = {}) {
 
     const page = await context.newPage();
     await page.addInitScript({ path: performanceObserverInject });
-    const consoleListener = createConsoleListener(page);
+    const consoleListener = attachConsoleListeners(page, { mode: 'full' });
     page.on('request', () => {
       requestCount += 1;
     });

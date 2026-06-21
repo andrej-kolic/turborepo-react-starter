@@ -3,11 +3,11 @@ import { ensureArtifactsDirectory, sleep } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import { resolveDurationMs } from '../cli/args.js';
 import {
-  connectCDP,
-  createConsoleListener,
-  getExistingPage,
-} from '../cdp/connect.js';
-import { httpGetJson } from '../cdp/http.js';
+  attachConsoleListeners,
+  connectOverCDP,
+  fetchCdpJson,
+  findRecentPage,
+} from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
@@ -15,14 +15,14 @@ import { sanitizeArtifacts } from '../sanitize/index.js';
 export async function recordConsole(options = {}) {
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('console');
-  const browserInfo = await httpGetJson('/json/version');
+  const browserInfo = await fetchCdpJson('/json/version');
 
-  const browser = await connectCDP();
+  const browser = await connectOverCDP();
   let captureResult = null;
 
   try {
-    const { page } = getExistingPage(browser);
-    const consoleListener = createConsoleListener(page);
+    const { page } = findRecentPage(browser);
+    const consoleListener = attachConsoleListeners(page, { mode: 'full' });
 
     await sleep(durationMs);
 

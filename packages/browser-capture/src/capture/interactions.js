@@ -4,8 +4,7 @@ import { buildMetadata } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import { requireUrl, resolveDurationMs } from '../cli/args.js';
-import { connectCDP } from '../cdp/connect.js';
-import { httpGetJson } from '../cdp/http.js';
+import { connectOverCDP, fetchCdpJson } from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { interactionRecorderInject } from '../inject/paths.js';
@@ -17,9 +16,9 @@ export async function recordInteractions(url, options = {}) {
   const targetUrl = requireUrl('record-interactions', url);
   const durationMs = resolveDurationMs(options);
   const artifactsDir = ensureArtifactsDirectory('interactions');
-  const browserInfo = await httpGetJson('/json/version');
+  const browserInfo = await fetchCdpJson('/json/version');
 
-  const browser = await connectCDP();
+  const browser = await connectOverCDP();
   const context = await browser.newContext();
   const interactions = [];
   let captureResult = null;

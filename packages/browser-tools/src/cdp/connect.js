@@ -1,7 +1,7 @@
 import { chromium } from 'playwright-core';
+import { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
 
-const DEFAULT_PORT = 9222;
-const DEFAULT_HOST = 'localhost';
+export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
 
 /**
  * Connect to an existing Chrome instance over CDP.
