@@ -79,6 +79,9 @@ pnpm lint
 pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
 pnpm chrome:debug --status  # check
 pnpm chrome:debug --stop    # stop
+pnpm browser:setup          # ensure Chrome + open app tab (verify tier)
+pnpm browser validate --selector "[data-testid=app-header]"  # DOM checks
+pnpm capture record-trace --duration 3   # HAR + trace artifacts (capture tier)
 ```
 
 Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).

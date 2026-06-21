@@ -8,16 +8,16 @@ export function usage() {
     '  capture-snapshot                   Fetch browser metadata and page list',
   );
   console.log(
-    '  record-trace <url>                 Full trace: HAR + Playwright trace + console + Web Vitals',
+    '  record-trace [url]                 Full trace: HAR + Playwright trace + console + Web Vitals',
   );
   console.log(
-    '  record-performance <url>           Web Vitals: LCP, CLS, INP and CDP browser metrics',
+    '  record-performance [url]           Web Vitals: LCP, CLS, INP and CDP browser metrics',
   );
   console.log(
     '  record-console [url]               Console messages from current page',
   );
   console.log(
-    '  record-interactions <url>          Record user interactions and generate a Playwright test',
+    '  record-interactions [url]          Record user interactions and generate a Playwright test',
   );
   console.log(
     '  upload-artifacts                   Package artifacts/  as tar.gz',
@@ -35,5 +35,9 @@ export function usage() {
   );
   console.log(
     '  --no-sanitize                      Skip automatic artifact sanitization',
+  );
+  console.log('');
+  console.log(
+    'URL resolution when [url] is omitted: positional → APP_URL → CAPTURE_URL',
   );
 }

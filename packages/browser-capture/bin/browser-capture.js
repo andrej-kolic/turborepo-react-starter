@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { parseArgs } from '../src/cli/args.js';
+import { parseArgs, resolveCaptureUrl } from '../src/cli/args.js';
 import { usage } from '../src/cli/usage.js';
 import { validateCaptureDuration } from '../src/config/env.js';
 import { initRuntime, setSanitizeEnabled } from '../src/config/runtime.js';
@@ -33,7 +33,7 @@ async function main() {
   }
 
   const { positionals, options } = parseArgs(process.argv.slice(3));
-  const url = positionals[0] || process.env.CAPTURE_URL;
+  const url = resolveCaptureUrl(positionals[0]);
   if (options['no-sanitize']) setSanitizeEnabled(false);
 
   if (!cmd || cmd === 'help' || cmd === '--help') {

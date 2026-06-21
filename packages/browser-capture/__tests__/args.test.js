@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   captureOptions,
   parseArgs,
   requireUrl,
+  resolveCaptureUrl,
   resolveDurationMs,
 } from '../src/cli/args.js';
 import {
@@ -58,6 +59,44 @@ describe('captureOptions', () => {
   });
 });
 
+describe('resolveCaptureUrl', () => {
+  const prevAppUrl = process.env.APP_URL;
+  const prevCaptureUrl = process.env.CAPTURE_URL;
+
+  afterEach(() => {
+    if (prevAppUrl === undefined) delete process.env.APP_URL;
+    else process.env.APP_URL = prevAppUrl;
+    if (prevCaptureUrl === undefined) delete process.env.CAPTURE_URL;
+    else process.env.CAPTURE_URL = prevCaptureUrl;
+  });
+
+  it('prefers positional URL', () => {
+    delete process.env.APP_URL;
+    delete process.env.CAPTURE_URL;
+    expect(resolveCaptureUrl('http://localhost:5173')).toBe(
+      'http://localhost:5173',
+    );
+  });
+
+  it('falls back to APP_URL', () => {
+    process.env.APP_URL = 'http://localhost:5173';
+    delete process.env.CAPTURE_URL;
+    expect(resolveCaptureUrl(undefined)).toBe('http://localhost:5173');
+  });
+
+  it('falls back to CAPTURE_URL when APP_URL is unset', () => {
+    delete process.env.APP_URL;
+    process.env.CAPTURE_URL = 'http://localhost:3000';
+    expect(resolveCaptureUrl(undefined)).toBe('http://localhost:3000');
+  });
+
+  it('prefers APP_URL over CAPTURE_URL', () => {
+    process.env.APP_URL = 'http://localhost:5173';
+    process.env.CAPTURE_URL = 'http://localhost:3000';
+    expect(resolveCaptureUrl(undefined)).toBe('http://localhost:5173');
+  });
+});
+
 describe('requireUrl', () => {
   it('returns the url when provided', () => {
     expect(requireUrl('record-trace', 'http://localhost:5173')).toBe(
@@ -66,9 +105,19 @@ describe('requireUrl', () => {
   });
 
   it('throws when url is missing', () => {
+    const prevAppUrl = process.env.APP_URL;
+    const prevCaptureUrl = process.env.CAPTURE_URL;
+    delete process.env.APP_URL;
+    delete process.env.CAPTURE_URL;
+
     expect(() => requireUrl('record-trace', undefined)).toThrow(
-      'record-trace requires a URL.',
+      'record-trace requires a URL: pass as positional, or set APP_URL or CAPTURE_URL.',
     );
+
+    if (prevAppUrl === undefined) delete process.env.APP_URL;
+    else process.env.APP_URL = prevAppUrl;
+    if (prevCaptureUrl === undefined) delete process.env.CAPTURE_URL;
+    else process.env.CAPTURE_URL = prevCaptureUrl;
   });
 });
 

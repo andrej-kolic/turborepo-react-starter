@@ -1,12 +1,13 @@
 # Plan: Refactor `@repo/browser-capture` + shared CDP (Option A)
 
-**Status:** Phase 4 done — continue at Phase 5  
+**Status:** Phase 5 done  
 **Branch:** `develop`  
 **Created:** 2026-06-20  
 **Phase 1 completed:** 2026-06-21  
 **Phase 2 completed:** 2026-06-21  
 **Phase 3 completed:** 2026-06-21  
-**Phase 4 completed:** 2026-06-21
+**Phase 4 completed:** 2026-06-21  
+**Phase 5 completed:** 2026-06-21
 
 ## How to run (new chat)
 
@@ -15,7 +16,7 @@ Attach or `@`-mention this file — no need to paste instructions separately.
 **Minimal prompt:**
 
 ```text
-Execute .ai/plans/browser-capture-refactor.md — start at Phase 5.
+Execute .ai/plans/browser-capture-refactor.md — start at Phase 5 (or later follow-ups).
 ```
 
 **Full agent instructions** (also at top so the file is self-contained):
@@ -25,7 +26,7 @@ Implement this plan. Read AGENTS.md first.
 
 - Turborepo monorepo, branch develop.
 - Approved: Option A (shared CDP in @repo/browser-tools), rename binary to browser-capture,
-  add --attach to capture, root pnpm capture:* scripts, MCP via .rulesync/mcp.json + pnpm sync:agents.
+  add --attach to capture, root pnpm capture script, MCP via .rulesync/mcp.json + pnpm sync:agents.
 - Do NOT replace packages with external npm tools.
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
 - Start with Phase 5 unless I specify a different phase.
@@ -37,7 +38,7 @@ If the plan is already partially done, read git status and skip completed tasks.
 
 ## Executive summary
 
-Split the ~1,737-line monolith `packages/browser-capture/bin/copilot-devtools.js` into a modular `src/` layout (mirroring `@repo/browser-tools`), share CDP primitives via **Option A** (extend `@repo/browser-tools` exports), rename the CLI binary to `browser-capture`, add **`--attach`** to capture commands that navigate, add root **`pnpm capture:*`** scripts, and update MCP via **`.rulesync/mcp.json`** (then `pnpm sync:agents`).
+Split the ~1,737-line monolith `packages/browser-capture/bin/copilot-devtools.js` into a modular `src/` layout (mirroring `@repo/browser-tools`), share CDP primitives via **Option A** (extend `@repo/browser-tools` exports), rename the CLI binary to `browser-capture`, add **`--attach`** to capture commands that navigate, add root **`pnpm capture`** wrapper (mirrors `pnpm browser`), and update MCP via **`.rulesync/mcp.json`** (then `pnpm sync:agents`).
 
 **Do not replace these packages with external npm tools.** They are repo-specific orchestration (artifact layout, sanitization policy, CI, APP_URL wiring, agent skills). External tools already in use: `playwright-core`, `chrome-devtools-mcp` (verify MCP tier).
 
@@ -50,7 +51,7 @@ Split the ~1,737-line monolith `packages/browser-capture/bin/copilot-devtools.js
 | 1   | **Option A** — shared CDP lives in `@repo/browser-tools`; `@repo/browser-capture` depends on it                                   |
 | 2   | **Rename binary** — `copilot-devtools` → `browser-capture`                                                                        |
 | 3   | **Add `--attach`** — capture commands that navigate can reuse the visible tab (same semantics as `browser-tools --attach`)        |
-| 4   | **Root scripts** — add `pnpm capture:*` wrappers (parallel to `pnpm browser:*`)                                                   |
+| 4   | **Root script** — add `pnpm capture` wrapper (mirrors `pnpm browser`; subcommands passed as args)                                 |
 | 5   | **MCP config** — edit `.rulesync/mcp.json` only; run `pnpm sync:agents`; do not hand-edit `.cursor/mcp.json` / `.vscode/mcp.json` |
 | 6   | **Keep internal** — do not publish to npm; do not adopt `@playwright/mcp` as a third MCP server                                   |
 
@@ -298,9 +299,16 @@ pnpm lint && pnpm test && pnpm check:type && pnpm check:agents
 
 ---
 
-### Phase 5 — Root `pnpm capture:*` scripts
+### Phase 5 — Root `pnpm capture` script ✅ DONE
 
-**Goal:** Mirror `pnpm browser:*` ergonomics with APP_URL injection.
+**Goal:** Mirror `pnpm browser` ergonomics with APP_URL injection.
+
+**Completed:**
+
+1. ✅ Root script: `"capture": "dotenv -- dev-tools-app-target run browser-capture"`
+2. ✅ `@repo/browser-capture` in root `devDependencies`
+3. ✅ `resolveCaptureUrl()` — positional → `APP_URL` → `CAPTURE_URL` (aligned with verify tier)
+4. ✅ Updated `AGENTS.md`, root `README.md`, capture skill, `packages/browser-capture/README.md`
 
 **Add to root `package.json`:**
 
@@ -310,29 +318,33 @@ pnpm lint && pnpm test && pnpm check:type && pnpm check:agents
     "@repo/browser-capture": "workspace:*"
   },
   "scripts": {
-    "capture:snapshot": "dotenv -- dev-tools-app-target run browser-capture capture-snapshot",
-    "capture:trace": "dotenv -- dev-tools-app-target run browser-capture record-trace",
-    "capture:performance": "dotenv -- dev-tools-app-target run browser-capture record-performance",
-    "capture:console": "dotenv -- dev-tools-app-target run browser-capture record-console",
-    "capture:interactions": "dotenv -- dev-tools-app-target run browser-capture record-interactions",
-    "capture:upload": "dotenv -- browser-capture upload-artifacts"
+    "capture": "dotenv -- dev-tools-app-target run browser-capture"
   }
 }
 ```
 
-**Notes:**
+**Usage (subcommands mirror `browser-capture` CLI):**
 
-- `record-*` commands need URL — either pass as extra args (`pnpm capture:trace -- http://localhost:5173`) or teach CLI to use `APP_URL` when URL positional omitted (align with browser-tools `resolveUrl`).
-- Consider extending capture CLI: if URL positional missing, use `process.env.APP_URL` then `CAPTURE_URL` (document precedence).
-- Update `AGENTS.md`, root `README.md`, capture skill, `packages/browser-capture/README.md`.
+```bash
+pnpm capture capture-snapshot
+pnpm capture record-trace --duration 3
+pnpm capture record-performance --attach
+pnpm capture record-console --attach --duration 3
+pnpm capture record-interactions --duration 10
+pnpm capture upload-artifacts
+```
 
-**Verification:**
+**URL resolution:** when `[url]` is omitted, `dev-tools-app-target run` injects `APP_URL` from `BUNDLER`; capture CLI falls back to `CAPTURE_URL` if `APP_URL` is unset. Pass URL as first positional to override.
+
+**Verification (passed):**
 
 ```bash
 pnpm browser:ensure-app
 pnpm chrome:debug
-pnpm capture:snapshot
-pnpm capture:trace -- "$(pnpm exec dev-tools-app-target url)" --duration 3
+pnpm capture capture-snapshot
+pnpm capture record-trace --duration 3
+pnpm --filter @repo/browser-capture test
+pnpm lint && pnpm test && pnpm check:type
 ```
 
 ---

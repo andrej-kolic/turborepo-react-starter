@@ -3,12 +3,28 @@ import { getDefaultDurationMs } from '../config/env.js';
 
 export { parseArgs } from '@repo/browser-tools/cli/args';
 
+/**
+ * Resolve capture target URL: positional → APP_URL → CAPTURE_URL.
+ *
+ * @param {string | undefined} urlArg  first positional URL, if any
+ * @returns {string | undefined}
+ */
+export function resolveCaptureUrl(urlArg) {
+  if (urlArg && typeof urlArg === 'string') return urlArg;
+  if (process.env.APP_URL) return process.env.APP_URL;
+  if (process.env.CAPTURE_URL) return process.env.CAPTURE_URL;
+  return undefined;
+}
+
 export function requireUrl(command, url) {
-  if (!url) {
-    throw new Error(`${command} requires a URL.`);
+  const resolved = resolveCaptureUrl(url);
+  if (!resolved) {
+    throw new Error(
+      `${command} requires a URL: pass as positional, or set APP_URL or CAPTURE_URL.`,
+    );
   }
 
-  return url;
+  return resolved;
 }
 
 export function resolveDurationMs(options) {

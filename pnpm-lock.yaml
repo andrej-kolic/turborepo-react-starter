@@ -59,6 +59,9 @@ importers:
 
   .:
     devDependencies:
+      '@repo/browser-capture':
+        specifier: workspace:*
+        version: link:packages/browser-capture
       '@repo/browser-tools':
         specifier: workspace:*
         version: link:packages/browser-tools

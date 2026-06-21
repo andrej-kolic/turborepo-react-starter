@@ -24,11 +24,23 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 App URL examples use `http://localhost:5173` (default `BUNDLER=app-vite`). For other bundlers,
 use the `devPort` from `apps/<BUNDLER>/package.json` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
+From repo root, prefer **`pnpm capture <subcommand>`** — loads `.env`, injects `APP_URL` via
+`dev-tools-app-target run` (same as `pnpm browser`). URL positional is optional when `APP_URL` is set.
+
 ```bash
-# Prerequisites: Chrome running on port 9222
+# Prerequisites: app running, Chrome on port 9222
+pnpm browser:ensure-app
 pnpm chrome:debug
 
-# From repo root
+# Root wrappers (APP_URL from BUNDLER)
+pnpm capture capture-snapshot
+pnpm capture record-trace --duration 5
+pnpm capture record-performance
+pnpm capture record-console
+pnpm capture record-interactions --duration 10
+pnpm capture upload-artifacts
+
+# Direct CLI (CI, MCP path, or explicit URL)
 node packages/browser-capture/bin/browser-capture.js capture-snapshot
 node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173
 node packages/browser-capture/bin/browser-capture.js record-performance http://localhost:5173
@@ -38,19 +50,19 @@ node packages/browser-capture/bin/browser-capture.js sanitize-artifacts packages
 node packages/browser-capture/bin/browser-capture.js upload-artifacts
 
 # Duration control (default: 10s)
-node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --duration 5
+pnpm capture record-trace --duration 5
 node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --duration-ms 3000
 
 # Skip automatic sanitization (e.g. for local debugging — never do this in CI)
-node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --no-sanitize
+pnpm capture record-trace --no-sanitize
 
 # Attach to the existing visible tab (preserves auth/session; does not navigate)
 pnpm browser:setup
 pnpm browser open --url http://localhost:5173
-node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:5173 --attach --duration 5
-node packages/browser-capture/bin/browser-capture.js record-performance http://localhost:5173 --attach
-node packages/browser-capture/bin/browser-capture.js record-interactions http://localhost:5173 --attach --duration 10
-node packages/browser-capture/bin/browser-capture.js record-console http://localhost:5173 --attach --duration 3
+pnpm capture record-trace --attach --duration 5
+pnpm capture record-performance --attach
+pnpm capture record-interactions --attach --duration 10
+pnpm capture record-console --attach --duration 3
 ```
 
 ### `--attach`: record on the existing visible tab
@@ -170,15 +182,16 @@ test('recorded: localhost/', async ({ page }) => {
 
 ## Environment Variables
 
-| Variable              | Default     | Description                                                              |
-| --------------------- | ----------- | ------------------------------------------------------------------------ |
-| `CHROME_DEBUG_PORT`   | `9222`      | CDP port                                                                 |
-| `CHROME_DEBUG_HOST`   | `localhost` | CDP host                                                                 |
-| `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms) — per-tool `duration` arg takes precedence |
-| `CAPTURE_URL`         | —           | Default URL for trace/performance commands                               |
-| `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                                              |
-| `GITHUB_ACTOR`        | —           | Set automatically by CI; logged in `metadata.json` for audit trail       |
-| `GITHUB_EVENT_NAME`   | —           | Set automatically by CI; logged in `metadata.json` (`triggerEvent`)      |
+| Variable              | Default     | Description                                                                    |
+| --------------------- | ----------- | ------------------------------------------------------------------------------ |
+| `CHROME_DEBUG_PORT`   | `9222`      | CDP port                                                                       |
+| `CHROME_DEBUG_HOST`   | `localhost` | CDP host                                                                       |
+| `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms) — per-tool `duration` arg takes precedence       |
+| `APP_URL`             | —           | Default URL when using `pnpm capture` (injected by `dev-tools-app-target run`) |
+| `CAPTURE_URL`         | —           | Fallback default URL when `APP_URL` is unset                                   |
+| `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                                                    |
+| `GITHUB_ACTOR`        | —           | Set automatically by CI; logged in `metadata.json` for audit trail             |
+| `GITHUB_EVENT_NAME`   | —           | Set automatically by CI; logged in `metadata.json` (`triggerEvent`)            |
 
 ## CI Integration
 

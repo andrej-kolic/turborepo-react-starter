@@ -57,7 +57,7 @@ Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-too
 | app-esbuild            | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
 | ui-storybook           | `pnpm dev:ui`                                 |
 
-Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser validation,
+Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
 
 To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)

@@ -54,13 +54,25 @@ Navigate-based capture opens a **new isolated context** by default. Add `--attac
 2. Run capture with `--attach` — matches tab by **origin**, does **not** navigate
 
 ```bash
-node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:<port> --attach --duration 5
-node packages/browser-capture/bin/browser-capture.js record-console http://localhost:<port> --attach --duration 3
+pnpm capture record-trace --attach --duration 5
+pnpm capture record-console --attach --duration 3
 ```
 
 Commands: `record-trace`, `record-performance`, `record-interactions`, `record-console` (with URL).
 
 ## CLI (when MCP is unavailable — CI, Cloud Agent, SSH)
+
+Prefer **`pnpm capture <subcommand>`** from repo root — same `APP_URL` injection as `pnpm browser`.
+Bootstrap with `pnpm browser:ensure-app`, `pnpm browser:setup`, and `pnpm chrome:debug` first.
+
+```bash
+pnpm capture capture-snapshot
+pnpm capture record-trace --duration 5
+pnpm capture record-trace --attach --duration 5
+pnpm capture upload-artifacts
+```
+
+Direct CLI (explicit URL or when not using root wrapper):
 
 ```bash
 node packages/browser-capture/bin/browser-capture.js record-trace http://localhost:<port>
