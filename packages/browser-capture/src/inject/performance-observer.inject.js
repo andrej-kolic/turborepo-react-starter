@@ -1,4 +1,6 @@
 (() => {
+  if (window.__COPILOT_DEVTOOLS_PERF__) return;
+
   const state = {
     navigationStart: performance.timeOrigin,
     lcpEntries: [],

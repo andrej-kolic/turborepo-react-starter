@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  if (window.__BROWSER_CAPTURE_INTERACTIONS__) return;
+  window.__BROWSER_CAPTURE_INTERACTIONS__ = true;
+
   function getElementInfo(el) {
     if (!el || !el.tagName) return null;
     return {
