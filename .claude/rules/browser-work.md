@@ -16,7 +16,7 @@ Two tiers — never mix them:
 
 | Tier        | Package / tool                                  | Use for                                                                          |
 | ----------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| **Verify**  | `@repo/browser-tools`, MCP browser surfaces     | DOM assertions, `browser eval`, `browser screenshot` — no capture-tier artifacts |
+| **Verify**  | `@repo/browser-tools`, MCP browser surfaces     | DOM snapshot, assertions, `browser screenshot` — no capture-tier artifacts |
 | **Capture** | `@repo/browser-capture`, `devtools-capture` MCP | HAR, traces, Web Vitals, console — produces artifacts                            |
 
 **Sandbox:** `chrome:*` and `browser:setup` need `required_permissions: ["all"]`. Regular `pnpm browser validate` / `read` / `eval` connect over localhost CDP and do not.

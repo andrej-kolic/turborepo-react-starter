@@ -386,7 +386,6 @@ pnpm --filter @repo/browser-tools test
 - Replace `chrome/lifecycle.js` with `chrome-launcher` npm package
 - Use `pw-sanitizer` for trace zip post-processing (partial overlap only)
 - Add `@repo/browser-tools` MCP server (README TODO)
-- `browser-tools check-spec` command
 
 ---
 

@@ -1,8 +1,8 @@
 # Design Spec Validation
 
-Lightweight functional design checks for agents — **not** pixel regression.
+Lightweight functional design checks for agents while developing — **not** pixel regression.
 
-Use this when verifying a component matches design **tokens and layout constraints** extracted from Figma (or a pasted SVG). For pixel-perfect CI regression, use Chromatic on Storybook stories.
+Use this when verifying a component matches design **tokens and layout constraints** extracted from Figma (or a pasted SVG). For pixel-perfect CI regression, use Chromatic on Storybook stories. For CI gates, use Playwright E2E (planned).
 
 ---
 
@@ -16,27 +16,9 @@ Use this when verifying a component matches design **tokens and layout constrain
 
 Layer 2 is automatable and lightweight. Layer 3 is agent-assisted (subjective). Do not use `browser-capture` for routine checks.
 
----
+**While developing:** prefer `pnpm browser snapshot` (DOM + `data-testid` regions) and `pnpm browser screenshot` (visual) before deep token checks — see the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md).
 
-## Spec format (YAML)
-
-Store specs next to the component or story they validate. Example:
-
-```yaml
-# specs/app-header.spec.yaml
-url: <url> # e.g. http://localhost:5173 or a Storybook canvas URL
-checks:
-  - selector: '[data-testid=app-header]'
-    exists: true
-  - selector: '[data-testid=app-header]'
-    text_contains: 'Turborepo'
-  - selector: '[data-testid=app-header]'
-    styles:
-      display: block
-  - console_errors: false
-```
-
-For Storybook: `url` from
+For Storybook: `--url` from
 `${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.ts` — not
 `?path=/story/…`.
 
@@ -47,14 +29,26 @@ For Storybook: `url` from
 - Colors → `rgb(r, g, b)` or `rgba(...)`
 - Sizes → `px` strings
 
-Extract expected values from Figma dev mode or inspect a reference build once, then hard-code in the spec.
+Extract expected values from Figma dev mode or inspect a reference build once, then hard-code in the `--expr`.
 
 ---
 
-## Running checks manually
+## Running checks
 
-> **URL:** run `pnpm browser:ensure-app` first — it prints the resolved URL and the `pnpm browser`
-> commands below will pick it up automatically. Pass `--url <url>` explicitly only to override.
+Bootstrap via the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** (Step 1 + Tier C).
+
+> **URL:** run `pnpm browser:ensure-app` first — it prints the resolved URL and `pnpm browser`
+> commands pick it up automatically. Pass `--url <url>` only to override.
+
+### See the page (start here)
+
+```bash
+pnpm browser snapshot
+pnpm browser snapshot --selector "[data-testid=app-header]"
+pnpm browser screenshot --selector "[data-testid=app-header]" --output /tmp/app-header.png
+```
+
+Use `--attach` when iterating on a visible tab after HMR (see [`docs/browser-validation.md`](browser-validation.md)).
 
 ### Exists + text (layer 1)
 
@@ -128,16 +122,6 @@ pnpm browser screenshot \
 ```
 
 Agents with vision compare `/tmp/app-header.png` to a Figma export or pasted reference image. This is a spot-check, not a CI gate.
-
----
-
-Bootstrap via the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** (Step 1 + Tier C), then run the layer commands in the sections above.
-
----
-
-## Future: `browser check-spec`
-
-A `pnpm browser check-spec specs/app-header.spec.yaml` runner may be added later. Until then, agents run the `pnpm browser validate` / `pnpm browser eval` commands implied by each spec row.
 
 ---
 

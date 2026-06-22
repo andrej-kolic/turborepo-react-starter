@@ -24,7 +24,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser validate`, `pnpm browser read`, `pnpm browser eval`, `pnpm browser screenshot`)
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 
 #### Infra
@@ -80,6 +80,7 @@ pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
 pnpm chrome:debug --status  # check
 pnpm chrome:debug --stop    # stop
 pnpm browser:setup          # ensure Chrome + open app tab (verify tier)
+pnpm browser snapshot       # see DOM + data-testid regions (agent eyes, no MCP)
 pnpm browser validate --selector "[data-testid=app-header]"  # DOM checks
 pnpm capture record-trace --duration 3   # HAR + trace artifacts (capture tier)
 ```

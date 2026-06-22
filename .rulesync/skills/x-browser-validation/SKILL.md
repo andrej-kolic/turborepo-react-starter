@@ -62,11 +62,11 @@ Output tells you the flag to use for all subsequent browser commands:
 
 | Goal                   | Command                                                        |
 | ---------------------- | -------------------------------------------------------------- |
+| See page structure     | `pnpm browser snapshot [--selector …] [--attach]`              |
+| Visual spot-check      | `pnpm browser screenshot --selector … [--attach]`              |
 | Assert selector / text | `pnpm browser validate --selector … [--contains …] [--attach]` |
 | Read element content   | `pnpm browser read --selector … [--attach]`                    |
-| Evaluate JS            | `pnpm browser eval --expr "() => …" [--attach]`                |
-| Page snapshot          | `pnpm browser snapshot [--attach]`                             |
-| Visual spot-check      | `pnpm browser screenshot --selector … [--attach]`              |
+| Evaluate JS / tokens   | `pnpm browser eval --expr "() => …" [--attach]`                |
 
 Storybook: `--url` from
 `${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.ts` — not
@@ -78,4 +78,4 @@ For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with veri
 
 ---
 
-> Edge-case scenarios (`--attach`, SSH tunnel, remote URL), Storybook, and URL derivation: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
+> Edge-case scenarios (`--attach`, SSH tunnel, remote URL), Storybook, design checks, and URL derivation: [`docs/browser-validation.md`](../../../docs/browser-validation.md)

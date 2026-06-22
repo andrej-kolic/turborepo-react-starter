@@ -144,8 +144,7 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 ## TODO
 
 - Add session/interaction commands only if you need multi-step behavior specs (open modal → fill form → submit)
-- Add an MCP server exposing the same 5–6 verify commands — one implementation, CLI + IDE both covered
-- **`browser-tools check-spec`** — run a YAML/JSON design spec in one command (exists, text, styles, console checks). Spec format and manual workflow today: [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md). Should batch checks in a **single page session** (one navigation per spec file).
+- Add an MCP server exposing the same verify commands — one implementation, CLI + IDE both covered
 
 ## Environment Variables
 
@@ -161,6 +160,6 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 ## See Also
 
 - [`docs/browser-validation.md`](../../docs/browser-validation.md) — edge-case scenarios, Storybook, URL derivation
-- [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — token/layout spec checks via `browser-tools eval`
+- [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — design/token checks via snapshot, screenshot, and `browser eval`
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` convention
 - [`packages/browser-capture/README.md`](../browser-capture/README.md) — capture tier (HAR, traces, Web Vitals)

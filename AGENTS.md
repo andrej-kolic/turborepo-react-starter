@@ -84,7 +84,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
 | [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
 | [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
-| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Token/layout checks via `browser eval`                                   |
+| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks — snapshot, screenshot, `browser eval`               |
 
 Pick the **lightest** tool for the question: `pnpm test` (logic) · Storybook (isolated UI) ·
 browser-validation skill (DOM/text) · browser-capture skill (artifacts).
