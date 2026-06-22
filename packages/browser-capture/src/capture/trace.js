@@ -41,6 +41,8 @@ async function recordTraceAttached(targetUrl, durationMs) {
     harRecorder.attach(page);
     let tracingStarted = false;
     let requestCount = 0;
+    /** @type {ReturnType<typeof attachConsoleListeners> | null} */
+    let consoleListener = null;
 
     page.on('request', () => {
       requestCount += 1;
@@ -51,7 +53,7 @@ async function recordTraceAttached(targetUrl, durationMs) {
       tracingStarted = true;
 
       await injectScript(page, performanceObserverInject);
-      const consoleListener = attachConsoleListeners(page, { mode: 'full' });
+      consoleListener = attachConsoleListeners(page, { mode: 'full' });
 
       await page.waitForTimeout(durationMs);
 
@@ -95,6 +97,7 @@ async function recordTraceAttached(targetUrl, durationMs) {
       if (tracingStarted) {
         await context.tracing.stop({ path: tracePath }).catch(() => {});
       }
+      consoleListener?.detach();
       harRecorder.detach();
     }
   });
