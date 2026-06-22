@@ -210,7 +210,7 @@ export async function startMcpServer() {
           .boolean()
           .optional()
           .describe(
-            'With url: match tab by origin. Without url: no-op (uses most recent tab).',
+            'Match the open tab by url origin. Requires url when attach=true.',
           ),
       }),
       annotations: { readOnlyHint: true, destructiveHint: false },

@@ -72,14 +72,14 @@ By default, navigate-based capture commands open a **new isolated browser contex
 
 `--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. The command does **not** navigate; it records whatever the tab currently shows. If no tab is found at that origin, the error hints to run `browser-tools open --url <url>` first.
 
-|                       | Default (no `--attach`)           | `--attach`                                    |
-| --------------------- | --------------------------------- | --------------------------------------------- |
-| `record-trace`        | New context + navigate + full HAR | Existing tab; HAR covers capture window only  |
-| `record-performance`  | New context + navigate            | Existing tab; no navigation                   |
-| `record-interactions` | New context + navigate            | Existing tab; interact during capture window  |
-| `record-console`      | Most recent open tab              | With URL: match by origin; without URL: no-op |
+|                       | Default (no `--attach`)           | `--attach`                                   |
+| --------------------- | --------------------------------- | -------------------------------------------- |
+| `record-trace`        | New context + navigate + full HAR | Existing tab; HAR covers capture window only |
+| `record-performance`  | New context + navigate            | Existing tab; no navigation                  |
+| `record-interactions` | New context + navigate            | Existing tab; interact during capture window |
+| `record-console`      | Most recent open tab              | Requires URL; match tab by origin            |
 
-Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console` (with URL).
+Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console`. With `--attach`, pass a URL (positional, `APP_URL`, or `CAPTURE_URL`) so the tab is matched by origin.
 
 ## MCP Server
 

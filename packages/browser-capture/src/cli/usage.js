@@ -14,7 +14,7 @@ export function usage() {
     '  record-performance [url]           Web Vitals: LCP, CLS, INP and CDP browser metrics',
   );
   console.log(
-    '  record-console [url]               Console messages from current page',
+    '  record-console [url]               Console messages from current page (omit url: most recent tab)',
   );
   console.log(
     '  record-interactions [url]          Record user interactions and generate a Playwright test',
@@ -31,7 +31,7 @@ export function usage() {
   console.log('');
   console.log('Options:');
   console.log(
-    '  --attach                           Record on the existing visible tab (matches URL origin; no navigation)',
+    '  --attach                           Record on an existing tab at URL origin (requires [url]; no navigation)',
   );
   console.log(
     '  --no-sanitize                      Skip automatic artifact sanitization',

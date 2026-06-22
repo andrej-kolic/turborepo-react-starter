@@ -1,7 +1,7 @@
 import { buildMetadata } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory, sleep } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
-import { captureOptions } from '../cli/args.js';
+import { captureOptions, requireUrl } from '../cli/args.js';
 import {
   attachConsoleListeners,
   connectOverCDP,
@@ -16,8 +16,9 @@ import { sanitizeArtifacts } from '../sanitize/index.js';
 export async function recordConsole(options = {}, url) {
   const { durationMs, attach } = captureOptions(options);
 
-  if (attach && url) {
-    return recordConsoleAttached(url, durationMs);
+  if (attach) {
+    const targetUrl = requireUrl('record-console', url);
+    return recordConsoleAttached(targetUrl, durationMs);
   }
 
   return recordConsoleRecent(durationMs);
