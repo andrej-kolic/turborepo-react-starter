@@ -20,9 +20,7 @@ Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note 
 
 ## Step 2 — Pick capture tier
 
-Use attach only in visible Chrome to preserve session and tab state — not in CI. Run `pnpm browser open --url <url>` first.
-
-**Attach semantics:** match tab by URL **origin**; when several tabs share an origin, the most recently opened tab is used and brought to the front. Does not navigate. `record-console` with attach requires `url`. `record-trace` attach: HAR is capture-window only; `trace.zip` may include other tabs in the browser context.
+Use `--attach` only in visible Chrome (match by origin, no navigation) — not in CI. Run `pnpm browser open --url <url>` first. Capture attach: HAR is capture-window only; `trace.zip` may include other tabs; `record-console` needs a URL.
 
 ### A — `devtools-capture` MCP
 
@@ -74,5 +72,3 @@ Artifacts land in `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
 ---
 
 For routine DOM/text verification use the browser-validation skill — never mix tiers.
-
-> Edge-case scenarios (`--attach`, remote URL, SSH tunnel), Storybook URL, artifact formats, and env vars: [`docs/browser-validation.md`](../../../docs/browser-validation.md) · [`packages/browser-capture/README.md`](../../../packages/browser-capture/README.md)
