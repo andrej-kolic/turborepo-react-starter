@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  applyCaptureCliOptions,
   captureOptions,
   parseArgs,
   requireUrl,
@@ -10,6 +11,10 @@ import {
   getDefaultDurationMs,
   validateCaptureDuration,
 } from '../src/config/env.js';
+import {
+  isSanitizeEnabled,
+  setSanitizeEnabled,
+} from '../src/config/runtime.js';
 
 describe('parseArgs', () => {
   it('parses positionals and options', () => {
@@ -52,6 +57,28 @@ describe('captureOptions', () => {
     expect(captureOptions({})).toMatchObject({
       attach: false,
     });
+  });
+
+  it('does not return a sanitize field', () => {
+    expect(captureOptions({ 'no-sanitize': true })).not.toHaveProperty(
+      'sanitize',
+    );
+  });
+});
+
+describe('applyCaptureCliOptions', () => {
+  afterEach(() => {
+    setSanitizeEnabled(true);
+  });
+
+  it('disables sanitization when --no-sanitize is set', () => {
+    applyCaptureCliOptions({ 'no-sanitize': true });
+    expect(isSanitizeEnabled()).toBe(false);
+  });
+
+  it('leaves sanitization enabled by default', () => {
+    applyCaptureCliOptions({});
+    expect(isSanitizeEnabled()).toBe(true);
   });
 });
 

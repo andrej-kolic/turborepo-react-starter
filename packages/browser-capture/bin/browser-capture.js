@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { parseArgs, resolveCaptureUrl } from '../src/cli/args.js';
+import {
+  parseArgs,
+  resolveCaptureUrl,
+  applyCaptureCliOptions,
+} from '../src/cli/args.js';
 import { usage } from '../src/cli/usage.js';
 import { validateCaptureDuration } from '../src/config/env.js';
-import { initRuntime, setSanitizeEnabled } from '../src/config/runtime.js';
+import { initRuntime } from '../src/config/runtime.js';
 import { captureSnapshot } from '../src/capture/snapshot.js';
 import { recordConsole } from '../src/capture/console.js';
 import { recordInteractions } from '../src/capture/interactions.js';
@@ -34,7 +38,7 @@ async function main() {
 
   const { positionals, options } = parseArgs(process.argv.slice(3));
   const url = resolveCaptureUrl(positionals[0]);
-  if (options['no-sanitize']) setSanitizeEnabled(false);
+  applyCaptureCliOptions(options);
 
   if (!cmd || cmd === 'help' || cmd === '--help') {
     usage();
