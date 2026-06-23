@@ -22,7 +22,7 @@ export async function getPerformanceMetrics(page, cdpSession) {
 
   try {
     runtimeMetrics = await page.evaluate(() => {
-      const state = window.__COPILOT_DEVTOOLS_PERF__ || {
+      const state = window.__BROWSER_CAPTURE_PERF__ || {
         navigationStart: performance.timeOrigin,
         lcpEntries: [],
         clsEntries: [],

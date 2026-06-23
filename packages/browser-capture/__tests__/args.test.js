@@ -41,20 +41,16 @@ describe('captureOptions', () => {
     validateCaptureDuration(true);
   });
 
-  it('maps attach and sanitize flags', () => {
-    expect(
-      captureOptions({ attach: true, duration: '3', 'no-sanitize': true }),
-    ).toEqual({
+  it('maps attach flag', () => {
+    expect(captureOptions({ attach: true, duration: '3' })).toEqual({
       durationMs: 3000,
       attach: true,
-      sanitize: false,
     });
   });
 
   it('defaults attach to false', () => {
     expect(captureOptions({})).toMatchObject({
       attach: false,
-      sanitize: true,
     });
   });
 });

@@ -53,6 +53,5 @@ export function captureOptions(options) {
   return {
     durationMs: resolveDurationMs(options),
     attach: isTruthyFlag(options.attach),
-    sanitize: options['no-sanitize'] !== true,
   };
 }

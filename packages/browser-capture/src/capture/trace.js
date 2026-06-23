@@ -147,7 +147,6 @@ async function recordTraceIsolated(targetUrl, durationMs) {
 
     await context.tracing.stop({ path: tracePath });
     tracingStarted = false;
-    await context.close();
 
     const consoleEntries = consoleListener.getEntries();
     const metadata = buildMetadata('trace', artifactsDir, browserInfo, {

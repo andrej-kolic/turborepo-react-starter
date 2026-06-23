@@ -1,5 +1,5 @@
 (() => {
-  if (window.__COPILOT_DEVTOOLS_PERF__) return;
+  if (window.__BROWSER_CAPTURE_PERF__) return;
 
   const state = {
     navigationStart: performance.timeOrigin,
@@ -84,5 +84,5 @@
     { type: 'event', buffered: true, durationThreshold: 0 },
   );
 
-  window.__COPILOT_DEVTOOLS_PERF__ = state;
+  window.__BROWSER_CAPTURE_PERF__ = state;
 })();
