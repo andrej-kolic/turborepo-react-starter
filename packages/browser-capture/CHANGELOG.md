@@ -14,8 +14,10 @@ Newest phases first.
 
 - CLI `--attach` on `record-trace`, `record-performance`, `record-interactions`, `record-console`
 - Matches open tab by URL origin; does not navigate (preserves cookies and auth)
+- Tab selection: most recently opened tab at origin (CDP order) + `bringToFront()` via `@repo/browser-tools`
 - MCP: optional `attach` on `record_trace`, `record_performance`, `record_console`, `record_interactions`
 - Attach-mode HAR via `HarRecorder` (network activity during capture window only)
+- Documented attach caveats: capture-window HAR, browser-context `trace.zip`, `record-console` URL required
 
 #### Root wrapper & URL resolution
 

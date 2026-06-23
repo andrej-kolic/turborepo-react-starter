@@ -22,6 +22,8 @@ Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note 
 
 Use attach only in visible Chrome to preserve session and tab state — not in CI. Run `pnpm browser open --url <url>` first.
 
+**Attach semantics:** match tab by URL **origin**; when several tabs share an origin, the most recently opened tab is used and brought to the front. Does not navigate. `record-console` with attach requires `url`. `record-trace` attach: HAR is capture-window only; `trace.zip` may include other tabs in the browser context.
+
 ### A — `devtools-capture` MCP
 
 Attach: `attach=true` on the tool.
