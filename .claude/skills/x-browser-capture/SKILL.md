@@ -20,7 +20,7 @@ Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note 
 
 ## Step 2 — Pick capture tier
 
-Use `--attach` only in visible Chrome (match by origin, no navigation) — not in CI. Run `pnpm browser open --url <url>` first. Capture attach: HAR is capture-window only; `trace.zip` may include other tabs; `record-console` needs a URL.
+Attach: visible Chrome only, not CI. Match tab by origin; no navigation. Run `pnpm browser open --url <url>` first.
 
 ### A — `devtools-capture` MCP
 
