@@ -9,6 +9,7 @@
     inpEntries: [],
     observerErrors: [],
   };
+  window.__BROWSER_CAPTURE_PERF__ = state;
 
   const safeObserve = (type, callback, options) => {
     try {
@@ -83,6 +84,4 @@
     },
     { type: 'event', buffered: true, durationThreshold: 0 },
   );
-
-  window.__BROWSER_CAPTURE_PERF__ = state;
 })();
