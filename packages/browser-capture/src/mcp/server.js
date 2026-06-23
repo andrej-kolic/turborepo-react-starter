@@ -8,7 +8,14 @@ import { recordInteractions } from '../capture/interactions.js';
 import { recordPerformance } from '../capture/performance.js';
 import { recordTrace } from '../capture/trace.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
-import { mcpToolError } from './errors.js';
+
+function toolError(err) {
+  const message = err instanceof Error ? err.message : String(err);
+  return {
+    content: [{ type: 'text', text: `Error: ${message}` }],
+    isError: true,
+  };
+}
 
 function mcpCaptureOptions(args) {
   const options = {};
@@ -58,7 +65,7 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err);
+        return toolError(err);
       }
     },
   );
@@ -120,7 +127,7 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err);
+        return toolError(err);
       }
     },
   );
@@ -177,7 +184,7 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err);
+        return toolError(err);
       }
     },
   );
@@ -231,11 +238,15 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err, (message) =>
-          message.includes('No existing Chrome page')
-            ? 'record_console requires an already-open Chrome tab. Open a page in Chrome first, then retry. For navigating to a URL, use record_trace instead.'
-            : message,
-        );
+        let message = err instanceof Error ? err.message : String(err);
+        if (message.includes('No existing Chrome page')) {
+          message =
+            'record_console requires an already-open Chrome tab. Open a page in Chrome first, then retry. For navigating to a URL, use record_trace instead.';
+        }
+        return {
+          content: [{ type: 'text', text: `Error: ${message}` }],
+          isError: true,
+        };
       }
     },
   );
@@ -294,7 +305,7 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err);
+        return toolError(err);
       }
     },
   );
@@ -338,7 +349,7 @@ export async function startMcpServer() {
           },
         };
       } catch (err) {
-        return mcpToolError(err);
+        return toolError(err);
       }
     },
   );
