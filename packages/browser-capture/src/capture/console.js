@@ -2,9 +2,9 @@ import { buildMetadata } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory, sleep } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import { captureOptions, requireUrl } from '../cli/args.js';
+import { getPageDetails, withCdpBrowser } from './capture-session.js';
 import {
   attachConsoleListeners,
-  connectOverCDP,
   fetchCdpJson,
   findRecentPage,
   withAttachedSession,
@@ -27,41 +27,22 @@ export async function recordConsole(options = {}, url) {
 async function recordConsoleAttached(url, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('console');
   const browserInfo = await fetchCdpJson('/json/version');
-  let captureResult = null;
 
-  await withAttachedSession(url, async ({ page }) => {
-    captureResult = await captureConsoleFromPage(
-      page,
-      durationMs,
-      artifactsDir,
-      browserInfo,
-      { attach: true },
-    );
-  });
-
-  return captureResult;
+  return withAttachedSession(url, async ({ page }) =>
+    captureConsoleFromPage(page, durationMs, artifactsDir, browserInfo, {
+      attach: true,
+    }),
+  );
 }
 
 async function recordConsoleRecent(durationMs) {
   const artifactsDir = ensureArtifactsDirectory('console');
   const browserInfo = await fetchCdpJson('/json/version');
 
-  const browser = await connectOverCDP();
-  let captureResult = null;
-
-  try {
+  return withCdpBrowser(async (browser) => {
     const { page } = findRecentPage(browser);
-    captureResult = await captureConsoleFromPage(
-      page,
-      durationMs,
-      artifactsDir,
-      browserInfo,
-    );
-  } finally {
-    await browser.close().catch(() => {});
-  }
-
-  return captureResult;
+    return captureConsoleFromPage(page, durationMs, artifactsDir, browserInfo);
+  });
 }
 
 /**
@@ -80,29 +61,31 @@ async function captureConsoleFromPage(
 ) {
   const consoleListener = attachConsoleListeners(page, { mode: 'full' });
 
-  await sleep(durationMs);
+  try {
+    await sleep(durationMs);
 
-  const pageDetails = await page
-    .evaluate(() => ({ url: location.href, title: document.title }))
-    .catch(() => ({ url: null, title: null }));
-  const consoleEntries = consoleListener.getEntries();
-  const metadata = buildMetadata('console', artifactsDir, browserInfo, {
-    url: pageDetails.url || null,
-    title: pageDetails.title || null,
-    durationMs,
-    consoleMessageCount: consoleEntries.length,
-    ...sessionInfo,
-  });
+    const pageDetails = await getPageDetails(page);
+    const consoleEntries = consoleListener.getEntries();
+    const metadata = buildMetadata('console', artifactsDir, browserInfo, {
+      url: pageDetails.url || null,
+      title: pageDetails.title || null,
+      durationMs,
+      consoleMessageCount: consoleEntries.length,
+      ...sessionInfo,
+    });
 
-  writeJson(artifactsDir, 'metadata.json', metadata);
-  writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
+    writeJson(artifactsDir, 'metadata.json', metadata);
+    writeJson(artifactsDir, 'console.json', { entries: consoleEntries });
 
-  if (isSanitizeEnabled()) sanitizeArtifacts(artifactsDir);
-  log(`Saved console artifacts to ${artifactsDir}`);
+    if (isSanitizeEnabled()) sanitizeArtifacts(artifactsDir);
+    log(`Saved console artifacts to ${artifactsDir}`);
 
-  return {
-    artifactsDir,
-    metadata,
-    consoleMessageCount: consoleEntries.length,
-  };
+    return {
+      artifactsDir,
+      metadata,
+      consoleMessageCount: consoleEntries.length,
+    };
+  } finally {
+    consoleListener.detach();
+  }
 }

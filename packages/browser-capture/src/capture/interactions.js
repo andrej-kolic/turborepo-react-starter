@@ -3,12 +3,13 @@ import path from 'node:path';
 import { buildMetadata } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
-import { captureOptions, requireUrl } from '../cli/args.js';
 import {
-  connectOverCDP,
-  fetchCdpJson,
-  withAttachedSession,
-} from '@repo/browser-tools/cdp';
+  getPageDetails,
+  gotoTarget,
+  runCaptureSession,
+  withIsolatedCapture,
+} from './capture-session.js';
+import { fetchCdpJson, withAttachedSession } from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { injectScript } from './inject-page.js';
@@ -18,24 +19,22 @@ import { generatePlaywrightTest } from '../interactions/test-generator.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
 export async function recordInteractions(url, options = {}) {
-  const targetUrl = requireUrl('record-interactions', url);
-  const { durationMs, attach } = captureOptions(options);
-
-  if (attach) {
-    return recordInteractionsAttached(targetUrl, durationMs);
-  }
-
-  return recordInteractionsIsolated(targetUrl, durationMs);
+  return runCaptureSession({
+    command: 'record-interactions',
+    url,
+    options,
+    attachedFn: recordInteractionsAttached,
+    isolatedFn: recordInteractionsIsolated,
+  });
 }
 
 async function recordInteractionsAttached(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('interactions');
   const browserInfo = await fetchCdpJson('/json/version');
-  let captureResult = null;
 
-  await withAttachedSession(targetUrl, async ({ page }) => {
+  return withAttachedSession(targetUrl, async ({ page }) => {
     const interactions = await setupInteractionRecorder(page, 'inject');
-    captureResult = await finalizeInteractions(
+    return finalizeInteractions(
       page,
       targetUrl,
       durationMs,
@@ -45,23 +44,17 @@ async function recordInteractionsAttached(targetUrl, durationMs) {
       { attach: true },
     );
   });
-
-  return captureResult;
 }
 
 async function recordInteractionsIsolated(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('interactions');
   const browserInfo = await fetchCdpJson('/json/version');
 
-  const browser = await connectOverCDP();
-  const context = await browser.newContext();
-  let captureResult = null;
-
-  try {
+  return withIsolatedCapture(async ({ context }) => {
     const page = await context.newPage();
     const interactions = await setupInteractionRecorder(page, 'init');
-    await page.goto(targetUrl, { waitUntil: 'load', timeout: 30_000 });
-    captureResult = await finalizeInteractions(
+    await gotoTarget(page, targetUrl);
+    return finalizeInteractions(
       page,
       targetUrl,
       durationMs,
@@ -69,12 +62,7 @@ async function recordInteractionsIsolated(targetUrl, durationMs) {
       browserInfo,
       interactions,
     );
-  } finally {
-    await context.close().catch(() => {});
-    await browser.close().catch(() => {});
-  }
-
-  return captureResult;
+  });
 }
 
 /**
@@ -173,9 +161,7 @@ async function finalizeInteractions(
     }
   }
 
-  const pageDetails = await page
-    .evaluate(() => ({ url: location.href, title: document.title }))
-    .catch(() => ({ url: null, title: null }));
+  const pageDetails = await getPageDetails(page);
 
   const resolvedUrl = pageDetails.url || targetUrl;
   const metadata = buildMetadata('interactions', artifactsDir, browserInfo, {
