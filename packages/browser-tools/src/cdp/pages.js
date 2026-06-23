@@ -6,6 +6,8 @@
 
 /**
  * Find an open page whose origin matches the given URL.
+ * When multiple tabs share the origin, returns the most recently used one
+ * (last in CDP tab order).
  *
  * @param {Browser} browser
  * @param {string} url
@@ -19,11 +21,14 @@ export async function findPageAtOrigin(browser, url) {
     return null;
   }
 
+  /** @type {Page | null} */
+  let match = null;
+
   for (const context of browser.contexts()) {
     for (const page of context.pages()) {
       try {
         if (new URL(page.url()).origin === origin) {
-          return page;
+          match = page;
         }
       } catch {
         // skip chrome://, about:blank, etc.
@@ -31,7 +36,7 @@ export async function findPageAtOrigin(browser, url) {
     }
   }
 
-  return null;
+  return match;
 }
 
 /**

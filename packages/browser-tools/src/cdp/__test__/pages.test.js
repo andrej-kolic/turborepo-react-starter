@@ -20,6 +20,16 @@ describe('findPageAtOrigin', () => {
     ).resolves.toBe(matching);
   });
 
+  it('prefers the most recently used tab when multiple share an origin', async () => {
+    const first = makePage('http://localhost:5173/a');
+    const second = makePage('http://localhost:5173/b');
+    const browser = makeBrowser([{ pages: () => [first, second] }]);
+
+    await expect(
+      findPageAtOrigin(browser, 'http://localhost:5173/'),
+    ).resolves.toBe(second);
+  });
+
   it('returns null when no page matches the origin', async () => {
     const browser = makeBrowser([
       { pages: () => [makePage('http://example.com/')] },

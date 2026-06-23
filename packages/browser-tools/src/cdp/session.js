@@ -69,6 +69,8 @@ export async function withAttachedSession(url, fn, options = {}) {
     );
   }
 
+  await page.bringToFront();
+
   const consoleListener = attachConsoleListeners(page);
 
   try {
