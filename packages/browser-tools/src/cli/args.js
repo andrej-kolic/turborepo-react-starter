@@ -4,6 +4,8 @@
  */
 
 /**
+ * Treat CLI boolean flags as true when value is true, `'true'`, or `'1'`.
+ *
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -12,6 +14,8 @@ export function isTruthyFlag(value) {
 }
 
 /**
+ * Parse argv into positional args and `--key` / `--key=value` options.
+ *
  * @param {string[]} argv
  * @returns {{ positionals: string[], options: Record<string, string | boolean> }}
  */
@@ -54,6 +58,8 @@ export function resolveUrl(urlArg) {
 }
 
 /**
+ * Normalize shared browser CLI flags into typed session options.
+ *
  * @param {Record<string, string | boolean>} options
  * @returns {{ selector?: string, noConsoleErrors: boolean, attach: boolean, timeout?: number }}
  */
@@ -74,6 +80,8 @@ export function sharedOptions(options) {
 }
 
 /**
+ * Normalize screenshot CLI flags into capture options.
+ *
  * @param {Record<string, string | boolean>} options
  * @param {string | null | undefined} outputPath
  * @returns {{ useBase64: boolean, fullPage: boolean, format: 'png' | 'jpeg' }}

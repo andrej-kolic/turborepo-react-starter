@@ -20,7 +20,10 @@ const NAVIGATION_TIMEOUT_MS = 30_000;
  */
 
 /**
+ * Resolve selector wait timeout from options or the package default.
+ *
  * @param {SessionOptions} [options]
+ * @returns {number}
  */
 export function selectorTimeout(options = {}) {
   return options.timeout ?? DEFAULT_SELECTOR_TIMEOUT_MS;
@@ -137,7 +140,10 @@ async function collectPageDiagnostics(page, pageErrors) {
 }
 
 /**
+ * Collect page state and console errors for failure diagnostics.
+ *
  * @param {PageSession} session
+ * @returns {Promise<object>}
  */
 export async function sessionDiagnostics(session) {
   return collectPageDiagnostics(session.page, session.pageErrors);
@@ -175,6 +181,7 @@ export async function waitForSelectorOrDiagnostics(session, selector, timeout) {
  * @param {PageSession} session
  * @param {string} [selector]
  * @param {number} timeout
+ * @returns {Promise<{ ok: true } | { ok: false, diagnostics: object }>}
  */
 export async function settlePage(session, selector, timeout) {
   if (selector) {
@@ -191,6 +198,7 @@ export async function settlePage(session, selector, timeout) {
  *
  * @param {PageSession} session
  * @param {boolean} [enabled]
+ * @returns {Promise<object | undefined>}
  */
 export async function consoleDiagnostics(session, enabled) {
   if (!enabled || session.pageErrors.length === 0) return undefined;

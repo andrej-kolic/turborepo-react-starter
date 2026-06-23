@@ -11,6 +11,8 @@ import {
  */
 
 /**
+ * Assert the page loaded without console errors.
+ *
  * @param {string} url
  * @param {SessionOptions} [options]
  * @returns {Promise<{ consoleOk: boolean, diagnostics?: object }>}
@@ -32,6 +34,8 @@ export async function assertNoConsoleErrors(url, options = {}) {
 }
 
 /**
+ * Assert a CSS selector is present in the DOM.
+ *
  * @param {string} url
  * @param {string} selector
  * @param {SessionOptions & { noConsoleErrors?: boolean }} [options]
@@ -68,6 +72,8 @@ export async function assertSelectorExists(url, selector, options = {}) {
 }
 
 /**
+ * Assert a selector exists and its text content includes the expected string.
+ *
  * @param {string} url
  * @param {string} selector
  * @param {string} text

@@ -4,8 +4,11 @@
  */
 
 /**
+ * Attach page console listeners. Full mode records all messages; errors mode collects errors only.
+ *
  * @param {Page} page
  * @param {{ mode?: ConsoleListenerMode }} [options]
+ * @returns {{ pageErrors: string[], detach(): void } | { getEntries(): object[], detach(): void }}
  */
 export function attachConsoleListeners(page, { mode = 'errors' } = {}) {
   if (mode === 'full') {

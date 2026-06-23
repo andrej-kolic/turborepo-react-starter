@@ -1,6 +1,8 @@
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
 
 /**
+ * Resolve CDP host, port, and base URL from args or environment.
+ *
  * @param {number} [port]
  * @param {string} [host]
  * @returns {{ port: number, host: string, baseUrl: string }}
