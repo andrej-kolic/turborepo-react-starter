@@ -6,12 +6,8 @@ import fs from 'node:fs';
  */
 export class HarRecorder {
   constructor() {
-    /** @type {Map<string, object>} */
+    /** @type {Map<object, object>} */
     this.entries = new Map();
-    /** @type {WeakMap<object, string>} */
-    this._requestKeys = new WeakMap();
-    /** @type {number} */
-    this._nextKey = 0;
     /** @type {import('playwright-core').Page | null} */
     this.page = null;
     this._onRequest = null;
@@ -24,9 +20,7 @@ export class HarRecorder {
   attach(page) {
     this.page = page;
     this._onRequest = (request) => {
-      const key = String(this._nextKey++);
-      this._requestKeys.set(request, key);
-      this.entries.set(key, {
+      this.entries.set(request, {
         startedDateTime: new Date().toISOString(),
         time: 0,
         request: {
@@ -44,10 +38,7 @@ export class HarRecorder {
       });
     };
     this._onResponse = async (response) => {
-      const request = response.request();
-      const key = this._requestKeys.get(request);
-      if (!key) return;
-      const entry = this.entries.get(key);
+      const entry = this.entries.get(response.request());
       if (!entry) return;
 
       entry.response = {
