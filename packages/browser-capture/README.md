@@ -68,16 +68,18 @@ pnpm capture record-console --attach --duration 3
 
 ### `--attach`: record on the existing visible tab
 
+Use `--attach` only in visible Chrome to preserve session and tab state — not in CI (default isolated mode there).
+
 By default, navigate-based capture commands open a **new isolated browser context** (no cookies, no auth). Add `--attach` to record on the tab already open in the visible Chrome window — preserving its session, cookies, and current URL.
 
 `--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. The command does **not** navigate; it records whatever the tab currently shows. If no tab is found at that origin, the error hints to run `browser-tools open --url <url>` first.
 
-|                       | Default (no `--attach`)           | `--attach`                                   |
-| --------------------- | --------------------------------- | -------------------------------------------- |
-| `record-trace`        | New context + navigate + full HAR | Existing tab; HAR covers capture window only |
-| `record-performance`  | New context + navigate            | Existing tab; no navigation                  |
-| `record-interactions` | New context + navigate            | Existing tab; interact during capture window |
-| `record-console`      | Most recent open tab              | Requires URL; match tab by origin            |
+|                       | Default (no `--attach`)                       | `--attach`                                                                          |
+| --------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `record-trace`        | New context + navigate + full HAR + trace.zip | Existing tab; page-scoped HAR/console/perf; trace.zip is **browser-context** scoped |
+| `record-performance`  | New context + navigate                        | Existing tab; no navigation                                                         |
+| `record-interactions` | New context + navigate                        | Existing tab; interact during capture window                                        |
+| `record-console`      | Most recent open tab                          | Requires URL; match tab by origin                                                   |
 
 Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console`. With `--attach`, pass a URL (positional, `APP_URL`, or `CAPTURE_URL`) so the tab is matched by origin.
 
@@ -133,7 +135,7 @@ Standard HAR 1.2 format. Open in Chrome DevTools → Network → Import HAR, or 
 
 ### `trace.zip`
 
-Playwright trace format. View with:
+Playwright trace format. With `--attach`, `trace.zip` includes activity from **all tabs in the Chrome browser context**, not just the attached tab (`metadata.json` sets `traceScope: "browser-context"`). View with:
 
 ```bash
 npx playwright show-trace packages/browser-capture/artifacts/trace-*/trace.zip

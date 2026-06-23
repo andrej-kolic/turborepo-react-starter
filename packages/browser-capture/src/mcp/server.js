@@ -75,7 +75,7 @@ export async function startMcpServer() {
     {
       title: 'Record Trace',
       description:
-        'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record the existing visible tab at the URL origin without navigating.',
+        'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record the existing visible tab at the URL origin without navigating; trace.zip is browser-context scoped (may include other tabs).',
       inputSchema: z.object({
         url: z.string().url().describe('URL to navigate to and record'),
         duration: z
@@ -88,7 +88,7 @@ export async function startMcpServer() {
           .boolean()
           .optional()
           .describe(
-            'Record on the existing visible tab at the URL origin (no navigation)',
+            'Record on the existing visible tab at the URL origin (no navigation). trace.zip is browser-context scoped.',
           ),
       }),
       annotations: { readOnlyHint: false, destructiveHint: false },
@@ -97,6 +97,10 @@ export async function startMcpServer() {
       try {
         const result = await recordTrace(args.url, mcpCaptureOptions(args));
         const { lcp, cls, inp } = result.webVitals;
+        const traceNote =
+          result.metadata.traceScope === 'browser-context'
+            ? 'Note: trace.zip is browser-context scoped (may include other tabs).'
+            : null;
         return {
           content: [
             {
@@ -105,9 +109,12 @@ export async function startMcpServer() {
                 `Trace saved to ${result.artifactsDir}`,
                 `Files: metadata.json, har.json, trace.zip, console.json, performance.json`,
                 `View trace: npx playwright show-trace ${result.artifactsDir}/trace.zip`,
+                traceNote,
                 `Web Vitals: LCP=${lcp != null ? `${Math.round(lcp)}ms` : 'n/a'}, CLS=${cls}, INP=${inp != null ? `${Math.round(inp)}ms` : 'n/a'}`,
                 `Requests: ${result.requestCount}, Console messages: ${result.consoleMessageCount}`,
-              ].join('\n'),
+              ]
+                .filter(Boolean)
+                .join('\n'),
             },
           ],
           structuredContent: {
@@ -119,6 +126,7 @@ export async function startMcpServer() {
               'console.json',
               'performance.json',
             ],
+            traceScope: result.metadata.traceScope ?? null,
             url: result.metadata.url,
             webVitals: result.webVitals,
             requestCount: result.requestCount,

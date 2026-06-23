@@ -20,7 +20,11 @@ Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note 
 
 ## Step 2 — Pick capture tier
 
+Use attach only in visible Chrome to preserve session and tab state — not in CI. Run `pnpm browser open --url <url>` first.
+
 ### A — `devtools-capture` MCP
+
+Attach: `attach=true` on the tool.
 
 **When:** `record_trace` is in your tool list.
 
@@ -34,11 +38,11 @@ Use the URL from Step 1. Do not run CLI capture commands.
 | Console dump          | `record_console`      | `duration` (tab must exist) |
 | Interaction recording | `record_interactions` | `url`, `duration`           |
 
-Add `attach=true` to record the visible Chrome tab — preserves session, matches by origin, does not navigate. Run `pnpm browser open --url <url>` first.
-
 ---
 
 ### B — CLI (no MCP)
+
+Attach: `--attach` on the command.
 
 ```bash
 pnpm browser:setup   # required_permissions: all
@@ -62,8 +66,6 @@ Retry. Do not fall back to verify-tier tools.
 | Console dump          | `pnpm capture record-console --duration 3`       |
 | Interaction recording | `pnpm capture record-interactions --duration 10` |
 | Package for CI        | `pnpm capture upload-artifacts`                  |
-
-Add `--attach` for session-preserving capture on the visible tab (same semantics as Tier A).
 
 Artifacts land in `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
 

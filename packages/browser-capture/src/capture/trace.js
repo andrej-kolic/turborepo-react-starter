@@ -49,6 +49,9 @@ async function recordTraceAttached(targetUrl, durationMs) {
     });
 
     try {
+      // TODO: switch to page-scoped tracing when Playwright supports it over CDP
+      // (https://github.com/microsoft/playwright/issues/34769). Until then,
+      // context.tracing includes all tabs in the Chrome browser context.
       await context.tracing.start({ screenshots: true, snapshots: true });
       tracingStarted = true;
 
@@ -77,6 +80,7 @@ async function recordTraceAttached(targetUrl, durationMs) {
         requestCount,
         consoleMessageCount: consoleEntries.length,
         traceFormat: 'playwright-zip',
+        traceScope: 'browser-context',
         attach: true,
       });
 
