@@ -1,0 +1,20 @@
+---
+root: false
+targets:
+  - cursor
+  - claudecode
+  - copilot
+description: JSDoc on exported package API — when to add and format.
+globs:
+  - packages/**
+cursor:
+  alwaysApply: false
+---
+
+# JSDoc
+
+Exception to "no narrating comments" for **exported** package API.
+
+- **When:** new or changed exports — especially CLI/MCP entry points or non-obvious behavior (side effects, modes, throws)
+- **Skip:** non-exported code, re-exports, constants, trivial one-liners, typed React components
+- **Format:** 1–2 sentence description; TS = description only, JS = + `@param`/`@returns`; match the file

@@ -39,7 +39,7 @@ Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: 
 
 ## Code style
 
-- No comments that narrate what the code does. Comments explain _why_, not _what_.
+- No comments that narrate what the code does. Comments explain _why_, not _what_. JSDoc on exported package API is the exception — see jsdoc rule.
 
 ## Before calling it done
 
