@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+/**
+ * Capture-tier CLI and MCP entry point for HAR, traces, Web Vitals, console, and interaction artifacts.
+ * Requires Chrome with remote debugging; use @repo/browser-tools for DOM verification only.
+ */
 import path from 'node:path';
 import {
   parseArgs,

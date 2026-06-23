@@ -1,3 +1,4 @@
+/** Compile-time environment values exposed to the app by the active bundler. */
 export type EnvironmentVariables = {
   // set by bundler
   readonly BUILD_ENVIRONMENT: string;
@@ -21,6 +22,10 @@ const environmentVariables: EnvironmentVariables = {
 };
 
 // TODO: rename to getRuntimeEnvVariables() or getAppconfig()
+/**
+ * Returns bundler-injected app config from import.meta.env.
+ * Values are fixed at build time, not read from runtime process.env.
+ */
 export function getEnvironmentVariables() {
   return environmentVariables;
 }

@@ -1,3 +1,4 @@
+/** Print CLI command and flag help. Callers decide exit code. */
 export function usage() {
   console.log('browser-capture CLI');
   console.log(

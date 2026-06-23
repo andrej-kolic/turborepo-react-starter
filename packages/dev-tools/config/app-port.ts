@@ -30,6 +30,7 @@ export interface AppTargetsFromEnv {
 
 export type AppTargets = AppTargetsFromEnv & Partial<AppEndpoints>;
 
+/** Target resolution mode: dev uses APP_URL then BUNDLER dev ports; preview uses BUNDLER preview ports only. */
 export type AppTargetMode = 'dev' | 'preview';
 
 type AppPortField = 'devPort' | 'previewPort';
@@ -59,7 +60,12 @@ function portFromUrl(url: string): string {
   throw new Error(`APP_URL has no resolvable port: ${url}`);
 }
 
-/** @param appDirName e.g. app-vite, ui-storybook */
+/**
+ * Read devPort and previewPort from apps/<appDirName>/package.json and return localhost URLs.
+ * Throws if the file is missing or ports are invalid.
+ *
+ * @param appDirName e.g. app-vite, ui-storybook
+ */
 export function loadAppEndpoints(
   appDirName: string,
   root = workspaceRoot,
@@ -135,6 +141,10 @@ export function resolveAppTargets(
   };
 }
 
+/**
+ * Convenience wrapper around resolveAppTargets that returns only the URL, or null when required env is unset.
+ * Propagates throws from invalid APP_URL, unknown BUNDLER, or bad package.json.
+ */
 export function resolveAppUrl(
   env: NodeJS.ProcessEnv = process.env,
   mode: AppTargetMode = 'dev',
