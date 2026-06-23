@@ -12,11 +12,17 @@ Used by bundler apps and tooling:
 
 ## `bin/` — CLI entrypoints
 
-| Command                    | Purpose                                                    |
-| -------------------------- | ---------------------------------------------------------- |
-| `dev-tools-with-app-url`   | Resolve `APP_URL` from `BUNDLER` and spawn a child command |
-| `dev-tools-print-app-port` | Print resolved dev port (CI shell scripts)                 |
+| Command                | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `dev-tools-app-target` | Resolve app URL/port or run a child with `APP_URL` set |
 
-Root `pnpm browser:*` scripts use `dev-tools-with-app-url`. Plain-Node repo workflows stay in `/scripts`.
+Subcommands:
+
+- `dev-tools-app-target url [--preview]` — print resolved URL
+- `dev-tools-app-target port [--preview]` — print resolved port
+- `dev-tools-app-target resolve [--preview]` — print URL and port (tab-separated)
+- `dev-tools-app-target run <cmd> [args...]` — run command with dev `APP_URL` injected
+
+Root `pnpm browser:*` scripts use `dev-tools-app-target run`. Plain-Node repo workflows stay in `/scripts`.
 
 Run bins via `pnpm exec` or root `package.json` scripts after `@repo/dev-tools` is a dependency.

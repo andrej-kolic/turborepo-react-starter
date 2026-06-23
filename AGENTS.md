@@ -48,7 +48,7 @@ Ports are declared as `devPort` / `previewPort` in each app's `package.json` —
 single source of truth. Bundler configs, `@repo/dev-tools/config/app-port`, and browser
 tooling all read from it. Override the target URL with `APP_URL` only (not `PORT`).
 
-Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-with-app-url`, `dev-tools-print-app-port`). Root `/scripts` holds plain-Node workflow scripts only.
+Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
 | Service                | Start                                         |
 | ---------------------- | --------------------------------------------- |
@@ -57,7 +57,7 @@ Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-too
 | app-esbuild            | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
 | ui-storybook           | `pnpm dev:ui`                                 |
 
-Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser validation,
+Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
 
 To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)
@@ -84,7 +84,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
 | [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
 | [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
-| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Token/layout checks via `browser eval`                                   |
+| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks — snapshot, screenshot, `browser eval`               |
 
 Pick the **lightest** tool for the question: `pnpm test` (logic) · Storybook (isolated UI) ·
 browser-validation skill (DOM/text) · browser-capture skill (artifacts).

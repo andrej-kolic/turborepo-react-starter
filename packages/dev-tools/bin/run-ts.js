@@ -12,7 +12,7 @@ const tsxRoot = dirname(require.resolve('tsx/package.json'));
 const tsxCli = join(tsxRoot, 'dist/cli.mjs');
 
 /**
- * @param {string} tsFileName  e.g. `print-app-port.ts` in this directory
+ * @param {string} tsFileName  e.g. `app-target.ts` in this directory
  * @param {string[]} [argv]    forwarded args (defaults to process.argv.slice(2))
  */
 export function runTsBin(tsFileName, argv = process.argv.slice(2)) {

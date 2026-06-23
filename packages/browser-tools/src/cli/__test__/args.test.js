@@ -30,8 +30,12 @@ describe('parseArgs', () => {
   });
 
   it('collects positionals', () => {
-    const { positionals } = parseArgs(['spec.yaml', '--url', 'http://x.test']);
-    expect(positionals).toEqual(['spec.yaml']);
+    const { positionals } = parseArgs([
+      'path/to/file',
+      '--url',
+      'http://x.test',
+    ]);
+    expect(positionals).toEqual(['path/to/file']);
   });
 
   it('stores --timeout value as string', () => {

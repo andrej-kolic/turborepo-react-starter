@@ -5,9 +5,8 @@ paths:
   - .claude/skills/x-browser-*/**
   - docs/browser-validation.md
   - .github/workflows/verify-browser-smoke.yml
-  - .github/workflows/capture-devtools.yml
+  - .github/workflows/capture-browser-trace.yml
 ---
-
 # Browser work
 
 Read the **[browser-validation skill](../../.claude/skills/x-browser-validation/SKILL.md)** first — it has the tier A/B/C decision graph and bootstrap commands.
@@ -16,7 +15,7 @@ Two tiers — never mix them:
 
 | Tier        | Package / tool                                  | Use for                                                                          |
 | ----------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
-| **Verify**  | `@repo/browser-tools`, MCP browser surfaces     | DOM assertions, `browser eval`, `browser screenshot` — no capture-tier artifacts |
+| **Verify**  | `@repo/browser-tools`, MCP browser surfaces     | DOM snapshot, assertions, `browser screenshot` — no capture-tier artifacts |
 | **Capture** | `@repo/browser-capture`, `devtools-capture` MCP | HAR, traces, Web Vitals, console — produces artifacts                            |
 
 **Sandbox:** `chrome:*` and `browser:setup` need `required_permissions: ["all"]`. Regular `pnpm browser validate` / `read` / `eval` connect over localhost CDP and do not.

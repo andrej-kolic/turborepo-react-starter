@@ -33,12 +33,14 @@
     "prepare": "husky",
     "update:dependencies": "syncpack update --interactive",
     "chrome:debug": "browser-tools-chrome",
-    "browser:setup": "dotenv -- dev-tools-with-app-url browser-tools-setup",
-    "browser:ensure-app": "dotenv -- dev-tools-with-app-url node scripts/ensure-app.js",
-    "browser": "dotenv -- dev-tools-with-app-url browser-tools",
+    "browser:setup": "dotenv -- dev-tools-app-target run browser-tools-setup",
+    "browser:ensure-app": "dotenv -- dev-tools-app-target run node scripts/ensure-app.js",
+    "browser": "dotenv -- dev-tools-app-target run browser-tools",
+    "capture": "dotenv -- dev-tools-app-target run browser-capture",
     "sync:agents": "rulesync generate"
   },
   "devDependencies": {
+    "@repo/browser-capture": "workspace:*",
     "@repo/browser-tools": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",

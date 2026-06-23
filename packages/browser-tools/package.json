@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    "./cdp": "./src/cdp/index.js",
+    "./cli/args": "./src/cli/args.js"
+  },
   "bin": {
     "browser-tools": "./bin/browser.js",
     "browser-tools-chrome": "./bin/chrome.js",

@@ -13,7 +13,7 @@
     "devtools-capture": {
       "command": "node",
       "args": [
-        "packages/browser-capture/bin/copilot-devtools.js",
+        "packages/browser-capture/bin/browser-capture.js",
         "mcp-server"
       ],
       "env": {

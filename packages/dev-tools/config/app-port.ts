@@ -5,8 +5,8 @@
  *
  * Public API:
  *   loadAppEndpoints(appDirName) — read apps/<app>/package.json → ports + localhost URLs
- *   resolveAppTargets(env)       — APP_URL override, else BUNDLER dev targets; null if unset; throws if invalid
- *   resolveAppUrl(env)           — resolveAppTargets(env)?.url; null if unset; throws if invalid
+ *   resolveAppTargets(env, mode) — dev: APP_URL override else BUNDLER dev targets; preview: BUNDLER preview targets; null if unset
+ *   resolveAppUrl(env, mode)     — resolveAppTargets(env, mode)?.url; null if unset; throws if invalid
  *
  * Bundler configs already load their package.json — use pkg.devPort / pkg.previewPort directly.
  */
@@ -30,6 +30,8 @@ export interface AppTargetsFromEnv {
 
 export type AppTargets = AppTargetsFromEnv & Partial<AppEndpoints>;
 
+export type AppTargetMode = 'dev' | 'preview';
+
 type AppPortField = 'devPort' | 'previewPort';
 
 function readPort(pkg: Record<string, unknown>, field: AppPortField): number {
@@ -42,6 +44,19 @@ function readPort(pkg: Record<string, unknown>, field: AppPortField): number {
 
 function localhostUrl(port: number): string {
   return `http://localhost:${port}`;
+}
+
+function portFromUrl(url: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`APP_URL is not a valid URL: ${url}`);
+  }
+  if (parsed.port) return parsed.port;
+  if (parsed.protocol === 'https:') return '443';
+  if (parsed.protocol === 'http:') return '80';
+  throw new Error(`APP_URL has no resolvable port: ${url}`);
 }
 
 /** @param appDirName e.g. app-vite, ui-storybook */
@@ -69,27 +84,29 @@ export function loadAppEndpoints(
 }
 
 /**
- * Resolve the active dev-server URL and port for browser tooling / CI.
+ * Resolve the active app URL and port for browser tooling / CI.
  *
- * Resolution order:
- *   1. APP_URL set → use as-is (port from URL)
+ * Dev mode (`mode: 'dev'`):
+ *   1. APP_URL set → use as-is (port from URL, default 80/443 when omitted)
  *   2. BUNDLER set → devUrl / devPort from apps/<BUNDLER>/package.json
  *   3. else → null
  *
- * Returns null when neither APP_URL nor BUNDLER is set.
+ * Preview mode (`mode: 'preview'`):
+ *   1. BUNDLER set → previewUrl / previewPort from apps/<BUNDLER>/package.json
+ *   2. else → null
+ *
+ * APP_URL applies to dev mode only; preview always uses BUNDLER endpoints.
+ *
+ * Returns null when required env is unset.
  * Throws when env is set but invalid (bad URL, unknown bundler, missing/invalid package.json).
  */
 export function resolveAppTargets(
   env: NodeJS.ProcessEnv = process.env,
+  mode: AppTargetMode = 'dev',
 ): AppTargets | null {
-  if (env.APP_URL) {
+  if (mode === 'dev' && env.APP_URL) {
     const url = env.APP_URL;
-    let port: string;
-    try {
-      port = new URL(url).port;
-    } catch {
-      throw new Error(`APP_URL is not a valid URL: ${url}`);
-    }
+    const port = portFromUrl(url);
     return {
       url,
       port,
@@ -101,6 +118,15 @@ export function resolveAppTargets(
   if (!bundler) return null;
 
   const endpoints = loadAppEndpoints(bundler);
+  if (mode === 'preview') {
+    return {
+      url: endpoints.previewUrl,
+      port: String(endpoints.previewPort),
+      source: 'BUNDLER',
+      ...endpoints,
+    };
+  }
+
   return {
     url: endpoints.devUrl,
     port: String(endpoints.devPort),
@@ -111,6 +137,7 @@ export function resolveAppTargets(
 
 export function resolveAppUrl(
   env: NodeJS.ProcessEnv = process.env,
+  mode: AppTargetMode = 'dev',
 ): string | null {
-  return resolveAppTargets(env)?.url ?? null;
+  return resolveAppTargets(env, mode)?.url ?? null;
 }

@@ -1,8 +1,8 @@
-# Fast headless smoke test — verify tier only (no artifacts).
+# Headless smoke test — verify tier with optional capture on failure.
 # Validates the live app renders a key page region; not a replacement for unit tests.
-# Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
+# On smoke failure, record-trace captures HAR + Playwright trace + console for debugging.
 #
-# Matrix: all bundler apps. Port/URL derived via dev-tools-with-app-url → app-port.ts.
+# Matrix: all bundler apps. Port/URL derived via dev-tools-app-target → app-port.ts.
 
 name: 'Verify: Browser smoke'
 
@@ -32,13 +32,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js (with pnpm cache)
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
@@ -62,10 +62,27 @@ jobs:
             exit 1
           fi
 
+      - name: Capture trace on smoke failure
+        if: failure()
+        run: |
+          pnpm capture record-trace --duration 5
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+
+      - name: Upload capture artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-failure-trace-${{ matrix.bundler }}-${{ github.run_id }}
+          path: packages/browser-capture/artifacts/**
+          retention-days: 30
+          if-no-files-found: ignore
+
       - name: Cleanup
         if: always()
         run: |
           pnpm chrome:debug --stop || true
-          if APP_PORT=$(pnpm exec dev-tools-print-app-port); then
+          if APP_PORT=$(pnpm exec dev-tools-app-target port); then
             lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
           fi

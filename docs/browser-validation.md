@@ -20,10 +20,11 @@ For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`
 
 ### URL resolution
 
-Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-with-app-url`**
-(`@repo/dev-tools/config/app-port`). Resolution order: `APP_URL` already set → use as-is; else
+Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-app-target run`**
+(`@repo/dev-tools/config/app-port`). Dev resolution: `APP_URL` already set → use as-is; else
 derive `http://localhost:<devPort>` from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` /
-`resolveAppUrl()`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
+`resolveAppUrl()`. Preview resolution (`--preview`) always uses `BUNDLER` + `previewPort` and
+ignores `APP_URL`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
 
 For bootstrap commands (ensure-app, setup, tier selection), follow the
 **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)**.
@@ -31,7 +32,7 @@ For bootstrap commands (ensure-app, setup, tier selection), follow the
 ### CLI URL resolution
 
 When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
-`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-with-app-url` wrapper.
+`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-app-target run` wrapper.
 
 ### CI bootstrap
 
@@ -44,7 +45,7 @@ pnpm browser:setup
 pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
 ```
 
-`APP_URL` is derived from `BUNDLER` via `dev-tools-with-app-url` — CI does not set it explicitly.
+`APP_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
 `--log-file` captures dev-server output for CI failures (startup timeout or validate step).
 
 ---
@@ -80,10 +81,10 @@ pnpm browser read --url <url> --selector "[data-testid=app-header]" --attach
 
 **`--attach` rules:**
 
-- Matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies, regardless of path.
-- Does **not** navigate — inspects whatever the tab currently shows.
-- Requires a tab open at that origin (`pnpm browser open` or manual navigation). Errors with a hint if none is found.
-- **Do not use in headless/CI/Cloud Agent** — each command should open a fresh isolated context there.
+- Match tab by **origin** only; does not navigate.
+- Multiple tabs at same origin → most recent (CDP order), brought to front.
+- Tab must already be open (`pnpm browser open`); not for CI/headless.
+- **Capture (`pnpm capture --attach`):** HAR = traffic during capture window only; `trace.zip` may include other tabs. `record-console --attach` requires a URL.
 
 ---
 

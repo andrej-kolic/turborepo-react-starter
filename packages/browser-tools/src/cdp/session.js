@@ -1,4 +1,6 @@
 import { connectOverCDP } from './connect.js';
+import { attachConsoleListeners } from './console.js';
+import { findPageAtOrigin } from './pages.js';
 import { BROWSER_BIN } from '../cli/bin-names.js';
 
 export const DEFAULT_SELECTOR_TIMEOUT_MS = 30_000;
@@ -33,54 +35,16 @@ async function createPageSession(port, host) {
   const browser = await connectOverCDP(port, host);
   const context = await browser.newContext();
   const page = await context.newPage();
-  const pageErrors = [];
-
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      pageErrors.push(`[console.error] ${msg.text()}`);
-    }
-  });
-  page.on('pageerror', (error) => {
-    pageErrors.push(`[pageerror] ${error.message}`);
-  });
+  const consoleListener = attachConsoleListeners(page);
 
   return {
     page,
-    pageErrors,
+    pageErrors: consoleListener.pageErrors,
     async close() {
       await context.close().catch(() => {});
       await browser.close().catch(() => {});
     },
   };
-}
-
-/**
- * Find an open page in Chrome whose origin matches the given URL.
- * Used by withAttachedSession to locate the visible tab.
- *
- * @param {import('playwright-core').Browser} browser
- * @param {string} url
- * @returns {Promise<Page | null>}
- */
-async function findPageAtOrigin(browser, url) {
-  let origin;
-  try {
-    origin = new URL(url).origin;
-  } catch {
-    return null;
-  }
-  for (const context of browser.contexts()) {
-    for (const page of context.pages()) {
-      try {
-        if (new URL(page.url()).origin === origin) {
-          return page;
-        }
-      } catch {
-        // skip chrome://, about:blank, etc.
-      }
-    }
-  }
-  return null;
 }
 
 /**
@@ -105,23 +69,14 @@ export async function withAttachedSession(url, fn, options = {}) {
     );
   }
 
-  const pageErrors = [];
-  const onConsole = (msg) => {
-    if (msg.type() === 'error')
-      pageErrors.push(`[console.error] ${msg.text()}`);
-  };
-  const onPageError = (error) => {
-    pageErrors.push(`[pageerror] ${error.message}`);
-  };
+  await page.bringToFront();
 
-  page.on('console', onConsole);
-  page.on('pageerror', onPageError);
+  const consoleListener = attachConsoleListeners(page);
 
   try {
-    return await fn({ page, pageErrors });
+    return await fn({ page, pageErrors: consoleListener.pageErrors });
   } finally {
-    page.off('console', onConsole);
-    page.off('pageerror', onPageError);
+    consoleListener.detach();
     await browser.close().catch(() => {});
   }
 }

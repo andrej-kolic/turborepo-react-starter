@@ -3,7 +3,7 @@ name: x-browser-capture
 description: >-
   Capture Chrome DevTools artifacts — HAR, Playwright traces, Web Vitals
   (LCP/CLS/INP), console logs, and recorded interactions — via the
-  devtools-capture MCP server or the copilot-devtools CLI. Use when the user
+  devtools-capture MCP server or the browser-capture CLI. Use when the user
   asks to record a trace, profile performance, capture network/HAR, dump
   console, or produce a CI debugging artifact. For routine DOM/text checks, use
   the browser-validation skill instead.
@@ -13,52 +13,67 @@ targets:
 
 # Browser Capture
 
-Capture/instrumentation only — produces artifacts. For routine DOM/text verification, use the
-**browser-validation** skill first.
-
-## Prerequisites
+## Step 1 — Ensure app is running
 
 ```bash
-# Start Chrome and open a tab (idempotent) — required_permissions: all
-# URL auto-resolves from BUNDLER via dev-tools-with-app-url; pass --url to override
-pnpm browser:setup
-
-# Check / stop Chrome if needed
-pnpm chrome:debug --status  # check (probes localhost:9222/json/version)
-pnpm chrome:debug --stop    # stop
+pnpm browser:ensure-app   # required_permissions: network
 ```
 
-The `devtools-capture` MCP server is configured in `.cursor/mcp.json` and `.vscode/mcp.json`.
+Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note the `App: UP <url>` line in the output — you need it for both tiers.
 
-## MCP tools (when MCP is available)
+## Step 2 — Pick capture tier
 
-| Tool                  | Produces                                                           |
-| --------------------- | ------------------------------------------------------------------ |
-| `capture_snapshot`    | Chrome metadata + open-tab list (health check)                     |
-| `record_trace`        | HAR, Playwright trace, console, Web Vitals + CDP metrics, metadata |
-| `record_performance`  | Web Vitals + browser metrics (lighter — no HAR/screenshots)        |
-| `record_console`      | Console output of the currently open tab                           |
-| `record_interactions` | Interaction log + generated Playwright test                        |
+Attach: visible Chrome only, not CI. Match tab by origin; no navigation. Run `pnpm browser open --url <url>` first.
 
-```text
-devtools-capture MCP → record_trace url="http://localhost:<port>" duration=5
-devtools-capture MCP → record_performance url="http://localhost:<port>"
-```
+### A — `devtools-capture` MCP
 
-## CLI (when MCP is unavailable — CI, Cloud Agent, SSH)
+Attach: `attach=true` on the tool.
+
+**When:** `record_trace` is in your tool list.
+
+Use the URL from Step 1. Do not run CLI capture commands.
+
+| Goal                  | Tool                  | Key args                    |
+| --------------------- | --------------------- | --------------------------- |
+| Health check          | `capture_snapshot`    | —                           |
+| Full trace            | `record_trace`        | `url`, `duration` (seconds) |
+| Web Vitals / metrics  | `record_performance`  | `url`                       |
+| Console dump          | `record_console`      | `duration` (tab must exist) |
+| Interaction recording | `record_interactions` | `url`, `duration`           |
+
+---
+
+### B — CLI (no MCP)
+
+Attach: `--attach` on the command.
 
 ```bash
-node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:<port>
+pnpm browser:setup   # required_permissions: all
 ```
 
-Commands: `capture-snapshot`, `record-trace`, `record-performance`, `record-console`,
-`record-interactions`, `upload-artifacts`, `mcp-server`.
+URL is resolved automatically. Pass `--url <url>` only to override (Storybook, remote, preview port).
 
-Artifacts are written to `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
+If capture fails with "connection refused":
 
-## Full reference
+```bash
+pnpm chrome:debug   # required_permissions: all
+```
 
-- Per-tool inputs/returns, artifact formats, env vars, CLI flags:
-  [`packages/browser-capture/README.md`](../../../packages/browser-capture/README.md)
-- Where capture fits among the verification tiers:
-  [`docs/browser-validation.md`](../../../docs/browser-validation.md)
+Retry. Do not fall back to verify-tier tools.
+
+| Goal                  | Command                                          |
+| --------------------- | ------------------------------------------------ |
+| Health check          | `pnpm capture capture-snapshot`                  |
+| Full trace            | `pnpm capture record-trace --duration 5`         |
+| Web Vitals / metrics  | `pnpm capture record-performance`                |
+| Console dump          | `pnpm capture record-console --duration 3`       |
+| Interaction recording | `pnpm capture record-interactions --duration 10` |
+| Package for CI        | `pnpm capture upload-artifacts`                  |
+
+Artifacts land in `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
+
+---
+
+For routine DOM/text verification use the browser-validation skill — never mix tiers.
+
+> Edge-case scenarios (`--attach`, remote URL, SSH tunnel), Storybook URL, artifact formats, and env vars: [`docs/browser-validation.md`](../../../docs/browser-validation.md) · [`packages/browser-capture/README.md`](../../../packages/browser-capture/README.md)
