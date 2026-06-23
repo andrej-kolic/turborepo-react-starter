@@ -1,6 +1,5 @@
 # Production-preview perf gate — capture tier.
 # Builds the app, serves preview, records Web Vitals, and fails when LCP exceeds budget.
-# Separate from verify-browser-smoke.yml (dev-server smoke) and capture-browser-trace.yml (on-demand trace).
 #
 # Matrix: all bundler apps. Preview URL/port via dev-tools-app-target → app-port.ts.
 
