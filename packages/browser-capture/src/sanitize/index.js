@@ -5,6 +5,12 @@ import { sanitizeConsoleLog } from './console.js';
 import { sanitizeHar } from './har.js';
 import { sanitizeInteractionLog } from './interactions.js';
 
+/**
+ * Sanitize all artifact files in a capture directory and update metadata.
+ *
+ * @param {string} artifactsDir
+ * @returns {object}
+ */
 export function sanitizeArtifacts(artifactsDir) {
   const harResult = sanitizeHar(path.join(artifactsDir, 'har.json'));
   const consoleResult = sanitizeConsoleLog(

@@ -1,3 +1,10 @@
+/**
+ * Collect Web Vitals from injected observers and CDP Performance metrics.
+ *
+ * @param {import('playwright-core').Page} page
+ * @param {import('playwright-core').CDPSession} cdpSession
+ * @returns {Promise<object>}
+ */
 export async function getPerformanceMetrics(page, cdpSession) {
   let browserMetrics = [];
 

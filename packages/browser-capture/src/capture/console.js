@@ -13,6 +13,13 @@ import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+/**
+ * Monitor console messages for a duration on the attached tab or most recent page.
+ *
+ * @param {Record<string, string | boolean>} [options]
+ * @param {string | undefined} url  required when --attach is set
+ * @returns {Promise<object>}
+ */
 export async function recordConsole(options = {}, url) {
   const { durationMs, attach } = captureOptions(options);
 

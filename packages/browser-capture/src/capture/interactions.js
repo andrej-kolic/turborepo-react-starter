@@ -18,6 +18,14 @@ import { resolveSourceLocation } from '../interactions/source-map.js';
 import { generatePlaywrightTest } from '../interactions/test-generator.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+/**
+ * Record user interactions and generate a Playwright test file.
+ * Dispatches to attach or isolated mode via runCaptureSession.
+ *
+ * @param {string | undefined} url
+ * @param {Record<string, string | boolean>} [options]
+ * @returns {Promise<object>}
+ */
 export async function recordInteractions(url, options = {}) {
   return runCaptureSession({
     command: 'record-interactions',

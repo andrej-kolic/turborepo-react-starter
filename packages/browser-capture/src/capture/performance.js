@@ -14,6 +14,14 @@ import { injectScript } from './inject-page.js';
 import { performanceObserverInject } from '../inject/paths.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+/**
+ * Collect LCP, CLS, INP, and CDP browser metrics for a URL.
+ * Dispatches to attach or isolated mode via runCaptureSession.
+ *
+ * @param {string | undefined} url
+ * @param {Record<string, string | boolean>} [options]
+ * @returns {Promise<object>}
+ */
 export async function recordPerformance(url, options = {}) {
   return runCaptureSession({
     command: 'record-performance',

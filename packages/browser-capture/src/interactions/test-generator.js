@@ -15,6 +15,13 @@ function pushGoto(actionLines, state, targetUrl) {
   actionLines.push(`  await page.goto(${JSON.stringify(targetUrl)});`);
 }
 
+/**
+ * Build Playwright test source from recorded interaction events.
+ *
+ * @param {string} url
+ * @param {object[]} interactions
+ * @returns {string}
+ */
 export function generatePlaywrightTest(url, interactions) {
   const actionLines = [];
   const navState = { lastGoto: null };

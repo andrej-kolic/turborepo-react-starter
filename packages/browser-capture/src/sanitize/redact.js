@@ -16,6 +16,12 @@ export const PII_PATTERNS = [
 export const SENSITIVE_FIELD_RE =
   /password|passwd|pwd|secret|token|api[_-]?key|auth(?:orization)?|ssn|social.?security|credit.?card|card.?num|cvv|cvc|\bpin\b|access.?key|private.?key/i;
 
+/**
+ * Replace known PII and secret patterns in a string with labeled placeholders.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
 export function redactPii(text) {
   if (typeof text !== 'string') return text;
   let result = text;
@@ -25,6 +31,12 @@ export function redactPii(text) {
   return result;
 }
 
+/**
+ * Whether a field name matches sensitive-data patterns (password, token, etc.).
+ *
+ * @param {string} name
+ * @returns {boolean}
+ */
 export function isSensitiveField(name) {
   return typeof name === 'string' && SENSITIVE_FIELD_RE.test(name);
 }

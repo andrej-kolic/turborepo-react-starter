@@ -15,6 +15,8 @@ export class HarRecorder {
   }
 
   /**
+   * Subscribe to request/response events on a page.
+   *
    * @param {import('playwright-core').Page} page
    */
   attach(page) {
@@ -60,6 +62,7 @@ export class HarRecorder {
     page.on('response', this._onResponse);
   }
 
+  /** Stop listening to page network events. */
   detach() {
     if (!this.page) return;
     if (this._onRequest) this.page.off('request', this._onRequest);
@@ -68,6 +71,8 @@ export class HarRecorder {
   }
 
   /**
+   * Write captured entries to a HAR 1.2 JSON file.
+   *
    * @param {string} harPath
    */
   write(harPath) {

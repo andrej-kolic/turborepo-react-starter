@@ -1,5 +1,13 @@
 import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
+/**
+ * Resolve a bundled script location to original source via source maps.
+ *
+ * @param {string} scriptUrl
+ * @param {number} line
+ * @param {number} col
+ * @returns {Promise<{ source: string, line: number, column: number } | null>}
+ */
 export async function resolveSourceLocation(scriptUrl, line, col) {
   try {
     if (!scriptUrl.startsWith('http://') && !scriptUrl.startsWith('https://')) {

@@ -4,6 +4,8 @@ import { getDefaultDurationMs } from '../config/env.js';
 
 export { parseArgs } from '@repo/browser-tools/cli/args';
 
+/** @typedef {{ durationMs: number, attach: boolean }} CaptureOptions */
+
 /**
  * Resolve capture target URL: positional → APP_URL → CAPTURE_URL.
  *
@@ -17,6 +19,13 @@ export function resolveCaptureUrl(urlArg) {
   return undefined;
 }
 
+/**
+ * Resolve a capture URL or throw with a command-specific error message.
+ *
+ * @param {string} command
+ * @param {string | undefined} url
+ * @returns {string}
+ */
 export function requireUrl(command, url) {
   const resolved = resolveCaptureUrl(url);
   if (!resolved) {
@@ -28,6 +37,12 @@ export function requireUrl(command, url) {
   return resolved;
 }
 
+/**
+ * Parse `--duration` (seconds) or `--duration-ms` from CLI options.
+ *
+ * @param {Record<string, string | boolean>} options
+ * @returns {number}
+ */
 export function resolveDurationMs(options) {
   if (options['duration-ms']) {
     const durationMs = Number(options['duration-ms']);
@@ -50,11 +65,21 @@ export function resolveDurationMs(options) {
   return getDefaultDurationMs();
 }
 
-/** Apply CLI flags with process-wide side effects (sanitization, etc.). */
+/**
+ * Apply CLI flags with process-wide side effects (sanitization, etc.).
+ *
+ * @param {Record<string, string | boolean>} [options]
+ */
 export function applyCaptureCliOptions(options = {}) {
   if (options['no-sanitize']) setSanitizeEnabled(false);
 }
 
+/**
+ * Normalize capture CLI options into duration and attach mode.
+ *
+ * @param {Record<string, string | boolean>} options
+ * @returns {CaptureOptions}
+ */
 export function captureOptions(options) {
   return {
     durationMs: resolveDurationMs(options),

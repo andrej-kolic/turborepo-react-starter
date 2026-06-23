@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import { isSensitiveField, redactPii } from './redact.js';
 
+/**
+ * Redact sensitive fill values and PII from interaction log entries in place.
+ *
+ * @param {string} interactionsPath
+ * @returns {{ valuesRedacted: number }}
+ */
 export function sanitizeInteractionLog(interactionsPath) {
   if (!fs.existsSync(interactionsPath)) return { valuesRedacted: 0 };
 

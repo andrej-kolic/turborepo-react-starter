@@ -20,6 +20,14 @@ import { injectScript } from './inject-page.js';
 import { performanceObserverInject } from '../inject/paths.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+/**
+ * Record HAR, Playwright trace, console, and Web Vitals for a URL.
+ * Dispatches to attach or isolated mode via runCaptureSession.
+ *
+ * @param {string | undefined} url
+ * @param {Record<string, string | boolean>} [options]
+ * @returns {Promise<object>}
+ */
 export async function recordTrace(url, options = {}) {
   return runCaptureSession({
     command: 'record-trace',

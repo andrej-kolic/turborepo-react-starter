@@ -22,6 +22,12 @@ export const SAFE_HAR_HEADERS = new Set([
   'x-xss-protection',
 ]);
 
+/**
+ * Redact non-safe HAR headers and sensitive query/post params in place.
+ *
+ * @param {string} harPath
+ * @returns {{ headersRedacted: number, paramsRedacted: number }}
+ */
 export function sanitizeHar(harPath) {
   if (!fs.existsSync(harPath)) return { headersRedacted: 0, paramsRedacted: 0 };
 

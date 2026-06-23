@@ -10,6 +10,12 @@ export function toArtifactTimestamp(date = new Date()) {
   return date.toISOString().replace(/[:.]/g, '-');
 }
 
+/**
+ * Create a timestamped artifacts subdirectory for a capture mode.
+ *
+ * @param {string} mode  e.g. "trace", "console", "snapshot"
+ * @returns {string} absolute path to the new directory
+ */
 export function ensureArtifactsDirectory(mode) {
   const dir = path.join(ARTIFACTS_ROOT, `${mode}-${toArtifactTimestamp()}`);
   fs.mkdirSync(dir, { recursive: true });

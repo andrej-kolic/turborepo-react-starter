@@ -1,3 +1,9 @@
+/**
+ * Map a recorded interaction element to a Playwright locator expression string.
+ *
+ * @param {object} interaction
+ * @returns {string | null}
+ */
 export function interactionToLocator(interaction) {
   const el = interaction.element;
   if (!el) return null;

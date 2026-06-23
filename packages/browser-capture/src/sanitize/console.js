@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import { redactPii } from './redact.js';
 
+/**
+ * Redact PII from console log entries in place.
+ *
+ * @param {string} consolePath
+ * @returns {{ messagesRedacted: number }}
+ */
 export function sanitizeConsoleLog(consolePath) {
   if (!fs.existsSync(consolePath)) return { messagesRedacted: 0 };
 

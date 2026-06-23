@@ -28,6 +28,11 @@ function mcpCaptureOptions(args) {
   return options;
 }
 
+/**
+ * Start the browser-capture MCP server over stdio with capture tool handlers.
+ *
+ * @returns {Promise<void>}
+ */
 export async function startMcpServer() {
   const pkg = JSON.parse(
     fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),

@@ -27,6 +27,15 @@ export function getGitCommit() {
   return safeExec('git rev-parse HEAD');
 }
 
+/**
+ * Build capture metadata with git, Chrome, and CI context.
+ *
+ * @param {string} mode
+ * @param {string} artifactsDir
+ * @param {object} browserInfo
+ * @param {object} [extra]
+ * @returns {object}
+ */
 export function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
   return {
     mode,
