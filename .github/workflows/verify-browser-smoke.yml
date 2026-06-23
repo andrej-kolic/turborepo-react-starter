@@ -56,7 +56,7 @@ jobs:
       - name: Assert app header renders
         run: |
           if ! pnpm browser validate \
-            --selector "[data-testid=__app-header]" \
+            --selector "[data-testid=app-header]" \
             --no-console-errors; then
             echo "--- dev-app.log ---"
             cat /tmp/dev-app.log || true
@@ -66,8 +66,7 @@ jobs:
       - name: Capture trace on smoke failure
         if: failure()
         run: |
-          APP_URL=$(pnpm exec dev-tools-app-target url)
-          node packages/browser-capture/bin/browser-capture.js record-trace "$APP_URL" --duration 5
+          pnpm capture record-trace --duration 5
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
