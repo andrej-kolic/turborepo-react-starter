@@ -20,7 +20,7 @@ Exits 0 when live. URL is resolved automatically from `BUNDLER` in `.env`. Note 
 
 ## Step 2 — Pick capture tier
 
-Use attach only in visible Chrome to preserve session and tab state — not in CI. Run `pnpm browser open --url <url>` first.
+Attach: visible Chrome only, not CI. Match tab by origin; no navigation. Run `pnpm browser open --url <url>` first.
 
 ### A — `devtools-capture` MCP
 

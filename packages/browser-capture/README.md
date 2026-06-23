@@ -72,7 +72,7 @@ Use `--attach` only in visible Chrome to preserve session and tab state — not 
 
 By default, navigate-based capture commands open a **new isolated browser context** (no cookies, no auth). Add `--attach` to record on the tab already open in the visible Chrome window — preserving its session, cookies, and current URL.
 
-`--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. The command does **not** navigate; it records whatever the tab currently shows. If no tab is found at that origin, the error hints to run `browser-tools open --url <url>` first.
+`--attach` matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies. When multiple tabs share an origin, the **most recently opened** tab is used (last in CDP tab order) and brought to the front. The command does **not** navigate; it records whatever the tab currently shows. If no tab is found at that origin, the error hints to run `browser-tools open --url <url>` first.
 
 |                       | Default (no `--attach`)                       | `--attach`                                                                          |
 | --------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |

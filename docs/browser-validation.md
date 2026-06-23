@@ -81,10 +81,10 @@ pnpm browser read --url <url> --selector "[data-testid=app-header]" --attach
 
 **`--attach` rules:**
 
-- Matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies, regardless of path.
-- Does **not** navigate — inspects whatever the tab currently shows.
-- Requires a tab open at that origin (`pnpm browser open` or manual navigation). Errors with a hint if none is found.
-- **Do not use in headless/CI/Cloud Agent** — each command should open a fresh isolated context there.
+- Match tab by **origin** only; does not navigate.
+- Multiple tabs at same origin → most recent (CDP order), brought to front.
+- Tab must already be open (`pnpm browser open`); not for CI/headless.
+- **Capture (`pnpm capture --attach`):** HAR = traffic during capture window only; `trace.zip` may include other tabs. `record-console --attach` requires a URL.
 
 ---
 

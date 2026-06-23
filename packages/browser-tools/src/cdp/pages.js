@@ -21,14 +21,11 @@ export async function findPageAtOrigin(browser, url) {
     return null;
   }
 
-  /** @type {Page | null} */
-  let match = null;
-
-  for (const context of browser.contexts()) {
-    for (const page of context.pages()) {
+  for (const context of [...browser.contexts()].reverse()) {
+    for (const page of [...context.pages()].reverse()) {
       try {
         if (new URL(page.url()).origin === origin) {
-          match = page;
+          return page;
         }
       } catch {
         // skip chrome://, about:blank, etc.
@@ -36,7 +33,7 @@ export async function findPageAtOrigin(browser, url) {
     }
   }
 
-  return match;
+  return null;
 }
 
 /**
