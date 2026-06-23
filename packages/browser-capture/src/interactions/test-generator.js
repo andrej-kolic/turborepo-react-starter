@@ -1,7 +1,25 @@
 import { interactionToLocator } from './locator.js';
 
+function hrefForCompare(raw) {
+  try {
+    return new URL(raw).href;
+  } catch {
+    return raw;
+  }
+}
+
+function pushGoto(actionLines, state, targetUrl) {
+  const href = hrefForCompare(targetUrl);
+  if (state.lastGoto === href) return;
+  state.lastGoto = href;
+  actionLines.push(`  await page.goto(${JSON.stringify(targetUrl)});`);
+}
+
 export function generatePlaywrightTest(url, interactions) {
   const actionLines = [];
+  const navState = { lastGoto: null };
+
+  pushGoto(actionLines, navState, url);
 
   for (const interaction of interactions) {
     const locator = interactionToLocator(interaction);
@@ -21,9 +39,7 @@ export function generatePlaywrightTest(url, interactions) {
 
     switch (interaction.type) {
       case 'navigate':
-        actionLines.push(
-          `  await page.goto(${JSON.stringify(interaction.url)});`,
-        );
+        pushGoto(actionLines, navState, interaction.url);
         break;
       case 'click':
         if (!locator) break;
@@ -70,7 +86,6 @@ export function generatePlaywrightTest(url, interactions) {
     `// Captured: ${new Date().toISOString()}`,
     ``,
     `test(${JSON.stringify('recorded: ' + testLabel)}, async ({ page }) => {`,
-    `  await page.goto(${JSON.stringify(url)});`,
     ...actionLines,
     `});`,
     ``,

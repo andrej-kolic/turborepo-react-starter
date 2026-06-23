@@ -45,6 +45,19 @@ describe('generatePlaywrightTest', () => {
     expect(output.endsWith('\n')).toBe(true);
   });
 
+  it('dedupes navigate events that repeat the entry URL', () => {
+    const url = 'http://localhost:5173/dashboard';
+    const output = generatePlaywrightTest(url, [
+      { type: 'navigate', url },
+      { type: 'click', element: { testId: 'refresh' } },
+    ]);
+
+    expect(
+      (output.match(/goto\("http:\/\/localhost:5173\/dashboard"\)/g) ?? [])
+        .length,
+    ).toBe(1);
+  });
+
   it('JSON-serializes captured values to prevent injection', () => {
     const output = generatePlaywrightTest('http://localhost:5173', [
       {
