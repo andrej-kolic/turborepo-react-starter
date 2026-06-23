@@ -400,5 +400,5 @@ pnpm --filter @repo/browser-tools test
 | `.rulesync/skills/x-browser-capture/SKILL.md`    | Agent capture workflow          |
 | `.rulesync/skills/x-browser-validation/SKILL.md` | Verify tier (do not mix)        |
 | `docs/browser-validation.md`                     | URL derivation, edge cases      |
-| `.github/workflows/capture-devtools.yml`         | CI capture                      |
+| `.github/workflows/capture-browser-trace.yml`    | CI capture                      |
 | `.github/workflows/verify-browser-smoke.yml`     | Smoke + optional trace          |

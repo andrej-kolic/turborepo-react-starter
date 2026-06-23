@@ -12,7 +12,7 @@ globs:
   - .claude/skills/x-browser-*/**
   - docs/browser-validation.md
   - .github/workflows/verify-browser-smoke.yml
-  - .github/workflows/capture-devtools.yml
+  - .github/workflows/capture-browser-trace.yml
 cursor:
   alwaysApply: false
 ---

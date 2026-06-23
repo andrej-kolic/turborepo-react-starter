@@ -1,4 +1,4 @@
-name: 'Capture: DevTools'
+name: 'Capture: Browser trace'
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ permissions:
 jobs:
   # ─── Main capture job ────────────────────────────────────────────────────────
   capture:
-    name: Capture DevTools artifacts
+    name: Capture browser trace artifacts
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -152,7 +152,7 @@ jobs:
           fi
 
           cat >> "$GITHUB_STEP_SUMMARY" << EOF
-          ## 🔍 DevTools Capture — Ops Report
+          ## 🔍 Browser trace capture — Ops Report
 
           | Metric | Value |
           |--------|-------|
@@ -183,7 +183,7 @@ jobs:
               ? (Number(process.env.ARTIFACT_SIZE_BYTES) / 1024).toFixed(1) + ' KB'
               : 'n/a';
             const body = [
-              '## ✅ DevTools capture complete',
+              '## ✅ Browser trace capture complete',
               '',
               '| Metric | Value |',
               '|--------|-------|',
@@ -219,8 +219,8 @@ jobs:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
             await core.summary
-              .addHeading('❌ DevTools capture failed')
-              .addRaw(`The \`capture-devtools.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
+              .addHeading('❌ Browser trace capture failed')
+              .addRaw(`The \`capture-browser-trace.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
               .addBreak()
               .addRaw(`**Trigger:** \`${{ github.event_name }}\` | **Actor:** \`${{ github.actor }}\``)
               .addBreak()
@@ -238,5 +238,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue_number,
-              body: `## ❌ DevTools capture failed\n\nThe capture job encountered an error. Check the [run logs](${runUrl}) for details.\n\n**Run ID:** \`${process.env.GITHUB_RUN_ID}\``,
+              body: `## ❌ Browser trace capture failed\n\nThe capture job encountered an error. Check the [run logs](${runUrl}) for details.\n\n**Run ID:** \`${process.env.GITHUB_RUN_ID}\``,
             });

@@ -1,4 +1,4 @@
-Integrate workflows as a **GitHub Actions job** (or extra steps in an existing job). The repo already has the hard parts — copy setup from `verify-browser-smoke.yml` and artifact upload from `capture-devtools.yml`.
+Integrate workflows as a **GitHub Actions job** (or extra steps in an existing job). The repo already has the hard parts — copy setup from `verify-browser-smoke.yml` and artifact upload from `capture-browser-trace.yml`.
 
 ---
 
@@ -144,7 +144,7 @@ Tune the threshold. Upload artifact on failure so you can compare runs.
 
 ## Workflow 3 — On-demand PR trace
 
-**Where:** extend `capture-devtools.yml` — swap `capture-snapshot` for `record-trace` and point at a URL.
+**Where:** extend `capture-browser-trace.yml` — swap `capture-snapshot` for `record-trace` and point at a URL.
 
 **Trigger:** already there — `workflow_dispatch` + `/capture-trace` comment.
 
@@ -229,13 +229,13 @@ Same pattern as workflow 1: `if: failure()` after the step that can fail.
 
 ## What to add first (practical order)
 
-| Priority | Workflow              | Effort                                  | File                       |
-| -------- | --------------------- | --------------------------------------- | -------------------------- |
-| 1        | Smoke failure → trace | ~15 lines in existing job               | `verify-browser-smoke.yml` |
-| 2        | On-demand PR trace    | Change one command + optional URL input | `capture-devtools.yml`     |
-| 3        | Perf gate             | New workflow + LCP assert               | `verify-browser-perf.yml`  |
-| 4        | HAR contract          | New script + step after trace           | `scripts/assert-har.js`    |
-| 5        | E2E failure capture   | Needs E2E tests first                   | new `e2e.yml`              |
+| Priority | Workflow              | Effort                                  | File                        |
+| -------- | --------------------- | --------------------------------------- | --------------------------- |
+| 1        | Smoke failure → trace | ~15 lines in existing job               | `verify-browser-smoke.yml`  |
+| 2        | On-demand PR trace    | Change one command + optional URL input | `capture-browser-trace.yml` |
+| 3        | Perf gate             | New workflow + LCP assert               | `verify-browser-perf.yml`   |
+| 4        | HAR contract          | New script + step after trace           | `scripts/assert-har.js`     |
+| 5        | E2E failure capture   | Needs E2E tests first                   | new `e2e.yml`               |
 
 ---
 

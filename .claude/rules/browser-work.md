@@ -5,9 +5,8 @@ paths:
   - .claude/skills/x-browser-*/**
   - docs/browser-validation.md
   - .github/workflows/verify-browser-smoke.yml
-  - .github/workflows/capture-devtools.yml
+  - .github/workflows/capture-browser-trace.yml
 ---
-
 # Browser work
 
 Read the **[browser-validation skill](../../.claude/skills/x-browser-validation/SKILL.md)** first — it has the tier A/B/C decision graph and bootstrap commands.

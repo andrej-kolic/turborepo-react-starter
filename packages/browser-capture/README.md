@@ -198,7 +198,7 @@ test('recorded: app/', async ({ page }) => {
 
 ## CI Integration
 
-The included GitHub Actions workflow (`.github/workflows/capture-devtools.yml`) runs when a PR
+The included GitHub Actions workflow (`.github/workflows/capture-browser-trace.yml`) runs when a PR
 collaborator comments `/capture-trace` or when manually dispatched. It records a full headless
 `record-trace` (5s): starts the local dev app when no URL is given, bootstraps Chrome via
 `pnpm browser:setup`, uploads `metadata.json`, `har.json`, `trace.zip`, `console.json`, and

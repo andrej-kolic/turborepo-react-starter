@@ -36,7 +36,7 @@ Newest phases first.
 
 - CI caching: pnpm deps cached in GitHub Actions
 - Monitoring: capture duration and artifact size tracked in ops reports and PR comments
-- Alerts: failure notifications on `capture-devtools.yml` job failures + PR comments
+- Alerts: failure notifications on `capture-browser-trace.yml` job failures + PR comments
 - CI workflow runs full `record-trace` (5s); sanitization runs automatically in capture commands before upload
 - Remote URL in CI: optional URL via `workflow_dispatch` input or first `http(s)://…` in `/capture-trace` comment body; otherwise traces local dev app
 
@@ -113,7 +113,7 @@ Newest phases first.
 
 #### CI
 
-- `.github/workflows/capture-devtools.yml` — pnpm cache, capture duration + artifact size in job summary
+- `.github/workflows/capture-browser-trace.yml` — pnpm cache, capture duration + artifact size in job summary
 
 ---
 
