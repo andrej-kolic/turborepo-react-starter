@@ -2,7 +2,7 @@
 /**
  * Ensure the dev app is running.
  *
- * Reads APP_URL from env (injected by dev-tools-app-target via pnpm browser:ensure-app).
+ * Reads TARGET_URL from env (injected by dev-tools-app-target via pnpm browser:ensure-app).
  * If the app is DOWN, starts `pnpm dev:app` and polls until it responds (60 s).
  * Exits 0 when live, exits 1 on timeout or immediate server crash.
  *
@@ -52,12 +52,12 @@ function dumpLogFile(logFilePath) {
 
 const logFilePath = parseLogFile(process.argv.slice(2));
 
-const url = process.env.APP_URL;
+const url = process.env.TARGET_URL;
 if (!url) {
   console.error(
-    'Error: APP_URL is not set.\n' +
+    'Error: TARGET_URL is not set.\n' +
       '  Run via: pnpm browser:ensure-app\n' +
-      '  Or set APP_URL explicitly before invoking.',
+      '  Or set TARGET_URL explicitly before invoking.',
   );
   process.exit(1);
 }

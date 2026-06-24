@@ -46,7 +46,7 @@ pnpm --filter @repo/commons build
 
 Ports are declared as `devPort` / `previewPort` in each app's `package.json` — that is the
 single source of truth. Bundler configs, `@repo/dev-tools/config/app-port`, and browser
-tooling all read from it. Override the target URL with `APP_URL` only (not `PORT`).
+tooling all read from it. Override the browser/E2E target URL with **`TARGET_URL`** (ephemeral — shell, CI, or `dev-tools-app-target run`; not in committed `.env`). Do not use `PORT` for this.
 
 Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
@@ -61,7 +61,7 @@ Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser too
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
 
 To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)
-and pass `--url` with the `previewUrl` from that app's `package.json` (or set `APP_URL`).
+and pass `--url` with the `previewUrl` from that app's `package.json` (or set `TARGET_URL`).
 
 Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch at once; it is heavy.
 

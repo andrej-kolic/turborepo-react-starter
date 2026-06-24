@@ -3,7 +3,7 @@
   "globalDependencies": ["**/.env.*local", "prettier.config.js"],
 
   "globalEnv": [
-    "APP_URL",
+    "TARGET_URL",
     "BUNDLER",
     "BUILD_ENVIRONMENT",
     "CI",

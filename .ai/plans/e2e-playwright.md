@@ -151,7 +151,7 @@ Execute as separate PRs when possible. Each phase ends with quality gate.
 1. Create `packages/e2e` with `@playwright/test`, extend `@repo/typescript-config`
 2. Add `@playwright/test` to `pnpm-workspace.yaml` catalog if not present
 3. `playwright.config.ts`:
-   - `baseURL` from `APP_URL` or `dev-tools-app-target url --preview`
+   - `baseURL: resolveAppUrl(process.env, 'preview')` — override via `TARGET_URL`; see [target-url-unification.md](./target-url-unification.md)
    - `retain-on-failure` trace, screenshot on failure
    - Chromium only
 4. First spec `tests/app.spec.ts`:

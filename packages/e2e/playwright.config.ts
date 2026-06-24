@@ -1,15 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
-import { resolveAppUrl } from '@repo/dev-tools/config/app-port';
+import {
+  resolveAppUrl,
+  warnIfStaleLocalTargetUrlOverride,
+} from '@repo/dev-tools/config/app-port';
 
 function resolveBaseUrl(): string {
-  if (process.env.APP_URL) {
-    return process.env.APP_URL;
-  }
-
+  warnIfStaleLocalTargetUrlOverride(process.env, 'preview');
   const url = resolveAppUrl(process.env, 'preview');
   if (!url) {
     throw new Error(
-      'Set BUNDLER (e.g. app-vite) or APP_URL before running E2E tests against preview.',
+      'Set BUNDLER (e.g. app-vite) or TARGET_URL before running E2E tests against preview.',
     );
   }
 

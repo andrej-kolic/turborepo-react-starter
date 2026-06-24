@@ -1,9 +1,9 @@
 # Plan: Unify browser target URL resolution (`TARGET_URL`)
 
-**Status:** Not started  
+**Status:** Phases 1–4 complete (Phase 5 optional)  
 **Branch:** `develop`  
 **Created:** 2026-06-24  
-**Related:** [e2e-playwright.md](./e2e-playwright.md) (Phase 1 workaround in `packages/e2e/playwright.config.ts`)
+**Related:** [e2e-playwright.md](./e2e-playwright.md) — E2E uses unified `resolveAppUrl(process.env, 'preview')`
 
 ## How to run (new chat)
 

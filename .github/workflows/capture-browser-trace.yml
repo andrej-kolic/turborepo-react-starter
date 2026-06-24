@@ -95,16 +95,16 @@ jobs:
         run: |
           CAPTURE_START_MS=$(date +%s%3N)
           if [ -n "${{ steps.trace-url.outputs.url }}" ]; then
-            APP_URL="${{ steps.trace-url.outputs.url }}"
+            TARGET_URL="${{ steps.trace-url.outputs.url }}"
           else
-            APP_URL=$(pnpm exec dev-tools-app-target url)
+            TARGET_URL=$(pnpm exec dev-tools-app-target url)
           fi
-          pnpm capture record-trace "$APP_URL" --duration 5
+          pnpm capture record-trace "$TARGET_URL" --duration 5
           CAPTURE_END_MS=$(date +%s%3N)
           DURATION_MS=$((CAPTURE_END_MS - CAPTURE_START_MS))
-          echo "Trace recorded in ${DURATION_MS}ms (${APP_URL})"
+          echo "Trace recorded in ${DURATION_MS}ms (${TARGET_URL})"
           echo "capture_duration_ms=${DURATION_MS}" >> "$GITHUB_OUTPUT"
-          echo "app_url=${APP_URL}" >> "$GITHUB_OUTPUT"
+          echo "target_url=${TARGET_URL}" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -139,7 +139,7 @@ jobs:
         if: always()
         run: |
           CAPTURE="${{ steps.capture.outputs.capture_duration_ms }}"
-          TRACE_URL="${{ steps.capture.outputs.app_url }}"
+          TRACE_URL="${{ steps.capture.outputs.target_url }}"
           SIZE="${{ steps.artifact-size.outputs.artifact_size_bytes }}"
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
@@ -174,7 +174,7 @@ jobs:
         uses: actions/github-script@v9
         env:
           CAPTURE_DURATION_MS: ${{ steps.capture.outputs.capture_duration_ms }}
-          TRACE_URL: ${{ steps.capture.outputs.app_url }}
+          TRACE_URL: ${{ steps.capture.outputs.target_url }}
           ARTIFACT_SIZE_BYTES: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
         with:
           script: |

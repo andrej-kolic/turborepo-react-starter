@@ -74,7 +74,7 @@ pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
 pnpm e2e
 ```
 
-Override the target bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test. Set `APP_URL` to point at an already-running preview.
+Override the target bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test. Set `TARGET_URL` to point at an already-running preview.
 
 ### Lint
 

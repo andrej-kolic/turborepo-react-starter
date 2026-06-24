@@ -12,27 +12,39 @@ Each bundler app declares its own port as `devPort` / `previewPort` in its `pack
 (e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs,
 `@repo/dev-tools/config/app-port`, and browser tooling all read from it. Vite uses
 `strictPort: true` so the declared port matches the listening port. Port overrides are not
-supported via `PORT`; set `APP_URL` instead.
+supported via `PORT`; set `TARGET_URL` instead.
 
 For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`). After
 `pnpm preview:app`, pass `--url` with `previewUrl` from `apps/<BUNDLER>/package.json`, or set
-`APP_URL`. For deployed previews, pass the full remote URL.
+`TARGET_URL`. For deployed previews, pass the full remote URL.
 
 ### URL resolution
 
-Root `pnpm browser:*` scripts inject `APP_URL` via **`dev-tools-app-target run`**
-(`@repo/dev-tools/config/app-port`). Dev resolution: `APP_URL` already set → use as-is; else
-derive `http://localhost:<devPort>` from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` /
-`resolveAppUrl()`. Preview resolution (`--preview`) always uses `BUNDLER` + `previewPort` and
-ignores `APP_URL`. Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
+Unified resolution (`@repo/dev-tools/config/app-port` — `resolveAppUrl(env, mode)`):
+
+1. **`TARGET_URL` set** → use as-is (dev, preview, remote, Storybook canvas)
+2. **`mode: 'dev'`** and `BUNDLER` set → `devPort` from `apps/<BUNDLER>/package.json`
+3. **`mode: 'preview'`** and `BUNDLER` set → `previewPort` from `apps/<BUNDLER>/package.json`
+4. else → error with actionable hint
+
+**Override always wins** — unset `TARGET_URL` when you want `BUNDLER` defaults. Do not commit URLs in `.env`.
+
+**Stale shell export:** `TARGET_URL` is inherited by child shells. A leftover `export TARGET_URL=http://localhost:<devPort>` from browser dev makes `pnpm e2e` and `dev-tools-app-target url --preview` hit the dev server instead of preview — with no error. Run `unset TARGET_URL` before preview/E2E, or rely on the resolver warning when localhost `TARGET_URL` differs from the mode default. Remote `TARGET_URL` values (deploy previews) are not warned.
+
+Root `pnpm browser:*` / `pnpm capture` scripts inject `TARGET_URL` via **`dev-tools-app-target run`**
+when unset (dev default from `BUNDLER`). Pass `--url` or a positional URL to override without env.
 
 For bootstrap commands (ensure-app, setup, tier selection), follow the
 **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)**.
 
 ### CLI URL resolution
 
-When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
-`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-app-target run` wrapper.
+| Tool             | Chain when URL omitted                            |
+| ---------------- | ------------------------------------------------- |
+| `pnpm browser …` | `--url` → `TARGET_URL` → error                    |
+| `pnpm capture …` | positional → `TARGET_URL` → `CAPTURE_URL` → error |
+
+`BUNDLER` is read by `dev-tools-app-target run`, not by the CLI directly.
 
 ### CI bootstrap
 
@@ -45,7 +57,7 @@ pnpm browser:setup
 pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
 ```
 
-`APP_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
+`TARGET_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
 `--log-file` captures dev-server output for CI failures (startup timeout or validate step).
 
 ---

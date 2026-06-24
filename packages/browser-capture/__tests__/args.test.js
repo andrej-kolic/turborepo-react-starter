@@ -83,40 +83,40 @@ describe('applyCaptureCliOptions', () => {
 });
 
 describe('resolveCaptureUrl', () => {
-  const prevAppUrl = process.env.APP_URL;
+  const prevTargetUrl = process.env.TARGET_URL;
   const prevCaptureUrl = process.env.CAPTURE_URL;
 
   afterEach(() => {
-    if (prevAppUrl === undefined) delete process.env.APP_URL;
-    else process.env.APP_URL = prevAppUrl;
+    if (prevTargetUrl === undefined) delete process.env.TARGET_URL;
+    else process.env.TARGET_URL = prevTargetUrl;
     if (prevCaptureUrl === undefined) delete process.env.CAPTURE_URL;
     else process.env.CAPTURE_URL = prevCaptureUrl;
   });
 
   it('prefers positional URL', () => {
-    delete process.env.APP_URL;
+    delete process.env.TARGET_URL;
     delete process.env.CAPTURE_URL;
     expect(resolveCaptureUrl('http://localhost:5173')).toBe(
       'http://localhost:5173',
     );
   });
 
-  it('falls back to APP_URL', () => {
-    process.env.APP_URL = 'http://localhost:5173';
+  it('falls back to TARGET_URL', () => {
+    process.env.TARGET_URL = 'http://localhost:5173';
     delete process.env.CAPTURE_URL;
     expect(resolveCaptureUrl(undefined)).toBe('http://localhost:5173');
   });
 
-  it('falls back to CAPTURE_URL when APP_URL is unset', () => {
-    delete process.env.APP_URL;
+  it('falls back to CAPTURE_URL when TARGET_URL is unset', () => {
+    delete process.env.TARGET_URL;
     process.env.CAPTURE_URL = 'http://localhost:3000';
     expect(resolveCaptureUrl(undefined)).toBe('http://localhost:3000');
   });
 
-  it('prefers APP_URL over CAPTURE_URL', () => {
-    process.env.APP_URL = 'http://localhost:5173';
+  it('prefers TARGET_URL over CAPTURE_URL', () => {
+    process.env.TARGET_URL = 'http://localhost:8888';
     process.env.CAPTURE_URL = 'http://localhost:3000';
-    expect(resolveCaptureUrl(undefined)).toBe('http://localhost:5173');
+    expect(resolveCaptureUrl(undefined)).toBe('http://localhost:8888');
   });
 });
 
@@ -128,17 +128,17 @@ describe('requireUrl', () => {
   });
 
   it('throws when url is missing', () => {
-    const prevAppUrl = process.env.APP_URL;
+    const prevTargetUrl = process.env.TARGET_URL;
     const prevCaptureUrl = process.env.CAPTURE_URL;
-    delete process.env.APP_URL;
+    delete process.env.TARGET_URL;
     delete process.env.CAPTURE_URL;
 
     expect(() => requireUrl('record-trace', undefined)).toThrow(
-      'record-trace requires a URL: pass as positional, or set APP_URL or CAPTURE_URL.',
+      'record-trace requires a URL: pass as positional, or set TARGET_URL or CAPTURE_URL.',
     );
 
-    if (prevAppUrl === undefined) delete process.env.APP_URL;
-    else process.env.APP_URL = prevAppUrl;
+    if (prevTargetUrl === undefined) delete process.env.TARGET_URL;
+    else process.env.TARGET_URL = prevTargetUrl;
     if (prevCaptureUrl === undefined) delete process.env.CAPTURE_URL;
     else process.env.CAPTURE_URL = prevCaptureUrl;
   });
