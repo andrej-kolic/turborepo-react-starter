@@ -27,7 +27,7 @@ jobs:
       BUILD_ENVIRONMENT: development
       CHROME_HEADLESS: 'true'
       CHROME_DEBUG_PORT: 9222
-      BUNDLER: app-vite
+      BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
 
     # Only run on manual dispatch or when a PR collaborator comments /capture-trace
     if: |
