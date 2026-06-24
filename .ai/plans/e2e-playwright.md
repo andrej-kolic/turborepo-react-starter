@@ -1,8 +1,10 @@
 # Plan: Playwright E2E for enterprise template starter
 
-**Status:** Not started  
+**Status:** Phases 1–2 complete — Phases 3–4 pending  
 **Branch:** `develop`  
-**Created:** 2026-06-21
+**Created:** 2026-06-21  
+**Phase 1 completed:** 2026-06-24  
+**Phase 2 completed:** 2026-06-24
 
 ## How to run (new chat)
 
@@ -80,10 +82,13 @@ Debug on failure:  Playwright trace (+ optional browser-capture)
 
 ## Current state
 
-- No `@playwright/test` package or config
-- No E2E tests or `e2e` scripts
-- CI: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server + `pnpm browser validate` (single selector)
-- CI: [`verify-browser-perf.yml`](../../.github/workflows/verify-browser-perf.yml) — preview + capture (pattern to reuse for E2E bootstrap)
+- ✅ `@repo/e2e` — Playwright config, `tests/app.spec.ts`, `@playwright/test` in catalog
+- ✅ Root scripts: `pnpm e2e`, `e2e:ui`, `e2e:headed` (via `pnpm --filter`; not in Turbo graph)
+- ✅ README local workflow (build → preview → `pnpm e2e`)
+- ✅ CI: `.github/workflows/verify-e2e.yml` (app-vite preview gate)
+- ⬜ Docs: validation map in AGENTS.md, `docs/e2e.md` (Phase 3)
+- CI smoke: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server + `pnpm browser validate`
+- CI perf (preview bootstrap pattern): [`verify-browser-perf.yml`](../../.github/workflows/verify-browser-perf.yml)
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` registry: `app-header`, `resource-cards`, `scroller`
 
 ---
@@ -144,22 +149,28 @@ packages/e2e/
 
 Execute as separate PRs when possible. Each phase ends with quality gate.
 
-### Phase 1 — Package scaffold + local run
+### Phase 1 — Package scaffold + local run ✅ DONE
 
 **Goal:** `pnpm e2e` passes locally against preview.
 
-1. Create `packages/e2e` with `@playwright/test`, extend `@repo/typescript-config`
-2. Add `@playwright/test` to `pnpm-workspace.yaml` catalog if not present
-3. `playwright.config.ts`:
+1. ✅ Create `packages/e2e` with `@playwright/test`, extend `@repo/typescript-config`
+2. ✅ Add `@playwright/test` to `pnpm-workspace.yaml` catalog
+3. ✅ `playwright.config.ts`:
    - `baseURL: resolveAppUrl(process.env, 'preview')` — override via `TARGET_URL`; see [target-url-unification.md](./target-url-unification.md)
    - `retain-on-failure` trace, screenshot on failure
    - Chromium only
-4. First spec `tests/app.spec.ts`:
-   - Page loads
-   - `[data-testid=app-header]`, `resource-cards`, `scroller` visible
-   - Optional: fail on `console` type `error`
-5. Root scripts: `e2e`, `e2e:ui`, `e2e:headed`
-6. Document local workflow in README snippet
+4. ✅ First spec `tests/app.spec.ts`:
+   - Page loads (`main` visible)
+   - `getByTestId('app-header')`, `resource-cards`, `scroller` visible
+   - Fail on `console.error` on load
+5. ✅ Root scripts: `e2e`, `e2e:ui`, `e2e:headed`
+6. ✅ Document local workflow in README snippet
+
+**Post–Phase 1 refinements (same PR / follow-ups):**
+
+- Package script named `e2e` (not `test`) so `pnpm test` stays unit-only
+- E2E intentionally **not** in `turbo.json` — invoked via `pnpm --filter`
+- `install:browsers` for first-time Chromium install (`setup` conflicts with pnpm global)
 
 **Verification:**
 
@@ -172,17 +183,17 @@ pnpm lint && pnpm test && pnpm check:type
 
 ---
 
-### Phase 2 — CI workflow
+### Phase 2 — CI workflow ✅ DONE
 
 **Goal:** PR gate runs E2E on preview (app-vite).
 
-1. New `.github/workflows/verify-e2e.yml`:
+1. ✅ New `.github/workflows/verify-e2e.yml`:
    - Reuse bootstrap from `verify-browser-perf.yml` (build → preview → wait-on)
-   - `pnpm exec playwright install chromium --with-deps`
-   - `pnpm e2e`
+   - `pnpm --filter @repo/e2e install:browsers`
+   - `pnpm e2e` with `TARGET_URL` from `dev-tools-app-target resolve --preview`
    - Upload Playwright report/trace artifacts on failure
-2. `BUNDLER: app-vite` only
-3. Optional: add to `pnpm quality-checks` once stable
+2. ✅ `BUNDLER: app-vite` only
+3. ⬜ Optional: add to `pnpm quality-checks` once stable
 
 **Verification:**
 
