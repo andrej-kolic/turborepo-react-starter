@@ -65,6 +65,17 @@ To test all apps and packages, run the following command:
 pnpm test
 ```
 
+**E2E (Playwright)** runs against a production preview build — not the dev server:
+
+```bash
+pnpm build:app
+pnpm preview:app &          # serve preview (default bundler: app-vite)
+pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
+pnpm e2e
+```
+
+Override the target bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test. Set `APP_URL` to point at an already-running preview.
+
 ### Lint
 
 To lint all apps and packages, run the following command:

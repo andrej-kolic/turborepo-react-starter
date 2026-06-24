@@ -33,7 +33,7 @@ If the plan is already partially done, read git status and skip completed tasks.
 
 ## Executive summary
 
-Add **Playwright Test** (`@playwright/test`) as the canonical browser regression layer for this enterprise template starter. E2E runs against a **production preview** build (not the dev server). CI gets a dedicated workflow; local dev gets `pnpm test:e2e`.
+Add **Playwright Test** (`@playwright/test`) as the canonical browser regression layer for this enterprise template starter. E2E runs against a **production preview** build (not the dev server). CI gets a dedicated workflow; local dev gets `pnpm e2e`.
 
 **Custom repo concerns** (multi-bundler, agent browser-tools) stay separate:
 
@@ -81,7 +81,7 @@ Debug on failure:  Playwright trace (+ optional browser-capture)
 ## Current state
 
 - No `@playwright/test` package or config
-- No E2E tests or `test:e2e` scripts
+- No E2E tests or `e2e` scripts
 - CI: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server + `pnpm browser validate` (single selector)
 - CI: [`verify-browser-perf.yml`](../../.github/workflows/verify-browser-perf.yml) — preview + capture (pattern to reuse for E2E bootstrap)
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` registry: `app-header`, `resource-cards`, `scroller`
@@ -95,7 +95,7 @@ flowchart TB
   subgraph ci ["CI"]
     BUILD[pnpm build:app]
     PREVIEW[pnpm preview:app]
-    E2E[pnpm test:e2e]
+    E2E[pnpm e2e]
     BUILD --> PREVIEW --> E2E
   end
 
@@ -132,9 +132,9 @@ packages/e2e/
 
 ```json
 {
-  "test:e2e": "dotenv -- pnpm --filter @repo/e2e test",
-  "test:e2e:ui": "dotenv -- pnpm --filter @repo/e2e test:ui",
-  "test:e2e:headed": "dotenv -- pnpm --filter @repo/e2e test:headed"
+  "e2e": "dotenv -- pnpm --filter @repo/e2e e2e",
+  "e2e:ui": "dotenv -- pnpm --filter @repo/e2e e2e:ui",
+  "e2e:headed": "dotenv -- pnpm --filter @repo/e2e e2e:headed"
 }
 ```
 
@@ -146,7 +146,7 @@ Execute as separate PRs when possible. Each phase ends with quality gate.
 
 ### Phase 1 — Package scaffold + local run
 
-**Goal:** `pnpm test:e2e` passes locally against preview.
+**Goal:** `pnpm e2e` passes locally against preview.
 
 1. Create `packages/e2e` with `@playwright/test`, extend `@repo/typescript-config`
 2. Add `@playwright/test` to `pnpm-workspace.yaml` catalog if not present
@@ -158,7 +158,7 @@ Execute as separate PRs when possible. Each phase ends with quality gate.
    - Page loads
    - `[data-testid=app-header]`, `resource-cards`, `scroller` visible
    - Optional: fail on `console` type `error`
-5. Root scripts: `test:e2e`, `test:e2e:ui`, `test:e2e:headed`
+5. Root scripts: `e2e`, `e2e:ui`, `e2e:headed`
 6. Document local workflow in README snippet
 
 **Verification:**
@@ -166,7 +166,7 @@ Execute as separate PRs when possible. Each phase ends with quality gate.
 ```bash
 pnpm build:app
 pnpm preview:app &
-pnpm test:e2e
+pnpm e2e
 pnpm lint && pnpm test && pnpm check:type
 ```
 
@@ -179,7 +179,7 @@ pnpm lint && pnpm test && pnpm check:type
 1. New `.github/workflows/verify-e2e.yml`:
    - Reuse bootstrap from `verify-browser-perf.yml` (build → preview → wait-on)
    - `pnpm exec playwright install chromium --with-deps`
-   - `pnpm test:e2e`
+   - `pnpm e2e`
    - Upload Playwright report/trace artifacts on failure
 2. `BUNDLER: app-vite` only
 3. Optional: add to `pnpm quality-checks` once stable
@@ -188,7 +188,7 @@ pnpm lint && pnpm test && pnpm check:type
 
 ```bash
 # Local dry-run of CI steps
-pnpm build:app && pnpm preview:app & … && pnpm test:e2e
+pnpm build:app && pnpm preview:app & … && pnpm e2e
 ```
 
 ---
@@ -198,12 +198,12 @@ pnpm build:app && pnpm preview:app & … && pnpm test:e2e
 **Goal:** Template adopters understand the two-lane model.
 
 1. **AGENTS.md** — validation map (unit / E2E / smoke / agent verify / capture)
-2. **`docs/component-validation-contract.md`** — add Playwright E2E (`pnpm test:e2e`) as a registry consumer alongside `browser validate` and smoke; extend Verification section (build → preview → `test:e2e`, link `verify-e2e.yml`)
+2. **`docs/component-validation-contract.md`** — add Playwright E2E (`pnpm e2e`) as a registry consumer alongside `browser validate` and smoke; extend Verification section (build → preview → `e2e`, link `verify-e2e.yml`)
 3. **`docs/e2e.md`** (or section in `docs/browser-validation.md`):
-   - Local: build → preview → test:e2e
+   - Local: build → preview → e2e
    - Bundler override for local matrix testing
    - Locator conventions (link component-validation-contract)
-4. **README.md** — `pnpm test:e2e` in test section
+4. **README.md** — `pnpm e2e` in test section
 5. **browser-validation skill** — one line: “regression → Playwright; live dev → browser snapshot”
 6. Run `pnpm sync:agents` if skill changed
 
@@ -249,7 +249,7 @@ pnpm lint
 pnpm test
 pnpm check:type
 pnpm check:agents   # when .rulesync/** changed
-pnpm test:e2e       # when e2e package changed
+pnpm e2e       # when e2e package changed
 ```
 
 ---
