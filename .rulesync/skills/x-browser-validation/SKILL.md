@@ -1,12 +1,12 @@
 ---
 name: x-browser-validation
 description: >-
-  Verify the live app or Storybook renders correctly — assert DOM, text, and
-  selectors. Use before any browser-related verification in this repo, or when
-  the user mentions browser open, browser validate, browser read, browser eval,
-  browser snapshot, browser screenshot, --attach, chrome-devtools MCP, DOM
-  assertions, or checking rendered UI in local, CLI, remote, or Cloud Agent
-  environments.
+  Live dev verification — assert DOM, text, and selectors against the running
+  app or Storybook (browser-tools, MCP, or CLI). Not CI regression (`pnpm e2e`).
+  Use when the user mentions browser open, browser validate, browser read,
+  browser eval, browser snapshot, browser screenshot, --attach, chrome-devtools
+  MCP, DOM assertions, or checking rendered UI in local, CLI, remote, or Cloud
+  Agent environments.
 targets:
   - claudecode
 ---

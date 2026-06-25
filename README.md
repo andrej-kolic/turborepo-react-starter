@@ -26,6 +26,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 - `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
+- `e2e`: Playwright E2E regression tests (`pnpm e2e`) against preview builds
 
 #### Infra
 
@@ -59,13 +60,13 @@ pnpm dev:ui    # Storybook + dependency watchers
 
 ### Test
 
-To test all apps and packages, run the following command:
+**Unit tests** (Vitest) — all apps and packages:
 
 ```
 pnpm test
 ```
 
-**E2E (Playwright)** runs against a production preview build — not the dev server:
+**E2E** (Playwright) — browser regression on a production preview build (not the dev server):
 
 ```bash
 pnpm build:app
@@ -74,7 +75,8 @@ pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
 pnpm e2e
 ```
 
-Override the target bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test. Set `TARGET_URL` to point at an already-running preview.
+CI runs E2E via `.github/workflows/verify-e2e.yml`. For bundler overrides, locators, and the
+agent vs regression split, see [`docs/e2e.md`](docs/e2e.md).
 
 ### Lint
 

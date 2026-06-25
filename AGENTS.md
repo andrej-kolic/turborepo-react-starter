@@ -65,12 +65,22 @@ and pass `--url` with the `previewUrl` from that app's `package.json` (or set `T
 
 Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch at once; it is heavy.
 
+## Validation map
+
+- While developing: browser snapshot / screenshot / validate (browser-tools)
+- CI regression: Playwright E2E on preview build
+- Multi-bundler boot: verify-browser-smoke.yml (all bundlers)
+- Debug on failure: Playwright trace (+ optional browser-capture)
+
+E2E runs against a **production preview** build — not the dev server. Full layer breakdown: [`docs/e2e.md`](docs/e2e.md).
+
 ## Common commands
 
 See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
-- Test: `pnpm test`
+- Test: `pnpm test` (unit only — E2E is separate)
+- E2E: `pnpm e2e` (after `pnpm build:app` + `pnpm preview:app`)
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
@@ -82,12 +92,13 @@ See root `README.md` and `package.json` scripts. Typical loop:
 | [`README.md`](README.md)                                                                       | Human-oriented package inventory and basic commands                      |
 | [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md) | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
+| [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E — local run, bundler override, locators                   |
 | [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
 | [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
 | [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks — snapshot, screenshot, `browser eval`               |
 
-Pick the **lightest** tool for the question: `pnpm test` (logic) · Storybook (isolated UI) ·
-browser-validation skill (DOM/text) · browser-capture skill (artifacts).
+Pick the **lightest** tool for the question: `pnpm test` (logic) · `pnpm e2e` (CI regression) ·
+Storybook (isolated UI) · browser-validation skill (live dev DOM/text) · browser-capture skill (artifacts).
 
 ## Agent config (rulesync)
 

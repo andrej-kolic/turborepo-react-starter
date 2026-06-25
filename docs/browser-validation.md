@@ -149,10 +149,10 @@ CHROME_DEBUG_PORT=9222
 Storybook (`pnpm dev:ui`; port in `apps/ui-storybook/package.json`) and the live bundler app are
 **different targets** — do not use `verify-browser-smoke.yml` for Storybook.
 
-| Target                          | CI / regression                                          | Agent / local spot-check                |
-| ------------------------------- | -------------------------------------------------------- | --------------------------------------- |
-| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one) | `pnpm browser read` against canvas URLs |
-| `packages/app-core` in live app | `.github/workflows/verify-browser-smoke.yml`             | `pnpm browser validate`                 |
+| Target                          | CI / regression                                                                                                                                                  | Agent / local spot-check                |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one)                                                                                                         | `pnpm browser read` against canvas URLs |
+| `packages/app-core` in live app | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) (preview) + [smoke](../.github/workflows/verify-browser-smoke.yml) (dev, all bundlers) | `pnpm browser validate`                 |
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live
 app, not Storybook URLs. See `docs/component-validation-contract.md`.
@@ -170,5 +170,6 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 ## Related
 
 - [`AGENTS.md`](../AGENTS.md) — documentation map and setup
+- [`docs/e2e.md`](e2e.md) — Playwright E2E (CI regression on preview)
 - [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI flags and env vars
 - [`packages/dev-tools/config/app-port.ts`](../packages/dev-tools/config/app-port.ts) — `loadAppEndpoints`, `resolveAppUrl`

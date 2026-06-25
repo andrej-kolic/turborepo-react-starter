@@ -1,10 +1,11 @@
 # Plan: Playwright E2E for enterprise template starter
 
-**Status:** Phases 1–2 complete — Phases 3–4 pending  
+**Status:** Phases 1–3 complete — Phase 4 optional  
 **Branch:** `develop`  
 **Created:** 2026-06-21  
 **Phase 1 completed:** 2026-06-24  
-**Phase 2 completed:** 2026-06-24
+**Phase 2 completed:** 2026-06-24  
+**Phase 3 completed:** 2026-06-24
 
 ## How to run (new chat)
 
@@ -86,7 +87,7 @@ Debug on failure:  Playwright trace (+ optional browser-capture)
 - ✅ Root scripts: `pnpm e2e`, `e2e:ui`, `e2e:headed` (via `pnpm --filter`; not in Turbo graph)
 - ✅ README local workflow (build → preview → `pnpm e2e`)
 - ✅ CI: `.github/workflows/verify-e2e.yml` (app-vite preview gate)
-- ⬜ Docs: validation map in AGENTS.md, `docs/e2e.md` (Phase 3)
+- ✅ Docs: validation map in AGENTS.md, `docs/e2e.md` (Phase 3)
 - CI smoke: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server + `pnpm browser validate`
 - CI perf (preview bootstrap pattern): [`verify-browser-perf.yml`](../../.github/workflows/verify-browser-perf.yml)
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` registry: `app-header`, `resource-cards`, `scroller`
@@ -204,19 +205,16 @@ pnpm build:app && pnpm preview:app & … && pnpm e2e
 
 ---
 
-### Phase 3 — Docs + agent alignment
+### Phase 3 — Docs + agent alignment ✅ DONE
 
 **Goal:** Template adopters understand the two-lane model.
 
-1. **AGENTS.md** — validation map (unit / E2E / smoke / agent verify / capture)
-2. **`docs/component-validation-contract.md`** — add Playwright E2E (`pnpm e2e`) as a registry consumer alongside `browser validate` and smoke; extend Verification section (build → preview → `e2e`, link `verify-e2e.yml`)
-3. **`docs/e2e.md`** (or section in `docs/browser-validation.md`):
-   - Local: build → preview → e2e
-   - Bundler override for local matrix testing
-   - Locator conventions (link component-validation-contract)
-4. **README.md** — `pnpm e2e` in test section
-5. **browser-validation skill** — one line: “regression → Playwright; live dev → browser snapshot”
-6. Run `pnpm sync:agents` if skill changed
+1. ✅ **AGENTS.md** — validation map (unit / E2E / smoke / agent verify / capture)
+2. ✅ **`docs/component-validation-contract.md`** — Playwright E2E as registry consumer; Verification section
+3. ✅ **`docs/e2e.md`** — local workflow, bundler override, locator conventions
+4. ✅ **README.md** — `pnpm e2e` in test section
+5. ✅ **browser-validation skill** — regression → Playwright; live dev → browser snapshot
+6. ✅ Run `pnpm sync:agents`
 
 **Verification:**
 
