@@ -138,8 +138,8 @@ Unit tests cover pure CLI helpers in `src/cli/args.js` (flag parsing, option map
 pnpm --filter @repo/browser-tools test
 ```
 
-CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
-[`.github/workflows/verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml).
+CDP integration (Chrome + live page) is not unit-tested here — exercise locally with
+`pnpm browser validate` or rely on Playwright E2E for CI region checks ([`docs/e2e.md`](../../docs/e2e.md)).
 
 ## TODO
 

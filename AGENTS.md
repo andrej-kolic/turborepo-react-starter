@@ -18,7 +18,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.example` if missing. Important variables:
 
 - `BUILD_ENVIRONMENT` — required (e.g. `staging`)
-- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in example: `app-vite`)
+- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in `.env.example`: `app-vite`)
 
 ## Node.js version
 
@@ -50,12 +50,10 @@ tooling all read from it. Override the browser/E2E target URL with **`TARGET_URL
 
 Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
-| Service                | Start                                         |
-| ---------------------- | --------------------------------------------- |
-| **app-vite** (default) | `pnpm dev:app`                                |
-| app-webpack            | set `BUNDLER=app-webpack` then `pnpm dev:app` |
-| app-esbuild            | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
-| ui-storybook           | `pnpm dev:ui`                                 |
+| Service                  | Start                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-webpack`, `app-esbuild`) |
+| ui-storybook             | `pnpm dev:ui`                                                                   |
 
 Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
@@ -68,8 +66,8 @@ Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch a
 ## Validation map
 
 - While developing: browser snapshot / screenshot / validate (browser-tools)
-- CI regression: Playwright E2E on preview build
-- Multi-bundler boot: verify-browser-smoke.yml (all bundlers)
+- CI regression: Playwright E2E on preview build (`DEFAULT_BUNDLER` in CI; `BUNDLER` in `.env` locally)
+- Multi-bundler boot: verify-browser-smoke.yml (dev server HTTP 200, all bundlers)
 - Debug on failure: Playwright trace (+ optional browser-capture)
 
 E2E runs against a **production preview** build — not the dev server. Full layer breakdown: [`docs/e2e.md`](docs/e2e.md).

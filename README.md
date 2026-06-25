@@ -70,12 +70,12 @@ pnpm test
 
 ```bash
 pnpm build:app
-pnpm preview:app &          # serve preview (default bundler: app-vite)
+pnpm preview:app &          # serve preview (active bundler from BUNDLER in .env)
 pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
 pnpm e2e
 ```
 
-CI runs E2E via `.github/workflows/verify-e2e.yml`. For bundler overrides, locators, and the
+CI runs E2E via `.github/workflows/verify-e2e.yml` (`DEFAULT_BUNDLER` repo variable). For bundler overrides, locators, and the
 agent vs regression split, see [`docs/e2e.md`](docs/e2e.md).
 
 ### Lint

@@ -7,7 +7,7 @@ Rules for adding agent-checkable identifiers to components in this monorepo.
 ## Scope
 
 This contract governs **external verification of page regions** — assertions run by
-`pnpm browser validate`, Playwright E2E (`pnpm e2e`), and CI smoke tests.
+`pnpm browser validate` and Playwright E2E (`pnpm e2e`).
 
 It does **not** govern unit or integration test selectors. For those, follow the
 [Playwright / Testing Library best practices](https://playwright.dev/docs/best-practices):
@@ -85,7 +85,7 @@ Sub-elements within a region do not get testids unless they are independently ve
 ## Production Builds
 
 `data-testid` attributes are **intentionally present in production builds**. This project is a
-public frontend starter. The attributes carry no security risk and allow agents and CI smoke tests
+public frontend starter. The attributes carry no security risk and allow agents and Playwright E2E
 to run assertions against deployed URLs without a separate build configuration.
 
 If this project were to ship as a library or a security-sensitive product, testids should be
@@ -95,17 +95,20 @@ stripped via a Babel plugin or custom bundler transform.
 
 ## Registry consumers
 
-| Consumer                | Target        | Command / workflow                                                                            |
-| ----------------------- | ------------- | --------------------------------------------------------------------------------------------- |
-| Agent CLI               | Dev server    | `pnpm browser validate --selector "[data-testid=…]"`                                          |
-| Playwright E2E          | Preview build | `pnpm e2e` — see [`docs/e2e.md`](e2e.md)                                                      |
-| CI smoke (all bundlers) | Dev server    | [`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) |
-| CI E2E (app-vite)       | Preview build | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml)                     |
+| Consumer                 | Target        | Command / workflow                                                                                                 |
+| ------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Agent CLI                | Dev server    | `pnpm browser validate --selector "[data-testid=…]"`                                                               |
+| Playwright E2E           | Preview build | `pnpm e2e` — see [`docs/e2e.md`](e2e.md)                                                                           |
+| CI smoke (all bundlers)  | Dev server    | HTTP 200 boot only — [`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) |
+| CI E2E (default bundler) | Preview build | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) — `vars.DEFAULT_BUNDLER`                 |
 
 ## Verification
 
-**Agent / smoke (dev server):** run against the URL from `pnpm browser:ensure-app`. See
+**Agent (dev server):** run against the URL from `pnpm browser:ensure-app`. See
 [`docs/browser-validation.md`](browser-validation.md) for URL setup.
+
+**Smoke (dev server, all bundlers):** boot + HTTP 200 only — no region assertions. See
+[`verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml).
 
 **E2E (preview build):**
 
@@ -116,8 +119,8 @@ pnpm e2e
 ```
 
 Override the bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test.
-Set `TARGET_URL` to point at an already-running preview. CI runs via
-[`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml).
+Set `TARGET_URL` to point at an already-running preview. CI uses `vars.DEFAULT_BUNDLER` (fallback
+`app-vite`) via [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml).
 
 ---
 

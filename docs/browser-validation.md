@@ -48,17 +48,19 @@ For bootstrap commands (ensure-app, setup, tier selection), follow the
 
 ### CI bootstrap
 
-[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) runs the same
-helper path as local agents, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`, `app-esbuild`):
+[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) boots each
+bundler dev server and asserts HTTP 200, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`,
+`app-esbuild`):
 
 ```bash
 pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
-pnpm browser:setup
-pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
+curl -sf "$(pnpm exec dev-tools-app-target url)"   # smoke asserts HTTP 200 in CI
 ```
 
+Region assertions (`data-testid` registry) run in Playwright E2E on the default bundler's preview
+(`DEFAULT_BUNDLER` in CI) — see [`docs/e2e.md`](e2e.md).
 `TARGET_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
-`--log-file` captures dev-server output for CI failures (startup timeout or validate step).
+`--log-file` captures dev-server output for CI failures (startup timeout or HTTP check).
 
 ---
 
@@ -149,10 +151,10 @@ CHROME_DEBUG_PORT=9222
 Storybook (`pnpm dev:ui`; port in `apps/ui-storybook/package.json`) and the live bundler app are
 **different targets** — do not use `verify-browser-smoke.yml` for Storybook.
 
-| Target                          | CI / regression                                                                                                                                                  | Agent / local spot-check                |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one)                                                                                                         | `pnpm browser read` against canvas URLs |
-| `packages/app-core` in live app | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) (preview) + [smoke](../.github/workflows/verify-browser-smoke.yml) (dev, all bundlers) | `pnpm browser validate`                 |
+| Target                          | CI / regression                                                                                                                                                                       | Agent / local spot-check                |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one)                                                                                                                              | `pnpm browser read` against canvas URLs |
+| `packages/app-core` in live app | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) (default bundler preview) + [smoke](../.github/workflows/verify-browser-smoke.yml) (dev boot, all bundlers) | `pnpm browser validate`                 |
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live
 app, not Storybook URLs. See `docs/component-validation-contract.md`.

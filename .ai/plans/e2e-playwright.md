@@ -1,11 +1,12 @@
 # Plan: Playwright E2E for enterprise template starter
 
-**Status:** Phases 1–3 complete — Phase 4 optional  
+**Status:** Phases 1–4 complete (Option A)  
 **Branch:** `develop`  
 **Created:** 2026-06-21  
 **Phase 1 completed:** 2026-06-24  
 **Phase 2 completed:** 2026-06-24  
-**Phase 3 completed:** 2026-06-24
+**Phase 3 completed:** 2026-06-24  
+**Phase 4 completed:** 2026-06-24 (Option A — smoke HTTP 200 only)
 
 ## How to run (new chat)
 
@@ -27,7 +28,7 @@ Implement this plan. Read AGENTS.md first.
 - E2E = CI/regression truth. browser-tools = agent dev eyes (no MCP). Keep that split in docs.
 - Use @repo/dev-tools / dev-tools-app-target for URL resolution (same as browser tooling).
 - Execute phase-by-phase; run pnpm lint, pnpm test, pnpm check:type after each phase.
-- Default E2E CI target: app-vite preview only. Multi-bundler boot stays in verify-browser-smoke.yml.
+- Default E2E CI target: `DEFAULT_BUNDLER` preview (single bundler). Multi-bundler dev boot stays in verify-browser-smoke.yml.
 
 If the plan is already partially done, read git status and skip completed tasks.
 ```
@@ -44,7 +45,7 @@ Add **Playwright Test** (`@playwright/test`) as the canonical browser regression
 | ------------ | --------------------- | ------------------------------------------------------------- |
 | Unit         | Vitest + RTL          | Component logic (jsdom)                                       |
 | **E2E**      | **Playwright Test**   | **User-visible flows + regional gates in CI**                 |
-| Smoke        | browser-tools CLI     | All bundlers boot (matrix) — may shrink after E2E             |
+| Smoke        | dev server boot       | All bundlers HTTP 200 (matrix)                                |
 | Agent verify | browser-tools + skill | Eyes while developing (no MCP)                                |
 | Capture      | browser-capture       | Debug artifacts on failure (optional E2E hook)                |
 | Storybook    | ui-storybook          | Isolated component dev; Chromatic later for visual regression |
@@ -61,7 +62,7 @@ Add **Playwright Test** (`@playwright/test`) as the canonical browser regression
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **Playwright Test** — `@playwright/test`, not playwright-core alone                                                                                                                                                                                              |
 | 2   | **Preview target** — `pnpm build:app` → `pnpm preview:app` → E2E against `previewUrl` from `app-port.ts`                                                                                                                                                         |
-| 3   | **CI bundler** — E2E on **`app-vite` only** by default; smoke matrix keeps all three bundlers                                                                                                                                                                    |
+| 3   | **CI bundler** — E2E on **`DEFAULT_BUNDLER`** (fallback `app-vite`); smoke matrix keeps all three bundlers on dev server                                                                                                                                         |
 | 4   | **Layout** — `packages/e2e/`                                                                                                                                                                                                                                     |
 | 5   | **Locators** — `getByTestId` for registered page regions per [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md); `getByRole` / `getByText` for user flows (clicks, forms, navigation). v1 is region-only → all `getByTestId` |
 | 6   | **Keep browser-tools** — agent dev feedback; do not merge into Playwright                                                                                                                                                                                        |
@@ -86,9 +87,9 @@ Debug on failure:  Playwright trace (+ optional browser-capture)
 - ✅ `@repo/e2e` — Playwright config, `tests/app.spec.ts`, `@playwright/test` in catalog
 - ✅ Root scripts: `pnpm e2e`, `e2e:ui`, `e2e:headed` (via `pnpm --filter`; not in Turbo graph)
 - ✅ README local workflow (build → preview → `pnpm e2e`)
-- ✅ CI: `.github/workflows/verify-e2e.yml` (app-vite preview gate)
+- ✅ CI: `.github/workflows/verify-e2e.yml` (`DEFAULT_BUNDLER` preview gate)
 - ✅ Docs: validation map in AGENTS.md, `docs/e2e.md` (Phase 3)
-- CI smoke: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server + `pnpm browser validate`
+- CI smoke: [`verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml) — dev server boot + HTTP 200 (all bundlers)
 - CI perf (preview bootstrap pattern): [`verify-browser-perf.yml`](../../.github/workflows/verify-browser-perf.yml)
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` registry: `app-header`, `resource-cards`, `scroller`
 
@@ -186,14 +187,14 @@ pnpm lint && pnpm test && pnpm check:type
 
 ### Phase 2 — CI workflow ✅ DONE
 
-**Goal:** PR gate runs E2E on preview (app-vite).
+**Goal:** PR gate runs E2E on preview (`DEFAULT_BUNDLER`).
 
 1. ✅ New `.github/workflows/verify-e2e.yml`:
    - Reuse bootstrap from `verify-browser-perf.yml` (build → preview → wait-on)
    - `pnpm --filter @repo/e2e install:browsers`
    - `pnpm e2e` with `TARGET_URL` from `dev-tools-app-target resolve --preview`
    - Upload Playwright report/trace artifacts on failure
-2. ✅ `BUNDLER: app-vite` only
+2. ✅ `BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}` (single bundler, not a matrix)
 3. ⬜ Optional: add to `pnpm quality-checks` once stable
 
 **Verification:**
@@ -225,15 +226,13 @@ pnpm check:links
 
 ---
 
-### Phase 4 — Smoke workflow consolidation (optional)
+### Phase 4 — Smoke workflow consolidation ✅ DONE (Option A)
 
 **Goal:** Remove duplicate assertions; keep smoke focused.
 
-Options (pick one):
-
-- **A (recommended):** Move header/region assertions into Playwright; smoke keeps “app starts + HTTP 200” only
-- **B:** Keep smoke as-is; E2E adds deeper checks — accept some overlap short-term
-- **C:** Drop smoke matrix in favor of E2E + build matrix — only if build already covers all bundlers
+- ✅ **Option A:** Region assertions in Playwright E2E; smoke keeps dev-server boot + HTTP 200 only
+- Removed Chrome setup, `browser validate`, and capture-on-failure from `verify-browser-smoke.yml`
+- Docs aligned: `docs/e2e.md`, `docs/browser-validation.md`, `docs/component-validation-contract.md`
 
 ---
 
