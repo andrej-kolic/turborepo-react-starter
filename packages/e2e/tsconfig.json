@@ -3,5 +3,11 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["playwright.config.ts", "tests/**/*.ts"]
+  "include": [
+    "fixtures/**/*.ts",
+    "lib/**/*.ts",
+    "pages/**/*.ts",
+    "playwright.config.ts",
+    "tests/**/*.ts"
+  ]
 }

@@ -1,23 +1,18 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/app-target';
+import { AppPage } from '../pages/app.page';
 
 test.describe('app smoke', () => {
   test('loads with registered page regions and no console errors', async ({
     page,
+    appTarget,
   }) => {
-    const consoleErrors: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        consoleErrors.push(msg.text());
-      }
-    });
+    const appPage = new AppPage(page);
+    const consoleErrors = appPage.trackConsoleErrors();
 
-    const response = await page.goto('/');
+    const response = await appPage.goto();
     expect(response?.status()).toBeLessThan(500);
-
-    await expect(page.locator('main')).toBeVisible();
-    await expect(page.getByTestId('app-header')).toBeVisible();
-    await expect(page.getByTestId('resource-cards')).toBeVisible();
-    await expect(page.getByTestId('scroller')).toBeVisible();
+    appPage.expectOnOrigin(appTarget.url);
+    await appPage.expectRegisteredRegionsVisible();
 
     expect(consoleErrors).toEqual([]);
   });

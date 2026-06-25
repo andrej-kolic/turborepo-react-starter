@@ -1,20 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import {
-  resolveAppUrl,
-  warnIfStaleLocalTargetUrlOverride,
-} from '@repo/dev-tools/config/app-port';
-
-function resolveBaseUrl(): string {
-  warnIfStaleLocalTargetUrlOverride(process.env, 'preview');
-  const url = resolveAppUrl(process.env, 'preview');
-  if (!url) {
-    throw new Error(
-      'Set BUNDLER (e.g. app-vite) or TARGET_URL before running E2E tests against preview.',
-    );
-  }
-
-  return url;
-}
+import { resolvePreviewAppTarget } from './lib/resolve-preview-target';
 
 export default defineConfig({
   testDir: './tests',
@@ -24,7 +9,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: resolveBaseUrl(),
+    baseURL: resolvePreviewAppTarget().url,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

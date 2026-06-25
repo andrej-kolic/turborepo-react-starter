@@ -85,6 +85,9 @@ Debug on failure:  Playwright trace (+ optional browser-capture)
 ## Current state
 
 - ✅ `@repo/e2e` — Playwright config, `tests/app.spec.ts`, `@playwright/test` in catalog
+- ✅ `fixtures/app-target.ts` — `appTarget` fixture via `dev-tools-app-target` / `resolveAppTargets`
+- ✅ `lib/resolve-preview-target.ts` — shared preview URL resolution for config + fixture
+- ✅ `pages/app.page.ts` — Page Object Model for registered page regions
 - ✅ Root scripts: `pnpm e2e`, `e2e:ui`, `e2e:headed` (via `pnpm --filter`; not in Turbo graph)
 - ✅ README local workflow (build → preview → `pnpm e2e`)
 - ✅ CI: `.github/workflows/verify-e2e.yml` (`DEFAULT_BUNDLER` preview gate)
@@ -128,11 +131,16 @@ flowchart TB
 ```
 packages/e2e/
   package.json
-  playwright.config.ts      # baseURL via dev-tools-app-target / env
+  playwright.config.ts      # baseURL via lib/resolve-preview-target
   tsconfig.json
+  lib/
+    resolve-preview-target.ts
+  fixtures/
+    app-target.ts           # test.extend — appTarget fixture
+  pages/
+    app.page.ts             # Page Object Model — region locators + assertions
   tests/
     app.spec.ts             # smoke-level: load, regions, no console errors
-  fixtures/                 # optional: shared helpers
 ```
 
 ### Root scripts (target)
@@ -266,11 +274,14 @@ pnpm e2e       # when e2e package changed
 
 - E2E failure → `browser-capture record-trace` in CI
 - Playwright matrix across `app-vite`, `app-webpack`, `app-esbuild`
-- `@playwright/test` fixture that reuses `dev-tools-app-target` programmatically
-- Page Object Model layer as tests grow
 - Chromatic / visual regression on Storybook
 - `@repo/browser-tools` MCP server (separate plan)
 - Playwright component tests (usually redundant with Storybook + unit tests here)
+
+## Completed follow-ups
+
+- ✅ `@playwright/test` fixture that reuses `dev-tools-app-target` programmatically (`fixtures/app-target.ts`, `lib/resolve-preview-target.ts`)
+- ✅ Page Object Model layer (`pages/app.page.ts`); add new page classes as specs grow
 
 ---
 

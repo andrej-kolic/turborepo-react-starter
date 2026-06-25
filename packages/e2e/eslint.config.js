@@ -6,5 +6,11 @@ import {
 /** @type {import("eslint").Linter.Config} */
 export default [
   ...libraryConfig,
-  disableTypeCheck(['playwright.config.ts', 'tests/**']),
+  disableTypeCheck([
+    'fixtures/**',
+    'lib/**',
+    'pages/**',
+    'playwright.config.ts',
+    'tests/**',
+  ]),
 ];
