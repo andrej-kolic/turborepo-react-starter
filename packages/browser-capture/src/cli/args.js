@@ -7,14 +7,14 @@ export { parseArgs } from '@repo/browser-tools/cli/args';
 /** @typedef {{ durationMs: number, attach: boolean }} CaptureOptions */
 
 /**
- * Resolve capture target URL: positional → APP_URL → CAPTURE_URL.
+ * Resolve capture target URL: positional → TARGET_URL → CAPTURE_URL.
  *
  * @param {string | undefined} urlArg  first positional URL, if any
  * @returns {string | undefined}
  */
 export function resolveCaptureUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
-  if (process.env.APP_URL) return process.env.APP_URL;
+  if (process.env.TARGET_URL) return process.env.TARGET_URL;
   if (process.env.CAPTURE_URL) return process.env.CAPTURE_URL;
   return undefined;
 }
@@ -30,7 +30,7 @@ export function requireUrl(command, url) {
   const resolved = resolveCaptureUrl(url);
   if (!resolved) {
     throw new Error(
-      `${command} requires a URL: pass as positional, or set APP_URL or CAPTURE_URL.`,
+      `${command} requires a URL: pass as positional, or set TARGET_URL or CAPTURE_URL.`,
     );
   }
 

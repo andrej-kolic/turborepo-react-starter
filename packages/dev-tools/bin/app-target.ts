@@ -1,11 +1,14 @@
 /**
- * Resolve app URL/port from BUNDLER / APP_URL, or run a child with APP_URL injected.
+ * Resolve app URL/port from BUNDLER / TARGET_URL, or run a child with TARGET_URL injected.
  *
  * Usage:
  *   dev-tools-app-target url [--preview]         Print resolved app URL
  *   dev-tools-app-target port [--preview]        Print resolved app port
  *   dev-tools-app-target resolve [--preview]     Print URL and port (tab-separated)
- *   dev-tools-app-target run <cmd> [args...]     Run command with dev APP_URL set
+ *   dev-tools-app-target run <cmd> [args...]     Run command with dev TARGET_URL set
+ *
+ * `run` passes through an existing TARGET_URL; otherwise resolves dev default from BUNDLER
+ * and injects TARGET_URL on the child env.
  *
  * Invoked via `dev-tools-app-target` (bin/app-target.js → run-ts.js).
  */
@@ -13,16 +16,17 @@
 import { spawn } from 'node:child_process';
 import {
   resolveAppTargets,
-  resolveAppUrl,
+  warnIfStaleLocalTargetUrlOverride,
   type AppTargetMode,
 } from '../config/app-port';
+import { resolveRunChildEnv } from '../config/run-child-env';
 
 function usage(): never {
   console.error(`Usage:
   dev-tools-app-target url [--preview]         Print resolved app URL
   dev-tools-app-target port [--preview]        Print resolved app port
   dev-tools-app-target resolve [--preview]     Print URL and port (tab-separated)
-  dev-tools-app-target run <cmd> [args...]     Run command with dev APP_URL set`);
+  dev-tools-app-target run <cmd> [args...]     Run command with dev TARGET_URL set`);
   process.exit(1);
 }
 
@@ -30,7 +34,7 @@ function resolutionHint(mode: AppTargetMode): string {
   if (mode === 'preview') {
     return 'Set BUNDLER (e.g. app-vite) before invoking dev-tools-app-target with --preview.';
   }
-  return 'Set BUNDLER (e.g. app-vite) or APP_URL before invoking dev-tools-app-target.';
+  return 'Set BUNDLER (e.g. app-vite) or TARGET_URL before invoking dev-tools-app-target.';
 }
 
 function resolveMode(argv: string[]): {
@@ -70,16 +74,15 @@ if (subcommand === 'run') {
     usage();
   }
 
-  let appUrl: string | null;
+  let env: NodeJS.ProcessEnv;
   try {
-    appUrl = resolveAppUrl(process.env);
+    env = resolveRunChildEnv(process.env);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`Error: ${message}`);
     process.exit(1);
   }
 
-  const env = appUrl ? { ...process.env, APP_URL: appUrl } : process.env;
   const child = spawn(cmd, args, { stdio: 'inherit', env });
 
   child.on('error', (err) => {
@@ -103,6 +106,7 @@ if (subcommand === 'run') {
   }
 
   const targets = resolveTargetsOrExit(mode);
+  warnIfStaleLocalTargetUrlOverride(process.env, mode);
   if (subcommand === 'resolve') {
     console.log(`${targets.url}\t${targets.port}`);
   } else {

@@ -5,7 +5,7 @@ Chrome lifecycle + UI verification CLI.
 > **In turborepo-react-starter** the binaries are aliased in the root `package.json`:
 > `browser-tools` → `pnpm browser`, `browser-tools-chrome` → `pnpm chrome:debug`,
 > `browser-tools-setup` → `pnpm browser:setup`. Those wrappers also load `.env` and inject
-> `APP_URL` automatically. For the agent workflow see [`AGENTS.md`](../../AGENTS.md).
+> `TARGET_URL` automatically. For the agent workflow see [`AGENTS.md`](../../AGENTS.md).
 
 ## Scope
 
@@ -39,7 +39,7 @@ browser-tools-setup --url http://localhost:<port>
 
 Idempotent — safe to call when Chrome is already running or a tab is already open.
 Starts Chrome if not running; opens a tab at `--url` when a display is available.
-`APP_URL` may be used instead of `--url` (see [URL resolution](#url-resolution)).
+`TARGET_URL` may be used instead of `--url` (see [URL resolution](#url-resolution)).
 
 Output tells you the flag to use for all subsequent `browser-tools` commands:
 
@@ -127,8 +127,8 @@ Commands supporting `--attach`: `validate`, `read`, `eval`, `screenshot`, `snaps
 
 When `--url` is omitted:
 
-1. `APP_URL` env var
-2. Error — pass `--url` or set `APP_URL`
+1. `TARGET_URL` env var
+2. Error — pass `--url` or set `TARGET_URL`
 
 ## Testing
 
@@ -138,8 +138,8 @@ Unit tests cover pure CLI helpers in `src/cli/args.js` (flag parsing, option map
 pnpm --filter @repo/browser-tools test
 ```
 
-CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
-[`.github/workflows/verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml).
+CDP integration (Chrome + live page) is not unit-tested here — exercise locally with
+`pnpm browser validate` or rely on Playwright E2E for CI region checks ([`docs/e2e.md`](../../docs/e2e.md)).
 
 ## TODO
 
@@ -155,7 +155,7 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 | `CHROME_PATH`       | —           | Override Chrome executable path        |
 | `CHROME_HEADLESS`   | —           | Set to `1` or `true` for headless mode |
 | `CHROME_EXTRA_ARGS` | —           | Space-separated extra Chrome flags     |
-| `APP_URL`           | —           | Override URL when `--url` is omitted   |
+| `TARGET_URL`        | —           | Override URL when `--url` is omitted   |
 
 ## See Also
 

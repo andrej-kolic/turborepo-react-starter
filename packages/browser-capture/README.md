@@ -23,17 +23,17 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 
 App URLs always come from `devPort` in `apps/<BUNDLER>/package.json` — the single source of
 truth for every bundler (including Vite). Run `pnpm browser:ensure-app` for the resolved URL, or
-set `APP_URL`. Examples below use `<dev-url>` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+set `TARGET_URL`. Examples below use `<dev-url>` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
-From repo root, prefer **`pnpm capture <subcommand>`** — loads `.env`, injects `APP_URL` via
-`dev-tools-app-target run` (same as `pnpm browser`). URL positional is optional when `APP_URL` is set.
+From repo root, prefer **`pnpm capture <subcommand>`** — loads `.env`, injects `TARGET_URL` via
+`dev-tools-app-target run` (same as `pnpm browser`). URL positional is optional when `TARGET_URL` is set.
 
 ```bash
 # Prerequisites: app running, Chrome via pnpm chrome:debug (CHROME_DEBUG_PORT)
 pnpm browser:ensure-app
 pnpm chrome:debug
 
-# Root wrappers (APP_URL from BUNDLER)
+# Root wrappers (TARGET_URL from BUNDLER)
 pnpm capture capture-snapshot
 pnpm capture record-trace --duration 5
 pnpm capture record-performance
@@ -81,7 +81,7 @@ By default, navigate-based capture commands open a **new isolated browser contex
 | `record-interactions` | New context + navigate                        | Existing tab; interact during capture window                                        |
 | `record-console`      | Most recent open tab                          | Requires URL; match tab by origin                                                   |
 
-Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console`. With `--attach`, pass a URL (positional, `APP_URL`, or `CAPTURE_URL`) so the tab is matched by origin.
+Commands supporting `--attach`: `record-trace`, `record-performance`, `record-interactions`, `record-console`. With `--attach`, pass a URL (positional, `TARGET_URL`, or `CAPTURE_URL`) so the tab is matched by origin.
 
 ## MCP Server
 
@@ -190,8 +190,8 @@ test('recorded: app/', async ({ page }) => {
 | `CHROME_DEBUG_PORT`   | `9222`      | CDP port                                                                       |
 | `CHROME_DEBUG_HOST`   | `localhost` | CDP host                                                                       |
 | `CAPTURE_DURATION_MS` | `10000`     | Default capture duration (ms) — per-tool `duration` arg takes precedence       |
-| `APP_URL`             | —           | Default URL when using `pnpm capture` (injected by `dev-tools-app-target run`) |
-| `CAPTURE_URL`         | —           | Fallback default URL when `APP_URL` is unset                                   |
+| `TARGET_URL`          | —           | Default URL when using `pnpm capture` (injected by `dev-tools-app-target run`) |
+| `CAPTURE_URL`         | —           | Fallback default URL when `TARGET_URL` is unset                                |
 | `CAPTURE_BRANCH`      | git branch  | Override branch in metadata                                                    |
 | `GITHUB_ACTOR`        | —           | Set automatically by CI; logged in `metadata.json` for audit trail             |
 | `GITHUB_EVENT_NAME`   | —           | Set automatically by CI; logged in `metadata.json` (`triggerEvent`)            |

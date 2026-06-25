@@ -46,15 +46,15 @@ export function parseArgs(argv) {
 }
 
 /**
- * Resolve the target URL from the --url flag or APP_URL env var.
+ * Resolve the target URL from the --url flag or TARGET_URL env var.
  *
  * @param {string | boolean | undefined} urlArg  value of parsed --url option
  * @returns {string}
  */
 export function resolveUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
-  if (process.env.APP_URL) return process.env.APP_URL;
-  throw new Error('No URL: pass --url <url> or set APP_URL.');
+  if (process.env.TARGET_URL) return process.env.TARGET_URL;
+  throw new Error('No URL: pass --url <url> or set TARGET_URL.');
 }
 
 /**
