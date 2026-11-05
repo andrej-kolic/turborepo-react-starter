@@ -40,7 +40,7 @@ If the plan is already partially done, read git status and skip completed tasks.
 
 Split the ~1,737-line monolith `packages/browser-capture/bin/copilot-devtools.js` into a modular `src/` layout (mirroring `@repo/browser-tools`), share CDP primitives via **Option A** (extend `@repo/browser-tools` exports), rename the CLI binary to `browser-capture`, add **`--attach`** to capture commands that navigate, add root **`pnpm capture`** wrapper (mirrors `pnpm browser`), and update MCP via **`.rulesync/mcp.json`** (then `pnpm sync:agents`).
 
-**Do not replace these packages with external npm tools.** They are repo-specific orchestration (artifact layout, sanitization policy, CI, APP_URL wiring, agent skills). External tools already in use: `playwright-core`, `chrome-devtools-mcp` (verify MCP tier).
+**Do not replace these packages with external npm tools.** They are repo-specific orchestration (artifact layout, sanitization policy, CI, TARGET_URL wiring, agent skills). External tools already in use: `playwright-core`, `chrome-devtools-mcp` (verify MCP tier).
 
 ---
 
@@ -301,13 +301,13 @@ pnpm lint && pnpm test && pnpm check:type && pnpm check:agents
 
 ### Phase 5 — Root `pnpm capture` script ✅ DONE
 
-**Goal:** Mirror `pnpm browser` ergonomics with APP_URL injection.
+**Goal:** Mirror `pnpm browser` ergonomics with TARGET_URL injection.
 
 **Completed:**
 
 1. ✅ Root script: `"capture": "dotenv -- dev-tools-app-target run browser-capture"`
 2. ✅ `@repo/browser-capture` in root `devDependencies`
-3. ✅ `resolveCaptureUrl()` — positional → `APP_URL` → `CAPTURE_URL` (aligned with verify tier)
+3. ✅ `resolveCaptureUrl()` — positional → `TARGET_URL` → `CAPTURE_URL` (aligned with verify tier)
 4. ✅ Updated `AGENTS.md`, root `README.md`, capture skill, `packages/browser-capture/README.md`
 
 **Add to root `package.json`:**
@@ -334,7 +334,7 @@ pnpm capture record-interactions --duration 10
 pnpm capture upload-artifacts
 ```
 
-**URL resolution:** when `[url]` is omitted, `dev-tools-app-target run` injects `APP_URL` from `BUNDLER`; capture CLI falls back to `CAPTURE_URL` if `APP_URL` is unset. Pass URL as first positional to override.
+**URL resolution:** when `[url]` is omitted, `dev-tools-app-target run` injects `TARGET_URL` from `BUNDLER`; capture CLI falls back to `CAPTURE_URL` if `TARGET_URL` is unset. Pass URL as first positional to override.
 
 **Verification (passed):**
 

@@ -39,6 +39,6 @@ export function usage() {
   );
   console.log('');
   console.log(
-    'URL resolution when [url] is omitted: positional → APP_URL → CAPTURE_URL',
+    'URL resolution when [url] is omitted: positional → TARGET_URL → CAPTURE_URL',
   );
 }

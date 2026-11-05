@@ -12,16 +12,16 @@ Used by bundler apps and tooling:
 
 ## `bin/` — CLI entrypoints
 
-| Command                | Purpose                                                |
-| ---------------------- | ------------------------------------------------------ |
-| `dev-tools-app-target` | Resolve app URL/port or run a child with `APP_URL` set |
+| Command                | Purpose                                                   |
+| ---------------------- | --------------------------------------------------------- |
+| `dev-tools-app-target` | Resolve app URL/port or run a child with `TARGET_URL` set |
 
 Subcommands:
 
 - `dev-tools-app-target url [--preview]` — print resolved URL
 - `dev-tools-app-target port [--preview]` — print resolved port
 - `dev-tools-app-target resolve [--preview]` — print URL and port (tab-separated)
-- `dev-tools-app-target run <cmd> [args...]` — run command with dev `APP_URL` injected
+- `dev-tools-app-target run <cmd> [args...]` — run command with dev `TARGET_URL` injected
 
 Root `pnpm browser:*` scripts use `dev-tools-app-target run`. Plain-Node repo workflows stay in `/scripts`.
 

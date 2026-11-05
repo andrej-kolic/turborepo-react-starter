@@ -32,7 +32,7 @@ steps:
   # - run: pnpm preview:app &
   # - run: npx wait-on http://localhost:4173
   #   env:
-  #     APP_URL: http://localhost:4173
+  #     TARGET_URL: http://localhost:4173
 
   - run: pnpm chrome:debug
   - run: |
@@ -46,10 +46,10 @@ steps:
 Resolve URL in shell:
 
 ```bash
-APP_URL="${APP_URL:-$(pnpm exec dev-tools-app-target url)}"
+TARGET_URL="${TARGET_URL:-$(pnpm exec dev-tools-app-target url)}"
 ```
 
-Or hardcode preview: `APP_URL=http://localhost:4173`.
+Or hardcode preview: `TARGET_URL=http://localhost:4173`.
 
 Upload artifacts (always sanitize first — capture commands do it too, but CI re-runs for safety):
 
@@ -85,8 +85,8 @@ Upload artifacts (always sanitize first — capture commands do it too, but CI r
 - name: Capture trace on smoke failure
   if: failure()
   run: |
-    APP_URL=$(pnpm exec dev-tools-app-target url)
-    node packages/browser-capture/bin/browser-capture.js record-trace "$APP_URL" --duration 5
+    TARGET_URL=$(pnpm exec dev-tools-app-target url)
+    node packages/browser-capture/bin/browser-capture.js record-trace "$TARGET_URL" --duration 5
   env:
     GITHUB_ACTOR: ${{ github.actor }}
     GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -245,6 +245,6 @@ Same pattern as workflow 1: `if: failure()` after the step that can fail.
 - **`record-console`** needs an existing tab — useless in headless CI unless you `browser open` first.
 - **`record-interactions`** needs a human clicking — not a CI fit.
 - Set **`GITHUB_ACTOR`** / **`GITHUB_EVENT_NAME`** in env so `metadata.json` shows who triggered it.
-- Use **`APP_URL`** for preview port (`4173` for vite) — `BUNDLER` alone resolves **dev** port (`5173`).
+- Use **`TARGET_URL`** for preview port (`4173` for vite) — `BUNDLER` alone resolves **dev** port (`5173`).
 
 Want me to wire up workflow 1 (smoke failure capture) in the repo? That's the highest-value, lowest-effort starting point.

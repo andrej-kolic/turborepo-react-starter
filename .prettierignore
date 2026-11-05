@@ -13,6 +13,8 @@ build/
 # tools and frameworks
 storybook-static/
 turbo/
+packages/e2e/test-results/
+packages/e2e/playwright-report/
 
 # cache
 .eslintcache

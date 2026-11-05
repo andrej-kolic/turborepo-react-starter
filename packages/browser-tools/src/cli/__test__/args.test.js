@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   isTruthyFlag,
   parseArgs,
+  resolveUrl,
   screenshotOptions,
   sharedOptions,
 } from '../args.js';
@@ -46,6 +47,32 @@ describe('parseArgs', () => {
   it('stores bare --timeout as true', () => {
     const { options } = parseArgs(['--timeout', '--selector', 'h1']);
     expect(options.timeout).toBe(true);
+  });
+});
+
+describe('resolveUrl', () => {
+  const prevTargetUrl = process.env.TARGET_URL;
+
+  afterEach(() => {
+    if (prevTargetUrl === undefined) delete process.env.TARGET_URL;
+    else process.env.TARGET_URL = prevTargetUrl;
+  });
+
+  it('prefers --url flag over TARGET_URL', () => {
+    process.env.TARGET_URL = 'http://localhost:8888';
+    expect(resolveUrl('http://localhost:5173')).toBe('http://localhost:5173');
+  });
+
+  it('falls back to TARGET_URL', () => {
+    process.env.TARGET_URL = 'http://localhost:5173';
+    expect(resolveUrl(undefined)).toBe('http://localhost:5173');
+  });
+
+  it('throws when no URL is available', () => {
+    delete process.env.TARGET_URL;
+    expect(() => resolveUrl(undefined)).toThrow(
+      'No URL: pass --url <url> or set TARGET_URL.',
+    );
   });
 });
 
