@@ -43,8 +43,8 @@ Stop preview when done (`kill %1` or close the background job).
 
 ## URL resolution
 
-`packages/e2e/playwright.config.ts` sets `baseURL` via `resolveAppUrl(env, 'preview')` from
-[`@repo/dev-tools/config/app-port`](../packages/dev-tools/config/app-port.ts).
+`packages/e2e/playwright.config.ts` sets `baseURL` via `resolvePreviewAppTarget()` from
+[`packages/e2e/lib/resolve-preview-target.ts`](../packages/e2e/lib/resolve-preview-target.ts).
 
 1. **`TARGET_URL` set** → use as-is (local preview, deploy preview, etc.)
 2. **`BUNDLER` set** → `previewPort` from `apps/<BUNDLER>/package.json`

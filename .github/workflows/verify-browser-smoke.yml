@@ -48,10 +48,10 @@ jobs:
 
       - name: Assert HTTP 200
         run: |
-          APP_URL=$(pnpm exec dev-tools-app-target url)
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL")
+          TARGET_URL=$(pnpm exec dev-tools-app-target url)
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL")
           if [ "$http_code" != "200" ]; then
-            echo "Expected HTTP 200 from ${APP_URL}, got ${http_code}"
+            echo "Expected HTTP 200 from ${TARGET_URL}, got ${http_code}"
             echo "--- dev-app.log ---"
             cat /tmp/dev-app.log || true
             exit 1

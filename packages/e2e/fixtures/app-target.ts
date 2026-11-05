@@ -15,4 +15,3 @@ export const test = base.extend<AppTargetFixtures>({
 });
 
 export { expect } from '@playwright/test';
-export { resolvePreviewAppTarget } from '../lib/resolve-preview-target';

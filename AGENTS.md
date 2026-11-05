@@ -28,7 +28,7 @@ Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.exa
 nvm use 24
 ```
 
-Use `node -v` to confirm before debugging version-specific issues. **pnpm@11.1.3** is pinned via `packageManager` in root `package.json` (Corepack).
+Use `node -v` to confirm before debugging version-specific issues. **pnpm** is pinned via `packageManager` in root `package.json` (Corepack).
 
 ### Cursor Cloud
 

@@ -30,13 +30,6 @@ function usage(): never {
   process.exit(1);
 }
 
-function resolutionHint(mode: AppTargetMode): string {
-  if (mode === 'preview') {
-    return 'Set BUNDLER (e.g. app-vite) before invoking dev-tools-app-target with --preview.';
-  }
-  return 'Set BUNDLER (e.g. app-vite) or TARGET_URL before invoking dev-tools-app-target.';
-}
-
 function resolveMode(argv: string[]): {
   mode: AppTargetMode;
   positional: string[];
@@ -59,7 +52,7 @@ function resolveTargetsOrExit(mode: AppTargetMode) {
   }
 
   console.error(
-    `Error: could not resolve ${mode} target.\n  ${resolutionHint(mode)}`,
+    `Error: could not resolve ${mode} target.\n  Set BUNDLER (e.g. app-vite) or TARGET_URL before invoking dev-tools-app-target.`,
   );
   process.exit(1);
 }

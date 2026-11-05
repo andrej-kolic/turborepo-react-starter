@@ -1,9 +1,9 @@
 # Plan: Unify browser target URL resolution (`TARGET_URL`)
 
-**Status:** Phases 1–4 complete (Phase 5 optional)  
+**Status:** Phases 1–5 complete  
 **Branch:** `develop`  
 **Created:** 2026-06-24  
-**Related:** [e2e-playwright.md](./e2e-playwright.md) — E2E uses unified `resolveAppUrl(process.env, 'preview')`
+**Related:** [e2e-playwright.md](./e2e-playwright.md) — E2E uses unified resolution via `resolvePreviewAppTarget()`
 
 ## How to run (new chat)
 
@@ -93,12 +93,12 @@ Optional follow-up (out of scope unless requested): `dev-tools-app-target run --
 
 ### CLI URL chains (after migration)
 
-| Tool                      | Chain                                                                      |
-| ------------------------- | -------------------------------------------------------------------------- |
-| **browser-tools**         | `--url` → `TARGET_URL` → error                                             |
-| **browser-capture**       | positional → `TARGET_URL` → `CAPTURE_URL` → error                          |
-| **app-port / app-target** | `resolveAppUrl(env, mode)` implements unified order above                  |
-| **E2E Playwright**        | `baseURL: resolveAppUrl(process.env, 'preview')` — no local override guard |
+| Tool                      | Chain                                                              |
+| ------------------------- | ------------------------------------------------------------------ |
+| **browser-tools**         | `--url` → `TARGET_URL` → error                                     |
+| **browser-capture**       | positional → `TARGET_URL` → `CAPTURE_URL` → error                  |
+| **app-port / app-target** | `resolveAppUrl(env, mode)` implements unified order above          |
+| **E2E Playwright**        | `baseURL: resolvePreviewAppTarget().url` — no local override guard |
 
 ### Type / source renames in `app-port.ts`
 
@@ -179,7 +179,7 @@ Execute as separate PRs when possible. Each phase ends with quality gate.
    - Override wins in dev mode (existing cases).
    - `BUNDLER` fallback when override unset.
    - Deprecation: one test that `APP_URL` still works as alias when `TARGET_URL` unset.
-5. Simplify `packages/e2e/playwright.config.ts` to single `resolveAppUrl(process.env, 'preview')` call.
+5. Simplify `packages/e2e/playwright.config.ts` to a single `resolvePreviewAppTarget()` call (`lib/resolve-preview-target.ts`, which wraps `resolveAppTargets(env, 'preview')`).
 
 **Verification:**
 
@@ -260,7 +260,7 @@ pnpm lint && pnpm test && pnpm check:type
 
 ---
 
-### Phase 5 — E2E + preview CI alignment (optional, can merge with e2e Phase 2)
+### Phase 5 — E2E + preview CI alignment ✅ DONE (2026-11-05)
 
 **Goal:** E2E and perf/smoke workflows share the same bootstrap vocabulary.
 
