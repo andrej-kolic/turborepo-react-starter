@@ -3,7 +3,6 @@ root: false
 targets:
   - cursor
   - claudecode
-  - copilot
 description: JSDoc on exported package API — when to add and format.
 globs:
   - packages/**

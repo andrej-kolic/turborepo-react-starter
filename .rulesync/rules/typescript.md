@@ -3,7 +3,6 @@ root: false
 targets:
   - cursor
   - claudecode
-  - copilot
 description: TypeScript conventions. Auto-attaches to .ts and .tsx files.
 globs:
   - '**/*.ts'

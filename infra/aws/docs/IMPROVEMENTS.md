@@ -186,7 +186,6 @@ This analysis provides comprehensive improvement suggestions organized by priori
 
 - [OIDC Setup Guide](./OIDC_SETUP.md)
 - [Architecture Diagram](./images/cf-secure-static-site-architecture.png)
-- [GitHub Copilot Instructions](../.github/copilot-instructions.md)
 
 ---
 
