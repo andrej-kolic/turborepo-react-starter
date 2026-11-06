@@ -3,7 +3,6 @@ description: Review uncommitted code — bugs, edge-cases, side-effects, perform
 targets:
   - cursor
   - claudecode
-  - copilot
 ---
 
 Review uncommitted code (`git status`, `git diff HEAD`). Look for bugs, edge-cases, side-effects, and performance bottlenecks. If git reports "not a git repository", retry with unrestricted permissions.

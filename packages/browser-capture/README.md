@@ -2,7 +2,7 @@
 
 **Capture/instrumentation only — not for routine verification.** Records HAR files, Playwright traces, Web Vitals, and console logs from any URL. For DOM/text assertions use `@repo/browser-tools` (`pnpm browser validate`) or the `chrome-devtools` MCP — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
 
-Chrome DevTools artifact capture CLI and MCP server for Copilot workflows, with CI integration and MCP tool exposure for agent-driven debugging.
+Chrome DevTools artifact capture CLI and MCP server, with CI integration and MCP tool exposure for agent-driven debugging.
 
 Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Protocol (CDP). Connects to a Chrome instance started by `pnpm chrome:debug` (`packages/browser-tools/bin/chrome.js`) — no bundled browser binary needed.
 
@@ -85,7 +85,7 @@ Commands supporting `--attach`: `record-trace`, `record-performance`, `record-in
 
 ## MCP Server
 
-The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing six capture MCP tools that Copilot agents can call directly — no shell access needed.
+The `mcp-server` command starts a [Model Context Protocol](https://modelcontextprotocol.io/) server over stdio, exposing six capture MCP tools that agents can call directly — no shell access needed.
 
 ### Available MCP Tools
 
@@ -100,28 +100,9 @@ The `mcp-server` command starts a [Model Context Protocol](https://modelcontextp
 
 Each tool returns both a human-readable text summary and structured JSON (`artifactsDir`, `webVitals`, `requestCount`, etc.).
 
-### VS Code Setup (already configured in `.vscode/mcp.json`)
+### Cursor Setup (already configured in `.cursor/mcp.json`)
 
-The `devtools-capture` MCP server is pre-configured in `.vscode/mcp.json` and `.cursor/mcp.json`. It starts automatically when your agent session loads. Requires Chrome via `pnpm chrome:debug` (`CHROME_DEBUG_PORT`).
-
-### Copilot CLI Setup (user-level — not committed to repo)
-
-Add to `~/.copilot/mcp-config.json`:
-
-```json
-{
-  "mcpServers": {
-    "devtools-capture": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/turborepo-react-starter/packages/browser-capture/bin/browser-capture.js",
-        "mcp-server"
-      ],
-      "env": { "CHROME_DEBUG_PORT": "9222" }
-    }
-  }
-}
-```
+The `devtools-capture` MCP server is pre-configured in `.cursor/mcp.json`. It starts automatically when your agent session loads. Requires Chrome via `pnpm chrome:debug` (`CHROME_DEBUG_PORT`).
 
 > Agents: see the [`browser-capture`](../../.claude/skills/x-browser-capture/SKILL.md) skill for a quick-start entry point. This README is the full tool reference.
 

@@ -3,7 +3,6 @@ root: false
 targets:
   - cursor
   - claudecode
-  - copilot
 description: >-
   Always-applied principles: research-first workflow, simplicity, concise
   communication, and pre-done quality checks.
