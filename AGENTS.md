@@ -6,12 +6,19 @@ Canonical instructions for AI agents working in this repository.
 
 Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/app-core` served by one of three bundler apps (`app-vite`, `app-webpack`, `app-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
 
+## Monorepo conventions
+
+- Scope work with `pnpm --filter <pkg> <script>`.
+- Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
+- Extend `@repo/typescript-config` and `@repo/eslint-config`.
+- Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:agents` · `pnpm quality-checks`
+
 ## Environment file
 
 Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.example` if missing. Important variables:
 
 - `BUILD_ENVIRONMENT` — required (e.g. `staging`)
-- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in example: `app-vite`)
+- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in `.env.example`: `app-vite`)
 
 ## Node.js version
 
@@ -21,7 +28,7 @@ Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.exa
 nvm use 24
 ```
 
-Use `node -v` to confirm before debugging version-specific issues. **pnpm@11.1.3** is pinned via `packageManager` in root `package.json` (Corepack).
+Use `node -v` to confirm before debugging version-specific issues. **pnpm** is pinned via `packageManager` in root `package.json` (Corepack).
 
 ### Cursor Cloud
 
@@ -39,57 +46,73 @@ pnpm --filter @repo/commons build
 
 Ports are declared as `devPort` / `previewPort` in each app's `package.json` — that is the
 single source of truth. Bundler configs, `@repo/dev-tools/config/app-port`, and browser
-tooling all read from it. Override the target URL with `APP_URL` only (not `PORT`).
+tooling all read from it. Override the browser/E2E target URL with **`TARGET_URL`** (ephemeral — shell, CI, or `dev-tools-app-target run`; not in committed `.env`). Do not use `PORT` for this.
 
-Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-with-app-url`, `dev-tools-print-app-port`). Root `/scripts` holds plain-Node workflow scripts only.
+Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
-| Service                | Start                                         |
-| ---------------------- | --------------------------------------------- |
-| **app-vite** (default) | `pnpm dev:app`                                |
-| app-webpack            | set `BUNDLER=app-webpack` then `pnpm dev:app` |
-| app-esbuild            | set `BUNDLER=app-esbuild` then `pnpm dev:app` |
-| ui-storybook           | `pnpm dev:ui`                                 |
+| Service                  | Start                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-webpack`, `app-esbuild`) |
+| ui-storybook             | `pnpm dev:ui`                                                                   |
 
-Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser validation,
+Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
 
 To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)
-and pass `--url` with the `previewUrl` from that app's `package.json` (or set `APP_URL`).
+and pass `--url` with the `previewUrl` from that app's `package.json` (or set `TARGET_URL`).
 
 Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch at once; it is heavy.
+
+## Validation map
+
+- While developing: browser snapshot / screenshot / validate (browser-tools)
+- CI regression: Playwright E2E on preview build (`DEFAULT_BUNDLER` in CI; `BUNDLER` in `.env` locally)
+- Multi-bundler boot: verify-browser-smoke.yml (dev server HTTP 200, all bundlers)
+- Debug on failure: Playwright trace (+ optional browser-capture)
+
+E2E runs against a **production preview** build — not the dev server. Full layer breakdown: [`docs/e2e.md`](docs/e2e.md).
 
 ## Common commands
 
 See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
-- Test: `pnpm test`
+- Test: `pnpm test` (unit only — E2E is separate)
+- E2E: `pnpm e2e` (after `pnpm build:app` + `pnpm preview:app`)
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
 
-## Browser validation
+## Documentation map
 
-> **Read the [`browser-validation`](.cursor/skills/_browser-validation/SKILL.md) skill first** before
-> doing any browser-related work. Full decision flowchart and environment scenarios are in
-> [`docs/browser-validation.md`](docs/browser-validation.md).
+| Doc                                                                                            | Purpose                                                                  |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`README.md`](README.md)                                                                       | Human-oriented package inventory and basic commands                      |
+| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md) | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
+| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
+| [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E — local run, bundler override, locators                   |
+| [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
+| [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
+| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks — snapshot, screenshot, `browser eval`               |
 
-Pick the **lightest** path that answers the question:
+Pick the **lightest** tool for the question: `pnpm test` (logic) · `pnpm e2e` (CI regression) ·
+Storybook (isolated UI) · browser-validation skill (live dev DOM/text) · browser-capture skill (artifacts).
 
-| Goal                                   | Tool                                                                 |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| Logic / hooks / pure functions         | `pnpm test`                                                          |
-| Component UI in isolation              | `pnpm dev:ui` → Storybook (port in `apps/ui-storybook/package.json`) |
-| Assert DOM / text / evaluate JS        | browser-validation skill — follows tier A → B → C                    |
-| HAR / trace / Web Vitals / CI artifact | `devtools-capture` MCP                                               |
+## Agent config (rulesync)
 
-See the **[browser-validation skill](.cursor/skills/_browser-validation/SKILL.md)** for the full decision graph (URL resolution, app startup, tier selection, CLI commands).
+This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate tool-specific files from `.rulesync/`:
+
+| Edit                                                                                 | Do not edit directly                                                                                                |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` (canonical)                                                              | —                                                                                                                   |
+| `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/commands/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.cursor/commands/`, `.claude/rules/`, `.claude/skills/`, `.claude/commands/`, `.cursor/mcp.json` |
+
+After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. The pre-commit hook (when agent config files are staged) and `pnpm quality-checks` run `pnpm check:agents`, which fails when a generated file differs from its source. Skills sync to `.claude/skills/` (discovered by Cursor and Claude Code). Commands sync to `.cursor/commands/` and `.claude/commands/`.
+
+The `concision`, `conversation-style`, `documentation`, `git`, `jsdoc`, `security` and `testing` rules come from [`andrej-kolic/playbook`](https://github.com/andrej-kolic/playbook), set in `rulesync.jsonc` and pinned in `rulesync.lock`. `pnpm rules:outdated` checks for changes, `pnpm rules:update` takes them, and `pnpm rules:install` fetches the pinned versions. Edit them in the playbook repo, not in `.rulesync/rules/`: a file there with the same name replaces the playbook rule. After cloning, run `pnpm rules:install` once: `pnpm check:agents` needs the fetched copies in `.rulesync/rules/.curated/` and otherwise fetches them from GitHub.
 
 ## Gotchas
 
-- **MCP config:** `.cursor/mcp.json` (`mcpServers`) and `.vscode/mcp.json` (`servers`) must stay
-  identical — run `pnpm check:mcp-config` (also in `quality-checks` and pre-commit when either file
-  changes).
 - **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

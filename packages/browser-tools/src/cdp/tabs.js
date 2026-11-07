@@ -1,4 +1,5 @@
 import { connectOverCDP } from './connect.js';
+import { findPageAtOrigin } from './pages.js';
 
 /**
  * Open a URL in the visible Chrome window.
@@ -10,30 +11,15 @@ import { connectOverCDP } from './connect.js';
  * @returns {Promise<{ url: string, navigated: boolean }>}
  */
 export async function openUrl(url, options = {}) {
-  let origin;
   try {
-    origin = new URL(url).origin;
+    new URL(url).origin;
   } catch {
     throw new Error(`Invalid URL: ${url}`);
   }
 
   const browser = await connectOverCDP(options.port, options.host);
   try {
-    let targetPage = null;
-
-    for (const context of browser.contexts()) {
-      for (const page of context.pages()) {
-        try {
-          if (new URL(page.url()).origin === origin) {
-            targetPage = page;
-            break;
-          }
-        } catch {
-          // skip chrome://, about:blank, etc.
-        }
-      }
-      if (targetPage) break;
-    }
+    let targetPage = await findPageAtOrigin(browser, url);
 
     if (!targetPage) {
       const context = browser.contexts()[0];

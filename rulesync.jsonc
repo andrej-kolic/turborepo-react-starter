@@ -1,0 +1,22 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  "targets": {
+    "cursor": ["rules", "mcp", "commands"],
+    "claudecode": ["rules", "skills", "commands"]
+  },
+  "outputRoots": ["."],
+  "delete": false,
+  "verbose": false,
+  "silent": false,
+  "global": false,
+  "gitignoreTargetsOnly": true,
+  "sources": [
+    {
+      "source": "andrej-kolic/playbook",
+      "rules": [
+        "*"
+      ],
+      "rulesPath": ".rulesync/rules"
+    }
+  ]
+}

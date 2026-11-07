@@ -5,7 +5,7 @@ Chrome lifecycle + UI verification CLI.
 > **In turborepo-react-starter** the binaries are aliased in the root `package.json`:
 > `browser-tools` → `pnpm browser`, `browser-tools-chrome` → `pnpm chrome:debug`,
 > `browser-tools-setup` → `pnpm browser:setup`. Those wrappers also load `.env` and inject
-> `APP_URL` automatically. For the agent workflow see [`AGENTS.md`](../../AGENTS.md).
+> `TARGET_URL` automatically. For the agent workflow see [`AGENTS.md`](../../AGENTS.md).
 
 ## Scope
 
@@ -39,7 +39,7 @@ browser-tools-setup --url http://localhost:<port>
 
 Idempotent — safe to call when Chrome is already running or a tab is already open.
 Starts Chrome if not running; opens a tab at `--url` when a display is available.
-`APP_URL` may be used instead of `--url` (see [URL resolution](#url-resolution)).
+`TARGET_URL` may be used instead of `--url` (see [URL resolution](#url-resolution)).
 
 Output tells you the flag to use for all subsequent `browser-tools` commands:
 
@@ -127,8 +127,8 @@ Commands supporting `--attach`: `validate`, `read`, `eval`, `screenshot`, `snaps
 
 When `--url` is omitted:
 
-1. `APP_URL` env var
-2. Error — pass `--url` or set `APP_URL`
+1. `TARGET_URL` env var
+2. Error — pass `--url` or set `TARGET_URL`
 
 ## Testing
 
@@ -138,14 +138,13 @@ Unit tests cover pure CLI helpers in `src/cli/args.js` (flag parsing, option map
 pnpm --filter @repo/browser-tools test
 ```
 
-CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
-[`.github/workflows/verify-browser-smoke.yml`](../../.github/workflows/verify-browser-smoke.yml).
+CDP integration (Chrome + live page) is not unit-tested here — exercise locally with
+`pnpm browser validate` or rely on Playwright E2E for CI region checks ([`docs/e2e.md`](../../docs/e2e.md)).
 
 ## TODO
 
 - Add session/interaction commands only if you need multi-step behavior specs (open modal → fill form → submit)
-- Add an MCP server exposing the same 5–6 verify commands — one implementation, CLI + IDE both covered
-- **`browser-tools check-spec`** — run a YAML/JSON design spec in one command (exists, text, styles, console checks). Spec format and manual workflow today: [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md). Should batch checks in a **single page session** (one navigation per spec file).
+- Add an MCP server exposing the same verify commands — one implementation, CLI + IDE both covered
 
 ## Environment Variables
 
@@ -156,11 +155,11 @@ CDP integration (Chrome + live page) is not unit-tested here — see CI smoke:
 | `CHROME_PATH`       | —           | Override Chrome executable path        |
 | `CHROME_HEADLESS`   | —           | Set to `1` or `true` for headless mode |
 | `CHROME_EXTRA_ARGS` | —           | Space-separated extra Chrome flags     |
-| `APP_URL`           | —           | Override URL when `--url` is omitted   |
+| `TARGET_URL`        | —           | Override URL when `--url` is omitted   |
 
 ## See Also
 
 - [`docs/browser-validation.md`](../../docs/browser-validation.md) — edge-case scenarios, Storybook, URL derivation
-- [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — token/layout spec checks via `browser-tools eval`
+- [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — design/token checks via snapshot, screenshot, and `browser eval`
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` convention
 - [`packages/browser-capture/README.md`](../browser-capture/README.md) — capture tier (HAR, traces, Web Vitals)

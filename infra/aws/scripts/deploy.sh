@@ -174,7 +174,10 @@ sync_site_content() {
 
     print_info "BUCKET_NAME: $BUCKET_NAME"
 
-    aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete
+    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete; then
+        print_error "Failed to sync site content to s3://$BUCKET_NAME"
+        exit 1
+    fi
 
     print_success "Site content synced to s3://$BUCKET_NAME"
 }
@@ -198,9 +201,12 @@ invalidate_cloudfront_cache() {
     print_info "DISTRIBUTION_ID: $DISTRIBUTION_ID"
 
     # Invalidate all objects (you can change the path as needed)
-    aws cloudfront create-invalidation \
+    if ! aws cloudfront create-invalidation \
         --distribution-id "$DISTRIBUTION_ID" \
-        --paths "/*"
+        --paths "/*"; then
+        print_error "Failed to invalidate CloudFront cache"
+        exit 1
+    fi
 
     print_success "CloudFront cache invalidation requested."
 }

@@ -53,6 +53,8 @@ async function captureScreenshot(session, selector, type, fullPage, timeout) {
 }
 
 /**
+ * Navigate (or attach) and read text/HTML for a CSS selector.
+ *
  * @param {string} url
  * @param {string} selector
  * @param {SessionOptions} [options]
@@ -80,6 +82,8 @@ export async function readSelector(url, selector, options = {}) {
 }
 
 /**
+ * Run a JavaScript expression in the page context and return its value.
+ *
  * @param {string} url
  * @param {string} expression
  * @param {SessionOptions} [options]
@@ -103,6 +107,8 @@ export async function evaluateScript(url, expression, options = {}) {
 }
 
 /**
+ * Capture a viewport or element screenshot as a PNG/JPEG buffer.
+ *
  * @param {string} url
  * @param {SessionOptions & { fullPage?: boolean, type?: 'png' | 'jpeg' }} [options]
  * @returns {Promise<{ buffer: Buffer, format: 'png' | 'jpeg', pageErrors: string[] }>}

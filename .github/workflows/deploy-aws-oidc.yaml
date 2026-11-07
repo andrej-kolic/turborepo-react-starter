@@ -34,10 +34,10 @@ jobs:
           echo ""
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Configure AWS credentials (Admin access required for OIDC setup)
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           # Note: For initial OIDC setup, you need to use AWS access keys with admin permissions
           # After setup is complete, you can use the OIDC role for subsequent deployments

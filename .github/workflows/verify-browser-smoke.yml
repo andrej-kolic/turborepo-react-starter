@@ -1,8 +1,7 @@
-# Fast headless smoke test — verify tier only (no artifacts).
-# Validates the live app renders a key page region; not a replacement for unit tests.
-# Separate from capture-devtools.yml (artifact capture) and build-auto.yaml (lint/test/build).
+# Multi-bundler dev-server boot smoke — HTTP 200 only.
+# Region assertions live in Playwright E2E (verify-e2e.yml, DEFAULT_BUNDLER preview).
 #
-# Matrix: all bundler apps. Port/URL derived via dev-tools-with-app-url → app-port.ts.
+# Matrix: all bundler apps. Port/URL derived via dev-tools-app-target → app-port.ts.
 
 name: 'Verify: Browser smoke'
 
@@ -13,12 +12,10 @@ on:
 env:
   HUSKY: 0
   BUILD_ENVIRONMENT: development
-  CHROME_HEADLESS: 'true'
-  CHROME_DEBUG_PORT: 9222
 
 jobs:
   smoke:
-    name: Live app smoke (${{ matrix.bundler }})
+    name: Dev server boot (${{ matrix.bundler }})
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -32,13 +29,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js (with pnpm cache)
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
@@ -49,14 +46,12 @@ jobs:
       - name: Ensure dev app is running
         run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
 
-      - name: Setup Chrome (headless)
-        run: pnpm browser:setup
-
-      - name: Assert app header renders
+      - name: Assert HTTP 200
         run: |
-          if ! pnpm browser validate \
-            --selector "[data-testid=app-header]" \
-            --no-console-errors; then
+          TARGET_URL=$(pnpm exec dev-tools-app-target url)
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL")
+          if [ "$http_code" != "200" ]; then
+            echo "Expected HTTP 200 from ${TARGET_URL}, got ${http_code}"
             echo "--- dev-app.log ---"
             cat /tmp/dev-app.log || true
             exit 1
@@ -65,7 +60,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          pnpm chrome:debug --stop || true
-          if APP_PORT=$(pnpm exec dev-tools-print-app-port); then
+          if APP_PORT=$(pnpm exec dev-tools-app-target port); then
             lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
           fi

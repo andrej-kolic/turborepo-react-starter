@@ -24,8 +24,9 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser validate`, `pnpm browser read`, `pnpm browser eval`, `pnpm browser screenshot`)
+- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
+- `e2e`: Playwright E2E regression tests (`pnpm e2e`) against preview builds
 
 #### Infra
 
@@ -59,11 +60,23 @@ pnpm dev:ui    # Storybook + dependency watchers
 
 ### Test
 
-To test all apps and packages, run the following command:
+**Unit tests** (Vitest) — all apps and packages:
 
 ```
 pnpm test
 ```
+
+**E2E** (Playwright) — browser regression on a production preview build (not the dev server):
+
+```bash
+pnpm build:app
+pnpm preview:app &          # serve preview (active bundler from BUNDLER in .env)
+pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
+pnpm e2e
+```
+
+CI runs E2E via `.github/workflows/verify-e2e.yml` (`DEFAULT_BUNDLER` repo variable). For bundler overrides, locators, and the
+agent vs regression split, see [`docs/e2e.md`](docs/e2e.md).
 
 ### Lint
 
@@ -79,6 +92,10 @@ pnpm lint
 pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
 pnpm chrome:debug --status  # check
 pnpm chrome:debug --stop    # stop
+pnpm browser:setup          # ensure Chrome + open app tab (verify tier)
+pnpm browser snapshot       # see DOM + data-testid regions (agent eyes, no MCP)
+pnpm browser validate --selector "[data-testid=app-header]"  # DOM checks
+pnpm capture record-trace --duration 3   # HAR + trace artifacts (capture tier)
 ```
 
 Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).

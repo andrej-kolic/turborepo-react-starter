@@ -14,8 +14,8 @@
  *   browser-tools snapshot   [--url <url>] [--selector <css>] [--json] [--attach]
  *
  * URL resolution when --url is omitted:
- *   1. APP_URL env var
- *   2. Error — pass --url or set APP_URL
+ *   1. TARGET_URL env var
+ *   2. Error — pass --url or set TARGET_URL
  */
 
 import { writeFileSync } from 'fs';
@@ -76,7 +76,7 @@ Commands:
   snapshot     Structured page snapshot (ARIA tree + data-testid regions)
 
 Options (shared):
-  --url                 Target URL (optional; falls back to APP_URL env var)
+  --url                 Target URL (optional; falls back to TARGET_URL env var)
   --selector            CSS selector to query
   --no-console-errors   Fail on console.error or uncaught page exceptions (not warnings)
   --attach              Run on the existing visible tab instead of a new isolated session.

@@ -97,12 +97,11 @@ After sanitization, `metadata.json` is updated with:
 Pass `--no-sanitize` to any capture command to skip sanitization:
 
 ```bash
-node packages/browser-capture/bin/copilot-devtools.js record-trace http://localhost:5173 --no-sanitize
+node packages/browser-capture/bin/browser-capture.js record-trace <dev-url> --no-sanitize
 ```
 
-> ⚠️ **Never use `--no-sanitize` in CI.** The CI workflow does not pass
-> this flag and additionally runs a standalone `sanitize-artifacts` step
-> after capture as a defense-in-depth measure.
+> ⚠️ **Never use `--no-sanitize` in CI.** The CI workflow does not pass this flag; capture
+> commands sanitize automatically before writing artifacts.
 
 ### Re-sanitizing existing artifacts
 
@@ -110,7 +109,7 @@ Sanitization is idempotent and safe to re-run:
 
 ```bash
 # Re-sanitize a specific directory
-node packages/browser-capture/bin/copilot-devtools.js sanitize-artifacts packages/browser-capture/artifacts/trace-2026-06-01
+node packages/browser-capture/bin/browser-capture.js sanitize-artifacts packages/browser-capture/artifacts/trace-2026-06-01
 
 # Or via MCP tool
 # sanitize_artifacts({ dir: "/absolute/path/to/artifacts/trace-2026-06-01" })
@@ -141,8 +140,8 @@ to repository collaborators with at least **read** access.
 
 For **public repositories**, workflow artifacts are downloadable by anyone
 with the direct Actions run URL. This is a GitHub platform limitation.
-Ensure sanitization runs before `upload-artifact` (the CI workflow
-guarantees this).
+Capture commands run sanitization automatically before upload (the CI workflow
+does not pass `--no-sanitize`).
 
 ### Artifact retention
 

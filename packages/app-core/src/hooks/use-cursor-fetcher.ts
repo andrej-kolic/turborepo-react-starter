@@ -5,6 +5,7 @@ export type FetchResult<T, C> = {
   nextCursor: C | null;
 };
 
+/** Async fetch function for cursor pagination. */
 export type Fetcher<T, C> = (
   cursor: C | undefined,
   pageSize: number,
@@ -19,6 +20,7 @@ export type Status =
   | 'error'
   | 'done';
 
+/** Discriminated union of pagination status, accumulated items, and error/abort metadata. */
 export type State<T, C> =
   | { status: 'idle'; items: T[]; nextCursor: C | undefined }
   | {
@@ -31,6 +33,10 @@ export type State<T, C> =
   | { status: 'error'; items: T[]; nextCursor: C | undefined; message: string }
   | { status: 'done'; items: T[] };
 
+/**
+ * Cursor-based pagination hook that loads pages via fetch, merges items, and exposes fetchNext and abortFetch.
+ * Ignores duplicate calls while loading or after completion.
+ */
 export const useCursorFetcher = <T, C>(
   fetch: Fetcher<T, C>,
   pageSize: number,

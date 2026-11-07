@@ -1,0 +1,96 @@
+# Playwright E2E gate — regression on production preview.
+# Builds the app, serves preview, runs @repo/e2e against previewUrl.
+#
+# Single bundler (DEFAULT_BUNDLER, fallback app-vite). Multi-bundler boot stays in verify-browser-smoke.yml.
+
+name: 'Verify: E2E'
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  HUSKY: 0
+  BUILD_ENVIRONMENT: development
+  BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
+
+jobs:
+  e2e:
+    name: Playwright E2E (${{ vars.DEFAULT_BUNDLER || 'app-vite' }})
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve preview URL
+        id: preview
+        run: |
+          IFS=$'\t' read -r PREVIEW_URL PREVIEW_PORT <<< "$(pnpm exec dev-tools-app-target resolve --preview)"
+          echo "port=${PREVIEW_PORT}" >> "$GITHUB_OUTPUT"
+          echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+          echo "Preview target: ${PREVIEW_URL}"
+
+      - name: Build app
+        run: pnpm build:app
+
+      - name: Start preview server
+        run: |
+          pnpm preview:app &
+          for i in $(seq 1 60); do
+            curl -sf "${{ steps.preview.outputs.url }}" && exit 0
+            sleep 1
+          done
+          echo "Preview did not respond at ${{ steps.preview.outputs.url }}"
+          exit 1
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @repo/e2e install:browsers
+
+      - name: Run E2E tests
+        run: pnpm e2e
+        env:
+          TARGET_URL: ${{ steps.preview.outputs.url }}
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-failure-${{ github.run_id }}
+          path: |
+            packages/e2e/test-results/**
+            packages/e2e/playwright-report/**
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Write job summary
+        if: always()
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: |
+          {
+            echo "## Playwright E2E — ${BUNDLER}"
+            echo ""
+            echo "| Item | Value |"
+            echo "|------|-------|"
+            echo "| Preview URL | ${PREVIEW_URL:-n/a} |"
+            echo "| Bundler | ${BUNDLER} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          lsof -ti:"${{ steps.preview.outputs.port }}" | xargs -r kill 2>/dev/null || true

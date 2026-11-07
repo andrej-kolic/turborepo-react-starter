@@ -15,6 +15,10 @@ type DynamicListProps = {
   'data-testid'?: string;
 };
 
+/**
+ * Infinite-scroll list driven by IntersectionObserver: auto-calls fetchNext when the trigger enters view.
+ * On unmount, disconnects the observer and calls abortFetch to cancel in-flight loads.
+ */
 export function DynamicList(props: DynamicListProps) {
   const {
     items,

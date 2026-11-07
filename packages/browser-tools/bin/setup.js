@@ -9,7 +9,7 @@
  *   "Ready. Use --attach."    → add --attach to all browser subcommands
  *   "Ready. No --attach."     → omit --attach (headless mode)
  *
- * URL resolution: --url flag → APP_URL env var → error.
+ * URL resolution: --url flag → TARGET_URL → error.
  *
  * Usage:
  *   browser-tools-setup                          # required_permissions: all

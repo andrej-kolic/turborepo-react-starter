@@ -1,6 +1,6 @@
 # Browser Validation
 
-> **Agents:** follow the **[browser-validation skill](../.cursor/skills/_browser-validation/SKILL.md)** — it has the tier A → B → C decision graph and covers 95% of cases. This document is the reference for URL derivation and the three edge-case scenarios: `--attach` with session, remote URL, and SSH tunnel. Storybook is also here because it spans multiple packages.
+> **Agents:** follow the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** — it has the tier A → B → C decision graph and covers 95% of cases. This document is the reference for URL derivation and the three edge-case scenarios: `--attach` with session, remote URL, and SSH tunnel. Storybook is also here because it spans multiple packages.
 
 ---
 
@@ -12,52 +12,61 @@ Each bundler app declares its own port as `devPort` / `previewPort` in its `pack
 (e.g. `apps/app-vite/package.json`). That is the single source of truth — bundler configs,
 `@repo/dev-tools/config/app-port`, and browser tooling all read from it. Vite uses
 `strictPort: true` so the declared port matches the listening port. Port overrides are not
-supported via `PORT`; set `APP_URL` instead.
+supported via `PORT`; set `TARGET_URL` instead.
 
 For local dev, use the URL printed by `pnpm browser:ensure-app` (`App: UP <url>`). After
 `pnpm preview:app`, pass `--url` with `previewUrl` from `apps/<BUNDLER>/package.json`, or set
-`APP_URL`. For deployed previews, pass the full remote URL.
+`TARGET_URL`. For deployed previews, pass the full remote URL.
 
-### Agent bootstrap
+### URL resolution
 
-Root `pnpm browser:*` scripts inject `APP_URL` automatically via **`dev-tools-with-app-url`**
-(using `@repo/dev-tools/config/app-port`):
+Unified resolution (`@repo/dev-tools/config/app-port` — `resolveAppUrl(env, mode)`):
 
-```bash
-pnpm browser:ensure-app   # ensure dev server is up; prints "App: UP  <url>"
-pnpm browser:setup        # ensure Chrome + tab (CLI tier; required_permissions: all)
-pnpm browser validate --selector "[data-testid=app-header]"   # --url auto-resolved
-```
+1. **`TARGET_URL` set** → use as-is (dev, preview, remote, Storybook canvas)
+2. **`mode: 'dev'`** and `BUNDLER` set → `devPort` from `apps/<BUNDLER>/package.json`
+3. **`mode: 'preview'`** and `BUNDLER` set → `previewPort` from `apps/<BUNDLER>/package.json`
+4. else → error with actionable hint
 
-Resolution order: `APP_URL` already set → use as-is; else derive `http://localhost:<devPort>`
-from `apps/<BUNDLER>/package.json` via `resolveAppTargets()` / `resolveAppUrl()` in `@repo/dev-tools/config/app-port`.
+**Override always wins** — unset `TARGET_URL` when you want `BUNDLER` defaults. Do not commit URLs in `.env`.
 
-Pass `--url` only to override (Storybook canvas, preview port, remote deploy).
+**Stale shell export:** `TARGET_URL` is inherited by child shells. A leftover `export TARGET_URL=http://localhost:<devPort>` from browser dev makes `pnpm e2e` and `dev-tools-app-target url --preview` hit the dev server instead of preview — with no error. Run `unset TARGET_URL` before preview/E2E, or rely on the resolver warning when localhost `TARGET_URL` differs from the mode default. Remote `TARGET_URL` values (deploy previews) are not warned.
+
+Root `pnpm browser:*` / `pnpm capture` scripts inject `TARGET_URL` via **`dev-tools-app-target run`**
+when unset (dev default from `BUNDLER`). Pass `--url` or a positional URL to override without env.
+
+For bootstrap commands (ensure-app, setup, tier selection), follow the
+**[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)**.
 
 ### CLI URL resolution
 
-When `--url` is omitted on a `pnpm browser …` subcommand: `--url` flag → `APP_URL` env var → error.
-`BUNDLER` is **not** read by the CLI directly — only by the `dev-tools-with-app-url` wrapper.
+| Tool             | Chain when URL omitted                            |
+| ---------------- | ------------------------------------------------- |
+| `pnpm browser …` | `--url` → `TARGET_URL` → error                    |
+| `pnpm capture …` | positional → `TARGET_URL` → `CAPTURE_URL` → error |
+
+`BUNDLER` is read by `dev-tools-app-target run`, not by the CLI directly.
 
 ### CI bootstrap
 
-[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) runs the same
-helper path as local agents, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`, `app-esbuild`):
+[`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) boots each
+bundler dev server and asserts HTTP 200, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`,
+`app-esbuild`):
 
 ```bash
 pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
-pnpm browser:setup
-pnpm browser validate --selector "[data-testid=app-header]" --no-console-errors
+curl -sf "$(pnpm exec dev-tools-app-target url)"   # smoke asserts HTTP 200 in CI
 ```
 
-`APP_URL` is derived from `BUNDLER` via `dev-tools-with-app-url` — CI does not set it explicitly.
-`--log-file` captures dev-server output for CI failures (startup timeout or validate step).
+Region assertions (`data-testid` registry) run in Playwright E2E on the default bundler's preview
+(`DEFAULT_BUNDLER` in CI) — see [`docs/e2e.md`](e2e.md).
+`TARGET_URL` is derived from `BUNDLER` via `dev-tools-app-target run` — CI does not set it explicitly.
+`--log-file` captures dev-server output for CI failures (startup timeout or HTTP check).
 
 ---
 
 ## Edge-case scenarios
 
-> The **[skill](../.cursor/skills/_browser-validation/SKILL.md)** covers the common paths (cursor-ide-browser, chrome-devtools MCP, CLI with headless). The sections below require additional context.
+> The **[skill](../.claude/skills/x-browser-validation/SKILL.md)** covers the common paths (cursor-ide-browser, chrome-devtools MCP, CLI with headless). The sections below require additional context.
 
 ### Visible Chrome with session (`--attach`)
 
@@ -86,10 +95,10 @@ pnpm browser read --url <url> --selector "[data-testid=app-header]" --attach
 
 **`--attach` rules:**
 
-- Matches by **origin** (`scheme://host:port`) — any tab at that origin qualifies, regardless of path.
-- Does **not** navigate — inspects whatever the tab currently shows.
-- Requires a tab open at that origin (`pnpm browser open` or manual navigation). Errors with a hint if none is found.
-- **Do not use in headless/CI/Cloud Agent** — each command should open a fresh isolated context there.
+- Match tab by **origin** only; does not navigate.
+- Multiple tabs at same origin → most recent (CDP order), brought to front.
+- Tab must already be open (`pnpm browser open`); not for CI/headless.
+- **Capture (`pnpm capture --attach`):** HAR = traffic during capture window only; `trace.zip` may include other tabs. `record-console --attach` requires a URL.
 
 ---
 
@@ -142,10 +151,10 @@ CHROME_DEBUG_PORT=9222
 Storybook (`pnpm dev:ui`; port in `apps/ui-storybook/package.json`) and the live bundler app are
 **different targets** — do not use `verify-browser-smoke.yml` for Storybook.
 
-| Target                          | CI / regression                                          | Agent / local spot-check                |
-| ------------------------------- | -------------------------------------------------------- | --------------------------------------- |
-| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one) | `pnpm browser read` against canvas URLs |
-| `packages/app-core` in live app | `.github/workflows/verify-browser-smoke.yml`             | `pnpm browser validate`                 |
+| Target                          | CI / regression                                                                                                                                                                       | Agent / local spot-check                |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `packages/ui` in Storybook      | **Chromatic** (no workflow yet; run manually or add one)                                                                                                                              | `pnpm browser read` against canvas URLs |
+| `packages/app-core` in live app | [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) (default bundler preview) + [smoke](../.github/workflows/verify-browser-smoke.yml) (dev boot, all bundlers) | `pnpm browser validate`                 |
 
 **Scope:** `packages/app-core` components are **not** in Storybook. Assert them against the live
 app, not Storybook URLs. See `docs/component-validation-contract.md`.
@@ -160,19 +169,9 @@ Story IDs: `Example/DynamicList` + `Default` → `example-dynamiclist--default`.
 
 ---
 
-## Related files
+## Related
 
-| File                                          | Purpose                                                        |
-| --------------------------------------------- | -------------------------------------------------------------- |
-| `.cursor/skills/_browser-validation/SKILL.md` | Agent entry point — read this first                            |
-| `.cursor/skills/_browser-capture/SKILL.md`    | Capture skill (HAR, traces, Web Vitals)                        |
-| `AGENTS.md`                                   | Canonical agent setup, commands, service start                 |
-| `packages/browser-tools/README.md`            | Full CLI reference (`browser-tools validate`, flags, env vars) |
-| `docs/component-validation-contract.md`       | `data-testid` convention                                       |
-| `docs/design-spec-validation.md`              | Token/layout checks via `browser eval`                         |
-| `packages/browser-capture/README.md`          | Capture CLI and MCP reference                                  |
-| `packages/dev-tools/config/app-port.ts`       | `loadAppEndpoints`, `resolveAppTargets`, `resolveAppUrl`       |
-| `packages/dev-tools/bin/with-app-url.ts`      | `dev-tools-with-app-url` — injects `APP_URL` via `app-port.ts` |
-| `packages/dev-tools/bin/print-app-port.ts`    | `dev-tools-print-app-port` — resolved port for CI shell        |
-| `scripts/ensure-app.js`                       | Starts dev server if down; optional `--log-file` for CI        |
-| `.github/workflows/verify-browser-smoke.yml`  | CI live-app smoke test (matrix: all bundlers)                  |
+- [`AGENTS.md`](../AGENTS.md) — documentation map and setup
+- [`docs/e2e.md`](e2e.md) — Playwright E2E (CI regression on preview)
+- [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI flags and env vars
+- [`packages/dev-tools/config/app-port.ts`](../packages/dev-tools/config/app-port.ts) — `loadAppEndpoints`, `resolveAppUrl`

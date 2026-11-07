@@ -13,6 +13,8 @@
  */
 
 /**
+ * Format data-testid regions as a human-readable bullet list.
+ *
  * @param {TestIdRegion[]} testIds
  * @returns {string}
  */
@@ -32,6 +34,8 @@ export function formatTestIdRegions(testIds) {
 }
 
 /**
+ * Format a page snapshot object as markdown for CLI output.
+ *
  * @param {{ title: string, url: string, testIds: TestIdRegion[], ariaYaml: string }} snapshot
  * @returns {string}
  */

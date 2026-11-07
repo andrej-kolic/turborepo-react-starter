@@ -9,6 +9,8 @@ import { buildPageSnapshot } from './capture.js';
 export { formatPageSnapshot } from './format.js';
 
 /**
+ * Navigate (or attach) and capture a structured ARIA + data-testid snapshot.
+ *
  * @param {string} url
  * @param {import('../session.js').SessionOptions} [options]
  * @returns {Promise<{ found: boolean, snapshot?: Awaited<ReturnType<typeof buildPageSnapshot>>, diagnostics?: object }>}

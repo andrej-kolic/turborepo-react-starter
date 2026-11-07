@@ -49,6 +49,10 @@
 			"path": "packages/dev-tools"
 		},
 		{
+			"name": "📦 @repo/e2e",
+			"path": "packages/e2e"
+		},
+		{
 			"name": "📦 @repo/eslint-config",
 			"path": "packages/eslint-config"
 		},

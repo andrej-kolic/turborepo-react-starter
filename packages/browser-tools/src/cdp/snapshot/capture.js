@@ -10,6 +10,8 @@
  */
 
 /**
+ * Collect data-testid regions from the page or a scoped root selector.
+ *
  * @param {Page} page
  * @param {string | null | undefined} rootSelector
  * @returns {Promise<TestIdRegion[]>}
@@ -42,6 +44,8 @@ export async function collectTestIdRegions(page, rootSelector) {
 }
 
 /**
+ * Capture an ARIA accessibility tree snapshot as YAML for agent-readable output.
+ *
  * @param {Page} page
  * @param {{ selector?: string }} [options]
  * @returns {Promise<string>}
@@ -55,6 +59,8 @@ export async function captureAriaSnapshot(page, options = {}) {
 }
 
 /**
+ * Build a combined page snapshot from title, URL, data-testid regions, and ARIA tree.
+ *
  * @param {Page} page
  * @param {{ selector?: string }} [options]
  * @returns {Promise<{ title: string, url: string, testIds: TestIdRegion[], ariaYaml: string }>}

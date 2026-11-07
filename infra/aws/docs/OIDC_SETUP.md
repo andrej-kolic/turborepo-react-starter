@@ -14,7 +14,7 @@ This guide explains how to set up OpenID Connect (OIDC) authentication for GitHu
 
 1. **Go to your GitHub repository**
 2. **Navigate to Actions tab**
-3. **Find "Setup GitHub OIDC Provider" workflow**
+3. **Find the "Deploy: AWS: OIDC" workflow**
 4. **Click "Run workflow"**
 5. **Check the confirmation box** (acknowledges this is a one-time setup)
 6. **Run the workflow**
@@ -50,6 +50,7 @@ The OIDC setup is a **one-time, account-level operation** that creates:
    - Repository-specific role for secure access
    - Configured with necessary CloudFormation permissions
    - Scoped to your specific GitHub repository
+   - Can change only `${ProjectName}-*` stacks and buckets, and the Route 53 hosted zones listed as `HostedZoneId` under `environments`; rerun the OIDC setup after adding a new zone
 
 ## Configuration
 
@@ -95,12 +96,10 @@ The OIDC setup uses configuration from `deploy-config.json`:
 
 ## Deployment Workflows
 
-After OIDC setup, use the **"Deploy Static Website"** workflow with these actions:
+After OIDC setup, deploy with these workflows:
 
-- **infra**: Deploy CloudFormation infrastructure
-- **content**: Deploy static content to S3
-
-> **Note**: The `oidc` action has been moved to its own dedicated workflow to avoid confusion with environment-specific deployments.
+- **"Deploy: AWS: Infrastructure"**: deploys the CloudFormation stacks
+- **"Deploy: AWS: Content"**: syncs the built site to S3 and invalidates the CloudFront cache
 
 ## Security Features
 

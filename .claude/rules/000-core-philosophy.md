@@ -1,0 +1,32 @@
+---
+paths:
+  - '*'
+---
+# Engineering Philosophy
+
+Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: `AGENTS.md`.
+
+## Before you write
+
+- Read `package.json`, configs, and source before proposing changes — never guess.
+- Follow existing patterns; identify the right layer: app, package, infra, or scripts.
+- When multiple approaches exist, list tradeoffs concisely before coding.
+
+## Simplicity (KISS & YAGNI)
+
+- Write the minimum code that cleanly solves the problem.
+- No abstractions, wrappers, or "future-proof" utilities without a concrete second use case.
+- Prefer explicit, readable code over clever one-liners.
+- Short, single-purpose functions; keep orchestration out of components.
+
+## Communication
+
+- In code blocks, show only changed segments — not hundreds of unchanged lines.
+
+## Code style
+
+- No comments that narrate what the code does. Comments explain _why_, not _what_. JSDoc is the exception — see the jsdoc and package-jsdoc rules.
+
+## Before calling it done
+
+Run `pnpm lint`, `pnpm test`, and `pnpm check:type`.

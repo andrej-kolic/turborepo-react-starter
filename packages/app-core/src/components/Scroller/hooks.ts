@@ -11,6 +11,10 @@ export type ItemDto = {
 
 let requestCount = 0;
 
+/**
+ * Demo Fetcher that simulates paginated data with a fixed delay.
+ * Honors AbortSignal and rejects every third request to exercise error handling.
+ */
 export const fakeFetchItems: Fetcher<ItemDto, number> = async function (
   cursor: number | undefined,
   pageSize: number,

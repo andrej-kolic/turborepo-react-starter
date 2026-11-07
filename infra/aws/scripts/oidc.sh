@@ -28,6 +28,11 @@ get_oidc_config() {
     OIDC_ARN=$(jq -r ".oidc.oidc_arn" "$CONFIG_FILE")
     GITHUB_ORG=$(jq -r ".oidc.github_org" "$CONFIG_FILE")
     GITHUB_REPO=$(jq -r ".oidc.github_repo" "$CONFIG_FILE")
+    HOSTED_ZONE_IDS=$(jq -r '[.environments[].parameters.HostedZoneId // empty] | unique | join(",")' "$CONFIG_FILE")
+    if [ -z "$HOSTED_ZONE_IDS" ]; then
+        print_error "No HostedZoneId found under environments in $CONFIG_FILE"
+        exit 1
+    fi
 
     # Derived values
     OIDC_STACK_NAME="${PROJECT_NAME}-github-oidc"
@@ -39,6 +44,7 @@ get_oidc_config() {
     print_debug "GitHub Repo: $GITHUB_REPO"
     print_debug "Region: $REGION"
     print_debug "OIDC ARN: $OIDC_ARN"
+    print_debug "Hosted Zone IDs: $HOSTED_ZONE_IDS"
 }
 
 deploy_oidc() {
@@ -57,6 +63,7 @@ deploy_oidc() {
         "GitHubOrg=$GITHUB_ORG"
         "GitHubRepo=$GITHUB_REPO"
         "OIDCProviderArn=$OIDC_ARN"
+        "HostedZoneIds=$HOSTED_ZONE_IDS"
     )
 
     if ! aws cloudformation deploy \

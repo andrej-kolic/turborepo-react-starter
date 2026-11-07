@@ -4,6 +4,8 @@
  */
 
 /**
+ * Treat CLI boolean flags as true when value is true, `'true'`, or `'1'`.
+ *
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -12,6 +14,8 @@ export function isTruthyFlag(value) {
 }
 
 /**
+ * Parse argv into positional args and `--key` / `--key=value` options.
+ *
  * @param {string[]} argv
  * @returns {{ positionals: string[], options: Record<string, string | boolean> }}
  */
@@ -42,18 +46,20 @@ export function parseArgs(argv) {
 }
 
 /**
- * Resolve the target URL from the --url flag or APP_URL env var.
+ * Resolve the target URL from the --url flag or TARGET_URL env var.
  *
  * @param {string | boolean | undefined} urlArg  value of parsed --url option
  * @returns {string}
  */
 export function resolveUrl(urlArg) {
   if (urlArg && typeof urlArg === 'string') return urlArg;
-  if (process.env.APP_URL) return process.env.APP_URL;
-  throw new Error('No URL: pass --url <url> or set APP_URL.');
+  if (process.env.TARGET_URL) return process.env.TARGET_URL;
+  throw new Error('No URL: pass --url <url> or set TARGET_URL.');
 }
 
 /**
+ * Normalize shared browser CLI flags into typed session options.
+ *
  * @param {Record<string, string | boolean>} options
  * @returns {{ selector?: string, noConsoleErrors: boolean, attach: boolean, timeout?: number }}
  */
@@ -74,6 +80,8 @@ export function sharedOptions(options) {
 }
 
 /**
+ * Normalize screenshot CLI flags into capture options.
+ *
  * @param {Record<string, string | boolean>} options
  * @param {string | null | undefined} outputPath
  * @returns {{ useBase64: boolean, fullPage: boolean, format: 'png' | 'jpeg' }}
