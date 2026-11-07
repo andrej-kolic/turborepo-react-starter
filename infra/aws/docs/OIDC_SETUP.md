@@ -50,6 +50,7 @@ The OIDC setup is a **one-time, account-level operation** that creates:
    - Repository-specific role for secure access
    - Configured with necessary CloudFormation permissions
    - Scoped to your specific GitHub repository
+   - Can change only `${ProjectName}-*` stacks and buckets, and the Route 53 hosted zones listed as `HostedZoneId` under `environments`; rerun the OIDC setup after adding a new zone
 
 ## Configuration
 

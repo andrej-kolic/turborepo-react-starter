@@ -15,8 +15,6 @@ This analysis provides comprehensive improvement suggestions organized by priori
 - **Issue**: The GitHub OIDC IAM policy uses wildcard resources (`*`) for some actions
 - **Risk**: Overly permissive permissions
 - **Recommendation**:
-  - Scope CloudFormation actions to specific stack ARNs: `arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ProjectName}-*/*`
-  - Limit S3 bucket patterns to project-specific naming conventions
   - Add explicit deny statements for sensitive actions
 
 ### 2. **Resource Deletion Protection**
