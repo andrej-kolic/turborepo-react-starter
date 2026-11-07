@@ -106,6 +106,8 @@ Resources:
               - s3:PutEncryptionConfiguration
               - s3:GetBucketAcl
               - s3:PutBucketAcl
+              - s3:GetBucketPublicAccessBlock
+              - s3:PutBucketPublicAccessBlock
             Resource:
               - !Sub 'arn:aws:s3:::*-*'
               - !Sub 'arn:aws:s3:::*-*/*'
