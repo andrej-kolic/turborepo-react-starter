@@ -79,6 +79,12 @@ Resources:
               - cloudformation:DescribeChangeSet
               - cloudformation:GetTemplate
             Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ProjectName}-*/*'
+          # cloudfront-site.yaml uses the Serverless transform, and
+          # CreateChangeSet is checked against the transform's ARN too.
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateChangeSet
+            Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31'
           # These act on a template, not a stack, so they don't support
           # resource-level permissions.
           - Effect: Allow
