@@ -155,10 +155,10 @@ Resources:
         Name: !Sub '${ProjectName}-${Environment}-static-site-security-headers'
         SecurityHeadersConfig:
           StrictTransportSecurity:
+            # No IncludeSubdomains/Preload: those would force HTTPS on every
+            # subdomain of DomainName, including sites this stack doesn't own.
             AccessControlMaxAgeSec: 63072000
-            IncludeSubdomains: true
             Override: true
-            Preload: true
           ContentSecurityPolicy:
             ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'"
             Override: true
