@@ -16,6 +16,9 @@ Parameters:
     Type: String
     Description: 'ARN of the GitHub OIDC Provider (if it already exists)'
     Default: ''
+  HostedZoneIds:
+    Type: CommaDelimitedList
+    Description: 'Route 53 hosted zone IDs the deploy role may change records in'
 
 Conditions:
   CreateOIDCProvider: !Equals [!Ref OIDCProviderArn, '']
@@ -62,7 +65,8 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          # CloudFormation actions require stack-specific ARNs for least privilege
+          # Nested stacks are named ${ParentStackName}-${LogicalId}-${suffix},
+          # so they match this project's stack-name prefix too.
           - Effect: Allow
             Action:
               - cloudformation:CreateStack
@@ -74,6 +78,17 @@ Resources:
               - cloudformation:DeleteChangeSet
               - cloudformation:DescribeChangeSet
               - cloudformation:GetTemplate
+            Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ProjectName}-*/*'
+          # cloudfront-site.yaml uses the Serverless transform, and
+          # CreateChangeSet is checked against the transform's ARN too.
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateChangeSet
+            Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31'
+          # These act on a template, not a stack, so they don't support
+          # resource-level permissions.
+          - Effect: Allow
+            Action:
               - cloudformation:GetTemplateSummary
               - cloudformation:ValidateTemplate
               - cloudformation:Package
@@ -106,15 +121,27 @@ Resources:
               - s3:PutEncryptionConfiguration
               - s3:GetBucketAcl
               - s3:PutBucketAcl
+              - s3:GetBucketPublicAccessBlock
+              - s3:PutBucketPublicAccessBlock
             Resource:
-              - !Sub 'arn:aws:s3:::*-*'
-              - !Sub 'arn:aws:s3:::*-*/*'
+              - !Sub 'arn:aws:s3:::${ProjectName}-*'
+              - !Sub 'arn:aws:s3:::${ProjectName}-*/*'
           - Effect: Allow
             Action:
               - route53:GetHostedZone
-              - route53:ListHostedZones
               - route53:ChangeResourceRecordSets
               - route53:ListResourceRecordSets
+            Resource: !Split
+              - ','
+              - !Sub
+                - 'arn:aws:route53:::hostedzone/${ZoneIds}'
+                - ZoneIds:
+                    !Join [',arn:aws:route53:::hostedzone/', !Ref HostedZoneIds]
+          # ListHostedZones is account-wide and GetChange takes a change ID,
+          # so neither supports resource-level permissions.
+          - Effect: Allow
+            Action:
+              - route53:ListHostedZones
               - route53:GetChange
             Resource: '*'
           - Effect: Allow
