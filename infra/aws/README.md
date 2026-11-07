@@ -147,7 +147,7 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
 
 2. **One-time OIDC Setup**:
    - Go to GitHub Actions in your repository
-   - Run the "Setup GitHub OIDC Provider" workflow
+   - Run the "Deploy: AWS: OIDC" workflow
    - Check the confirmation box and run the workflow
    - Copy the outputted Role ARN and add it as repository secret `AWS_ROLE_ARN`
    - Remove any existing AWS access key secrets (no longer needed)
