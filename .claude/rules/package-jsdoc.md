@@ -1,0 +1,7 @@
+---
+paths:
+  - 'packages/**/*.{js,mjs,cjs}'
+---
+# Package JSDoc (plain JS)
+
+Follow the `jsdoc` rule, with one exception for plain-JS package files: every exported function gets `@param` and `@returns` with types, even when the name says it. In JS these tags are the only types editors see.

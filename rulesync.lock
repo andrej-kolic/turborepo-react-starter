@@ -1,0 +1,47 @@
+{
+  "lockfileVersion": 1,
+  "sources": {
+    "andrej-kolic/playbook": {
+      "requestedRef": "main",
+      "resolvedRef": "3633bdadaed5ea5ffd13e9ef7a6d8bae54a21f1a",
+      "resolvedAt": "2026-11-07T18:52:10.485Z",
+      "skills": {},
+      "rules": {
+        "concision": {
+          "integrity": "sha256-539f63141809233d5faa296dcc0a921cf5a18d7aeb54af5162fba1ab3d9ce1dd"
+        },
+        "conversation-style": {
+          "integrity": "sha256-f5060960c8897b1d2334d3b0658106aff534caa123beb540b28fe4c2a10d0f85"
+        },
+        "documentation": {
+          "integrity": "sha256-9d1ced68c4f841ca5045b4e8fc815fdc29793c873ba4a237c13088f1ff62fe98"
+        },
+        "git": {
+          "integrity": "sha256-9f29038e89b6260616dc33fa63a6f80249ec9edd4850cb19221dcd4445ef18c0"
+        },
+        "jsdoc": {
+          "integrity": "sha256-ea742976a8dee2b9f267e4b277a8818af14ac82e76906d9533286d7f017f5ec0"
+        },
+        "security": {
+          "integrity": "sha256-60a818406dffaf2da15b6f875bf3b4ad5ba400ab28fedde4c4d827e29b311de0"
+        },
+        "testing": {
+          "integrity": "sha256-89f082c22c9add0a29228006029e23fcc981e492c0d9d1644d810488e1e5076f"
+        }
+      },
+      "ruleSelection": [
+        "*"
+      ],
+      "rulesPath": ".rulesync/rules",
+      "resolvedRuleNames": [
+        "concision",
+        "conversation-style",
+        "documentation",
+        "git",
+        "jsdoc",
+        "security",
+        "testing"
+      ]
+    }
+  }
+}

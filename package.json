@@ -24,7 +24,7 @@
     "check:type": "dotenv -- turbo run check:type",
     "check:type:go": "dotenv -- turbo run check:type:go",
     "check:format": "dotenv -- prettier . --check",
-    "check:agents": "rulesync generate --check",
+    "check:agents": "pnpm rules:check && rulesync generate --check -t claudecode -f skills,commands && rulesync generate --check -t cursor -f commands,mcp",
     "check:links": "node scripts/check-links.js",
     "clear:cache": "pnpm cache delete && rm -rf pnpm-lock.yaml && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clear:output": "turbo run clear:output",
@@ -40,7 +40,11 @@
     "browser:ensure-app": "dotenv -- dev-tools-app-target run node scripts/ensure-app.js",
     "browser": "dotenv -- dev-tools-app-target run browser-tools",
     "capture": "dotenv -- dev-tools-app-target run browser-capture",
-    "sync:agents": "rulesync generate"
+    "sync:agents": "rulesync generate",
+    "rules:install": "rulesync install && rulesync generate -f rules -t claudecode,cursor",
+    "rules:outdated": "pnpm dlx github:andrej-kolic/playbook rules --check",
+    "rules:update": "rulesync install --update && rulesync generate -f rules -t claudecode,cursor",
+    "rules:check": "rulesync install --frozen && rulesync generate --check -f rules -t claudecode,cursor"
   },
   "devDependencies": {
     "@repo/browser-capture": "workspace:*",
@@ -53,7 +57,7 @@
     "husky": "9.1.7",
     "lint-staged": "17.0.7",
     "prettier": "3.8.4",
-    "rulesync": "8.30.0",
+    "rulesync": "27.0.0",
     "syncpack": "15.3.2",
     "turbo": "2.9.18",
     "typescript": "6.0.3"

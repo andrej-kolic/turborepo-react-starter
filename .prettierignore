@@ -34,3 +34,8 @@ infra/netlify/deploy_output.json
 # rulesync sources — excluded from commit-time prettier to avoid racing sync:agents;
 # format manually: prettier --write '.rulesync/**/*.{md,json}' && pnpm sync:agents
 .rulesync/
+
+# written by rulesync; formatting them makes rules:install show changes
+.claude/rules/
+.cursor/rules/
+rulesync.jsonc
