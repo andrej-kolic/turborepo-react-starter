@@ -107,7 +107,9 @@ This repo uses [rulesync](https://github.com/dyoshikawa/rulesync) to generate to
 | `AGENTS.md` (canonical)                                                              | —                                                                                                                   |
 | `.rulesync/rules/`, `.rulesync/skills/`, `.rulesync/commands/`, `.rulesync/mcp.json` | `.cursor/rules/`, `.cursor/commands/`, `.claude/rules/`, `.claude/skills/`, `.claude/commands/`, `.cursor/mcp.json` |
 
-After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. CI and pre-commit run `pnpm check:agents` when agent config files change. Skills sync to `.claude/skills/` (discovered by Cursor and Claude Code). Commands sync to `.cursor/commands/` and `.claude/commands/`.
+After changing `.rulesync/**`, run `pnpm sync:agents` and commit the generated outputs. The pre-commit hook (when agent config files are staged) and `pnpm quality-checks` run `pnpm check:agents`, which fails when a generated file differs from its source. Skills sync to `.claude/skills/` (discovered by Cursor and Claude Code). Commands sync to `.cursor/commands/` and `.claude/commands/`.
+
+The `concision`, `conversation-style`, `documentation`, `git`, `jsdoc`, `security` and `testing` rules come from [`andrej-kolic/playbook`](https://github.com/andrej-kolic/playbook), set in `rulesync.jsonc` and pinned in `rulesync.lock`. `pnpm rules:outdated` checks for changes, `pnpm rules:update` takes them, and `pnpm rules:install` fetches the pinned versions. Edit them in the playbook repo, not in `.rulesync/rules/`: a file there with the same name replaces the playbook rule. After cloning, run `pnpm rules:install` once: `pnpm check:agents` needs the fetched copies in `.rulesync/rules/.curated/` and otherwise fetches them from GitHub.
 
 ## Gotchas
 

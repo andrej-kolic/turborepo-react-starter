@@ -31,19 +31,12 @@ Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: 
 
 ## Communication
 
-- Be concise — skip filler ("Sure, I can help with that").
-- Go straight to the explanation, solution, or execution.
 - In code blocks, show only changed segments — not hundreds of unchanged lines.
-- Rules, AGENTS.md, instructions: one idea per bullet; no examples unless they disambiguate; one sentence over a paragraph.
 
 ## Code style
 
-- No comments that narrate what the code does. Comments explain _why_, not _what_. JSDoc on exported package API is the exception — see jsdoc rule.
+- No comments that narrate what the code does. Comments explain _why_, not _what_. JSDoc is the exception — see the jsdoc and package-jsdoc rules.
 
 ## Before calling it done
 
 Run `pnpm lint`, `pnpm test`, and `pnpm check:type`.
-
-## Git
-
-Never `git add`, commit, or push unless the user explicitly asks.

@@ -5,9 +5,18 @@
     "claudecode": ["rules", "skills", "commands"]
   },
   "outputRoots": ["."],
-  "delete": true,
+  "delete": false,
   "verbose": false,
   "silent": false,
   "global": false,
-  "gitignoreTargetsOnly": true
+  "gitignoreTargetsOnly": true,
+  "sources": [
+    {
+      "source": "andrej-kolic/playbook",
+      "rules": [
+        "*"
+      ],
+      "rulesPath": ".rulesync/rules"
+    }
+  ]
 }
