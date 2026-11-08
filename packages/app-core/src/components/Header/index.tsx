@@ -13,6 +13,7 @@ export function Header({ title }: { title: string }): React.ReactNode {
   return (
     <header className="Header" data-testid="app-header">
       <img className="Header__logo" alt="Logo" src={LogoIcon} />
+      {/* oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- demo click handler */}
       <div className="Header__title" onClick={handleClick}>
         {title}
         <span className="Header__version">
