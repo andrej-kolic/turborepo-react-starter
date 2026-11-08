@@ -63,9 +63,9 @@ CI sets `TARGET_URL` from `dev-tools-app-target resolve --preview` in
 Default bundler comes from `BUNDLER` in `.env` (see `.env.example`; commonly `app-vite`). To test another bundler:
 
 ```bash
-BUNDLER=app-webpack pnpm build:app
-BUNDLER=app-webpack pnpm preview:app &
-BUNDLER=app-webpack pnpm e2e
+BUNDLER=app-rspack pnpm build:app
+BUNDLER=app-rspack pnpm preview:app &
+BUNDLER=app-rspack pnpm e2e
 ```
 
 Or point at an already-running preview:
@@ -103,7 +103,7 @@ For future user-flow tests (clicks, forms, navigation), prefer `getByRole` / `ge
 4. `pnpm e2e` with `TARGET_URL`
 5. Upload Playwright report/trace artifacts on failure
 
-Set the GitHub repo variable **`DEFAULT_BUNDLER`** (`app-vite`, `app-webpack`, or `app-esbuild`) to
+Set the GitHub repo variable **`DEFAULT_BUNDLER`** (`app-vite`, `app-rspack`, or `app-esbuild`) to
 choose which bundler E2E exercises in CI. Local runs use `BUNDLER` in `.env` instead.
 
 ---

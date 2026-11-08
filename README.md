@@ -13,7 +13,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 - `app-esbuild`: ESBuild bundler for main app
 - `app-vite`: Vite bundler for main app
-- `app-webpack`: Webpack bundler for main app
+- `app-rspack`: Rspack bundler for main app
 - `ui-storybook`: Storybook as dev server for ui package
 
 #### Packages

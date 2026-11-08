@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bundler: [app-vite, app-webpack, app-esbuild]
+        bundler: [app-vite, app-rspack, app-esbuild]
 
     env:
       BUNDLER: ${{ matrix.bundler }}

@@ -13,8 +13,8 @@
 			"path": "apps/app-vite"
 		},
 		{
-			"name": "🚀 app-webpack",
-			"path": "apps/app-webpack"
+			"name": "🚀 app-rspack",
+			"path": "apps/app-rspack"
 		},
 		{
 			"name": "🚀 ui-storybook",

@@ -1,13 +1,13 @@
 {
-  "name": "app-webpack",
+  "name": "app-rspack",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "devPort": 8080,
   "previewPort": 8081,
   "scripts": {
-    "_bundle_dev": "tsx node_modules/webpack-cli/bin/cli.js serve --mode development --config config/webpack.config.ts",
-    "_bundle_build": "tsx node_modules/webpack-cli/bin/cli.js --mode production --config config/webpack.config.ts",
+    "_bundle_dev": "tsx node_modules/@rspack/cli/bin/rspack.js serve --mode development --config config/rspack.config.ts",
+    "_bundle_build": "tsx node_modules/@rspack/cli/bin/rspack.js build --mode production --config config/rspack.config.ts",
     "dev": "NODE_ENV=development pnpm _bundle_dev",
     "build": "NODE_ENV=production pnpm _bundle_build",
     "preview": "tsx ./scripts/preview.ts",
@@ -25,18 +25,13 @@
     "@repo/dev-tools": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rspack/cli": "2.3.1",
+    "@rspack/core": "2.3.1",
+    "@rspack/dev-server": "2.2.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "copy-webpack-plugin": "14.0.0",
-    "css-loader": "7.1.5",
-    "html-webpack-plugin": "5.6.8",
-    "mini-css-extract-plugin": "2.10.2",
-    "ts-loader": "9.6.2",
     "serve": "catalog:",
-    "tsx": "catalog:",
-    "webpack": "5.112.2",
-    "webpack-cli": "7.3.1",
-    "webpack-dev-server": "5.2.5"
+    "tsx": "catalog:"
   }
 }

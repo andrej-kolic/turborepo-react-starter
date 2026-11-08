@@ -4,7 +4,7 @@ Canonical instructions for AI agents working in this repository.
 
 ## Product overview
 
-Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/app-core` served by one of three bundler apps (`app-vite`, `app-webpack`, `app-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
+Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/app-core` served by one of three bundler apps (`app-vite`, `app-rspack`, `app-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
 
 ## Monorepo conventions
 
@@ -50,10 +50,10 @@ tooling all read from it. Override the browser/E2E target URL with **`TARGET_URL
 
 Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
-| Service                  | Start                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------- |
-| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-webpack`, `app-esbuild`) |
-| ui-storybook             | `pnpm dev:ui`                                                                   |
+| Service                  | Start                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-rspack`, `app-esbuild`) |
+| ui-storybook             | `pnpm dev:ui`                                                                  |
 
 Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
 `pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.

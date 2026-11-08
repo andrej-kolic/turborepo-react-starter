@@ -273,7 +273,7 @@ pnpm e2e       # when e2e package changed
 ## Optional follow-ups (out of scope unless requested)
 
 - E2E failure → `browser-capture record-trace` in CI
-- Playwright matrix across `app-vite`, `app-webpack`, `app-esbuild`
+- Playwright matrix across `app-vite`, `app-rspack`, `app-esbuild`
 - Chromatic / visual regression on Storybook
 - `@repo/browser-tools` MCP server (separate plan)
 - Playwright component tests (usually redundant with Storybook + unit tests here)

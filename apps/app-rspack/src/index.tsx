@@ -10,7 +10,7 @@ if (!rootNode) {
 }
 
 createRoot(rootNode).render(
-  <AppCore href="#" title="app-webpack">
+  <AppCore href="#" title="app-rspack">
     Content!
   </AppCore>,
 );

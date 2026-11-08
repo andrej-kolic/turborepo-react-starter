@@ -8,7 +8,7 @@
     "./library": "./library.js",
     "./next-js": "./next.js",
     "./react-internal": "./react-internal.js",
-    "./webpack": "./webpack.js",
+    "./rspack": "./rspack.js",
     "./vite": "./vite.js",
     "./esbuild": "./esbuild.js"
   },

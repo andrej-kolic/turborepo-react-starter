@@ -170,7 +170,7 @@ This method uses OpenID Connect (OIDC) for secure authentication without storing
    - Use the "AWS: Deploy: Content" workflow
    - Automatically triggered on branch pushes or manual workflow_dispatch
    - Builds the project and deploys website content
-   - Select bundler (app-vite/app-webpack/app-esbuild) and environment when running manually
+   - Select bundler (app-vite/app-rspack/app-esbuild) and environment when running manually
 
 For detailed OIDC setup instructions, see [docs/OIDC_SETUP.md](docs/OIDC_SETUP.md).
 

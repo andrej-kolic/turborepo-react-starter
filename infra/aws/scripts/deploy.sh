@@ -149,7 +149,7 @@ sync_site_content() {
     # Replace this with your actual site build/output directory
     # SITE_DIR="./www"
     # SITE_DIR="../../apps/app-vite/dist"
-    # SITE_DIR="../../apps/app-webpack/dist"
+    # SITE_DIR="../../apps/app-rspack/dist"
     print_debug "PWD (deploy.sh): $PWD"
     SITE_DIR="$(realpath "${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist")"
     print_debug "Distribution dir: $SITE_DIR"

@@ -12,7 +12,7 @@ on:
           - all
           - default
           - app-vite
-          - app-webpack
+          - app-rspack
           - app-esbuild
       build_environment:
         type: choice
