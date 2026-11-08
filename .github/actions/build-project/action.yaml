@@ -146,8 +146,8 @@ runs:
         # Build tasks list based on inputs
         TASKS=""
 
-        # Always include build for the specific filter
-        TASKS="build"
+        # Always include build and type check for the specific filter
+        TASKS="build check:type"
 
         # Add conditional tasks
         if [ "${{ inputs.run-lint }}" = "true" ]; then
