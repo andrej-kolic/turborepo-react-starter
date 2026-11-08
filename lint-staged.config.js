@@ -8,7 +8,7 @@ export default {
 
   // "!(*.js|*.cjs|*.mjs|*.jsx|*.ts|*.tsx)": ["prettier --write"]
 
-  '*.{js,jsx,ts,tsx}': ['eslint --fix', 'prettier --write'],
+  '*.{js,jsx,ts,tsx}': ['oxlint --type-aware --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json,jsonc}': ['prettier --write'],
   '.rulesync/**/*': [() => 'pnpm sync:agents', () => 'pnpm check:agents'],
   '{.cursor/rules/*.mdc,.cursor/commands/**/*.md,.claude/rules/**/*.md,.claude/skills/**/SKILL.md,.claude/commands/**/*.md,.cursor/mcp.json}':

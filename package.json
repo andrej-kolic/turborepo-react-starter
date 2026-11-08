@@ -56,6 +56,8 @@
     "eslint": "10.5.0",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
+    "oxlint": "1.92.0",
+    "oxlint-tsgolint": "7.0.2006",
     "prettier": "3.9.10",
     "rulesync": "43.7.0",
     "syncpack": "15.3.3",
