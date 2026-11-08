@@ -24,7 +24,7 @@ const environmentVariables = loadEnvironmentVariables({
   buildEnvironment: process.env.BUILD_ENVIRONMENT,
   customEnvVars: {
     BUNDLER: 'app-esbuild',
-    MODE: 'N/A', // esbuild does not have modes like vite/webpack,
+    MODE: 'N/A', // esbuild does not have modes like vite/rspack,
   },
 });
 

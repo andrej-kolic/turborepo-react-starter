@@ -14,7 +14,7 @@ const DEFAULT_PREFIX = 'APP_REACT';
  *
  * @param envDir directory where .env files are located
  * @param buildEnvironment environment name, e.g. 'development', 'production', 'staging'
- * @param bundler bundler name, e.g. 'vite', 'webpack', 'esbuild'
+ * @param bundler bundler name, e.g. 'vite', 'rspack', 'esbuild'
  *
  * @returns object with environment variables to be used in the app
  */

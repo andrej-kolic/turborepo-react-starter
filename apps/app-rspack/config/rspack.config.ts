@@ -1,9 +1,7 @@
 import path from 'node:path';
 import { createRequire } from 'module';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import webpack from 'webpack';
+import util from 'util';
+import { rspack, type Configuration } from '@rspack/core';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 
@@ -15,24 +13,19 @@ const pkg = _require('../package.json') as {
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 const distPath = path.resolve('dist');
 
-import 'webpack-dev-server';
-import util from 'util';
+const debuglog = util.debuglog('app-rspack');
 
-const debuglog = util.debuglog('app-webpack');
-
-//
-
-type WebpackConfigOptions = {
+type RspackConfigOptions = {
   mode: 'development' | 'production';
   config: string;
   env: Record<string, string>;
 };
 
-const webpackConfig = (
+const rspackConfig = (
   env: Record<string, string>,
-  options: WebpackConfigOptions,
-): webpack.Configuration => {
-  debuglog('WebpackConfigOptions:', options);
+  options: RspackConfigOptions,
+): Configuration => {
+  debuglog('RspackConfigOptions:', options);
 
   if (!process.env.BUILD_ENVIRONMENT) {
     const errorMsg =
@@ -46,7 +39,7 @@ const webpackConfig = (
     envDir: appCoreEnvDir,
     buildEnvironment: process.env.BUILD_ENVIRONMENT,
     customEnvVars: {
-      BUNDLER: 'app-webpack',
+      BUNDLER: 'app-rspack',
       MODE: options.mode, // should be set to 'development' or 'production'
     },
   });
@@ -59,6 +52,7 @@ const webpackConfig = (
     output: {
       path: distPath,
       filename: 'output.js',
+      cssFilename: 'static/css/[name].css',
       clean: true,
     },
 
@@ -67,7 +61,7 @@ const webpackConfig = (
     },
 
     plugins: [
-      new webpack.DefinePlugin({
+      new rspack.DefinePlugin({
         'import.meta.env': Object.fromEntries(
           Object.entries(environmentVariables).map(([key, value]) => [
             key,
@@ -76,18 +70,14 @@ const webpackConfig = (
         ),
       }),
 
-      new HtmlWebpackPlugin({
+      new rspack.HtmlRspackPlugin({
         template: `./src/index.html`,
         templateParameters: {
-          title: process.env.APP_REACT_TITLE,
+          title: process.env.APP_REACT_TITLE ?? '',
         },
       }),
 
-      new MiniCssExtractPlugin({
-        filename: 'static/css/[name].css',
-      }),
-
-      new CopyWebpackPlugin({
+      new rspack.CopyRspackPlugin({
         patterns: [
           {
             from: appCorePublic,
@@ -101,19 +91,25 @@ const webpackConfig = (
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
           exclude: /node_modules\/(?!@repo)/,
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              target: 'es2022',
+              parser: { syntax: 'typescript', tsx: true },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                  development: options.mode === 'development',
+                },
+              },
+            },
+          },
+          type: 'javascript/auto',
         },
         {
           test: /\.css$/i,
-          // use: ['style-loader', 'css-loader'],
-          use: [
-            MiniCssExtractPlugin.loader,
-            {
-              loader: 'css-loader',
-              options: { url: true },
-            },
-          ],
+          type: 'css',
         },
         {
           test: /\.(?:ico|gif|png|jpg|jpeg|jp2|svg|webp)$/i,
@@ -137,4 +133,4 @@ const webpackConfig = (
   };
 };
 
-export default webpackConfig;
+export default rspackConfig;

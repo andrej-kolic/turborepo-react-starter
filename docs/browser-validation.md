@@ -49,7 +49,7 @@ For bootstrap commands (ensure-app, setup, tier selection), follow the
 ### CI bootstrap
 
 [`.github/workflows/verify-browser-smoke.yml`](../.github/workflows/verify-browser-smoke.yml) boots each
-bundler dev server and asserts HTTP 200, with `BUNDLER` set per matrix job (`app-vite`, `app-webpack`,
+bundler dev server and asserts HTTP 200, with `BUNDLER` set per matrix job (`app-vite`, `app-rspack`,
 `app-esbuild`):
 
 ```bash

@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/typescript-config/webpack.json",
+  "extends": "@repo/typescript-config/rspack.json",
 
   "include": ["src", "../../@types"],
   "exclude": ["node_modules", "dist", "build"],

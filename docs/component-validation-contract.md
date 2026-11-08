@@ -118,7 +118,7 @@ pnpm preview:app &
 pnpm e2e
 ```
 
-Override the bundler with `BUNDLER=app-webpack` (or `app-esbuild`) before build/preview/test.
+Override the bundler with `BUNDLER=app-rspack` (or `app-esbuild`) before build/preview/test.
 Set `TARGET_URL` to point at an already-running preview. CI uses `vars.DEFAULT_BUNDLER` (fallback
 `app-vite`) via [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml).
 

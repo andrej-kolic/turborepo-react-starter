@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { loadAppEndpoints } from '@repo/dev-tools/config/app-port';
 
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { previewPort } = loadAppEndpoints('app-webpack');
+const { previewPort } = loadAppEndpoints('app-rspack');
 
 const result = spawnSync('serve', ['./dist', '-p', String(previewPort)], {
   stdio: 'inherit',
