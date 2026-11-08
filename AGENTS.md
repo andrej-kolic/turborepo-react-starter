@@ -10,7 +10,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 
 - Scope work with `pnpm --filter <pkg> <script>`.
 - Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
-- Extend `@repo/typescript-config` and `@repo/eslint-config`.
+- Extend `@repo/typescript-config` and `@repo/oxlint-config`.
 - Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:agents` · `pnpm quality-checks`
 
 ## Environment file

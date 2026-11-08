@@ -53,8 +53,8 @@
 			"path": "packages/e2e"
 		},
 		{
-			"name": "📦 @repo/eslint-config",
-			"path": "packages/eslint-config"
+			"name": "📦 @repo/oxlint-config",
+			"path": "packages/oxlint-config"
 		},
 		{
 			"name": "📦 @repo/typescript-config",

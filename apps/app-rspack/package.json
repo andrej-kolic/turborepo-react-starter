@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rspack/cli": "2.3.1",

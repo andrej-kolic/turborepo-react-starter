@@ -22,7 +22,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `commons`: a stub library shared by other packages. built using tsup
 - `dev-tools`: utils for development, shared by other packages. not meant to be used in source code
 - `@repo/ui`: a stub React component library shared by applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@repo/oxlint-config`: shared [oxlint](https://oxc.rs/docs/guide/usage/linter.html) configs (`base`, `react`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 - `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
@@ -36,7 +36,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 ### Utilities
 
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
+- [oxlint](https://oxc.rs/docs/guide/usage/linter.html) for code linting, with type-aware rules
 - [Prettier](https://prettier.io) for code formatting
 
 ### Build

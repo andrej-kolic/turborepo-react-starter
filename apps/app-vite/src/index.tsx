@@ -30,7 +30,7 @@ ReactDOM.createRoot(root).render(
   </React.StrictMode>,
 );
 
-// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+// TODO: remove - example of lint warning for react/only-export-components
 export const foo = () => {
   //
 };

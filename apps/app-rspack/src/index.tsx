@@ -14,7 +14,7 @@ createRoot(rootNode).render(
   </AppCore>,
 );
 
-// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+// TODO: remove - example of lint warning for react/only-export-components
 export const foo = () => {
   //
 };

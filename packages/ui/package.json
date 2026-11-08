@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@repo/commons": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@testing-library/dom": "catalog:",

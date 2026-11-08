@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
