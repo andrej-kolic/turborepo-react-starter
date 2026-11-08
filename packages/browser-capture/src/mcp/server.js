@@ -82,7 +82,7 @@ export async function startMcpServer() {
       description:
         'Navigate to a URL and record a full trace: HAR network log, Playwright trace (screenshots + DOM snapshots), console messages, and Web Vitals. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record the existing visible tab at the URL origin without navigating; trace.zip is browser-context scoped (may include other tabs).',
       inputSchema: z.object({
-        url: z.string().url().describe('URL to navigate to and record'),
+        url: z.url().describe('URL to navigate to and record'),
         duration: z
           .number()
           .optional()
@@ -152,7 +152,7 @@ export async function startMcpServer() {
       description:
         'Navigate to a URL and collect Web Vitals (LCP, CLS, INP) plus 36 CDP browser metrics. Requires Chrome running with --remote-debugging-port=9222. Set attach=true to measure the existing visible tab at the URL origin without navigating.',
       inputSchema: z.object({
-        url: z.string().url().describe('URL to navigate to and measure'),
+        url: z.url().describe('URL to navigate to and measure'),
         duration: z
           .number()
           .optional()
@@ -214,7 +214,6 @@ export async function startMcpServer() {
           .optional()
           .describe('Duration to listen in seconds (default: 10)'),
         url: z
-          .string()
           .url()
           .optional()
           .describe('When attach=true, match the open tab by this URL origin'),
@@ -271,10 +270,7 @@ export async function startMcpServer() {
       description:
         'Navigate to a URL, record user interactions (clicks, form fills, navigation) for a given duration, and generate a ready-to-run Playwright test file. React component source locations are included when available (requires the app to be running in dev mode). Requires Chrome running with --remote-debugging-port=9222. Set attach=true to record on the existing visible tab at the URL origin without navigating.',
       inputSchema: z.object({
-        url: z
-          .string()
-          .url()
-          .describe('URL to navigate to and record interactions on'),
+        url: z.url().describe('URL to navigate to and record interactions on'),
         duration: z
           .number()
           .optional()

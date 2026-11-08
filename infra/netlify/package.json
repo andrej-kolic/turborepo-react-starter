@@ -12,6 +12,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "netlify-cli": "26.1.0"
+    "netlify-cli": "27.16.2"
   }
 }
