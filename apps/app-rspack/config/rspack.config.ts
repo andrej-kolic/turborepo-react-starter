@@ -46,13 +46,20 @@ const rspackConfig = (
 
   debuglog('Runtime environment Variables:', environmentVariables);
 
+  // Hashes only in production: in dev they slow rebuilds and nothing caches the files.
+  const hash = options.mode === 'production' ? '-[contenthash:8]' : '';
+
   return {
     entry: './src/index.tsx',
 
+    // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
     output: {
       path: distPath,
-      filename: 'output.js',
-      cssFilename: 'static/css/[name].css',
+      filename: `assets/[name]${hash}.js`,
+      chunkFilename: `assets/[name]${hash}.js`,
+      cssFilename: `assets/[name]${hash}.css`,
+      cssChunkFilename: `assets/[name]${hash}.css`,
+      assetModuleFilename: `assets/[name]${hash}[ext]`,
       clean: true,
     },
 
@@ -114,9 +121,6 @@ const rspackConfig = (
         {
           test: /\.(?:ico|gif|png|jpg|jpeg|jp2|svg|webp)$/i,
           type: 'asset/resource',
-          generator: {
-            filename: 'static/assets/images/[name][hash][ext]',
-          },
         },
       ],
     },

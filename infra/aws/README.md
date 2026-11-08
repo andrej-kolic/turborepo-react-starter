@@ -237,8 +237,8 @@ This method uses the included deployment scripts to deploy the solution directly
 
 4. **Deploy your website content**:
    ```bash
-   # First, add your content to the www/ directory
-   # Then sync content to S3 and invalidate CloudFront cache
+   # First, build the app from the repo root: pnpm build:app (output in apps/$BUNDLER/dist)
+   # Then upload it to S3 and invalidate CloudFront cache
    ./scripts/deploy.sh content development
    ```
 
@@ -260,8 +260,9 @@ The `infra` action will:
 
 The `content` action will:
 
-1. Sync files from `www/` directory to the S3 bucket
-2. Create a CloudFront cache invalidation to refresh content
+1. Upload the build output (`apps/$BUNDLER/dist`) to the S3 bucket: `assets/` (content-hashed files) with a one-year `immutable` cache, everything else with `no-cache`, `index.html` last
+2. Delete files no longer in the build
+3. Create a CloudFront cache invalidation to refresh content
 
 **Example deployment workflow:**
 
@@ -276,7 +277,7 @@ The `content` action will:
 ./scripts/deploy.sh outputs development
 
 # Update content
-# (Make changes to files in www/ directory)
+# (Rebuild the app first: pnpm build:app from the repo root)
 ./scripts/deploy.sh content development
 ```
 

@@ -16,6 +16,9 @@ if [ -z "$BUNDLER" ] || [ -z "$BUILD_ENVIRONMENT" ] || [ -z "$NETLIFY_SITE_ID" ]
   exit 1
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cp "${SCRIPT_DIR}/../_headers" "${SCRIPT_DIR}/../../../apps/${BUNDLER}/dist/_headers"
+
 # Determine if we are deploying to production
 prod_flag=""
 if [ "${BUILD_ENVIRONMENT}" = "production" ]; then prod_flag="--prod"; fi
