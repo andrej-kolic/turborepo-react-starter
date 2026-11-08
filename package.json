@@ -51,19 +51,22 @@
     "@repo/browser-tools": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@typescript/native-preview": "7.0.0-dev.20260617.2",
-    "dotenv-cli": "11.0.0",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "dotenv-cli": "11.1.0",
     "eslint": "10.5.0",
     "husky": "9.1.7",
-    "lint-staged": "17.0.7",
-    "prettier": "3.8.4",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
     "rulesync": "43.7.0",
-    "syncpack": "15.3.2",
-    "turbo": "2.9.18",
+    "syncpack": "15.3.3",
+    "turbo": "2.11.10",
     "typescript": "6.0.3"
   },
   "lint-staged": {
     "*.{md,mdc}": "node scripts/check-links.js"
+  },
+  "engines": {
+    "node": ">=24.15.0"
   },
   "packageManager": "pnpm@11.7.0",
   "name": "turborepo-react-starter"

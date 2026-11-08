@@ -32,8 +32,8 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "npm-run-all2": "9.0.2",
-    "tsup": "8.5.1",
+    "npm-run-all2": "9.0.4",
+    "tsup": "9.0.0",
     "vitest": "catalog:"
   }
 }
