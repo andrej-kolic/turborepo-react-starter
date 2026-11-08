@@ -332,6 +332,18 @@ To change the Response Header Policy of the site:
 1. Make your changes by editing ResponseHeadersPolicy in `templates/cloudfront-site.yaml`. Here you can modify any of the headers for Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, and Referrer-Policy.
 2. Deploy the solution using one of described methods
 
+## Resource names
+
+- **Stack:** `{ProjectName}-{Environment}` (e.g. `trs-development`)
+- **S3 buckets:** `{ProjectName}-{Environment}-root-{AccountId}-{Region}` for the site, `...-logs-...` for access logs
+
+## Troubleshooting
+
+- **Stack deployment fails:** check the CloudFormation stack events; certificate validation is the usual cause.
+- **Content not updating:** check that the S3 upload and the CloudFront invalidation completed.
+- **OIDC authentication errors:** check that the GitHub secret `AWS_ROLE_ARN` is set.
+- **Domain doesn't resolve:** check the hosted zone configuration and wait for DNS propagation.
+
 ## License Summary
 
 This project is licensed under the Apache-2.0 License.
