@@ -22,7 +22,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check:type": "tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.test.json",
-    "check:type:go": "tsgo --noEmit -p tsconfig.lib.json && tsgo --noEmit -p tsconfig.test.json",
     "publint": "pnpm dlx publint"
   },
   "devDependencies": {

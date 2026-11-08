@@ -14,7 +14,6 @@
   },
   "scripts": {
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "check:type:go": "tsgo --noEmit && tsgo --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },

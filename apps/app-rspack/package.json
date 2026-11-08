@@ -13,7 +13,6 @@
     "preview": "tsx ./scripts/preview.ts",
     "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
