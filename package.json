@@ -22,7 +22,6 @@
     "e2e:headed": "dotenv -- pnpm --filter @repo/e2e e2e:headed",
     "check:dependencies": "dotenv -- syncpack lint --dependency-types prod,dev",
     "check:type": "dotenv -- turbo run check:type",
-    "check:type:go": "dotenv -- turbo run check:type:go",
     "check:format": "dotenv -- prettier . --check",
     "check:agents": "pnpm rules:check && rulesync generate --check -t claudecode -f skills,commands && rulesync generate --check -t cursor -f commands,mcp",
     "check:links": "node scripts/check-links.js",
@@ -51,7 +50,6 @@
     "@repo/browser-tools": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "dotenv-cli": "11.1.0",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
@@ -61,7 +59,7 @@
     "rulesync": "43.7.0",
     "syncpack": "15.3.3",
     "turbo": "2.11.10",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "lint-staged": {
     "*.{md,mdc}": "node scripts/check-links.js"

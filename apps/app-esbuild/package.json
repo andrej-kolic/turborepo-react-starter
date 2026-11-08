@@ -19,7 +19,6 @@
     "lint": "oxlint --type-aware",
     "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {

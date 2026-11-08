@@ -9,7 +9,6 @@
   "scripts": {
     "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit",
     "dev": "tsx ./scripts/dev.ts",
     "build": "storybook build ${STORYBOOK_OPTIONS}",
     "preview": "tsx ./scripts/preview.ts",

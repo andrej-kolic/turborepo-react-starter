@@ -8,8 +8,7 @@
     "./react": "./react.ts"
   },
   "scripts": {
-    "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit"
+    "check:type": "tsc --noEmit"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
