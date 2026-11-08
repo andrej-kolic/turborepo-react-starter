@@ -7,8 +7,9 @@ export default defineConfig({
   target: 'es2022',
 
   /**
-   * clean: true mess with watch mode because it empty folder, but type definitions are not recreated
-   * by tsc if there were no changes. Use custom clean when making a build instead.
+   * No clean: deleting dist/ breaks dev servers that resolve @repo/commons from it (#109),
+   * and tsc --watch does not re-emit unchanged type definitions. To clean, stop dev and run
+   * `pnpm --filter @repo/commons clear:output`.
    */
   // clean: true,
 
