@@ -36,7 +36,7 @@ This VM may also expose `/exec-daemon/node` (Node 22) earlier on `PATH`. Use `nv
 
 ## `@repo/commons` build artifact
 
-Apps import `@repo/commons` from `dist/`, which is not committed. Turbo usually builds it when you run `pnpm build`, `pnpm lint`, or `pnpm test`. If dev fails with missing `dist`, run:
+`@repo/commons` is a compiled package on purpose: apps import it from `dist/`, which is not committed. Every Turbo task (`pnpm dev:app`, `pnpm build`, `pnpm lint`, `pnpm test`) builds it first. Running an app's script without Turbo (e.g. `pnpm --filter app-vite dev`) skips that build; if it fails with `Can't resolve '@repo/commons'`, run:
 
 ```bash
 pnpm --filter @repo/commons build

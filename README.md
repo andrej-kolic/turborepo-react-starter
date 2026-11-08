@@ -19,7 +19,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 #### Packages
 
 - `app-core`: React app developed as library
-- `commons`: a stub library shared by other packages. built using tsup
+- `commons`: a stub library shared by other packages, built with tsup. It shows a compiled package: apps import its `dist/`, which Turbo builds before `dev`, `build`, `lint` and `test`
 - `dev-tools`: utils for development, shared by other packages. not meant to be used in source code
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/oxlint-config`: shared [oxlint](https://oxc.rs/docs/guide/usage/linter.html) configs (`base`, `react`)
