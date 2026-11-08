@@ -23,13 +23,4 @@ export function debugLog() {
     '* import.meta.env.APP_REACT_ENV_FILE:',
     import.meta.env.APP_REACT_ENV_FILE,
   );
-
-  // // @ts-ignore - external
-  // console.log("* import.meta.env.APP_REACT_ROOT_TEST:", import.meta.env.APP_REACT_ROOT_TEST, typeof import.meta.env.APP_REACT_ROOT_TEST, import.meta.env.APP_REACT_ROOT_TEST?.length);
-  // // @ts-ignore - external
-  // console.log("* import.meta.env.APP_REACT_HOME:", import.meta.env?.APP_REACT_HOME);
-  // // @ts-ignore - excluded
-  // console.log("* import.meta.env.HOME:", import.meta.env?.HOME);
-  // // @ts-ignore - excluded
-  // console.log("* import.meta.env.NO_PREFIX:", import.meta.env?.NO_PREFIX);
 }

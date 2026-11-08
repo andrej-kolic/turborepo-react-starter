@@ -29,7 +29,9 @@ export function ResourceCards() {
 
       <Card
         title="Public resource"
-        image={<img src={LinkIcon} style={{ position: 'relative', top: 3 }} />}
+        image={
+          <img alt="" src={LinkIcon} style={{ position: 'relative', top: 3 }} />
+        }
       >
         <a href="readme.txt" target="_blank" rel="noopener">
           Readme

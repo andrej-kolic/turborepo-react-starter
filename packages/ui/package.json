@@ -13,7 +13,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware",
     "generate:component": "turbo gen react-component",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@repo/commons": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",

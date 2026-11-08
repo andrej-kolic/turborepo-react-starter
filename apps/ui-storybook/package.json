@@ -7,7 +7,7 @@
   "devPort": 6006,
   "previewPort": 6007,
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
     "dev": "tsx ./scripts/dev.ts",
@@ -27,13 +27,12 @@
   "devDependencies": {
     "@chromatic-com/storybook": "5.6.0",
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@storybook/addon-docs": "10.6.6",
     "@storybook/addon-links": "10.6.6",
     "@storybook/react-vite": "10.6.6",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "eslint-plugin-storybook": "10.4.6",
     "serve": "catalog:",
     "storybook": "10.6.6",
     "tsx": "catalog:",

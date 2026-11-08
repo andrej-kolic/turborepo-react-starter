@@ -1,5 +1,3 @@
-/* eslint-disable import/no-default-export -- enable default exports */
-
 /**
  * Type definitions for import.meta.env
  */
@@ -63,6 +61,5 @@ declare module '*.png' {
 declare module '*.svg' {
   const reference: string;
 
-  // _eslint-disable-next-line import/no-default-export
   export default reference;
 }

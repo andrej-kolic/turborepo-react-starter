@@ -1,0 +1,20 @@
+{
+  "name": "@repo/oxlint-config",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./base": "./base.ts",
+    "./react": "./react.ts"
+  },
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint-plugin-turbo": "2.9.18",
+    "oxlint": "1.92.0"
+  }
+}

@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware",
     "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit",
     "check:type:go": "tsgo --noEmit",
@@ -21,14 +21,11 @@
   },
   "devDependencies": {
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "6.2.1",
     "vite": "catalog:"
-  },
-  "_devDependencies": {
-    "eslint-plugin-react-refresh": "^0.4.12"
   }
 }
