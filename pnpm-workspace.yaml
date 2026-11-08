@@ -24,12 +24,14 @@ catalog:
 
   # Testing
   '@playwright/test': 1.65.0
-  vitest: 4.1.9
-  jsdom: 29.1.1
+  vitest: 5.1.0
+  jsdom: 31.0.0
   '@testing-library/dom': '10.4.2'
-  '@testing-library/jest-dom': '6.9.1'
+  '@testing-library/jest-dom': '7.0.1'
   '@testing-library/react': 16.3.3
   '@testing-library/user-event': '14.6.8'
+
+engineStrict: true
 
 allowBuilds:
   '@parcel/watcher': true

@@ -65,6 +65,9 @@
   "lint-staged": {
     "*.{md,mdc}": "node scripts/check-links.js"
   },
+  "engines": {
+    "node": ">=24.15.0"
+  },
   "packageManager": "pnpm@11.7.0",
   "name": "turborepo-react-starter"
 }
