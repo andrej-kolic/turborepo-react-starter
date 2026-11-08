@@ -437,6 +437,12 @@ importers:
 
   packages/oxlint-config:
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.6.2
       eslint-plugin-turbo:
         specifier: 2.9.18
         version: 2.9.18(eslint@10.5.0(jiti@2.6.1))(turbo@2.11.10)

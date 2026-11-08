@@ -7,8 +7,14 @@
     "./base": "./base.ts",
     "./react": "./react.ts"
   },
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "check:type:go": "tsgo --noEmit"
+  },
   "devDependencies": {
-    "oxlint": "1.92.0",
-    "eslint-plugin-turbo": "2.9.18"
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint-plugin-turbo": "2.9.18",
+    "oxlint": "1.92.0"
   }
 }
