@@ -17,6 +17,9 @@ ACTION=${1}
 ENVIRONMENT=${2}
 CONFIG_FILE="${ROOT_DIR}/deploy-config.json"
 BUNDLER_NAME="${BUNDLER:-app-vite}"
+# Every bundler writes content-hashed files to assets/: a changed file gets a new name,
+# so browsers and CloudFront may keep these for a year without checking.
+ASSETS_CACHE_CONTROL="public, max-age=31536000, immutable"
 
 get_aws_account_id() {
     print_info "Checking AWS credentials..."
@@ -174,8 +177,34 @@ sync_site_content() {
 
     print_info "BUCKET_NAME: $BUCKET_NAME"
 
-    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete; then
-        print_error "Failed to sync site content to s3://$BUCKET_NAME"
+    # Upload order: hashed assets, then other files, then index.html, so a new page never
+    # points to a file that isn't uploaded yet. cp (not sync) re-sends every file, so each
+    # one gets its Cache-Control even when its content is unchanged.
+    if ! aws s3 cp "$SITE_DIR/assets" "s3://$BUCKET_NAME/assets" --recursive \
+        --cache-control "$ASSETS_CACHE_CONTROL"; then
+        print_error "Failed to upload assets to s3://$BUCKET_NAME/assets"
+        exit 1
+    fi
+
+    # no-cache: browsers may store the file but must check for a newer one before using it.
+    if ! aws s3 cp "$SITE_DIR" "s3://$BUCKET_NAME" --recursive \
+        --exclude "assets/*" --exclude "index.html" --cache-control "no-cache"; then
+        print_error "Failed to upload site files to s3://$BUCKET_NAME"
+        exit 1
+    fi
+
+    if ! aws s3 cp "$SITE_DIR/index.html" "s3://$BUCKET_NAME/index.html" \
+        --cache-control "no-cache"; then
+        print_error "Failed to upload index.html to s3://$BUCKET_NAME"
+        exit 1
+    fi
+
+    # Old assets are deleted right away: the app loads no code on demand, so an open tab
+    # already has every file it needs. Keep them for a while if that changes.
+    # --size-only: without it, a local clock ahead of S3 makes sync re-upload every file
+    # cp just sent, without Cache-Control.
+    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete --size-only; then
+        print_error "Failed to remove deleted files from s3://$BUCKET_NAME"
         exit 1
     fi
 

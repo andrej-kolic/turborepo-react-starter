@@ -10,12 +10,10 @@
   "devPort": 8000,
   "previewPort": 8001,
   "scripts": {
-    "_copy-html-dev": "mkdir -p dev && cp ./src/index.html ./dev",
-    "_copy-html-build": "mkdir -p dist && cp ./src/index.html ./dist",
     "_bundle_build": "tsx ./config/build.config.ts",
     "_bundle_dev": "tsx ./config/dev.config.ts",
-    "build": "pnpm _copy-html-build && pnpm _bundle_build",
-    "dev": "pnpm _copy-html-dev && pnpm _bundle_dev",
+    "build": "pnpm _bundle_build",
+    "dev": "pnpm _bundle_dev",
     "lint": "oxlint --type-aware",
     "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit",
@@ -27,6 +25,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@craftamap/esbuild-plugin-html": "0.9.0",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@types/node": "catalog:",

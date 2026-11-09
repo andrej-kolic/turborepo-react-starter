@@ -1,5 +1,6 @@
 import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
+import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
 import { createRequire } from 'module';
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
@@ -51,6 +52,16 @@ async function dev() {
     format: 'esm',
     logLevel: 'info',
     plugins: [
+      htmlPlugin({
+        files: [
+          {
+            entryPoints: ['src/index.tsx'],
+            filename: 'index.html',
+            htmlTemplate: 'src/index.html',
+            scriptLoading: 'module',
+          },
+        ],
+      }),
       copy({
         resolveFrom: 'cwd',
         assets: {

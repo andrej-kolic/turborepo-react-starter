@@ -3,6 +3,8 @@ import { createPaths } from '@repo/dev-tools/config/paths';
 import * as esbuild from 'esbuild';
 import util from 'util';
 import { copy } from 'esbuild-plugin-copy';
+import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
+import fs from 'fs';
 import path from 'path';
 
 const debuglog = util.debuglog('app-esbuild');
@@ -30,43 +32,53 @@ const environmentVariables = loadEnvironmentVariables({
 
 debuglog('Runtime environment Variables:', environmentVariables);
 
-async function bundle() {
-  try {
-    const buildResult = await esbuild.build({
-      entryPoints: ['src/index.tsx'],
-      bundle: true,
-      outdir: BUILD_DIR,
-      metafile: true,
-      //   minify: true,
-      //   sourcemap: true,
-      loader: {
-        '.webp': 'file',
-        '.svg': 'file',
-      },
-      format: 'esm',
+// Leftovers from earlier builds would otherwise be deployed with the new ones.
+fs.rmSync(BUILD_DIR, { recursive: true, force: true });
 
-      define: {
-        'import.meta.env': JSON.stringify(environmentVariables),
-      },
+const buildResult = await esbuild.build({
+  entryPoints: ['src/index.tsx'],
+  bundle: true,
+  outdir: BUILD_DIR,
+  // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
+  entryNames: 'assets/[name]-[hash]',
+  assetNames: 'assets/[name]-[hash]',
+  // Without it, JS refers to images relative to assets/, which breaks from index.html at the root.
+  publicPath: '/',
+  metafile: true,
+  //   minify: true,
+  //   sourcemap: true,
+  loader: {
+    '.webp': 'file',
+    '.svg': 'file',
+  },
+  format: 'esm',
 
-      plugins: [
-        copy({
-          resolveFrom: 'cwd',
-          assets: {
-            from: [publicDir],
-            to: [BUILD_DIR],
-          },
-          watch: false,
-        }),
+  define: {
+    'import.meta.env': JSON.stringify(environmentVariables),
+  },
+
+  plugins: [
+    htmlPlugin({
+      files: [
+        {
+          entryPoints: ['src/index.tsx'],
+          filename: 'index.html',
+          htmlTemplate: 'src/index.html',
+          scriptLoading: 'module',
+        },
       ],
+    }),
+    copy({
+      resolveFrom: 'cwd',
+      assets: {
+        from: [publicDir],
+        to: [BUILD_DIR],
+      },
+      watch: false,
+    }),
+  ],
 
-      // external: ['react', 'react-dom'],
-    });
+  // external: ['react', 'react-dom'],
+});
 
-    debuglog('Build successful:', buildResult);
-  } catch (err) {
-    debuglog('Error during build:', err);
-  }
-}
-
-void bundle();
+debuglog('Build successful:', buildResult);
