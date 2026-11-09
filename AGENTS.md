@@ -12,6 +12,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 - Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
 - Extend `@repo/typescript-config` and `@repo/oxlint-config`.
 - Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:agents` · `pnpm quality-checks`
+- Commit messages and PR titles: Conventional Commits, subject starts lowercase, header at most 72 characters (aim for 50). Enforced by the `commit-msg` hook and the `Verify: Commits` workflow (PRs, and pushes to `develop`/`main`); rules in `commitlint.config.js`.
 
 ## Environment file
 

@@ -46,6 +46,8 @@
     "rules:check": "rulesync install --frozen && rulesync generate --check -f rules -t claudecode,cursor"
   },
   "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
     "@repo/browser-capture": "workspace:*",
     "@repo/browser-tools": "workspace:*",
     "@repo/dev-tools": "workspace:*",
