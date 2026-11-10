@@ -51,6 +51,11 @@ async function dev() {
     },
     format: 'esm',
     logLevel: 'info',
+    // esbuild has no HMR; its dev server only signals rebuilds on /esbuild,
+    // so reload the page on each one. Lives here to stay out of prod builds.
+    banner: {
+      js: "new EventSource('/esbuild').addEventListener('change', () => location.reload());",
+    },
     plugins: [
       htmlPlugin({
         files: [
