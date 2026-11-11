@@ -33,8 +33,8 @@ pnpm e2e
 Other entry points:
 
 ```bash
-pnpm e2e:ui       # Playwright UI mode
-pnpm e2e:headed   # headed Chromium
+pnpm e2e --ui       # Playwright UI mode
+pnpm e2e --headed   # headed Chromium
 ```
 
 Stop preview when done (`kill %1` or close the background job).
@@ -118,7 +118,7 @@ packages/e2e/
     app.spec.ts
 ```
 
-Root scripts (`pnpm e2e`, `e2e:ui`, `e2e:headed`) delegate to `@repo/e2e` via `pnpm --filter`.
+Root `pnpm e2e` delegates to `@repo/e2e` via `pnpm --filter` and passes Playwright flags through.
 E2E is intentionally **not** in the Turbo graph.
 
 ---
