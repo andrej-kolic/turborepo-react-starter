@@ -23,17 +23,17 @@ Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.exa
 
 ## Node.js version
 
-`.nvmrc` specifies **Node 24** (matches CI). Prefer:
+`.nvmrc` specifies **Node 26** (matches CI). Prefer:
 
 ```bash
-nvm use 24
+nvm use 26
 ```
 
-Use `node -v` to confirm before debugging version-specific issues. **pnpm** is pinned via `packageManager` in root `package.json` (Corepack).
+Use `node -v` to confirm before debugging version-specific issues. **pnpm** is pinned via `packageManager` in root `package.json`.
 
 ### Cursor Cloud
 
-This VM may also expose `/exec-daemon/node` (Node 22) earlier on `PATH`. Use `nvm use 24` before debugging version-specific issues.
+This VM may also expose `/exec-daemon/node` (Node 22) earlier on `PATH`. Use `nvm use 26` before debugging version-specific issues.
 
 ## `@repo/commons` build artifact
 
