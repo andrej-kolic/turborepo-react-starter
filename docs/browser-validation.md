@@ -47,4 +47,4 @@ Keep `CHROME_DEBUG_HOST=localhost` and `CHROME_DEBUG_PORT=9222` locally.
 2. Build the canvas URL as in [`docs/app-url.md`](app-url.md#storybook-canvas).
 3. Run `pnpm browser read --url <canvas-url> --selector <selector>`.
 
-Only `packages/ui` components are in Storybook. Check `packages/app-core` components against the live app, not Storybook.
+Only `packages/ui` components are in Storybook. Check `packages/app-core` components against the live app, not Storybook. The smoke workflow (`verify-browser-smoke.yml`) checks only the bundler apps, not Storybook.

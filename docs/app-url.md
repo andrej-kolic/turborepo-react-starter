@@ -34,7 +34,7 @@ A `TARGET_URL` exported in a shell is inherited by child shells. A leftover loca
 | `pnpm browser …` | `--url` → `TARGET_URL` → error                    |
 | `pnpm capture …` | positional → `TARGET_URL` → `CAPTURE_URL` → error |
 
-Root `pnpm browser:*` and `pnpm capture` scripts run through `dev-tools-app-target run`, which sets `TARGET_URL` to the dev URL from `BUNDLER` when it is unset. The CLIs do not read `BUNDLER` themselves.
+Root `pnpm browser:*` and `pnpm capture` scripts run through `dev-tools-app-target run`, which sets `TARGET_URL` to the dev URL from `BUNDLER` when it is unset. The CLIs do not read `BUNDLER` themselves. CI workflows set only `BUNDLER` and derive the URL with `dev-tools-app-target` (`url`, or `resolve --preview` for E2E and perf); only a manual trace run with a given URL passes its own.
 
 ## `dev-tools-app-target`
 
