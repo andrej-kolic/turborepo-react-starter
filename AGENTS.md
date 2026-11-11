@@ -83,6 +83,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Format check: `pnpm check:format`
 - Full quality gate: `pnpm quality-checks`
+- Modern web platform guidance (run on request only, telemetry off): `pnpm modern-web-guidance legacy-scan .` · `search "<topic>"` · `retrieve <id>`
 
 ## Documentation map
 
