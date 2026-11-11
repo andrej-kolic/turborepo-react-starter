@@ -53,9 +53,7 @@ Kebab-case, unique within a rendered page, no package prefix (`app-header`, not 
 | ------------- | ---------------------- | ------------------------------- |
 | `DynamicList` | `data-testid?: string` | `<div className="DynamicList">` |
 
-## Production builds
-
-`data-testid` attributes stay in production builds, so agents and E2E can check deployed URLs. A library or security-sensitive product built from this template should strip them with a bundler transform.
+`data-testid` attributes stay in production builds: [decision 0005](decisions/0005-testids-in-production-builds.md).
 
 ## Used by
 
