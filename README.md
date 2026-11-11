@@ -49,5 +49,5 @@ Infra (`infra/`): `aws` (CloudFormation with CloudFront, S3 and ACM) and `netlif
 - [`docs/app-url.md`](docs/app-url.md): how tools find the app URL and ports
 - [`docs/component-validation-contract.md`](docs/component-validation-contract.md): `data-testid` rules and registry
 - [`docs/decisions/`](docs/decisions/): why the repo works the way it does
-- [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): CLI flags
+- [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): Chrome, page-check and capture commands (`pnpm chrome:debug`, `pnpm browser`, `pnpm capture`) and their flags
 - [`AGENTS.md`](AGENTS.md): instructions for AI agents
