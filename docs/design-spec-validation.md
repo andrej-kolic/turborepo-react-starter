@@ -1,58 +1,30 @@
-# Design Spec Validation
+# Design spec validation
 
-Lightweight functional design checks for agents while developing — **not** pixel regression.
+How to check that a component matches a design (tokens and layout taken from Figma or a pasted SVG) while developing. This is a functional check, not pixel regression: pixel regression belongs to Chromatic on Storybook stories (no workflow yet, #126), and CI page-region checks to [Playwright E2E](e2e.md).
 
-Use this when verifying a component matches design **tokens and layout constraints** extracted from Figma (or a pasted SVG). For pixel-perfect regression, use Chromatic on Storybook stories (no workflow yet). CI page-region checks run in Playwright E2E ([`docs/e2e.md`](e2e.md)).
+Agents set up the browser with the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md). Run `pnpm browser:ensure-app` first; `pnpm browser` commands then find the app URL themselves. Pass `--url` only to override it, for example with a [Storybook canvas URL](app-url.md#storybook-canvas). To keep checking a visible tab across HMR updates, add `--attach` ([how](browser-validation.md)). Selectors come from the [`data-testid` registry](component-validation-contract.md#registry).
 
----
-
-## Three layers (pick the right one)
+## Pick a layer
 
 | Layer                  | Question                              | Tool                                                     |
 | ---------------------- | ------------------------------------- | -------------------------------------------------------- |
 | **1. Renders**         | Does the region exist?                | `pnpm browser validate --selector …`                     |
-| **2. Token spec**      | Are colors/spacing/fonts correct?     | `pnpm browser eval --expr … --expect`                    |
+| **2. Token spec**      | Are colors, spacing and fonts right?  | `pnpm browser eval --expr … --expect`                    |
 | **3. Visual likeness** | Does it look like the design overall? | `pnpm browser screenshot` + agent vision vs Figma export |
 
-Layer 2 is automatable and lightweight. Layer 3 is agent-assisted (subjective). Do not use `browser-capture` for routine checks.
+Layers 1 and 2 pass or fail on their own; layer 3 is the agent's judgement. None of them needs `browser-capture`.
 
-**While developing:** prefer `pnpm browser snapshot` (DOM + `data-testid` regions) and `pnpm browser screenshot` (visual) before deep token checks — see the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md).
-
-For Storybook, pass the canvas URL from [`docs/app-url.md`](app-url.md#storybook-canvas) as `--url`.
-
-### Style values
-
-`pnpm browser eval` reads **computed styles** (`getComputedStyle`). Browsers normalize values:
-
-- Colors → `rgb(r, g, b)` or `rgba(...)`
-- Sizes → `px` strings
-
-Extract expected values from Figma dev mode or inspect a reference build once, then hard-code in the `--expr`.
-
----
-
-## Running checks
-
-Bootstrap via the **[browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md)** (Step 1 + Tier C).
-
-> **URL:** run `pnpm browser:ensure-app` first — it prints the resolved URL and `pnpm browser`
-> commands pick it up automatically. Pass `--url <url>` only to override.
-
-### See the page (start here)
+## Look at the page first
 
 ```bash
 pnpm browser snapshot
 pnpm browser snapshot --selector "[data-testid=app-header]"
-pnpm browser screenshot --selector "[data-testid=app-header]" --output /tmp/app-header.png
 ```
 
-Use `--attach` when iterating on a visible tab after HMR (see [`docs/browser-validation.md`](browser-validation.md)).
-
-### Exists + text (layer 1)
+## Check that a region renders (layer 1)
 
 ```bash
-pnpm browser validate \
-  --selector "[data-testid=app-header]"
+pnpm browser validate --selector "[data-testid=app-header]"
 
 pnpm browser validate \
   --selector "[data-testid=app-header]" \
@@ -60,7 +32,11 @@ pnpm browser validate \
   --no-console-errors
 ```
 
-### Token check (layer 2)
+## Check token values (layer 2)
+
+`pnpm browser eval` reads computed styles (`getComputedStyle`), which the browser normalizes: colors become `rgb(r, g, b)` or `rgba(...)`, sizes become `px` strings. Take the expected values from Figma dev mode, or read them once from a reference build, and hard-code them in `--expr`.
+
+Print several values:
 
 ```bash
 pnpm browser eval \
@@ -77,7 +53,7 @@ pnpm browser eval \
   --json
 ```
 
-Assert a single property with `--expect`:
+Assert one, with `--expect`, which exits 1 when the expression returns a falsy value:
 
 ```bash
 pnpm browser eval \
@@ -89,9 +65,9 @@ pnpm browser eval \
   --expect
 ```
 
-### SVG / icon shape (layer 2, niche)
+### Inline SVG icons
 
-When the component renders inline SVG:
+Check the `viewBox` and fill or color tokens; compare path data only once the design is stable. The story id `icons--default` and testid `icon` below are placeholders:
 
 ```bash
 ICON_CANVAS_URL=$(tsx -e \
@@ -109,9 +85,7 @@ pnpm browser eval \
   --expect
 ```
 
-Compare path data only when designs are stable; prefer viewBox + fill/color tokens otherwise.
-
-### Visual review (layer 3)
+## Compare with the design (layer 3)
 
 ```bash
 pnpm browser screenshot \
@@ -119,12 +93,4 @@ pnpm browser screenshot \
   --output /tmp/app-header.png
 ```
 
-Agents with vision compare `/tmp/app-header.png` to a Figma export or pasted reference image. This is a spot-check, not a CI gate.
-
----
-
-## Related
-
-- [`docs/component-validation-contract.md`](component-validation-contract.md) — `data-testid` naming
-- [`docs/browser-validation.md`](browser-validation.md) — `--attach`, remote URL, SSH tunnel, Storybook
-- [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI reference
+An agent with vision compares `/tmp/app-header.png` with a Figma export or a pasted reference image. This is a spot check, not a CI gate. CLI flags: [`packages/browser-tools/README.md`](../packages/browser-tools/README.md).
