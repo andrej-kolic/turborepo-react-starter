@@ -1,0 +1,11 @@
+{
+  // Checks that @repo/client-types/env merges with vite/client. skipLibCheck
+  // can't be scoped per file, so it is off only here, where "types": [] keeps
+  // unrelated node_modules types out (as vite's own tsconfig.check.json does).
+  "extends": "@repo/typescript-config/vite.json",
+  "compilerOptions": {
+    "skipLibCheck": false,
+    "types": []
+  },
+  "files": ["src/vite-env.d.ts"]
+}
