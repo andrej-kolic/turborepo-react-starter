@@ -15,10 +15,31 @@ env:
   BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
 
 jobs:
+  playwright-version:
+    name: Resolve Playwright version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Read @playwright/test from the pnpm catalog
+        id: version
+        run: |
+          version="$(yq -r '.catalog["@playwright/test"] // ""' pnpm-workspace.yaml)"
+          test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
   e2e:
     name: Playwright E2E (${{ vars.DEFAULT_BUNDLER || 'app-vite' }})
+    needs: playwright-version
     timeout-minutes: 20
     runs-on: ubuntu-latest
+    # Browsers and their system libraries come with the image, so CI needs no apt mirror.
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      options: --user 1001
 
     steps:
       - name: Checkout
@@ -57,9 +78,6 @@ jobs:
           echo "Preview did not respond at ${{ steps.preview.outputs.url }}"
           exit 1
 
-      - name: Install Playwright Chromium
-        run: pnpm --filter @repo/e2e install:browsers
-
       - name: Run E2E tests
         run: pnpm e2e
         env:
@@ -89,8 +107,3 @@ jobs:
             echo "| Preview URL | ${PREVIEW_URL:-n/a} |"
             echo "| Bundler | ${BUNDLER} |"
           } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Cleanup
-        if: always()
-        run: |
-          lsof -ti:"${{ steps.preview.outputs.port }}" | xargs -r kill 2>/dev/null || true

@@ -97,11 +97,12 @@ For future user-flow tests (clicks, forms, navigation), prefer `getByRole` / `ge
 
 [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml):
 
-1. Build app (`BUNDLER` from `vars.DEFAULT_BUNDLER`, fallback `app-vite`)
-2. Start preview and wait for HTTP
-3. Install Chromium
-4. `pnpm e2e` with `TARGET_URL`
-5. Upload Playwright report/trace artifacts on failure
+1. Read the `@playwright/test` version from the `pnpm-workspace.yaml` catalog
+2. Run the job in `mcr.microsoft.com/playwright:v<version>-noble`, which ships Chromium and its system libraries
+3. Build app (`BUNDLER` from `vars.DEFAULT_BUNDLER`, fallback `app-vite`)
+4. Start preview and wait for HTTP
+5. `pnpm e2e` with `TARGET_URL`
+6. Upload Playwright report/trace artifacts on failure
 
 Set the GitHub repo variable **`DEFAULT_BUNDLER`** (`app-vite`, `app-rspack`, or `app-esbuild`) to
 choose which bundler E2E exercises in CI. Local runs use `BUNDLER` in `.env` instead.
