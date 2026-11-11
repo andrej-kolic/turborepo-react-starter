@@ -46,6 +46,7 @@ async function dev() {
     metafile: true,
     sourcemap: true,
     loader: {
+      '.png': 'file',
       '.webp': 'file',
       '.svg': 'file',
     },

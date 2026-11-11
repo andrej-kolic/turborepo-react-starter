@@ -24,6 +24,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 - `@repo/ui`: a stub React component library shared by applications
 - `@repo/oxlint-config`: shared [oxlint](https://oxc.rs/docs/guide/usage/linter.html) configs (`base`, `react`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@repo/client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports)
 - `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
 - `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
 - `e2e`: Playwright E2E regression tests (`pnpm e2e`) against preview builds

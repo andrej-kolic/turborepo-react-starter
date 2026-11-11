@@ -1,5 +1,5 @@
 {
   "extends": "@repo/typescript-config/react-jit.json",
-  "include": ["src/**/*", "test/**/*", "../../@types"],
+  "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "src/**/*/assets"]
 }

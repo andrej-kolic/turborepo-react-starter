@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@craftamap/esbuild-plugin-html": "0.9.0",
+    "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@types/node": "catalog:",

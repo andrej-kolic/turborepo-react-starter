@@ -9,5 +9,5 @@
     "types": ["node"],
     "strictNullChecks": true
   },
-  "include": ["config/**/*.ts", "scripts/**/*.ts", "../../@types"]
+  "include": ["config/**/*.ts", "scripts/**/*.ts"]
 }

@@ -10,7 +10,7 @@
     "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "lint": "oxlint --type-aware",
     "preview": "vite preview --configLoader runner",
-    "check:type": "tsc --noEmit",
+    "check:type": "tsc --noEmit && tsc -p tsconfig.check.json",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@types/node": "catalog:",
