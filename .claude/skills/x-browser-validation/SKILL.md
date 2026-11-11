@@ -75,4 +75,4 @@ For HAR / traces / Web Vitals use `devtools-capture` MCP — never mix with veri
 
 ---
 
-> Edge-case scenarios (`--attach`, SSH tunnel, remote URL), Storybook, design checks, and URL derivation: [`docs/browser-validation.md`](../../../docs/browser-validation.md)
+> Edge-case scenarios (`--attach`, SSH tunnel, remote URL) and Storybook: [`docs/browser-validation.md`](../../../docs/browser-validation.md) · URL derivation: [`docs/app-url.md`](../../../docs/app-url.md) · design checks: [`docs/design-spec-validation.md`](../../../docs/design-spec-validation.md)

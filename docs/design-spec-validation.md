@@ -2,7 +2,7 @@
 
 Lightweight functional design checks for agents while developing — **not** pixel regression.
 
-Use this when verifying a component matches design **tokens and layout constraints** extracted from Figma (or a pasted SVG). For pixel-perfect CI regression, use Chromatic on Storybook stories. For CI gates, use Playwright E2E (planned).
+Use this when verifying a component matches design **tokens and layout constraints** extracted from Figma (or a pasted SVG). For pixel-perfect regression, use Chromatic on Storybook stories (no workflow yet). CI page-region checks run in Playwright E2E ([`docs/e2e.md`](e2e.md)).
 
 ---
 
@@ -18,9 +18,7 @@ Layer 2 is automatable and lightweight. Layer 3 is agent-assisted (subjective). 
 
 **While developing:** prefer `pnpm browser snapshot` (DOM + `data-testid` regions) and `pnpm browser screenshot` (visual) before deep token checks — see the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md).
 
-For Storybook: `--url` from
-`${loadAppEndpoints('ui-storybook').devUrl}/iframe.html?id=<story-id>` in `app-port.ts` — not
-`?path=/story/…`.
+For Storybook, pass the canvas URL from [`docs/app-url.md`](app-url.md#storybook-canvas) as `--url`.
 
 ### Style values
 
@@ -128,5 +126,5 @@ Agents with vision compare `/tmp/app-header.png` to a Figma export or pasted ref
 ## Related
 
 - [`docs/component-validation-contract.md`](component-validation-contract.md) — `data-testid` naming
-- [`docs/browser-validation.md`](browser-validation.md) — URL derivation, edge-case scenarios, Storybook
+- [`docs/browser-validation.md`](browser-validation.md) — `--attach`, remote URL, SSH tunnel, Storybook
 - [`packages/browser-tools/README.md`](../packages/browser-tools/README.md) — CLI reference

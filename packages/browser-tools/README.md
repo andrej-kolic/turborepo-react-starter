@@ -159,7 +159,8 @@ CDP integration (Chrome + live page) is not unit-tested here — exercise locall
 
 ## See Also
 
-- [`docs/browser-validation.md`](../../docs/browser-validation.md) — edge-case scenarios, Storybook, URL derivation
+- [`docs/browser-validation.md`](../../docs/browser-validation.md) — edge-case scenarios, Storybook
+- [`docs/app-url.md`](../../docs/app-url.md) — URL derivation
 - [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — design/token checks via snapshot, screenshot, and `browser eval`
 - [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` convention
 - [`packages/browser-capture/README.md`](../browser-capture/README.md) — capture tier (HAR, traces, Web Vitals)
