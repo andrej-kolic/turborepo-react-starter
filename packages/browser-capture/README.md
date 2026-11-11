@@ -23,7 +23,7 @@ Powered by [playwright-core](https://playwright.dev/) over Chrome DevTools Proto
 
 App URLs always come from `devPort` in `apps/<BUNDLER>/package.json` — the single source of
 truth for every bundler (including Vite). Run `pnpm browser:ensure-app` for the resolved URL, or
-set `TARGET_URL`. Examples below use `<dev-url>` — see [`docs/browser-validation.md`](../../docs/browser-validation.md).
+set `TARGET_URL`. Examples below use `<dev-url>` — see [`docs/app-url.md`](../../docs/app-url.md).
 
 From repo root, prefer **`pnpm capture <subcommand>`** — loads `.env`, injects `TARGET_URL` via
 `dev-tools-app-target run` (same as `pnpm browser`). URL positional is optional when `TARGET_URL` is set.

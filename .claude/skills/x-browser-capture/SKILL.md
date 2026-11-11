@@ -73,4 +73,4 @@ Artifacts land in `packages/browser-capture/artifacts/<mode>-<timestamp>/`.
 
 For routine DOM/text verification use the browser-validation skill — never mix tiers.
 
-> Edge-case scenarios (`--attach`, remote URL, SSH tunnel), Storybook URL, artifact formats, and env vars: [`docs/browser-validation.md`](../../../docs/browser-validation.md) · [`packages/browser-capture/README.md`](../../../packages/browser-capture/README.md)
+> Edge-case scenarios (`--attach`, remote URL, SSH tunnel): [`docs/browser-validation.md`](../../../docs/browser-validation.md) · Storybook URL and env vars: [`docs/app-url.md`](../../../docs/app-url.md) · artifact formats and capture env vars: [`packages/browser-capture/README.md`](../../../packages/browser-capture/README.md)

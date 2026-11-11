@@ -45,9 +45,7 @@ pnpm --filter @repo/commons build
 
 ## Services (local dev)
 
-Ports are declared as `devPort` / `previewPort` in each app's `package.json` — that is the
-single source of truth. Bundler configs, `@repo/dev-tools/config/app-port`, and browser
-tooling all read from it. Override the browser/E2E target URL with **`TARGET_URL`** (ephemeral — shell, CI, or `dev-tools-app-target run`; not in committed `.env`). Do not use `PORT` for this.
+Override the browser or E2E target URL with **`TARGET_URL`**, never `PORT`, and never put it in `.env`. Ports, URL resolution and the stale-`TARGET_URL` trap: [`docs/app-url.md`](docs/app-url.md).
 
 Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
@@ -56,8 +54,7 @@ Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-too
 | **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-rspack`, `app-esbuild`) |
 | ui-storybook             | `pnpm dev:ui`                                                                  |
 
-Ports: `apps/<service>/package.json` (`devPort`, `previewPort`). For browser tooling,
-`pnpm browser:ensure-app` prints the resolved dev URL — agents do not need to look up ports.
+`pnpm browser:ensure-app` prints the resolved dev URL, so agents do not need to look up ports.
 
 To validate a production build locally, run `pnpm preview:app` (or `pnpm preview:ui` for Storybook)
 and pass `--url` with the `previewUrl` from that app's `package.json` (or set `TARGET_URL`).
@@ -71,7 +68,7 @@ Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch a
 - Multi-bundler boot: verify-browser-smoke.yml (dev server HTTP 200, all bundlers)
 - Debug on failure: Playwright trace (+ optional browser-capture)
 
-E2E runs against a **production preview** build — not the dev server. Full layer breakdown: [`docs/e2e.md`](docs/e2e.md).
+E2E runs against a **production preview** build — not the dev server. How to run it: [`docs/e2e.md`](docs/e2e.md); why: [`docs/decisions/0003-e2e-on-preview-build.md`](docs/decisions/0003-e2e-on-preview-build.md).
 
 ## Common commands
 
@@ -92,10 +89,12 @@ See root `README.md` and `package.json` scripts. Typical loop:
 | [`README.md`](README.md)                                                                       | Human-oriented package inventory and basic commands                      |
 | [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md) | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
-| [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E — local run, bundler override, locators                   |
-| [`docs/browser-validation.md`](docs/browser-validation.md)                                     | URL derivation, edge cases (`--attach`, remote, SSH), Storybook          |
-| [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming and scope                                           |
-| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks — snapshot, screenshot, `browser eval`               |
+| [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E: run locally, other bundler, add a test                   |
+| [`docs/browser-validation.md`](docs/browser-validation.md)                                     | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
+| [`docs/app-url.md`](docs/app-url.md)                                                           | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
+| [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming, scope and registry                                 |
+| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks: snapshot, screenshot, `browser eval`                |
+| [`docs/decisions/`](docs/decisions/)                                                           | Decision records: why the repo works this way                            |
 
 Pick the **lightest** tool for the question: `pnpm test` (logic) · `pnpm e2e` (CI regression) ·
 Storybook (isolated UI) · browser-validation skill (live dev DOM/text) · browser-capture skill (artifacts).

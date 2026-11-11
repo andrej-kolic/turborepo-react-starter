@@ -11,6 +11,7 @@ globs:
   - packages/browser-capture/**
   - .claude/skills/x-browser-*/**
   - docs/browser-validation.md
+  - docs/app-url.md
   - .github/workflows/verify-browser-smoke.yml
   - .github/workflows/capture-browser-trace.yml
 cursor:
@@ -30,4 +31,4 @@ Two tiers — never mix them:
 
 **Sandbox:** `chrome:*` and `browser:setup` need `required_permissions: ["all"]`. Regular `pnpm browser validate` / `read` / `eval` connect over localhost CDP and do not.
 
-**More detail:** edge cases (`--attach`, remote URL, SSH tunnel), Storybook, and selectors → [`docs/browser-validation.md`](../../docs/browser-validation.md). CLI flags → [`packages/browser-tools/README.md`](../../packages/browser-tools/README.md).
+**More detail:** edge cases (`--attach`, remote URL, SSH tunnel) and Storybook → [`docs/browser-validation.md`](../../docs/browser-validation.md). App URL → [`docs/app-url.md`](../../docs/app-url.md). Selectors → [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md). CLI flags → [`packages/browser-tools/README.md`](../../packages/browser-tools/README.md).

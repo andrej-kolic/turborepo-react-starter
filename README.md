@@ -1,102 +1,53 @@
 # Turborepo React starter
 
-Monorepo starter project for FE projects
+Monorepo starter for frontend projects: one React app (`@repo/app-core`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with Prettier.
 
-## What's inside?
-
-### Source
-
-Most packages are 'light', meaning they only export source code without build/bundle step.
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-#### Apps
-
-- `app-esbuild`: ESBuild bundler for main app
-- `app-vite`: Vite bundler for main app
-- `app-rspack`: Rspack bundler for main app
-- `ui-storybook`: Storybook as dev server for ui package
-
-#### Packages
-
-- `app-core`: React app developed as library
-- `commons`: a stub library shared by other packages, built with tsup. It shows a compiled package: apps import its `dist/`, which Turbo builds before `dev`, `build`, `lint` and `test`
-- `dev-tools`: utils for development, shared by other packages. not meant to be used in source code
-- `@repo/ui`: a stub React component library shared by applications
-- `@repo/oxlint-config`: shared [oxlint](https://oxc.rs/docs/guide/usage/linter.html) configs (`base`, `react`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `@repo/client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports)
-- `browser-tools`: Chrome lifecycle + DOM verification CLI (`pnpm browser snapshot`, `pnpm browser validate`, `pnpm browser read`, …)
-- `browser-capture`: DevTools artifact capture CLI (HAR, traces, Web Vitals)
-- `e2e`: Playwright E2E regression tests (`pnpm e2e`) against preview builds
-
-#### Infra
-
-- `aws`: CloudFormation-based AWS deployment with CloudFront, S3, and ACM certificates
-- `netlify`: tools and scripts used to deploy to Netlify, both locally and from CI
-
-### Utilities
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [oxlint](https://oxc.rs/docs/guide/usage/linter.html) for code linting, with type-aware rules
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-pnpm build
-```
-
-### Develop
-
-Copy `.env.example` to `.env` at the repo root, then use the scoped dev scripts (preferred):
-
-```
-pnpm dev:app   # active bundler (BUNDLER in .env, default app-vite) + dependency watchers
-pnpm dev:ui    # Storybook + dependency watchers
-```
-
-`pnpm dev` starts every bundler, Storybook, and package watch tasks at once — avoid it unless you need the full matrix.
-
-### Test
-
-**Unit tests** (Vitest) — all apps and packages:
-
-```
-pnpm test
-```
-
-**E2E** (Playwright) — browser regression on a production preview build (not the dev server):
+## Quick start
 
 ```bash
-pnpm build:app
-pnpm preview:app &          # serve preview (active bundler from BUNDLER in .env)
-pnpm --filter @repo/e2e install:browsers   # first run only — install Chromium
-pnpm e2e
+cp .env.example .env
+pnpm install
+pnpm dev:app    # app on the bundler set by BUNDLER in .env (default app-vite)
+pnpm dev:ui     # Storybook for @repo/ui
 ```
 
-CI runs E2E via `.github/workflows/verify-e2e.yml` (`DEFAULT_BUNDLER` repo variable). For bundler overrides, locators, and the
-agent vs regression split, see [`docs/e2e.md`](docs/e2e.md).
+| Task       | Command                          |
+| ---------- | -------------------------------- |
+| Build all  | `pnpm build`                     |
+| Unit tests | `pnpm test`                      |
+| Lint       | `pnpm lint`                      |
+| E2E        | see [`docs/e2e.md`](docs/e2e.md) |
 
-### Lint
+`pnpm dev` starts every bundler, Storybook and all watchers at once; use it only when you need all of them.
 
-To lint all apps and packages, run the following command:
+## What's inside
 
-```
-pnpm lint
-```
+Apps (`apps/`):
 
-### Debug & browser tooling
+- `app-vite`, `app-rspack`, `app-esbuild`: the same app on three bundlers
+- `ui-storybook`: Storybook for `@repo/ui`
 
-```bash
-pnpm chrome:debug           # start Chrome with remote debugging (port 9222)
-pnpm chrome:debug --status  # check
-pnpm chrome:debug --stop    # stop
-pnpm browser:setup          # ensure Chrome + open app tab (verify tier)
-pnpm browser snapshot       # see DOM + data-testid regions (agent eyes, no MCP)
-pnpm browser validate --selector "[data-testid=app-header]"  # DOM checks
-pnpm capture record-trace --duration 3   # HAR + trace artifacts (capture tier)
-```
+Packages (`packages/`) export source with no build step of their own, except `commons`:
 
-Agent workflow, CLI flags, and package-level docs: [`AGENTS.md`](AGENTS.md) · [`packages/browser-tools/README.md`](packages/browser-tools/README.md) · [`packages/browser-capture/README.md`](packages/browser-capture/README.md).
+- `app-core`: the React app, developed as a library
+- `ui`: stub React component library
+- `commons`: stub shared library, compiled with tsup; apps import its `dist/`, which Turbo builds first
+- `client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports)
+- `dev-tools`: development helpers, not for app code
+- `browser-tools`: CLI that checks the running page (`pnpm browser snapshot`, `validate`, `read`)
+- `browser-capture`: CLI that records HAR files, traces and Web Vitals
+- `e2e`: Playwright regression tests against preview builds
+- `oxlint-config`, `typescript-config`: shared lint and TypeScript configs
+
+Infra (`infra/`): `aws` (CloudFormation with CloudFront, S3 and ACM) and `netlify` deploy scripts.
+
+## Documentation
+
+- [`docs/e2e.md`](docs/e2e.md): run and extend the E2E tests
+- [`docs/browser-validation.md`](docs/browser-validation.md): check the page with `--attach`, remote URLs, SSH tunnels, Storybook
+- [`docs/design-spec-validation.md`](docs/design-spec-validation.md): check a component against a design
+- [`docs/app-url.md`](docs/app-url.md): how tools find the app URL and ports
+- [`docs/component-validation-contract.md`](docs/component-validation-contract.md): `data-testid` rules and registry
+- [`docs/decisions/`](docs/decisions/): why the repo works the way it does
+- [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): Chrome, page-check and capture commands (`pnpm chrome:debug`, `pnpm browser`, `pnpm capture`) and their flags
+- [`AGENTS.md`](AGENTS.md): instructions for AI agents
