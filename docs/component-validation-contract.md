@@ -20,9 +20,9 @@ A component gets `data-testid` when all three hold:
 
 1. It is a top-level, user-visible page region.
 2. It is not a sub-element of a region that already has one, unless a test must check it on its own (e.g. a panel that must open).
-3. It is not a `@repo/ui` primitive. A primitive that needs one exposes a `data-testid` prop (like `DynamicList`), and the `app-core` component that uses it sets the value.
+3. It is not a `@repo/ui` primitive: unit tests find those by role. A primitive that needs one exposes a `data-testid` prop (like `DynamicList`), and the `app-core` component that uses it sets the value.
 
-Pair the testid with a landmark element where one fits:
+Pair the testid with a landmark element where one fits. The element gets an ARIA role for free, so unit tests and screen readers find the same region by role:
 
 ```tsx
 <header className="Header" data-testid="app-header">

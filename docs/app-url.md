@@ -15,7 +15,7 @@ Each bundler app declares `devPort` and `previewPort` in its `package.json` (e.g
 3. `mode: 'preview'` and `BUNDLER` set → `previewPort` from `apps/<BUNDLER>/package.json`
 4. else → `null`; `dev-tools-app-target` and E2E turn it into an error with a hint
 
-E2E uses the preview mode through `resolvePreviewAppTarget()` in [`packages/e2e/lib/resolve-preview-target.ts`](../packages/e2e/lib/resolve-preview-target.ts).
+E2E uses the preview mode: `packages/e2e/playwright.config.ts` sets Playwright's `baseURL` from `resolvePreviewAppTarget()` in [`packages/e2e/lib/resolve-preview-target.ts`](../packages/e2e/lib/resolve-preview-target.ts).
 
 ## Environment variables
 

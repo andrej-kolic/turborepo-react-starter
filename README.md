@@ -27,7 +27,7 @@ Apps (`apps/`):
 - `app-vite`, `app-rspack`, `app-esbuild`: the same app on three bundlers
 - `ui-storybook`: Storybook for `@repo/ui`
 
-Packages (`packages/`):
+Packages (`packages/`) export source with no build step of their own, except `commons`:
 
 - `app-core`: the React app, developed as a library
 - `ui`: stub React component library
