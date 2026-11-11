@@ -40,6 +40,10 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
       options: --user 1001
+    # Container jobs default to sh; "Resolve preview URL" needs bash.
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
