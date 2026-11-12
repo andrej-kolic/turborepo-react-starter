@@ -42,6 +42,7 @@ jobs:
           # build-filter: ${{ vars.DEFAULT_BUNDLER }} # uncomment to enable build filtering based on DEFAULT_BUNDLER variable
           build-environment: ${{ steps.build-env.outputs.environment }}
           check-dependencies: 'true'
+          check-unused: 'true'
           check-format: 'true'
           run-lint: 'true'
           run-tests: 'true'

@@ -12,6 +12,11 @@ inputs:
     required: false
     default: 'true'
 
+  check-unused:
+    description: 'Run unused code check (pnpm check:unused)'
+    required: false
+    default: 'true'
+
   check-format:
     description: 'Run format check (pnpm check:format)'
     required: false
@@ -54,6 +59,7 @@ runs:
         echo " "
         echo "Node.js version: ${{ inputs.node-version }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
+        echo "Check unused: ${{ inputs.check-unused }}"
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
@@ -115,6 +121,22 @@ runs:
       if: inputs.check-dependencies == 'true'
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:dependencies
+
+    # Check unused
+
+    - if: inputs.check-unused == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Check unused"
+        echo "──────────────────────────────────────"
+        echo " "
+    - name: Check unused
+      if: inputs.check-unused == 'true'
+      shell: bash
+      # knip loads packages/e2e/playwright.config.ts, which needs BUNDLER set; any bundler works.
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=app-vite pnpm check:unused
 
     # Check format
 
