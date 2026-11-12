@@ -348,9 +348,6 @@ importers:
       '@turbo/gen':
         specifier: 'catalog:'
         version: 2.11.10(@types/node@26.6.6)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -511,9 +508,6 @@ importers:
       '@turbo/gen':
         specifier: 'catalog:'
         version: 2.11.10(@types/node@26.6.6)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -7540,7 +7534,7 @@ snapshots:
       '@babel/code-frame': 7.27.1
       '@babel/generator': 7.28.3
       '@babel/helper-compilation-targets': 7.27.2
-      '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.4)
+      '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.4(supports-color@11.0.0))
       '@babel/helpers': 7.28.4
       '@babel/parser': 7.28.4
       '@babel/template': 7.27.2
@@ -7580,7 +7574,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/helper-module-transforms@7.28.3(@babel/core@7.28.4)':
+  '@babel/helper-module-transforms@7.28.3(@babel/core@7.28.4(supports-color@11.0.0))':
     dependencies:
       '@babel/core': 7.28.4(supports-color@11.0.0)
       '@babel/helper-module-imports': 7.27.1
