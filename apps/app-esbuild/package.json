@@ -16,7 +16,7 @@
     "dev": "pnpm _bundle_dev",
     "lint": "oxlint --type-aware",
     "preview": "tsx ./scripts/preview.ts",
-    "check:type": "tsc --noEmit",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {

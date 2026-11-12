@@ -7,7 +7,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "types": ["node"],
-    "strictNullChecks": true
+    "strict": true
   },
   "include": ["config/**/*.ts", "scripts/**/*.ts"]
 }
