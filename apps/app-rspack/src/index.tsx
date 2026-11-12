@@ -8,13 +8,16 @@ if (!rootNode) {
   throw new Error('no root element');
 }
 
-createRoot(rootNode).render(
+// demo: a component export, so foo below triggers react/only-export-components
+export const Wrapper = () => (
   <AppCore href="#" title="app-rspack">
     Content!
-  </AppCore>,
+  </AppCore>
 );
 
-// TODO: remove - example of lint warning for react/only-export-components
+createRoot(rootNode).render(<Wrapper />);
+
+// demo: triggers the react/only-export-components lint warning
 export const foo = () => {
   //
 };

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
 import './index.css';
 
-// TODO: // remove
+// demo: a component export, so foo below triggers react/only-export-components
 export const Wrapper = () => {
   // console.log("@ process.env:", process.env);
   // console.log("@ process.env.API_URL:", process.env.API_URL);
@@ -30,7 +30,7 @@ ReactDOM.createRoot(root).render(
   </React.StrictMode>,
 );
 
-// TODO: remove - example of lint warning for react/only-export-components
+// demo: triggers the react/only-export-components lint warning
 export const foo = () => {
   //
 };
