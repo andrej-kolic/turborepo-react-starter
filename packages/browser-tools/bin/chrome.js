@@ -19,14 +19,14 @@ const command = process.argv[2] || 'start';
 try {
   if (command === '--stop' || command === 'stop') {
     const result = stop({ port: PORT });
-    if (!result.running && !result.stopped) {
-      console.log('Chrome is not running.');
-    } else if (result.stopped) {
+    if (result.stopped) {
       console.log(`✅ Chrome stopped (PID: ${result.pid})`);
-    } else {
+    } else if (result.running) {
       console.log(
         `⚠️  Failed to stop Chrome (PID: ${result.pid}): ${result.error}`,
       );
+    } else {
+      console.log('Chrome is not running.');
     }
   } else if (command === '--status' || command === 'status') {
     const result = await status({ port: PORT });

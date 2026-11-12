@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import os from 'os';
 
 const DEBUGGING_SESSION_DIR = path.join(
@@ -77,10 +77,29 @@ function findChromeExecutable() {
   );
 }
 
+/**
+ * @param {string} raw  contents of a PID file
+ * @returns {number | null}
+ */
+function parsePid(raw) {
+  return /^\d+$/.test(raw) ? Number(raw) : null;
+}
+
+/** @param {string} pidFile */
+function removePidFile(pidFile) {
+  try {
+    fs.unlinkSync(pidFile);
+  } catch {
+    // ignore
+  }
+}
+
 /** @param {string} pid */
 function isProcessAlive(pid) {
+  const parsed = parsePid(pid);
+  if (parsed === null) return false;
   try {
-    execSync(`kill -0 ${pid}`, { stdio: 'ignore' });
+    process.kill(parsed, 0);
     return true;
   } catch {
     return false;
@@ -139,11 +158,7 @@ export async function start({
     if (isProcessAlive(existingPid)) {
       return { alreadyRunning: true, pid: existingPid, port };
     }
-    try {
-      fs.unlinkSync(pidFile);
-    } catch {
-      // ignore stale file removal errors
-    }
+    removePidFile(pidFile);
   }
 
   if (!fs.existsSync(DEBUGGING_SESSION_DIR)) {
@@ -186,29 +201,35 @@ export async function start({
 }
 
 /**
- * Stop Chrome gracefully.
+ * Stop Chrome gracefully. Removes the PID file once the process is gone.
  *
  * @param {{ port?: number }} options
- * @returns {{ running?: boolean, stopped?: boolean, pid?: string, error?: string }}
+ * @returns {{ running: boolean, stopped: boolean, pid?: string, error?: string }}
  */
 export function stop({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
 } = {}) {
   const pidFile = getPidFile(port);
   if (!fs.existsSync(pidFile)) {
-    return { running: false };
+    return { running: false, stopped: false };
   }
   const pid = fs.readFileSync(pidFile, 'utf8').trim();
+  const parsed = parsePid(pid);
+  if (parsed === null) {
+    removePidFile(pidFile);
+    return { running: false, stopped: false, pid };
+  }
   try {
-    execSync(`kill ${pid}`);
-    try {
-      fs.unlinkSync(pidFile);
-    } catch {
-      // ignore
-    }
-    return { stopped: true, pid };
+    process.kill(parsed);
+    removePidFile(pidFile);
+    return { running: false, stopped: true, pid };
   } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'ESRCH') {
+      removePidFile(pidFile);
+      return { running: false, stopped: false, pid };
+    }
     return {
+      running: true,
       stopped: false,
       pid,
       error: e instanceof Error ? e.message : String(e),
