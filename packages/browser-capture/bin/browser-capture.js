@@ -33,7 +33,7 @@ async function main() {
       await startMcpServer();
     } catch (error) {
       process.stderr.write(
-        `Failed to start MCP server: ${error instanceof Error ? error.message : error}\n`,
+        `Failed to start MCP server: ${error instanceof Error ? error.message : String(error)}\n`,
       );
       process.exit(1);
     }

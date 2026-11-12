@@ -5,6 +5,7 @@
   "private": true,
   "exports": {
     "./base": "./base.ts",
+    "./cli": "./cli.ts",
     "./react": "./react.ts"
   },
   "scripts": {

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { readJson } from '../artifact-io/read.js';
 import { log } from '../config/log.js';
 import { sanitizeConsoleLog } from './console.js';
 import { sanitizeHar } from './har.js';
@@ -9,7 +10,12 @@ import { sanitizeInteractionLog } from './interactions.js';
  * Sanitize all artifact files in a capture directory and update metadata.
  *
  * @param {string} artifactsDir
- * @returns {object}
+ * @returns {{
+ *   har: { headersRedacted: number, paramsRedacted: number },
+ *   console: { messagesRedacted: number },
+ *   interactions: { valuesRedacted: number },
+ *   sanitizedAt: string,
+ * }}
  */
 export function sanitizeArtifacts(artifactsDir) {
   const harResult = sanitizeHar(path.join(artifactsDir, 'har.json'));
@@ -22,7 +28,8 @@ export function sanitizeArtifacts(artifactsDir) {
 
   const metadataPath = path.join(artifactsDir, 'metadata.json');
   if (fs.existsSync(metadataPath)) {
-    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    /** @type {import('../types.js').MetadataArtifact} */
+    const metadata = readJson(metadataPath);
     metadata.sanitizedAt = new Date().toISOString();
     metadata.sanitization = {
       headersRedacted: harResult.headersRedacted,

@@ -1,5 +1,5 @@
 import { chromium } from 'playwright-core';
-import { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
+import { resolveCdpEndpoint } from './http.js';
 
 export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
 
@@ -17,7 +17,5 @@ export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
  * @returns {Promise<import('playwright-core').Browser>}
  */
 export async function connectOverCDP(port, host) {
-  const _port = port ?? Number(process.env.CHROME_DEBUG_PORT || DEFAULT_PORT);
-  const _host = host ?? (process.env.CHROME_DEBUG_HOST || DEFAULT_HOST);
-  return chromium.connectOverCDP(`http://${_host}:${_port}`);
+  return chromium.connectOverCDP(resolveCdpEndpoint(port, host).baseUrl);
 }

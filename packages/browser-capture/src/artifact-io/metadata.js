@@ -1,7 +1,13 @@
 import { execSync } from 'node:child_process';
 import path from 'node:path';
+import { fetchCdpJson } from '@repo/browser-tools/cdp';
+import { z } from 'zod';
 import { HOST, PORT } from '../config/env.js';
 
+/**
+ * @param {string} command
+ * @returns {string | null}
+ */
 function safeExec(command) {
   try {
     return execSync(command, {
@@ -14,6 +20,11 @@ function safeExec(command) {
   }
 }
 
+/**
+ * Current git branch, from `CAPTURE_BRANCH` or git.
+ *
+ * @returns {string | null}
+ */
 export function getGitBranch() {
   return (
     process.env.CAPTURE_BRANCH ||
@@ -23,8 +34,30 @@ export function getGitBranch() {
   );
 }
 
+/**
+ * Current git commit SHA.
+ *
+ * @returns {string | null}
+ */
 export function getGitCommit() {
   return safeExec('git rev-parse HEAD');
+}
+
+const browserVersionSchema = z.looseObject({
+  Browser: z.string().optional(),
+  'Protocol-Version': z.string().optional(),
+  'User-Agent': z.string().optional(),
+});
+
+/** @typedef {z.infer<typeof browserVersionSchema>} BrowserVersionInfo */
+
+/**
+ * Fetch Chrome's version info from the DevTools HTTP API.
+ *
+ * @returns {Promise<BrowserVersionInfo>}
+ */
+export async function fetchBrowserInfo() {
+  return browserVersionSchema.parse(await fetchCdpJson('/json/version'));
 }
 
 /**
@@ -32,11 +65,11 @@ export function getGitCommit() {
  *
  * @param {string} mode
  * @param {string} artifactsDir
- * @param {object} browserInfo
- * @param {object} [extra]
- * @returns {object}
+ * @param {BrowserVersionInfo} browserInfo
+ * @param {import('../types.js').CaptureDetails} details
+ * @returns {import('../types.js').CaptureMetadata}
  */
-export function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
+export function buildMetadata(mode, artifactsDir, browserInfo, details) {
   return {
     mode,
     capturedAt: new Date().toISOString(),
@@ -46,12 +79,11 @@ export function buildMetadata(mode, artifactsDir, browserInfo, extra = {}) {
     actor: process.env.GITHUB_ACTOR || process.env.USER || null,
     triggerEvent: process.env.GITHUB_EVENT_NAME || 'local',
     chrome: {
-      browser: browserInfo.Browser || browserInfo.browser || null,
-      protocolVersion:
-        browserInfo['Protocol-Version'] || browserInfo.protocolVersion || null,
-      userAgent: browserInfo['User-Agent'] || browserInfo.userAgent || null,
+      browser: browserInfo.Browser || null,
+      protocolVersion: browserInfo['Protocol-Version'] || null,
+      userAgent: browserInfo['User-Agent'] || null,
     },
     devtoolsEndpoint: `http://${HOST}:${PORT}`,
-    ...extra,
+    ...details,
   };
 }

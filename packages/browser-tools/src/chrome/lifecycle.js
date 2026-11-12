@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import os from 'os';
 
 const DEBUGGING_SESSION_DIR = path.join(
@@ -8,13 +8,24 @@ const DEBUGGING_SESSION_DIR = path.join(
   '.chrome-debugging-sessions',
 );
 
+/** @param {number} port */
 function getPidFile(port) {
   return path.join(DEBUGGING_SESSION_DIR, `chrome.${port}.pid`);
 }
 
 /**
+ * @param {string | undefined} value
+ * @returns {value is string}
+ */
+function isNonEmpty(value) {
+  return Boolean(value);
+}
+
+/**
  * Chrome executable paths in priority order.
  * Based on google/chrome-launcher and microsoft/playwright patterns.
+ *
+ * @returns {string[]}
  */
 function getChromeExecutablePaths() {
   const platform = process.platform;
@@ -27,7 +38,7 @@ function getChromeExecutablePaths() {
       '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
       '/opt/homebrew/bin/google-chrome',
       '/usr/local/bin/google-chrome',
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   if (platform === 'linux') {
@@ -38,7 +49,7 @@ function getChromeExecutablePaths() {
       '/snap/bin/google-chrome',
       '/snap/bin/chromium',
       `${os.homedir()}/.local/bin/chromium`,
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   if (platform === 'win32') {
@@ -46,7 +57,7 @@ function getChromeExecutablePaths() {
       process.env.CHROME_PATH,
       'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
       'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   throw new Error(`Unsupported platform: ${platform}`);
@@ -66,15 +77,36 @@ function findChromeExecutable() {
   );
 }
 
-function isProcessAlive(pid) {
+/**
+ * @param {string} raw  contents of a PID file
+ * @returns {number | null}
+ */
+function parsePid(raw) {
+  return /^\d+$/.test(raw) ? Number(raw) : null;
+}
+
+/** @param {string} pidFile */
+function removePidFile(pidFile) {
   try {
-    execSync(`kill -0 ${pid}`, { stdio: 'ignore' });
+    fs.unlinkSync(pidFile);
+  } catch {
+    // ignore
+  }
+}
+
+/** @param {string} pid */
+function isProcessAlive(pid) {
+  const parsed = parsePid(pid);
+  if (parsed === null) return false;
+  try {
+    process.kill(parsed, 0);
     return true;
   } catch {
     return false;
   }
 }
 
+/** @param {number} port */
 async function isPortOpen(port) {
   try {
     const res = await fetch(`http://localhost:${port}/json/version`);
@@ -84,9 +116,13 @@ async function isPortOpen(port) {
   }
 }
 
+/**
+ * @param {number} port
+ * @param {number} [timeoutMs]
+ */
 async function waitForChrome(port, timeoutMs = 25_000) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
     if (await isPortOpen(port)) return true;
     await new Promise((r) => setTimeout(r, 200));
   }
@@ -97,7 +133,7 @@ async function waitForChrome(port, timeoutMs = 25_000) {
  * Start Chrome with remote debugging.
  *
  * @param {{ port?: number, headless?: boolean }} options
- * @returns {{ alreadyRunning: boolean, pid: string|number, port: number, ready?: boolean, userDataDir?: string }}
+ * @returns {Promise<{ alreadyRunning: boolean, pid?: string | number, port: number, ready?: boolean, userDataDir?: string }>}
  */
 export async function start({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
@@ -122,11 +158,7 @@ export async function start({
     if (isProcessAlive(existingPid)) {
       return { alreadyRunning: true, pid: existingPid, port };
     }
-    try {
-      fs.unlinkSync(pidFile);
-    } catch {
-      // ignore stale file removal errors
-    }
+    removePidFile(pidFile);
   }
 
   if (!fs.existsSync(DEBUGGING_SESSION_DIR)) {
@@ -169,29 +201,39 @@ export async function start({
 }
 
 /**
- * Stop Chrome gracefully.
+ * Stop Chrome gracefully. Removes the PID file once the process is gone.
  *
  * @param {{ port?: number }} options
- * @returns {{ running: boolean, stopped?: boolean, pid?: string, error?: string }}
+ * @returns {{ running: boolean, stopped: boolean, pid?: string, error?: string }}
  */
 export function stop({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
 } = {}) {
   const pidFile = getPidFile(port);
   if (!fs.existsSync(pidFile)) {
-    return { running: false };
+    return { running: false, stopped: false };
   }
   const pid = fs.readFileSync(pidFile, 'utf8').trim();
+  const parsed = parsePid(pid);
+  if (parsed === null) {
+    removePidFile(pidFile);
+    return { running: false, stopped: false, pid };
+  }
   try {
-    execSync(`kill ${pid}`);
-    try {
-      fs.unlinkSync(pidFile);
-    } catch {
-      // ignore
-    }
-    return { stopped: true, pid };
+    process.kill(parsed);
+    removePidFile(pidFile);
+    return { running: false, stopped: true, pid };
   } catch (e) {
-    return { stopped: false, pid, error: e.message };
+    if (e instanceof Error && 'code' in e && e.code === 'ESRCH') {
+      removePidFile(pidFile);
+      return { running: false, stopped: false, pid };
+    }
+    return {
+      running: true,
+      stopped: false,
+      pid,
+      error: e instanceof Error ? e.message : String(e),
+    };
   }
 }
 
