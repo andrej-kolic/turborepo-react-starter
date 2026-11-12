@@ -27,7 +27,7 @@
     "clear:output": "turbo run clear:output",
     "format:code": "dotenv -- prettier . --write",
     "format:dependencies": "dotenv -- pnpm dlx sherif@latest -f",
-    "quality-checks": "dotenv -- pnpm check:dependencies && pnpm check:agents && pnpm check:links && pnpm turbo check:type lint test",
+    "quality-checks": "dotenv -- pnpm check:dependencies && pnpm check:agents && pnpm check:links && pnpm check:format && pnpm turbo check:type lint test",
     "deploy:aws": "dotenv -- sh -c 'pnpm build:app && ./infra/aws/scripts/deploy.sh content \"$BUILD_ENVIRONMENT\"'",
     "deploy:netlify": "dotenv -- sh -c 'pnpm build:app && pnpm run --filter @repo/infra-netlify deploy'",
     "prepare": "husky",
@@ -62,9 +62,6 @@
     "syncpack": "15.3.3",
     "turbo": "2.11.10",
     "typescript": "7.0.2"
-  },
-  "lint-staged": {
-    "*.{md,mdc}": "node scripts/check-links.js"
   },
   "engines": {
     "node": ">=26.0.0"

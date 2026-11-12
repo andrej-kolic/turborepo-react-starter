@@ -9,16 +9,14 @@ import { Scroller } from './components/Scroller';
 import '@repo/ui/theme.css';
 import './styles.css';
 
-// TODO remove
-/* _eslint no-console: "error" */
-
-// TODO remove
+// demo: keeps a type import from @repo/commons
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
 
-// TODO remove
+// demo: keeps a runtime import from @repo/ui
 console.log('* 1 + 2:', add(1, 2));
 
+// demo: triggers the no-underscore-dangle lint warning
 const _orphan = 1;
 
 export function AppCore(props: {
@@ -40,7 +38,7 @@ export function AppCore(props: {
   );
 }
 
-// TODO: remove - example of lint warning for react/only-export-components
+// demo: triggers the react/only-export-components lint warning
 export const foo = () => {
   //
 };

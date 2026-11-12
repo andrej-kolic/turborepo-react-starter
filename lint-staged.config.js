@@ -10,6 +10,7 @@ export default {
 
   '*.{js,jsx,ts,tsx}': ['oxlint --type-aware --fix', 'prettier --write'],
   '*.{md,mdx,mjs,yml,yaml,css,json,jsonc}': ['prettier --write'],
+  '*.{md,mdc}': ['node scripts/check-links.js'],
   '.rulesync/**/*': [() => 'pnpm sync:agents', () => 'pnpm check:agents'],
   '{.cursor/rules/*.mdc,.cursor/commands/**/*.md,.claude/rules/**/*.md,.claude/skills/**/SKILL.md,.claude/commands/**/*.md,.cursor/mcp.json}':
     () => 'pnpm check:agents',

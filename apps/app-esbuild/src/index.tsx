@@ -4,7 +4,14 @@ import { AppCore } from '@repo/app-core';
 import './index.css';
 // import './index.html';
 
-console.log('* in app'); // TODO: remove
+console.log('* in app'); // demo: triggers the no-console lint warning
+
+// demo: a component export, so foo below triggers react/only-export-components
+export const Wrapper = () => (
+  <AppCore title="app-esbuild" href="#">
+    <div>trt</div>
+  </AppCore>
+);
 
 const root = document.getElementById('root');
 
@@ -14,8 +21,11 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <AppCore title="app-esbuild" href="#">
-      <div>trt</div>
-    </AppCore>
+    <Wrapper />
   </React.StrictMode>,
 );
+
+// demo: triggers the react/only-export-components lint warning
+export const foo = () => {
+  //
+};
