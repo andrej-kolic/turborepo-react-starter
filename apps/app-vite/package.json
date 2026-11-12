@@ -10,7 +10,7 @@
     "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "lint": "oxlint --type-aware",
     "preview": "vite preview --configLoader runner",
-    "check:type": "tsc --noEmit && tsc -p tsconfig.check.json",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && tsc -p tsconfig.check.json",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {

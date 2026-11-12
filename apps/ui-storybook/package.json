@@ -8,7 +8,7 @@
   "previewPort": 6007,
   "scripts": {
     "lint": "oxlint --type-aware",
-    "check:type": "tsc --noEmit",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "dev": "tsx ./scripts/dev.ts",
     "build": "storybook build ${STORYBOOK_OPTIONS}",
     "preview": "tsx ./scripts/preview.ts",
@@ -31,6 +31,7 @@
     "@storybook/addon-docs": "10.6.6",
     "@storybook/addon-links": "10.6.6",
     "@storybook/react-vite": "10.6.6",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "serve": "catalog:",
