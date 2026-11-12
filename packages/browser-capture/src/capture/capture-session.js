@@ -7,13 +7,15 @@ const NAVIGATION_TIMEOUT_MS = 30_000;
 /**
  * Resolve URL and dispatch to attach or isolated capture implementation.
  *
- * @param {object} params
- * @param {string} params.command
- * @param {string | undefined} params.url
- * @param {Record<string, string | boolean>} params.options
- * @param {(targetUrl: string, durationMs: number) => Promise<unknown>} params.attachedFn
- * @param {(targetUrl: string, durationMs: number) => Promise<unknown>} params.isolatedFn
- * @returns {Promise<unknown>}
+ * @template T
+ * @param {{
+ *   command: string,
+ *   url: string | undefined,
+ *   options: Record<string, string | boolean>,
+ *   attachedFn: (targetUrl: string, durationMs: number) => Promise<T>,
+ *   isolatedFn: (targetUrl: string, durationMs: number) => Promise<T>,
+ * }} params
+ * @returns {Promise<T>}
  */
 export async function runCaptureSession({
   command,
@@ -47,15 +49,17 @@ export async function withCdpBrowser(fn) {
 /**
  * Open a fresh browser context for isolated capture, then tear it down.
  *
+ * @template T
  * @overload
- * @param {(session: { browser: import('playwright-core').Browser, context: import('playwright-core').BrowserContext }) => Promise<unknown>} fn
- * @returns {Promise<unknown>}
+ * @param {(session: { browser: import('playwright-core').Browser, context: import('playwright-core').BrowserContext }) => Promise<T>} fn
+ * @returns {Promise<T>}
  */
 /**
+ * @template T
  * @overload
  * @param {import('playwright-core').BrowserContextOptions} contextOptions
- * @param {(session: { browser: import('playwright-core').Browser, context: import('playwright-core').BrowserContext }) => Promise<unknown>} fn
- * @returns {Promise<unknown>}
+ * @param {(session: { browser: import('playwright-core').Browser, context: import('playwright-core').BrowserContext }) => Promise<T>} fn
+ * @returns {Promise<T>}
  */
 /**
  * @template T
@@ -68,6 +72,7 @@ export async function withIsolatedCapture(contextOptionsOrFn, maybeFn) {
     typeof contextOptionsOrFn === 'function' ? {} : (contextOptionsOrFn ?? {});
   const fn =
     typeof contextOptionsOrFn === 'function' ? contextOptionsOrFn : maybeFn;
+  if (!fn) throw new TypeError('withIsolatedCapture requires a callback');
   const browser = await connectOverCDP();
   /** @type {import('playwright-core').BrowserContext | undefined} */
   let context;
@@ -96,7 +101,7 @@ export async function getPageDetails(page) {
  * Collect page details and Web Vitals/CDP metrics for artifact output.
  *
  * @param {import('playwright-core').Page} page
- * @returns {Promise<{ pageDetails: { url: string | null, title: string | null }, performancePayload: object }>}
+ * @returns {Promise<{ pageDetails: { url: string | null, title: string | null }, performancePayload: import('../types.js').PerformancePayload }>}
  */
 export async function collectPerformancePayload(page) {
   const cdpSession = await page.context().newCDPSession(page);

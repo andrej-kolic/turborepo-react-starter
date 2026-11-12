@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { readJson } from '../artifact-io/read.js';
 import { isSensitiveField } from './redact.js';
 
 export const SAFE_HAR_HEADERS = new Set([
@@ -31,7 +32,8 @@ export const SAFE_HAR_HEADERS = new Set([
 export function sanitizeHar(harPath) {
   if (!fs.existsSync(harPath)) return { headersRedacted: 0, paramsRedacted: 0 };
 
-  const har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
+  /** @type {import('../types.js').HarArtifact | null} */
+  const har = readJson(harPath);
   let headersRedacted = 0;
   let paramsRedacted = 0;
 

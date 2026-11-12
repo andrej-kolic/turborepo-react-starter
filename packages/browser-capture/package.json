@@ -7,8 +7,10 @@
     "browser-capture": "./bin/browser-capture.js"
   },
   "scripts": {
+    "lint": "oxlint --type-aware",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:type": "tsc --noEmit"
   },
   "dependencies": {
     "@jridgewell/trace-mapping": "0.3.31",
@@ -18,6 +20,9 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "vitest": "catalog:"
   }
 }

@@ -1,10 +1,10 @@
 export const PII_PATTERNS = [
   {
-    pattern: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,
+    pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
     label: 'EMAIL',
   },
   { pattern: /\b\d{3}-\d{2}-\d{4}\b/g, label: 'SSN' },
-  { pattern: /\b(?:\d[ \-]?){13,18}\d\b/g, label: 'CREDIT-CARD' },
+  { pattern: /\b(?:\d[ -]?){13,18}\d\b/g, label: 'CREDIT-CARD' },
   {
     pattern: /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
     label: 'PHONE',
@@ -17,10 +17,21 @@ export const SENSITIVE_FIELD_RE =
   /password|passwd|pwd|secret|token|api[_-]?key|auth(?:orization)?|ssn|social.?security|credit.?card|card.?num|cvv|cvc|\bpin\b|access.?key|private.?key/i;
 
 /**
- * Replace known PII and secret patterns in a string with labeled placeholders.
- *
+ * @overload
  * @param {string} text
  * @returns {string}
+ */
+/**
+ * @overload
+ * @param {unknown} text
+ * @returns {unknown}
+ */
+/**
+ * Replace known PII and secret patterns in a string with labeled placeholders;
+ * any other value is returned unchanged.
+ *
+ * @param {unknown} text
+ * @returns {unknown}
  */
 export function redactPii(text) {
   if (typeof text !== 'string') return text;
@@ -34,7 +45,7 @@ export function redactPii(text) {
 /**
  * Whether a field name matches sensitive-data patterns (password, token, etc.).
  *
- * @param {string} name
+ * @param {unknown} name
  * @returns {boolean}
  */
 export function isSensitiveField(name) {

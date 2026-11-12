@@ -9,6 +9,10 @@ import { recordPerformance } from '../capture/performance.js';
 import { recordTrace } from '../capture/trace.js';
 import { sanitizeArtifacts } from '../sanitize/index.js';
 
+/**
+ * @param {unknown} err
+ * @returns {import('@modelcontextprotocol/sdk/types.js').CallToolResult}
+ */
 function toolError(err) {
   const message = err instanceof Error ? err.message : String(err);
   return {
@@ -17,7 +21,12 @@ function toolError(err) {
   };
 }
 
+/**
+ * @param {{ duration?: number, attach?: boolean }} args
+ * @returns {Record<string, string | boolean>}
+ */
 function mcpCaptureOptions(args) {
+  /** @type {Record<string, string | boolean>} */
   const options = {};
   if (args.duration !== undefined) {
     options.duration = String(args.duration);
@@ -34,9 +43,13 @@ function mcpCaptureOptions(args) {
  * @returns {Promise<void>}
  */
 export async function startMcpServer() {
-  const pkg = JSON.parse(
-    fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
-  );
+  const pkg = z
+    .object({ version: z.string() })
+    .parse(
+      JSON.parse(
+        fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
+      ),
+    );
 
   const server = new McpServer({
     name: 'browser-capture',
@@ -367,12 +380,9 @@ export async function startMcpServer() {
   await server.connect(transport);
   process.stderr.write('browser-capture MCP server started (stdio)\n');
 
-  process.once('SIGINT', async () => {
-    await server.close();
-    process.exit(0);
-  });
-  process.once('SIGTERM', async () => {
-    await server.close();
-    process.exit(0);
-  });
+  const shutdown = () => {
+    void server.close().then(() => process.exit(0));
+  };
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
 }

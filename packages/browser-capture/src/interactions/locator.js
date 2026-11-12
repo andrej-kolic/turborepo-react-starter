@@ -1,7 +1,7 @@
 /**
  * Map a recorded interaction element to a Playwright locator expression string.
  *
- * @param {object} interaction
+ * @param {Pick<import('../types.js').Interaction, 'element'>} interaction
  * @returns {string | null}
  */
 export function interactionToLocator(interaction) {

@@ -25,11 +25,11 @@ export async function resolveSourceLocation(scriptUrl, line, col) {
       i >= Math.max(0, scriptLines.length - 10);
       i--
     ) {
-      const t = scriptLines[i].trim();
+      const t = (scriptLines[i] ?? '').trim();
       const m =
         t.match(/\/\/[#@]\s*sourceMappingURL=(.+)/) ||
         t.match(/\/\*[#@]\s*sourceMappingURL=(.+?)\s*\*\//);
-      if (m) {
+      if (m?.[1]) {
         sourceMapRef = m[1].trim();
         break;
       }
@@ -52,7 +52,7 @@ export async function resolveSourceLocation(scriptUrl, line, col) {
       rawMap = await mapRes.text();
     }
 
-    const tracer = new TraceMap(JSON.parse(rawMap));
+    const tracer = new TraceMap(rawMap);
     const pos = originalPositionFor(tracer, { line, column: col });
     if (!pos.source || pos.line == null) return null;
 

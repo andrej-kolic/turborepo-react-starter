@@ -1,4 +1,4 @@
-import { buildMetadata } from '../artifact-io/metadata.js';
+import { buildMetadata, fetchBrowserInfo } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import {
@@ -7,7 +7,7 @@ import {
   runCaptureSession,
   withIsolatedCapture,
 } from './capture-session.js';
-import { fetchCdpJson, withAttachedSession } from '@repo/browser-tools/cdp';
+import { withAttachedSession } from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { injectScript } from './inject-page.js';
@@ -20,7 +20,7 @@ import { sanitizeArtifacts } from '../sanitize/index.js';
  *
  * @param {string | undefined} url
  * @param {Record<string, string | boolean>} [options]
- * @returns {Promise<object>}
+ * @returns {Promise<import('../types.js').PerformanceResult>}
  */
 export async function recordPerformance(url, options = {}) {
   return runCaptureSession({
@@ -32,9 +32,13 @@ export async function recordPerformance(url, options = {}) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordPerformanceAttached(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('performance');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
 
   return withAttachedSession(targetUrl, async ({ page }) => {
     await injectScript(page, performanceObserverInject);
@@ -65,9 +69,13 @@ async function recordPerformanceAttached(targetUrl, durationMs) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordPerformanceIsolated(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('performance');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
 
   return withIsolatedCapture(async ({ context }) => {
     const page = await context.newPage();

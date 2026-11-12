@@ -1,5 +1,9 @@
 import { interactionToLocator } from './locator.js';
 
+/**
+ * @param {string} raw
+ * @returns {string}
+ */
 function hrefForCompare(raw) {
   try {
     return new URL(raw).href;
@@ -8,6 +12,11 @@ function hrefForCompare(raw) {
   }
 }
 
+/**
+ * @param {string[]} actionLines
+ * @param {{ lastGoto: string | null }} state
+ * @param {string} targetUrl
+ */
 function pushGoto(actionLines, state, targetUrl) {
   const href = hrefForCompare(targetUrl);
   if (state.lastGoto === href) return;
@@ -19,11 +28,13 @@ function pushGoto(actionLines, state, targetUrl) {
  * Build Playwright test source from recorded interaction events.
  *
  * @param {string} url
- * @param {object[]} interactions
+ * @param {import('../types.js').Interaction[]} interactions
  * @returns {string}
  */
 export function generatePlaywrightTest(url, interactions) {
+  /** @type {string[]} */
   const actionLines = [];
+  /** @type {{ lastGoto: string | null }} */
   const navState = { lastGoto: null };
 
   pushGoto(actionLines, navState, url);
@@ -46,7 +57,7 @@ export function generatePlaywrightTest(url, interactions) {
 
     switch (interaction.type) {
       case 'navigate':
-        pushGoto(actionLines, navState, interaction.url);
+        if (interaction.url) pushGoto(actionLines, navState, interaction.url);
         break;
       case 'click':
         if (!locator) break;

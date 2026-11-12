@@ -19,20 +19,43 @@ import {
   withIsolatedCapture,
 } from '../src/capture/capture-session.js';
 
+/**
+ * Cast a partial fake to the Playwright type it stands in for.
+ *
+ * @template T
+ * @param {unknown} fake
+ * @returns {T}
+ */
+function fakeAs(fake) {
+  return /** @type {T} */ (fake);
+}
+
+/**
+ * @param {unknown} fake
+ * @returns {import('playwright-core').Browser}
+ */
+const asBrowser = (fake) => fakeAs(fake);
+
+/**
+ * @param {unknown} fake
+ * @returns {import('playwright-core').Page}
+ */
+const asPage = (fake) => fakeAs(fake);
+
 function mockBrowserSession() {
   const context = { close: vi.fn().mockResolvedValue(undefined) };
   const browser = {
     newContext: vi.fn().mockResolvedValue(context),
     close: vi.fn().mockResolvedValue(undefined),
   };
-  connectOverCDP.mockResolvedValue(browser);
+  vi.mocked(connectOverCDP).mockResolvedValue(asBrowser(browser));
   return { browser, context };
 }
 
 describe('runCaptureSession', () => {
   it('routes to attachedFn when attach is set', async () => {
-    const attachedFn = vi.fn().mockResolvedValue('attached');
-    const isolatedFn = vi.fn();
+    const attachedFn = vi.fn(() => Promise.resolve('attached'));
+    const isolatedFn = vi.fn(() => Promise.resolve('isolated'));
 
     const result = await runCaptureSession({
       command: 'record-trace',
@@ -48,8 +71,8 @@ describe('runCaptureSession', () => {
   });
 
   it('routes to isolatedFn when attach is not set', async () => {
-    const attachedFn = vi.fn();
-    const isolatedFn = vi.fn().mockResolvedValue('isolated');
+    const attachedFn = vi.fn(() => Promise.resolve('attached'));
+    const isolatedFn = vi.fn(() => Promise.resolve('isolated'));
 
     const result = await runCaptureSession({
       command: 'record-performance',
@@ -72,7 +95,7 @@ describe('withCdpBrowser', () => {
 
   it('closes the browser after fn completes', async () => {
     const browser = { close: vi.fn().mockResolvedValue(undefined) };
-    connectOverCDP.mockResolvedValue(browser);
+    vi.mocked(connectOverCDP).mockResolvedValue(asBrowser(browser));
 
     const result = await withCdpBrowser(async (connectedBrowser) => {
       expect(connectedBrowser).toBe(browser);
@@ -105,6 +128,7 @@ describe('withIsolatedCapture', () => {
 
   it('passes context options when provided', async () => {
     const { browser } = mockBrowserSession();
+    /** @type {import('playwright-core').BrowserContextOptions} */
     const contextOptions = {
       recordHar: { path: '/tmp/har.json', content: 'omit' },
     };
@@ -132,7 +156,7 @@ describe('withIsolatedCapture', () => {
       newContext: vi.fn().mockRejectedValue(new Error('context failed')),
       close: vi.fn().mockResolvedValue(undefined),
     };
-    connectOverCDP.mockResolvedValue(browser);
+    vi.mocked(connectOverCDP).mockResolvedValue(asBrowser(browser));
 
     await expect(withIsolatedCapture(async () => 'ok')).rejects.toThrow(
       'context failed',
@@ -151,7 +175,7 @@ describe('getPageDetails', () => {
       }),
     };
 
-    await expect(getPageDetails(page)).resolves.toEqual({
+    await expect(getPageDetails(asPage(page))).resolves.toEqual({
       url: 'http://localhost:5173',
       title: 'App',
     });
@@ -160,7 +184,7 @@ describe('getPageDetails', () => {
   it('returns null url and title when evaluate fails', async () => {
     const page = { evaluate: vi.fn().mockRejectedValue(new Error('gone')) };
 
-    await expect(getPageDetails(page)).resolves.toEqual({
+    await expect(getPageDetails(asPage(page))).resolves.toEqual({
       url: null,
       title: null,
     });
@@ -187,9 +211,11 @@ describe('collectPerformancePayload', () => {
       webVitals: { lcp: 100, cls: 0, inp: null },
       browserMetrics: [],
     };
-    getPerformanceMetrics.mockResolvedValue(performancePayload);
+    vi.mocked(getPerformanceMetrics).mockResolvedValue(
+      fakeAs(performancePayload),
+    );
 
-    const result = await collectPerformancePayload(page);
+    const result = await collectPerformancePayload(asPage(page));
 
     expect(result).toEqual({
       pageDetails: { url: 'http://localhost:5173', title: 'App' },
@@ -207,9 +233,11 @@ describe('collectPerformancePayload', () => {
       }),
       evaluate: vi.fn().mockRejectedValue(new Error('gone')),
     };
-    getPerformanceMetrics.mockRejectedValue(new Error('metrics failed'));
+    vi.mocked(getPerformanceMetrics).mockRejectedValue(
+      new Error('metrics failed'),
+    );
 
-    await expect(collectPerformancePayload(page)).rejects.toThrow(
+    await expect(collectPerformancePayload(asPage(page))).rejects.toThrow(
       'metrics failed',
     );
     expect(cdpSession.detach).toHaveBeenCalled();
@@ -220,7 +248,7 @@ describe('gotoTarget', () => {
   it('navigates with load wait and a 30s timeout', async () => {
     const page = { goto: vi.fn().mockResolvedValue(undefined) };
 
-    await gotoTarget(page, 'http://localhost:5173');
+    await gotoTarget(asPage(page), 'http://localhost:5173');
 
     expect(page.goto).toHaveBeenCalledWith('http://localhost:5173', {
       waitUntil: 'load',

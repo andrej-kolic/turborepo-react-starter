@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { buildMetadata } from '../artifact-io/metadata.js';
+import { buildMetadata, fetchBrowserInfo } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
+import { readJson } from '../artifact-io/read.js';
 import { writeJson } from '../artifact-io/write.js';
 import {
   getPageDetails,
@@ -9,7 +10,7 @@ import {
   runCaptureSession,
   withIsolatedCapture,
 } from './capture-session.js';
-import { fetchCdpJson, withAttachedSession } from '@repo/browser-tools/cdp';
+import { withAttachedSession } from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
 import { isSanitizeEnabled } from '../config/runtime.js';
 import { injectScript } from './inject-page.js';
@@ -24,7 +25,7 @@ import { sanitizeArtifacts } from '../sanitize/index.js';
  *
  * @param {string | undefined} url
  * @param {Record<string, string | boolean>} [options]
- * @returns {Promise<object>}
+ * @returns {Promise<import('../types.js').InteractionsResult>}
  */
 export async function recordInteractions(url, options = {}) {
   return runCaptureSession({
@@ -36,9 +37,13 @@ export async function recordInteractions(url, options = {}) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordInteractionsAttached(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('interactions');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
 
   return withAttachedSession(targetUrl, async ({ page }) => {
     const interactions = await setupInteractionRecorder(page, 'inject');
@@ -54,9 +59,13 @@ async function recordInteractionsAttached(targetUrl, durationMs) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordInteractionsIsolated(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('interactions');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
 
   return withIsolatedCapture(async ({ context }) => {
     const page = await context.newPage();
@@ -78,10 +87,15 @@ async function recordInteractionsIsolated(targetUrl, durationMs) {
  * @param {'init' | 'inject'} mode
  */
 async function setupInteractionRecorder(page, mode) {
+  /** @type {import('../types.js').Interaction[]} */
   const interactions = [];
-  await page.exposeFunction('__recordInteraction', (event) => {
-    interactions.push({ ...event, timestamp: Date.now() });
-  });
+  await page.exposeFunction(
+    '__recordInteraction',
+    /** @param {import('../types.js').Interaction} event */
+    (event) => {
+      interactions.push({ ...event, timestamp: Date.now() });
+    },
+  );
 
   if (mode === 'init') {
     await page.addInitScript({ path: interactionRecorderInject });
@@ -97,8 +111,8 @@ async function setupInteractionRecorder(page, mode) {
  * @param {string} targetUrl
  * @param {number} durationMs
  * @param {string} artifactsDir
- * @param {object} browserInfo
- * @param {object[]} interactions
+ * @param {import('../artifact-io/metadata.js').BrowserVersionInfo} browserInfo
+ * @param {import('../types.js').Interaction[]} interactions
  * @param {{ attach?: boolean }} [sessionInfo]
  */
 async function finalizeInteractions(
@@ -118,8 +132,13 @@ async function finalizeInteractions(
   const activeInput = await page
     .evaluate(() => {
       const el = document.activeElement;
-      if (!el) return null;
-      const tag = el.tagName?.toLowerCase();
+      if (
+        !(el instanceof HTMLInputElement) &&
+        !(el instanceof HTMLTextAreaElement)
+      ) {
+        return null;
+      }
+      const tag = el.tagName.toLowerCase();
       if (
         (tag === 'input' || tag === 'textarea') &&
         el.type !== 'checkbox' &&
@@ -185,11 +204,11 @@ async function finalizeInteractions(
 
   if (isSanitizeEnabled()) sanitizeArtifacts(artifactsDir);
 
-  const sanitizedInteractions = isSanitizeEnabled()
-    ? JSON.parse(
-        fs.readFileSync(path.join(artifactsDir, 'interactions.json'), 'utf8'),
-      ).interactions
-    : interactions;
+  /** @type {{ interactions?: import('../types.js').Interaction[] }} */
+  const sanitized = isSanitizeEnabled()
+    ? readJson(path.join(artifactsDir, 'interactions.json'))
+    : { interactions };
+  const sanitizedInteractions = sanitized.interactions ?? [];
   const testCode = generatePlaywrightTest(resolvedUrl, sanitizedInteractions);
   const testFilePath = path.join(artifactsDir, 'generated.test.ts');
   fs.writeFileSync(testFilePath, testCode, 'utf8');
