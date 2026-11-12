@@ -31,7 +31,7 @@ Packages (`packages/`) export source with no build step of their own, except `co
 
 - `app-core`: the React app, developed as a library
 - `ui`: stub React component library
-- `commons`: stub shared library, compiled with tsup; apps import its `dist/`, which Turbo builds first
+- `commons`: stub shared library, compiled with tsdown; apps import its `dist/`, which Turbo builds first
 - `client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports)
 - `dev-tools`: development helpers, not for app code
 - `browser-tools`: CLI that checks the running page (`pnpm browser snapshot`, `validate`, `read`)
