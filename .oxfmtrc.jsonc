@@ -1,0 +1,39 @@
+// oxfmt config, migrated from Prettier with `oxfmt --migrate=prettier`.
+// Options: https://oxc.rs/docs/guide/usage/formatter/config-file-reference.html
+{
+  "singleQuote": true,
+  // Prettier's default; oxfmt's own is 100.
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "overrides": [
+    {
+      // VS Code's jsonc validator warns on trailing commas unless a schema
+      // sets allowTrailingCommas; match strict .json behavior instead.
+      "files": ["*.jsonc"],
+      "options": { "trailingComma": "none" }
+    }
+  ],
+  // On top of .gitignore, which oxfmt also reads.
+  "ignorePatterns": [
+    ".husky/",
+    // output
+    "dist/",
+    "dev/",
+    "build/",
+    "storybook-static/",
+    "turbo/",
+    "packages/e2e/test-results/",
+    "packages/e2e/playwright-report/",
+    "pnpm-lock.yaml",
+    "*.code-workspace",
+    "infra/netlify/deploy_output.json",
+    // rulesync outputs (edit .rulesync/ only; run pnpm sync:agents).
+    // Formatting the fetched rules would also make rules:install show changes.
+    ".cursor/",
+    ".claude/",
+    "rulesync.jsonc",
+    // rulesync sources: excluded from commit-time formatting to avoid racing
+    // sync:agents.
+    ".rulesync/"
+  ]
+}
