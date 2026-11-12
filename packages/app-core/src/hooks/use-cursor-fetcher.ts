@@ -13,7 +13,12 @@ export type Fetcher<T, C> = (
 ) => Promise<FetchResult<T, C>>;
 
 export type Status =
-  'idle' | 'loading' | 'aborted' | 'success' | 'error' | 'done';
+  | 'idle'
+  | 'loading'
+  | 'aborted'
+  | 'success'
+  | 'error'
+  | 'done';
 
 /** Discriminated union of pagination status, accumulated items, and error/abort metadata. */
 export type State<T, C> =

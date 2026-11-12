@@ -1,6 +1,6 @@
 # Turborepo React starter
 
-Monorepo starter for frontend projects: one React app (`@repo/app-core`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with Prettier.
+Monorepo starter for frontend projects: one React app (`@repo/app-core`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with oxfmt.
 
 ## Quick start
 
