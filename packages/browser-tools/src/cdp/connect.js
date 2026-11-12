@@ -1,8 +1,6 @@
 import { chromium } from 'playwright-core';
 import { resolveCdpEndpoint } from './http.js';
 
-export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
-
 /**
  * Connect to an existing Chrome instance over CDP.
  *

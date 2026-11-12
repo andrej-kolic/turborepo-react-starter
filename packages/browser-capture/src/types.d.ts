@@ -93,7 +93,7 @@ export type CaptureMetadata = CaptureDetails & {
   devtoolsEndpoint: string;
 };
 
-export type WebVitals = { lcp: number | null; cls: number; inp: number | null };
+type WebVitals = { lcp: number | null; cls: number; inp: number | null };
 
 /** Contents of `performance.json`. */
 export type PerformancePayload = {

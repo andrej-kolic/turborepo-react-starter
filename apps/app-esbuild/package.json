@@ -6,7 +6,6 @@
   "author": "",
   "type": "module",
   "license": "ISC",
-  "main": "index.js",
   "devPort": 8000,
   "previewPort": 8001,
   "scripts": {

@@ -25,7 +25,7 @@ function safeExec(command) {
  *
  * @returns {string | null}
  */
-export function getGitBranch() {
+function getGitBranch() {
   return (
     process.env.CAPTURE_BRANCH ||
     safeExec('git branch --show-current') ||
@@ -39,7 +39,7 @@ export function getGitBranch() {
  *
  * @returns {string | null}
  */
-export function getGitCommit() {
+function getGitCommit() {
   return safeExec('git rev-parse HEAD');
 }
 
