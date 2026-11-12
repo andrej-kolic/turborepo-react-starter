@@ -8,9 +8,14 @@ import { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';
  * @returns {{ port: number, host: string, baseUrl: string }}
  */
 export function resolveCdpEndpoint(port, host) {
-  const _port = port ?? Number(process.env.CHROME_DEBUG_PORT || DEFAULT_PORT);
-  const _host = host ?? (process.env.CHROME_DEBUG_HOST || DEFAULT_HOST);
-  return { port: _port, host: _host, baseUrl: `http://${_host}:${_port}` };
+  const resolvedPort =
+    port ?? Number(process.env.CHROME_DEBUG_PORT || DEFAULT_PORT);
+  const resolvedHost = host ?? (process.env.CHROME_DEBUG_HOST || DEFAULT_HOST);
+  return {
+    port: resolvedPort,
+    host: resolvedHost,
+    baseUrl: `http://${resolvedHost}:${resolvedPort}`,
+  };
 }
 
 /**

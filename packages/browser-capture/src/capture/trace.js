@@ -50,7 +50,7 @@ async function recordTraceAttached(targetUrl, durationMs) {
     harRecorder.attach(page);
     let tracingStarted = false;
     let requestCount = 0;
-    /** @type {ReturnType<typeof attachConsoleListeners> | null} */
+    /** @type {import('@repo/browser-tools/cdp').FullListener | null} */
     let consoleListener = null;
 
     page.on('request', () => {
@@ -123,7 +123,7 @@ async function recordTraceIsolated(targetUrl, durationMs) {
     async ({ context }) => {
       let tracingStarted = false;
       let requestCount = 0;
-      /** @type {ReturnType<typeof attachConsoleListeners> | null} */
+      /** @type {import('@repo/browser-tools/cdp').FullListener | null} */
       let consoleListener = null;
 
       try {

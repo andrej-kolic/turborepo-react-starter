@@ -18,6 +18,16 @@ vi.mock('../console.js', () => ({
 import { connectOverCDP } from '../connect.js';
 import { withAttachedSession } from '../session.js';
 
+/**
+ * @param {object} fake
+ * @returns {import('playwright-core').Browser}
+ */
+function asBrowser(fake) {
+  return /** @type {import('playwright-core').Browser} */ (
+    /** @type {unknown} */ (fake)
+  );
+}
+
 describe('withAttachedSession', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -32,7 +42,7 @@ describe('withAttachedSession', () => {
       contexts: () => [{ pages: () => [page] }],
       close: mockClose,
     };
-    connectOverCDP.mockResolvedValue(browser);
+    vi.mocked(connectOverCDP).mockResolvedValue(asBrowser(browser));
 
     const result = await withAttachedSession(
       'http://localhost:5173/',
@@ -53,7 +63,7 @@ describe('withAttachedSession', () => {
       contexts: () => [{ pages: () => [] }],
       close: mockClose,
     };
-    connectOverCDP.mockResolvedValue(browser);
+    vi.mocked(connectOverCDP).mockResolvedValue(asBrowser(browser));
 
     await expect(
       withAttachedSession('http://localhost:5173/', async () => {}),

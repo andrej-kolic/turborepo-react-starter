@@ -1,12 +1,27 @@
 import { describe, expect, it } from 'vitest';
 import { findPageAtOrigin, findRecentPage } from '../pages.js';
 
+/**
+ * @typedef {import('playwright-core').Browser} Browser
+ * @typedef {import('playwright-core').Page} Page
+ */
+
+/**
+ * @param {string} url
+ * @returns {Page}
+ */
 function makePage(url) {
-  return { url: () => url };
+  return /** @type {Page} */ (/** @type {unknown} */ ({ url: () => url }));
 }
 
+/**
+ * @param {{ pages: () => Page[] }[]} contexts
+ * @returns {Browser}
+ */
 function makeBrowser(contexts) {
-  return { contexts: () => contexts };
+  return /** @type {Browser} */ (
+    /** @type {unknown} */ ({ contexts: () => contexts })
+  );
 }
 
 describe('findPageAtOrigin', () => {

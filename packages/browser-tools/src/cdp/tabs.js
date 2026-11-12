@@ -11,9 +11,7 @@ import { findPageAtOrigin } from './pages.js';
  * @returns {Promise<{ url: string, navigated: boolean }>}
  */
 export async function openUrl(url, options = {}) {
-  try {
-    new URL(url).origin;
-  } catch {
+  if (!URL.canParse(url)) {
     throw new Error(`Invalid URL: ${url}`);
   }
 

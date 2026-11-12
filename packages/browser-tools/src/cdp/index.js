@@ -8,6 +8,8 @@ export {
   assertTextVisible,
 } from './assert.js';
 
+/** @typedef {import('./console.js').FullListener} FullListener */
+
 export { attachConsoleListeners } from './console.js';
 
 export { DEFAULT_HOST, DEFAULT_PORT } from './constants.js';

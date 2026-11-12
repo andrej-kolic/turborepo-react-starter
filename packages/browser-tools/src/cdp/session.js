@@ -17,6 +17,15 @@ const NAVIGATION_TIMEOUT_MS = 30_000;
  *   selector?: string,
  *   attach?: boolean,
  * }} SessionOptions
+ * @typedef {{
+ *   title: string | null,
+ *   url: string,
+ *   bodyText: string | null,
+ *   hasRoot: boolean | null,
+ *   rootHtml: string | null,
+ *   hasViteError: boolean | null,
+ *   pageErrors: string[],
+ * }} PageDiagnostics
  */
 
 /**
@@ -113,6 +122,7 @@ export async function withPageSession(url, fn, options = {}) {
 /**
  * @param {Page} page
  * @param {string[]} pageErrors
+ * @returns {Promise<PageDiagnostics>}
  */
 async function collectPageDiagnostics(page, pageErrors) {
   try {
@@ -134,7 +144,10 @@ async function collectPageDiagnostics(page, pageErrors) {
       hasRoot: null,
       rootHtml: null,
       hasViteError: null,
-      pageErrors: [...pageErrors, `[diagnostics] ${error.message}`],
+      pageErrors: [
+        ...pageErrors,
+        `[diagnostics] ${error instanceof Error ? error.message : String(error)}`,
+      ],
     };
   }
 }
@@ -143,7 +156,7 @@ async function collectPageDiagnostics(page, pageErrors) {
  * Collect page state and console errors for failure diagnostics.
  *
  * @param {PageSession} session
- * @returns {Promise<object>}
+ * @returns {Promise<PageDiagnostics>}
  */
 export async function sessionDiagnostics(session) {
   return collectPageDiagnostics(session.page, session.pageErrors);
@@ -164,7 +177,7 @@ async function waitForSelector(page, selector, timeout) {
  * @param {PageSession} session
  * @param {string} selector
  * @param {number} timeout
- * @returns {Promise<{ ok: true } | { ok: false, diagnostics: object }>}
+ * @returns {Promise<{ ok: true } | { ok: false, diagnostics: PageDiagnostics }>}
  */
 export async function waitForSelectorOrDiagnostics(session, selector, timeout) {
   try {
@@ -179,9 +192,9 @@ export async function waitForSelectorOrDiagnostics(session, selector, timeout) {
  * After navigation, wait for an optional selector or for the load event to settle.
  *
  * @param {PageSession} session
- * @param {string} [selector]
+ * @param {string | undefined} selector
  * @param {number} timeout
- * @returns {Promise<{ ok: true } | { ok: false, diagnostics: object }>}
+ * @returns {Promise<{ ok: true } | { ok: false, diagnostics: PageDiagnostics }>}
  */
 export async function settlePage(session, selector, timeout) {
   if (selector) {
@@ -198,7 +211,7 @@ export async function settlePage(session, selector, timeout) {
  *
  * @param {PageSession} session
  * @param {boolean} [enabled]
- * @returns {Promise<object | undefined>}
+ * @returns {Promise<PageDiagnostics | undefined>}
  */
 export async function consoleDiagnostics(session, enabled) {
   if (!enabled || session.pageErrors.length === 0) return undefined;

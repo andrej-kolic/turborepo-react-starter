@@ -18,16 +18,18 @@
  */
 export async function collectTestIdRegions(page, rootSelector) {
   return page.evaluate((selector) => {
-    const root = selector ? document.querySelector(selector) : document;
-    if (!root) return [];
-
-    const elements =
-      root === document
-        ? [...document.querySelectorAll('[data-testid]')]
-        : [
-            ...(root.matches('[data-testid]') ? [root] : []),
-            ...root.querySelectorAll('[data-testid]'),
-          ];
+    /** @type {Element[]} */
+    let elements;
+    if (selector) {
+      const root = document.querySelector(selector);
+      if (!root) return [];
+      elements = [
+        ...(root.matches('[data-testid]') ? [root] : []),
+        ...root.querySelectorAll('[data-testid]'),
+      ];
+    } else {
+      elements = [...document.querySelectorAll('[data-testid]')];
+    }
 
     return elements.map((el) => ({
       testid: el.getAttribute('data-testid') ?? '',
@@ -35,8 +37,7 @@ export async function collectTestIdRegions(page, rootSelector) {
       role: el.getAttribute('role'),
       text: (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 200),
       visible: !!(
-        el.offsetWidth ||
-        el.offsetHeight ||
+        (el instanceof HTMLElement && (el.offsetWidth || el.offsetHeight)) ||
         el.getClientRects().length
       ),
     }));
@@ -66,9 +67,9 @@ export async function captureAriaSnapshot(page, options = {}) {
  * @returns {Promise<{ title: string, url: string, testIds: TestIdRegion[], ariaYaml: string }>}
  */
 export async function buildPageSnapshot(page, options = {}) {
-  const [title, url, testIds, ariaYaml] = await Promise.all([
+  const url = page.url();
+  const [title, testIds, ariaYaml] = await Promise.all([
     page.title(),
-    page.url(),
     collectTestIdRegions(page, options.selector),
     captureAriaSnapshot(page, options),
   ]);

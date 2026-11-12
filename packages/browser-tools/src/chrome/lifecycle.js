@@ -8,13 +8,24 @@ const DEBUGGING_SESSION_DIR = path.join(
   '.chrome-debugging-sessions',
 );
 
+/** @param {number} port */
 function getPidFile(port) {
   return path.join(DEBUGGING_SESSION_DIR, `chrome.${port}.pid`);
 }
 
 /**
+ * @param {string | undefined} value
+ * @returns {value is string}
+ */
+function isNonEmpty(value) {
+  return Boolean(value);
+}
+
+/**
  * Chrome executable paths in priority order.
  * Based on google/chrome-launcher and microsoft/playwright patterns.
+ *
+ * @returns {string[]}
  */
 function getChromeExecutablePaths() {
   const platform = process.platform;
@@ -27,7 +38,7 @@ function getChromeExecutablePaths() {
       '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
       '/opt/homebrew/bin/google-chrome',
       '/usr/local/bin/google-chrome',
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   if (platform === 'linux') {
@@ -38,7 +49,7 @@ function getChromeExecutablePaths() {
       '/snap/bin/google-chrome',
       '/snap/bin/chromium',
       `${os.homedir()}/.local/bin/chromium`,
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   if (platform === 'win32') {
@@ -46,7 +57,7 @@ function getChromeExecutablePaths() {
       process.env.CHROME_PATH,
       'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
       'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    ].filter(Boolean);
+    ].filter(isNonEmpty);
   }
 
   throw new Error(`Unsupported platform: ${platform}`);
@@ -66,6 +77,7 @@ function findChromeExecutable() {
   );
 }
 
+/** @param {string} pid */
 function isProcessAlive(pid) {
   try {
     execSync(`kill -0 ${pid}`, { stdio: 'ignore' });
@@ -75,6 +87,7 @@ function isProcessAlive(pid) {
   }
 }
 
+/** @param {number} port */
 async function isPortOpen(port) {
   try {
     const res = await fetch(`http://localhost:${port}/json/version`);
@@ -84,9 +97,13 @@ async function isPortOpen(port) {
   }
 }
 
+/**
+ * @param {number} port
+ * @param {number} [timeoutMs]
+ */
 async function waitForChrome(port, timeoutMs = 25_000) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
     if (await isPortOpen(port)) return true;
     await new Promise((r) => setTimeout(r, 200));
   }
@@ -97,7 +114,7 @@ async function waitForChrome(port, timeoutMs = 25_000) {
  * Start Chrome with remote debugging.
  *
  * @param {{ port?: number, headless?: boolean }} options
- * @returns {{ alreadyRunning: boolean, pid: string|number, port: number, ready?: boolean, userDataDir?: string }}
+ * @returns {Promise<{ alreadyRunning: boolean, pid?: string | number, port: number, ready?: boolean, userDataDir?: string }>}
  */
 export async function start({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
@@ -172,7 +189,7 @@ export async function start({
  * Stop Chrome gracefully.
  *
  * @param {{ port?: number }} options
- * @returns {{ running: boolean, stopped?: boolean, pid?: string, error?: string }}
+ * @returns {{ running?: boolean, stopped?: boolean, pid?: string, error?: string }}
  */
 export function stop({
   port = Number(process.env.CHROME_DEBUG_PORT || 9222),
@@ -191,7 +208,11 @@ export function stop({
     }
     return { stopped: true, pid };
   } catch (e) {
-    return { stopped: false, pid, error: e.message };
+    return {
+      stopped: false,
+      pid,
+      error: e instanceof Error ? e.message : String(e),
+    };
   }
 }
 

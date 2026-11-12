@@ -39,6 +39,12 @@ import {
 } from '../src/cli/args.js';
 import { SETUP_BIN } from '../src/cli/bin-names.js';
 
+/**
+ * @typedef {Record<string, string | boolean>} CliOptions
+ * @typedef {import('../src/cdp/session.js').PageDiagnostics} PageDiagnostics
+ */
+
+/** @param {PageDiagnostics | undefined} diagnostics */
 function printDiagnostics(diagnostics) {
   if (!diagnostics) return;
   console.error('--- page diagnostics ---');
@@ -122,6 +128,7 @@ Examples:
 Exit codes: 0 = pass, 1 = assertion failed or error`);
 }
 
+/** @param {CliOptions} options */
 async function runOpen(options) {
   const url = resolveUrl(options.url);
   const result = await openUrl(url);
@@ -130,6 +137,7 @@ async function runOpen(options) {
   );
 }
 
+/** @param {CliOptions} options */
 async function runValidate(options) {
   const url = resolveUrl(options.url);
   const { selector, noConsoleErrors, attach, timeout } = sharedOptions(options);
@@ -214,6 +222,7 @@ async function runValidate(options) {
   }
 }
 
+/** @param {CliOptions} options */
 async function runRead(options) {
   const url = resolveUrl(options.url);
   const { selector, attach, timeout } = sharedOptions(options);
@@ -242,6 +251,7 @@ async function runRead(options) {
   }
 }
 
+/** @param {CliOptions} options */
 async function runEval(options) {
   const url = resolveUrl(options.url);
   const { selector, noConsoleErrors, attach, timeout } = sharedOptions(options);
@@ -279,6 +289,7 @@ async function runEval(options) {
   }
 
   if (asJson) {
+    /** @type {{ url: string, selector: string | null, value: unknown, pass?: boolean }} */
     const payload = {
       url,
       selector: selector ?? null,
@@ -297,6 +308,7 @@ async function runEval(options) {
   }
 }
 
+/** @param {CliOptions} options */
 async function runScreenshot(options) {
   const url = resolveUrl(options.url);
   const { selector, attach, timeout } = sharedOptions(options);
@@ -345,6 +357,7 @@ async function runScreenshot(options) {
   );
 }
 
+/** @param {CliOptions} options */
 async function runSnapshot(options) {
   const url = resolveUrl(options.url);
   const { selector, attach, timeout } = sharedOptions(options);
@@ -410,7 +423,7 @@ async function main() {
       process.exit(1);
     }
   } catch (err) {
-    const msg = err.message ?? String(err);
+    const msg = err instanceof Error ? err.message : String(err);
     if (
       msg.includes('ECONNREFUSED') ||
       msg.includes('connect') ||
