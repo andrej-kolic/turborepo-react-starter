@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
 import './index.css';
@@ -15,7 +16,11 @@ export const Wrapper = () => (
   </AppCore>
 );
 
-createRoot(rootNode).render(<Wrapper />);
+createRoot(rootNode).render(
+  <StrictMode>
+    <Wrapper />
+  </StrictMode>,
+);
 
 // demo: triggers the react/only-export-components lint warning
 export const foo = () => {
