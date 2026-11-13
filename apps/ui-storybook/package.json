@@ -26,14 +26,14 @@
     "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
-    "@storybook/addon-docs": "10.6.6",
-    "@storybook/addon-links": "10.6.6",
-    "@storybook/react-vite": "10.6.6",
+    "@storybook/addon-docs": "10.6.7",
+    "@storybook/addon-links": "10.6.7",
+    "@storybook/react-vite": "10.6.7",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "serve": "catalog:",
-    "storybook": "10.6.6",
+    "storybook": "10.6.7",
     "tsx": "catalog:",
     "vite": "catalog:"
   }
