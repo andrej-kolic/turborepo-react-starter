@@ -5,7 +5,8 @@ import { environmentSchema } from '@repo/client-types/env-schema';
 
 const debuglog = util.debuglog('dev-tools');
 
-const DEFAULT_PREFIX = 'APP_REACT';
+// Fixed: environmentSchema only knows APP_REACT_* keys.
+const PREFIX = 'APP_REACT';
 
 /**
  * Load variables from .env files and process.env. Meant to be used in bundlers.
@@ -26,12 +27,10 @@ export function loadEnvironmentVariables({
   envDir,
   buildEnvironment,
   customEnvVars,
-  PREFIX = DEFAULT_PREFIX,
 }: {
   envDir: string;
   buildEnvironment: string;
   customEnvVars?: Record<string, string>;
-  PREFIX?: string;
 }) {
   // load .env files
   const variables = dotenvFlow.config({
