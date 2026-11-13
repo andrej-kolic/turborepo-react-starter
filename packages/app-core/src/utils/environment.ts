@@ -1,17 +1,6 @@
-/** Compile-time environment values exposed to the app by the active bundler. */
-export type EnvironmentVariables = {
-  // set by bundler
-  readonly BUILD_ENVIRONMENT: string;
-  readonly BUNDLER: string;
-  readonly MODE: string;
+import type { EnvironmentVariables } from '@repo/client-types/env-schema';
 
-  // client
-  readonly APP_REACT_ENV_FILE: string;
-  readonly APP_REACT_TITLE: string;
-  readonly APP_REACT_VERSION: string;
-};
-
-const environmentVariables: EnvironmentVariables = {
+const environmentVariables = Object.freeze({
   BUILD_ENVIRONMENT: import.meta.env.BUILD_ENVIRONMENT,
   BUNDLER: import.meta.env.BUNDLER,
   MODE: import.meta.env.MODE,
@@ -19,7 +8,7 @@ const environmentVariables: EnvironmentVariables = {
   APP_REACT_ENV_FILE: import.meta.env.APP_REACT_ENV_FILE,
   APP_REACT_TITLE: import.meta.env.APP_REACT_TITLE,
   APP_REACT_VERSION: import.meta.env.APP_REACT_VERSION,
-};
+} satisfies EnvironmentVariables);
 
 // TODO: rename to getRuntimeEnvVariables() or getAppconfig()
 /**

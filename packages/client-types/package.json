@@ -8,12 +8,16 @@
     "./env": {
       "types": "./env.d.ts"
     },
+    "./env-schema": "./env-schema.ts",
     "./assets": {
       "types": "./assets.d.ts"
     }
   },
   "scripts": {
     "check:type": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"

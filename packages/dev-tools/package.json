@@ -21,9 +21,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@repo/client-types": "workspace:*",
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
     "tsx": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zod": "catalog:"
   }
 }

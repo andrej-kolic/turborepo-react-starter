@@ -1,9 +1,12 @@
 import dotenvFlow from 'dotenv-flow';
 import util from 'util';
+import { z } from 'zod';
+import { environmentSchema } from '@repo/client-types/env-schema';
 
 const debuglog = util.debuglog('dev-tools');
 
-const DEFAULT_PREFIX = 'APP_REACT';
+// Fixed: environmentSchema only knows APP_REACT_* keys.
+const PREFIX = 'APP_REACT';
 
 /**
  * Load variables from .env files and process.env. Meant to be used in bundlers.
@@ -11,23 +14,23 @@ const DEFAULT_PREFIX = 'APP_REACT';
  * 2. Merge with process.env (process.env has precedence)
  * 3. Filter only variables with PREFIX
  * 4. Enhance with BUILD_ENVIRONMENT and customEnvVars
+ * 5. Validate against `environmentSchema`
  *
  * @param envDir directory where .env files are located
  * @param buildEnvironment environment name, e.g. 'development', 'production', 'staging'
- * @param bundler bundler name, e.g. 'vite', 'rspack', 'esbuild'
+ * @param customEnvVars extra values, e.g. BUNDLER and MODE
  *
- * @returns object with environment variables to be used in the app
+ * @returns validated environment variables to be used in the app
+ * @throws Error listing every invalid or unknown variable
  */
 export function loadEnvironmentVariables({
   envDir,
   buildEnvironment,
   customEnvVars,
-  PREFIX = DEFAULT_PREFIX,
 }: {
   envDir: string;
   buildEnvironment: string;
   customEnvVars?: Record<string, string>;
-  PREFIX?: string;
 }) {
   // load .env files
   const variables = dotenvFlow.config({
@@ -61,5 +64,13 @@ export function loadEnvironmentVariables({
   };
   debuglog('final variable map:', finalEnvMap);
 
-  return finalEnvMap;
+  const result = environmentSchema.safeParse(finalEnvMap);
+  if (!result.success) {
+    throw new Error(
+      `Invalid environment variables (env files in ${envDir}, BUILD_ENVIRONMENT=${buildEnvironment}):\n` +
+        z.prettifyError(result.error),
+    );
+  }
+
+  return result.data;
 }
