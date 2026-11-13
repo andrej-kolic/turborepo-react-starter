@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
   "devPort": 6006,
   "previewPort": 6007,
   "scripts": {
@@ -18,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"

@@ -3,7 +3,7 @@ import { attachConsoleListeners } from './console.js';
 import { findPageAtOrigin } from './pages.js';
 import { BROWSER_BIN } from '../cli/bin-names.js';
 
-export const DEFAULT_SELECTOR_TIMEOUT_MS = 30_000;
+const DEFAULT_SELECTOR_TIMEOUT_MS = 30_000;
 const NAVIGATION_TIMEOUT_MS = 30_000;
 
 /**

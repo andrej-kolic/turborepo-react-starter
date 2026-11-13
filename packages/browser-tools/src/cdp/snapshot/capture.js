@@ -16,7 +16,7 @@
  * @param {string | null | undefined} rootSelector
  * @returns {Promise<TestIdRegion[]>}
  */
-export async function collectTestIdRegions(page, rootSelector) {
+async function collectTestIdRegions(page, rootSelector) {
   return page.evaluate((selector) => {
     /** @type {Element[]} */
     let elements;
@@ -51,7 +51,7 @@ export async function collectTestIdRegions(page, rootSelector) {
  * @param {{ selector?: string }} [options]
  * @returns {Promise<string>}
  */
-export async function captureAriaSnapshot(page, options = {}) {
+async function captureAriaSnapshot(page, options = {}) {
   const locator = options.selector
     ? page.locator(options.selector).first()
     : page.locator('body');

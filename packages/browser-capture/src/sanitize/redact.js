@@ -1,4 +1,4 @@
-export const PII_PATTERNS = [
+const PII_PATTERNS = [
   {
     pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
     label: 'EMAIL',

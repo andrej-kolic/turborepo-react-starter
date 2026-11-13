@@ -11,7 +11,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 - Scope work with `pnpm --filter <pkg> <script>`.
 - Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
 - Extend `@repo/typescript-config` and `@repo/oxlint-config`.
-- Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:agents` · `pnpm quality-checks`
+- Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:unused` · `pnpm check:agents` · `pnpm quality-checks`
 - Commit messages and PR titles: Conventional Commits, subject starts lowercase, header at most 72 characters (aim for 50). Enforced by the `commit-msg` hook and the `Verify: Commits` workflow (PRs, and pushes to `develop`/`main`); rules in `commitlint.config.js`.
 
 ## Environment file
@@ -79,6 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - E2E: `pnpm e2e` (after `pnpm build:app` + `pnpm preview:app`)
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Format check: `pnpm check:format`
+- Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`
 - Modern web platform guidance (run on request only, telemetry off): `pnpm modern-web-guidance legacy-scan .` · `search "<topic>"` · `retrieve <id>`
 

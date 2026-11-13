@@ -18,7 +18,7 @@ export function sleep(ms) {
  * @param {Date} [date]
  * @returns {string}
  */
-export function toArtifactTimestamp(date = new Date()) {
+function toArtifactTimestamp(date = new Date()) {
   return date.toISOString().replace(/[:.]/g, '-');
 }
 
