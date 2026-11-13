@@ -39,5 +39,10 @@ export default defineConfig({
       files: ['**/*.{test,spec}.{ts,tsx}'],
       plugins: ['vitest'],
     },
+    {
+      // Global type files extend existing interfaces (ImportMetaEnv, ViteTypeOptions); only an interface can do that.
+      files: ['**/*.d.ts'],
+      rules: { 'typescript/consistent-type-definitions': 'off' },
+    },
   ],
 });
