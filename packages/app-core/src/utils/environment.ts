@@ -1,17 +1,4 @@
-/** Compile-time environment values exposed to the app by the active bundler. */
-export type EnvironmentVariables = {
-  // set by bundler
-  readonly BUILD_ENVIRONMENT: string;
-  readonly BUNDLER: string;
-  readonly MODE: string;
-
-  // client
-  readonly APP_REACT_ENV_FILE: string;
-  readonly APP_REACT_TITLE: string;
-  readonly APP_REACT_VERSION: string;
-};
-
-const environmentVariables: EnvironmentVariables = {
+const environmentVariables = {
   BUILD_ENVIRONMENT: import.meta.env.BUILD_ENVIRONMENT,
   BUNDLER: import.meta.env.BUNDLER,
   MODE: import.meta.env.MODE,

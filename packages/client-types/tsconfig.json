@@ -6,5 +6,5 @@
     "skipLibCheck": false,
     "types": []
   },
-  "include": ["*.d.ts"]
+  "include": ["*.ts"]
 }

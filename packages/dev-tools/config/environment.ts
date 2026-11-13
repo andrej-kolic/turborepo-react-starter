@@ -1,7 +1,7 @@
 import dotenvFlow from 'dotenv-flow';
 import util from 'util';
 import { z } from 'zod';
-import { environmentSchema } from './environment-schema';
+import { environmentSchema } from '@repo/client-types/env-schema';
 
 const debuglog = util.debuglog('dev-tools');
 
