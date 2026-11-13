@@ -51,7 +51,7 @@ jobs:
       - name: Assert HTTP 200
         run: |
           TARGET_URL=$(pnpm exec dev-tools-app-target url)
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL")
+          http_code=$(curl -s --max-time 10 -o /dev/null -w "%{http_code}" "$TARGET_URL")
           if [ "$http_code" != "200" ]; then
             echo "Expected HTTP 200 from ${TARGET_URL}, got ${http_code}"
             echo "--- dev-app.log ---"
@@ -77,7 +77,7 @@ jobs:
         if: failure()
         run: |
           TARGET_URL=$(pnpm exec dev-tools-app-target url)
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL" || true)
+          http_code=$(curl -s --max-time 10 -o /dev/null -w "%{http_code}" "$TARGET_URL" || true)
           if [ "$http_code" != "000" ]; then
             echo "up=true" >> "$GITHUB_OUTPUT"
           else
