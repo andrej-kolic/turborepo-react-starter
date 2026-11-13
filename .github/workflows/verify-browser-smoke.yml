@@ -1,4 +1,6 @@
 # Multi-bundler dev-server boot smoke — HTTP 200 only.
+# On failure: uploads the dev-server log, plus a browser-capture trace when
+# the server is reachable.
 # Region assertions live in Playwright E2E (verify-e2e.yml, DEFAULT_BUNDLER preview).
 #
 # Matrix: all bundler apps. Port/URL derived via dev-tools-app-target → app-port.ts.
@@ -57,9 +59,52 @@ jobs:
             exit 1
           fi
 
+      # Attempt in the name: a re-run of a failed job would otherwise hit a
+      # name conflict, since artifact names are unique per workflow run.
+      - name: Upload dev-server log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-dev-log-${{ matrix.bundler }}-${{ github.run_attempt }}
+          path: /tmp/dev-app.log
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # Probe the port directly: ensure-app also fails when a running server
+      # answers 5xx, and that case still deserves a trace.
+      - name: Check whether the dev server started
+        id: server
+        if: failure()
+        run: |
+          TARGET_URL=$(pnpm exec dev-tools-app-target url)
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL" || true)
+          if [ "$http_code" != "000" ]; then
+            echo "up=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Dev server not reachable at ${TARGET_URL}; skipping trace"
+          fi
+
+      - name: Record trace
+        if: failure() && steps.server.outputs.up == 'true'
+        env:
+          CHROME_HEADLESS: 'true'
+        run: |
+          pnpm browser:setup
+          pnpm capture record-trace --duration 5
+
+      - name: Upload trace
+        if: failure() && steps.server.outputs.up == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-trace-${{ matrix.bundler }}-${{ github.run_attempt }}
+          path: packages/browser-capture/artifacts/**
+          retention-days: 30
+          if-no-files-found: ignore
+
       - name: Cleanup
         if: always()
         run: |
+          pnpm chrome:debug --stop || true
           if APP_PORT=$(pnpm exec dev-tools-app-target port); then
             lsof -ti:"$APP_PORT" | xargs -r kill 2>/dev/null || true
           fi
