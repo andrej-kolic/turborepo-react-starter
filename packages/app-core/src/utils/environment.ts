@@ -1,4 +1,6 @@
-const environmentVariables = {
+import type { EnvironmentVariables } from '@repo/client-types/env-schema';
+
+const environmentVariables = Object.freeze({
   BUILD_ENVIRONMENT: import.meta.env.BUILD_ENVIRONMENT,
   BUNDLER: import.meta.env.BUNDLER,
   MODE: import.meta.env.MODE,
@@ -6,7 +8,7 @@ const environmentVariables = {
   APP_REACT_ENV_FILE: import.meta.env.APP_REACT_ENV_FILE,
   APP_REACT_TITLE: import.meta.env.APP_REACT_TITLE,
   APP_REACT_VERSION: import.meta.env.APP_REACT_VERSION,
-};
+} satisfies EnvironmentVariables);
 
 // TODO: rename to getRuntimeEnvVariables() or getAppconfig()
 /**
