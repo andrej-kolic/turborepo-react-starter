@@ -7,6 +7,7 @@ type RepoBundlerEnv = Readonly<
   Omit<import('./env-schema').EnvironmentVariables, 'MODE'>
 >;
 
+// Named as in vite/client and @rsbuild/core, so it merges with their ImportMetaEnv; a different name conflicts on ImportMeta.env.
 interface ImportMetaEnv extends RepoBundlerEnv {
   // Required and not readonly: vite/client declares MODE this way, and merged declarations must match.
   // The schema allows it to be missing because Vite sets it after the env is loaded.
