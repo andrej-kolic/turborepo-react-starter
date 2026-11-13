@@ -64,6 +64,12 @@ describe('loadEnvironmentVariables', () => {
     expect(() => load()).toThrow(/must be a semver version/);
   });
 
+  it('accepts a pre-release and build suffix in APP_REACT_VERSION', () => {
+    writeEnvFile(VALID_ENV_FILE.replace('1.2.3', '1.2.3-rc.1+build.5'));
+
+    expect(load().APP_REACT_VERSION).toBe('1.2.3-rc.1+build.5');
+  });
+
   it('throws when an APP_REACT_* variable is not in the schema', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nAPP_REACT_TYPO="x"`);
 
