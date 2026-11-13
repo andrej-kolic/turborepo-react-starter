@@ -17,7 +17,7 @@
     "@modelcontextprotocol/sdk": "1.32.2",
     "@repo/browser-tools": "workspace:*",
     "playwright-core": "catalog:",
-    "zod": "4.6.7"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/oxlint-config": "workspace:*",

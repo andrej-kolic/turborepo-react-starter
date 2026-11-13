@@ -20,6 +20,9 @@ catalog:
   serve: 14.2.7
   '@turbo/gen': 2.11.11
 
+  # Validation
+  zod: 4.6.7
+
   # Browser capture
   playwright-core: 1.65.0
 
