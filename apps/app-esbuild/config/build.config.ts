@@ -1,6 +1,7 @@
 import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import * as esbuild from 'esbuild';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import util from 'util';
 import { copy } from 'esbuild-plugin-copy';
 import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
@@ -53,6 +54,7 @@ const buildResult = await esbuild.build({
     '.svg': 'file',
   },
   format: 'esm',
+  target: browserslistToEsbuild(),
 
   define: {
     'import.meta.env': JSON.stringify(environmentVariables),

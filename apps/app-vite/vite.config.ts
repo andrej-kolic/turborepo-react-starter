@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import util from 'util';
 import { createRequire } from 'module';
 
@@ -67,13 +68,14 @@ export default defineConfig((configEnv) => {
 
     publicDir: appCorePublic,
 
-    // TODO: remove, added for readable output
-    // build: {
-    //   minify: false,
-    //   rollupOptions: {
-    //     // external: ["react", "react-dom", "react/jsx-runtime"],
-    //     treeshake: false,
-    //   },
-    // },
+    build: {
+      target: browserslistToEsbuild(),
+      // TODO: remove, added for readable output
+      // minify: false,
+      // rollupOptions: {
+      //   // external: ["react", "react-dom", "react/jsx-runtime"],
+      //   treeshake: false,
+      // },
+    },
   };
 });
