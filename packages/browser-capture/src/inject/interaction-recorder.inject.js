@@ -43,6 +43,29 @@
   }
 
   /**
+   * Find where the element's JSX was written in a React 19 `_debugStack`.
+   * The stack runs from React's JSX runtime (`jsxDEV`) down to
+   * `react_stack_bottom_frame`, so the call site is the first frame after the
+   * runtime. React swaps in a placeholder stack after its 10,000-element
+   * budget; that one has no frame in between, and gives null.
+   *
+   * @param {string} stack
+   * @returns {RegExpMatchArray | null} groups 1-3: script URL, line, column
+   */
+  function jsxCallSite(stack) {
+    const lines = stack.split('\n');
+    const bottom = lines.findIndex((line) =>
+      /react[_-]stack[_-]bottom[_-]frame/.test(line),
+    );
+    if (bottom === -1) return null;
+    const frames = lines
+      .slice(0, bottom)
+      .map((line) => line.match(/^\s*at (?:.*\()?(.+?):(\d+):(\d+)\)?$/))
+      .filter((match) => match !== null);
+    return frames[1] ?? null;
+  }
+
+  /**
    * @param {Element} el
    * @returns {import('../types.js').ReactInfo | null}
    */
@@ -56,8 +79,10 @@
       const host = el;
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- React's fiber is an untyped expando on the DOM node.
       const fibers = /** @type {Record<string, Fiber | undefined>} */ (host);
+      const hostFiber = fibers[fiberKey];
+      if (!hostFiber) return null;
       /** @type {Fiber | null} */
-      let fiber = fibers[fiberKey] ?? null;
+      let fiber = hostFiber;
       while (fiber && fiber.tag !== 0 && fiber.tag !== 1) fiber = fiber.return;
       if (!fiber) return null;
       const type = typeof fiber.type === 'string' ? null : fiber.type;
@@ -65,16 +90,18 @@
       const result = {
         componentName: (type && (type.name || type.displayName)) || null,
       };
-      if (fiber._debugSource) {
-        result.fileName = fiber._debugSource.fileName;
-        result.lineNumber = fiber._debugSource.lineNumber;
-        result.columnNumber = fiber._debugSource.columnNumber;
-      } else if (fiber._debugStack) {
+      // The clicked tag's own fiber, not the component's: the component's
+      // location is where its parent renders it, in another file.
+      if (hostFiber._debugSource) {
+        result.fileName = hostFiber._debugSource.fileName;
+        result.lineNumber = hostFiber._debugSource.lineNumber;
+        result.columnNumber = hostFiber._debugSource.columnNumber;
+      } else if (hostFiber._debugStack) {
         const stack =
-          typeof fiber._debugStack === 'string'
-            ? fiber._debugStack
-            : fiber._debugStack && fiber._debugStack.stack;
-        const match = stack && stack.match(/\(([^)]+):(\d+):(\d+)\)/);
+          typeof hostFiber._debugStack === 'string'
+            ? hostFiber._debugStack
+            : hostFiber._debugStack.stack;
+        const match = stack && jsxCallSite(stack);
         if (match?.[1] && match[2] && match[3]) {
           result.scriptUrl = match[1];
           result.lineNumber = parseInt(match[2], 10);
