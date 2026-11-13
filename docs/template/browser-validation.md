@@ -1,6 +1,6 @@
 # Browser validation: special setups
 
-How to check the page in setups the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md) does not cover. Start with the skill; how the app URL is found is in [`docs/app-url.md`](app-url.md).
+How to check the page in setups the [browser-validation skill](../../.claude/skills/x-browser-validation/SKILL.md) does not cover. Start with the skill; how the app URL is found is in [`docs/template/app-url.md`](app-url.md).
 
 ## Check a page you are logged in to (`--attach`)
 
@@ -44,7 +44,7 @@ Keep `CHROME_DEBUG_HOST=localhost` and `CHROME_DEBUG_PORT=9222` locally.
 ## Check a Storybook component
 
 1. Start Storybook with `pnpm dev:ui`.
-2. Build the canvas URL as in [`docs/app-url.md`](app-url.md#storybook-canvas).
+2. Build the canvas URL as in [`docs/template/app-url.md`](app-url.md#storybook-canvas).
 3. Run `pnpm browser read --url <canvas-url> --selector <selector>`.
 
 Only `packages/ui` components are in Storybook. Check `packages/app-core` components against the live app, not Storybook. The smoke workflow (`verify-browser-smoke.yml`) checks only the bundler apps, not Storybook.

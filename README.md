@@ -11,12 +11,12 @@ pnpm dev:app    # app on the bundler set by BUNDLER in .env (default app-vite)
 pnpm dev:ui     # Storybook for @repo/ui
 ```
 
-| Task       | Command                          |
-| ---------- | -------------------------------- |
-| Build all  | `pnpm build`                     |
-| Unit tests | `pnpm test`                      |
-| Lint       | `pnpm lint`                      |
-| E2E        | see [`docs/e2e.md`](docs/e2e.md) |
+| Task       | Command                                            |
+| ---------- | -------------------------------------------------- |
+| Build all  | `pnpm build`                                       |
+| Unit tests | `pnpm test`                                        |
+| Lint       | `pnpm lint`                                        |
+| E2E        | see [`docs/template/e2e.md`](docs/template/e2e.md) |
 
 `pnpm dev` starts every bundler, Storybook and all watchers at once; use it only when you need all of them.
 
@@ -47,11 +47,13 @@ Every app builds for the `browserslist` query in the root `package.json`, `basel
 
 ## Documentation
 
-- [`docs/e2e.md`](docs/e2e.md): run and extend the E2E tests
-- [`docs/browser-validation.md`](docs/browser-validation.md): check the page with `--attach`, remote URLs, SSH tunnels, Storybook
-- [`docs/design-spec-validation.md`](docs/design-spec-validation.md): check a component against a design
-- [`docs/app-url.md`](docs/app-url.md): how tools find the app URL and ports
-- [`docs/component-validation-contract.md`](docs/component-validation-contract.md): `data-testid` rules and registry
-- [`docs/decisions/`](docs/decisions/): why the repo works the way it does
+Docs about the starter itself live in `docs/template/`. The rest of `docs/` is free for the docs of the project you build from it.
+
+- [`docs/template/e2e.md`](docs/template/e2e.md): run and extend the E2E tests
+- [`docs/template/browser-validation.md`](docs/template/browser-validation.md): check the page with `--attach`, remote URLs, SSH tunnels, Storybook
+- [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md): check a component against a design
+- [`docs/template/app-url.md`](docs/template/app-url.md): how tools find the app URL and ports
+- [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md): `data-testid` rules and registry
+- [`docs/template/decisions/`](docs/template/decisions/): why the repo works the way it does
 - [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): Chrome, page-check and capture commands (`pnpm chrome:debug`, `pnpm browser`, `pnpm capture`) and their flags
 - [`AGENTS.md`](AGENTS.md): instructions for AI agents

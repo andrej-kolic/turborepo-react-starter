@@ -45,7 +45,7 @@ pnpm --filter @repo/commons build
 
 ## Services (local dev)
 
-Override the browser or E2E target URL with **`TARGET_URL`**, never `PORT`, and never put it in `.env`. Ports, URL resolution and the stale-`TARGET_URL` trap: [`docs/app-url.md`](docs/app-url.md).
+Override the browser or E2E target URL with **`TARGET_URL`**, never `PORT`, and never put it in `.env`. Ports, URL resolution and the stale-`TARGET_URL` trap: [`docs/template/app-url.md`](docs/template/app-url.md).
 
 Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-tools-app-target`). Root `/scripts` holds plain-Node workflow scripts only.
 
@@ -68,7 +68,7 @@ Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch a
 - Multi-bundler boot: verify-browser-smoke.yml (dev server HTTP 200, all bundlers)
 - Debug on failure: Playwright trace (+ optional browser-capture)
 
-E2E runs against a **production preview** build — not the dev server. How to run it: [`docs/e2e.md`](docs/e2e.md); why: [`docs/decisions/0003-e2e-on-preview-build.md`](docs/decisions/0003-e2e-on-preview-build.md).
+E2E runs against a **production preview** build — not the dev server. How to run it: [`docs/template/e2e.md`](docs/template/e2e.md); why: [`docs/template/decisions/0003-e2e-on-preview-build.md`](docs/template/decisions/0003-e2e-on-preview-build.md).
 
 ## Common commands
 
@@ -85,18 +85,20 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 ## Documentation map
 
-| Doc                                                                                            | Purpose                                                                  |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`README.md`](README.md)                                                                       | Human-oriented package inventory and basic commands                      |
-| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md) | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
-| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)       | HAR, traces, Web Vitals — capture only, not routine verification         |
-| [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E: run locally, other bundler, add a test                   |
-| [`docs/browser-validation.md`](docs/browser-validation.md)                                     | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
-| [`docs/app-url.md`](docs/app-url.md)                                                           | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
-| [`docs/env.md`](docs/env.md)                                                                   | Add an `APP_REACT_*` env variable; the build validates it                |
-| [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming, scope and registry                                 |
-| [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks: snapshot, screenshot, `browser eval`                |
-| [`docs/decisions/`](docs/decisions/)                                                           | Decision records: why the repo works this way                            |
+Docs about the starter itself live in `docs/template/`. Put docs for the project built from it in the rest of `docs/`, not in `docs/template/`.
+
+| Doc                                                                                                | Purpose                                                                  |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`README.md`](README.md)                                                                           | Human-oriented package inventory and basic commands                      |
+| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md)     | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
+| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)           | HAR, traces, Web Vitals — capture only, not routine verification         |
+| [`docs/template/e2e.md`](docs/template/e2e.md)                                                     | Playwright E2E: run locally, other bundler, add a test                   |
+| [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
+| [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
+| [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                |
+| [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                 |
+| [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                |
+| [`docs/template/decisions/`](docs/template/decisions/)                                             | Decision records: why the repo works this way                            |
 
 Pick the **lightest** tool for the question: `pnpm test` (logic) · `pnpm e2e` (CI regression) ·
 Storybook (isolated UI) · browser-validation skill (live dev DOM/text) · browser-capture skill (artifacts).

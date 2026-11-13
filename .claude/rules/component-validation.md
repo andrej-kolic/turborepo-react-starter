@@ -6,7 +6,7 @@ paths:
 # Component validation contract
 
 Agent CLI verification (`pnpm browser validate`) and Playwright E2E — not unit-test selectors.
-**Full spec:** [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md)
+**Full spec:** [`docs/template/component-validation-contract.md`](../../docs/template/component-validation-contract.md)
 
 Quick rules when editing components:
 

@@ -57,7 +57,7 @@ Kebab-case, unique within a rendered page, no package prefix (`app-header`, not 
 
 ## Used by
 
-| Consumer       | Target        | Where                                                                                                  |
-| -------------- | ------------- | ------------------------------------------------------------------------------------------------------ |
-| Agent CLI      | Dev server    | `pnpm browser validate --selector "[data-testid=…]"`                                                   |
-| Playwright E2E | Preview build | [`packages/e2e/tests/app.spec.ts`](../packages/e2e/tests/app.spec.ts), run per [`docs/e2e.md`](e2e.md) |
+| Consumer       | Target        | Where                                                                                                              |
+| -------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Agent CLI      | Dev server    | `pnpm browser validate --selector "[data-testid=…]"`                                                               |
+| Playwright E2E | Preview build | [`packages/e2e/tests/app.spec.ts`](../../packages/e2e/tests/app.spec.ts), run per [`docs/template/e2e.md`](e2e.md) |
