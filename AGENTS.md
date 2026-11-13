@@ -93,6 +93,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 | [`docs/e2e.md`](docs/e2e.md)                                                                   | Playwright E2E: run locally, other bundler, add a test                   |
 | [`docs/browser-validation.md`](docs/browser-validation.md)                                     | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
 | [`docs/app-url.md`](docs/app-url.md)                                                           | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
+| [`docs/env.md`](docs/env.md)                                                                   | Add an `APP_REACT_*` env variable; the build validates it                |
 | [`docs/component-validation-contract.md`](docs/component-validation-contract.md)               | `data-testid` naming, scope and registry                                 |
 | [`docs/design-spec-validation.md`](docs/design-spec-validation.md)                             | Agent design checks: snapshot, screenshot, `browser eval`                |
 | [`docs/decisions/`](docs/decisions/)                                                           | Decision records: why the repo works this way                            |

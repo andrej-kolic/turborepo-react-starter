@@ -7,7 +7,7 @@ Workspace-aware development utilities for this monorepo.
 Used by bundler apps and tooling:
 
 - **`app-port`** — `devPort` / `previewPort` / URL resolution from `apps/*/package.json`
-- **`environment`** — `.env` loading for bundler configs, validated against the Zod schema in `@repo/client-types/env-schema` (add new `APP_REACT_*` variables there)
+- **`environment`** — `.env` loading for bundler configs, validated against the Zod schema in `@repo/client-types/env-schema` ([adding a variable](../../docs/env.md))
 - **`paths`** — `@repo/app-core` public/env paths for bundlers
 
 ## `bin/` — CLI entrypoints
