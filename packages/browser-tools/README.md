@@ -139,7 +139,7 @@ pnpm --filter @repo/browser-tools test
 ```
 
 CDP integration (Chrome + live page) is not unit-tested here — exercise locally with
-`pnpm browser validate` or rely on Playwright E2E for CI region checks ([`docs/e2e.md`](../../docs/e2e.md)).
+`pnpm browser validate` or rely on Playwright E2E for CI region checks ([`docs/template/e2e.md`](../../docs/template/e2e.md)).
 
 ## TODO
 
@@ -159,8 +159,8 @@ CDP integration (Chrome + live page) is not unit-tested here — exercise locall
 
 ## See Also
 
-- [`docs/browser-validation.md`](../../docs/browser-validation.md) — edge-case scenarios, Storybook
-- [`docs/app-url.md`](../../docs/app-url.md) — URL derivation
-- [`docs/design-spec-validation.md`](../../docs/design-spec-validation.md) — design/token checks via snapshot, screenshot, and `browser eval`
-- [`docs/component-validation-contract.md`](../../docs/component-validation-contract.md) — `data-testid` convention
+- [`docs/template/browser-validation.md`](../../docs/template/browser-validation.md) — edge-case scenarios, Storybook
+- [`docs/template/app-url.md`](../../docs/template/app-url.md) — URL derivation
+- [`docs/template/design-spec-validation.md`](../../docs/template/design-spec-validation.md) — design/token checks via snapshot, screenshot, and `browser eval`
+- [`docs/template/component-validation-contract.md`](../../docs/template/component-validation-contract.md) — `data-testid` convention
 - [`packages/browser-capture/README.md`](../browser-capture/README.md) — capture tier (HAR, traces, Web Vitals)

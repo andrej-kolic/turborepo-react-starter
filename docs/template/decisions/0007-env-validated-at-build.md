@@ -16,6 +16,6 @@ A missing or misspelled `APP_REACT_*` value built fine and reached the app as `u
 
 ## Consequences
 
-- A new variable goes in three places: [`docs/env.md`](../env.md).
+- A new variable goes in three places: [`docs/template/env.md`](../env.md).
 - The running app does not check the values again.
 - `@repo/client-types` now has runtime code and depends on `zod`.

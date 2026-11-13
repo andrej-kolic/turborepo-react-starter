@@ -8,14 +8,14 @@ Each bundler app declares `devPort` and `previewPort` in its `package.json` (e.g
 
 ## Resolution order
 
-`resolveAppUrl(env, mode)` in [`packages/dev-tools/config/app-port.ts`](../packages/dev-tools/config/app-port.ts):
+`resolveAppUrl(env, mode)` in [`packages/dev-tools/config/app-port.ts`](../../packages/dev-tools/config/app-port.ts):
 
 1. `TARGET_URL` set → used as-is, in any mode (dev, preview, remote, Storybook canvas)
 2. `mode: 'dev'` and `BUNDLER` set → `devPort` from `apps/<BUNDLER>/package.json`
 3. `mode: 'preview'` and `BUNDLER` set → `previewPort` from `apps/<BUNDLER>/package.json`
 4. else → `null`; `dev-tools-app-target` and E2E turn it into an error with a hint
 
-E2E uses the preview mode: `packages/e2e/playwright.config.ts` sets Playwright's `baseURL` from `resolvePreviewAppTarget()` in [`packages/e2e/lib/resolve-preview-target.ts`](../packages/e2e/lib/resolve-preview-target.ts).
+E2E uses the preview mode: `packages/e2e/playwright.config.ts` sets Playwright's `baseURL` from `resolvePreviewAppTarget()` in [`packages/e2e/lib/resolve-preview-target.ts`](../../packages/e2e/lib/resolve-preview-target.ts).
 
 ## Environment variables
 

@@ -30,7 +30,7 @@ BUNDLER=app-rspack pnpm e2e
 TARGET_URL=http://localhost:<previewPort> pnpm e2e
 ```
 
-`previewPort` is in `apps/<BUNDLER>/package.json`; URL rules are in [`docs/app-url.md`](app-url.md).
+`previewPort` is in `apps/<BUNDLER>/package.json`; URL rules are in [`docs/template/app-url.md`](app-url.md).
 
 ## Add a test
 
@@ -40,4 +40,4 @@ TARGET_URL=http://localhost:<previewPort> pnpm e2e
 
 ## Choose the CI bundler
 
-Set the GitHub repo variable `DEFAULT_BUNDLER` to `app-vite`, `app-rspack` or `app-esbuild` (fallback `app-vite`). [`.github/workflows/verify-e2e.yml`](../.github/workflows/verify-e2e.yml) builds that bundler, runs the job in the Playwright container that matches the catalog version, and uploads the report and traces on failure.
+Set the GitHub repo variable `DEFAULT_BUNDLER` to `app-vite`, `app-rspack` or `app-esbuild` (fallback `app-vite`). [`.github/workflows/verify-e2e.yml`](../../.github/workflows/verify-e2e.yml) builds that bundler, runs the job in the Playwright container that matches the catalog version, and uploads the report and traces on failure.

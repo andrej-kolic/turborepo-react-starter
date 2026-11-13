@@ -2,7 +2,7 @@
 
 How to check that a component matches a design (tokens and layout taken from Figma or a pasted SVG) while developing. This is a functional check, not pixel regression: pixel regression belongs to Chromatic on Storybook stories (no workflow yet, #126), and CI page-region checks to [Playwright E2E](e2e.md).
 
-Agents set up the browser with the [browser-validation skill](../.claude/skills/x-browser-validation/SKILL.md): Step 1 (start the app), then tier C (the CLI). Run `pnpm browser:ensure-app` first; `pnpm browser` commands then find the app URL themselves. Pass `--url` only to override it, for example with a [Storybook canvas URL](app-url.md#storybook-canvas). To keep checking a visible tab across HMR updates, add `--attach` ([how](browser-validation.md)). Selectors come from the [`data-testid` registry](component-validation-contract.md#registry).
+Agents set up the browser with the [browser-validation skill](../../.claude/skills/x-browser-validation/SKILL.md): Step 1 (start the app), then tier C (the CLI). Run `pnpm browser:ensure-app` first; `pnpm browser` commands then find the app URL themselves. Pass `--url` only to override it, for example with a [Storybook canvas URL](app-url.md#storybook-canvas). To keep checking a visible tab across HMR updates, add `--attach` ([how](browser-validation.md)). Selectors come from the [`data-testid` registry](component-validation-contract.md#registry).
 
 ## Pick a layer
 
@@ -93,4 +93,4 @@ pnpm browser screenshot \
   --output /tmp/app-header.png
 ```
 
-An agent with vision compares `/tmp/app-header.png` with a Figma export or a pasted reference image. This is a spot check, not a CI gate. CLI flags: [`packages/browser-tools/README.md`](../packages/browser-tools/README.md).
+An agent with vision compares `/tmp/app-header.png` with a Figma export or a pasted reference image. This is a spot check, not a CI gate. CLI flags: [`packages/browser-tools/README.md`](../../packages/browser-tools/README.md).

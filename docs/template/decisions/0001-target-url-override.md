@@ -17,4 +17,4 @@ Rename the override to `TARGET_URL` and apply one rule everywhere: when `TARGET_
 - A `TARGET_URL` left exported in a shell also overrides preview and E2E. `dev-tools-app-target` and E2E warn when a localhost value differs from the mode default.
 - `APP_URL` is no longer read.
 
-Reference: [`docs/app-url.md`](../app-url.md).
+Reference: [`docs/template/app-url.md`](../app-url.md).
