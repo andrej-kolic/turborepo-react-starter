@@ -46,6 +46,9 @@
     "rules:update": "rulesync install --update && rulesync generate -f rules -t claudecode,cursor",
     "rules:check": "rulesync install --frozen && rulesync generate --check -f rules -t claudecode,cursor"
   },
+  "browserslist": [
+    "baseline widely available"
+  ],
   "devDependencies": {
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",

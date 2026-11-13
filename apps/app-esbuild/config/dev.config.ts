@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { copy } from 'esbuild-plugin-copy';
 import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
 import { createRequire } from 'module';
@@ -51,6 +52,7 @@ async function dev() {
       '.svg': 'file',
     },
     format: 'esm',
+    target: browserslistToEsbuild(),
     logLevel: 'info',
     // esbuild has no HMR; its dev server only signals rebuilds on /esbuild,
     // so reload the page on each one. Lives here to stay out of prod builds.

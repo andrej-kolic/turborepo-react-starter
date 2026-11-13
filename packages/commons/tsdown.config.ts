@@ -4,7 +4,8 @@ export default defineConfig({
   entry: ['src/index.ts'],
   tsconfig: 'tsconfig.lib.json',
   format: ['esm'],
-  target: 'es2022',
+  // Ship modern syntax: each app lowers it to the root browserslist target.
+  target: 'esnext',
   // Keep the .js/.d.ts names that package.json's main and types point to.
   fixedExtension: false,
 

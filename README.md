@@ -41,6 +41,10 @@ Packages (`packages/`) export source with no build step of their own, except `co
 
 Infra (`infra/`): `aws` (CloudFormation with CloudFront, S3 and ACM) and `netlify` deploy scripts.
 
+## Browser support
+
+Every app builds for the `browserslist` query in the root `package.json`, `baseline widely available`, which moves forward as browsers age. Edit it to change the target.
+
 ## Documentation
 
 - [`docs/e2e.md`](docs/e2e.md): run and extend the E2E tests

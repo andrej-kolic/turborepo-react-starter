@@ -52,6 +52,9 @@ const rspackConfig = (
   return {
     entry: './src/index.tsx',
 
+    // Reads the root package.json browserslist; swc-loader and the CSS minifier inherit it.
+    target: 'browserslist',
+
     // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
     output: {
       path: distPath,
@@ -102,7 +105,6 @@ const rspackConfig = (
           loader: 'builtin:swc-loader',
           options: {
             jsc: {
-              target: 'es2022',
               parser: { syntax: 'typescript', tsx: true },
               transform: {
                 react: {
@@ -112,6 +114,14 @@ const rspackConfig = (
               },
             },
           },
+          type: 'javascript/auto',
+        },
+        {
+          // Compiled workspace packages (@repo/commons dist/) ship modern syntax;
+          // lower it to the browserslist target. Matches by real path, so they are not under node_modules.
+          test: /\.[cm]?js$/,
+          exclude: /node_modules/,
+          loader: 'builtin:swc-loader',
           type: 'javascript/auto',
         },
         {
