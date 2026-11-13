@@ -4,7 +4,7 @@ export default {
   workspaces: {
     '.': {
       // Run by the `browser:ensure-app` script through dev-tools-app-target, which knip can't follow.
-      entry: ['scripts/*.js'],
+      entry: ['scripts/ensure-app.js'],
       // Its bin runs through dev-tools-app-target in the `capture` script.
       ignoreDependencies: ['@repo/browser-capture'],
     },
