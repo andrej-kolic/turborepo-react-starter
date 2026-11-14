@@ -58,6 +58,8 @@ const buildResult = await esbuild.build({
 
   define: {
     'import.meta.env': JSON.stringify(environmentVariables),
+    // esbuild otherwise picks React's development build whenever minify is off.
+    'process.env.NODE_ENV': '"production"',
   },
 
   plugins: [
