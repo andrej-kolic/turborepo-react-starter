@@ -108,6 +108,7 @@ describe('defineEnvironmentVariables', () => {
     APP_REACT_ENV_FILE: '.env',
     APP_REACT_TITLE: 'Test "App"',
     APP_REACT_VERSION: '1.2.3',
+    APP_REACT_GUARD_ON: 'true',
   } as const;
 
   it('defines each import.meta.env key as its value in code form', () => {
@@ -118,6 +119,15 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_ENV_FILE': '".env"',
       'import.meta.env.APP_REACT_TITLE': '"Test \\"App\\""',
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
+      'import.meta.env.APP_REACT_GUARD_ON': '"true"',
+      'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
     });
+  });
+
+  it('defines a schema key without a value as undefined', () => {
+    expect(defineEnvironmentVariables(values)).toHaveProperty(
+      ['import.meta.env.APP_REACT_GUARD_OFF'],
+      'undefined',
+    );
   });
 });

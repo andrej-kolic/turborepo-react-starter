@@ -79,6 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - E2E: `pnpm e2e` (after `pnpm build:app` + `pnpm preview:app`)
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers): `pnpm check:size`
+- Env guards (after a build; every workflow that uses `.github/actions/build-project` runs it): `pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`
