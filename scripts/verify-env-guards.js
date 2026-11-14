@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Checks each bundler's build output for the env guard lines in packages/app-core/src/index.tsx:
+ * Checks each bundler's build output for the env guard lines in packages/app-core/src/env-guards.ts:
  * code behind APP_REACT_GUARD_ON (set) must ship, code behind APP_REACT_GUARD_OFF (unset) must be gone.
  * Exits 1 if either fails in any bundler app's dist folder, if no app has been built,
- * or if index.tsx no longer has both guard lines, since the build check would then prove nothing.
+ * or if env-guards.ts no longer has both guard lines, since the build check would then prove nothing.
  *
  * Usage, after a build:
  *   node scripts/verify-env-guards.js
@@ -18,7 +18,7 @@ const appsDir = join(root, 'apps');
 const ON_TEXT = 'env-guard:on';
 const OFF_TEXT = 'env-guard:off';
 
-const GUARD_SOURCE = 'packages/app-core/src/index.tsx';
+const GUARD_SOURCE = 'packages/app-core/src/env-guards.ts';
 const GUARD_LINES = [
   `if (import.meta.env.APP_REACT_GUARD_ON) console.debug('${ON_TEXT}');`,
   `if (import.meta.env.APP_REACT_GUARD_OFF) console.debug('${OFF_TEXT}');`,

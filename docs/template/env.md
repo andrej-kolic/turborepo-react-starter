@@ -19,4 +19,4 @@ if (import.meta.env.APP_REACT_GUARD_OFF) console.debug('env-guard:off');
 
 Read through `getEnvironmentVariables()` or a variable, esbuild keeps the code even when the value is unset. A switch read directly skips step 3.
 
-Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` after its build. It fails when the guard lines in [`packages/app-core/src/index.tsx`](../../packages/app-core/src/index.tsx) stop working this way.
+Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` after its build. It fails when the guard lines in [`packages/app-core/src/env-guards.ts`](../../packages/app-core/src/env-guards.ts) stop working this way.
