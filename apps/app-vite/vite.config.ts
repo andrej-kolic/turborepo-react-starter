@@ -39,7 +39,12 @@ export default defineConfig((configEnv) => {
   const environmentVariables = loadEnvironmentVariables({
     envDir: appCoreEnvDir,
     buildEnvironment,
-    customEnvVars: { BUNDLER: 'app-vite', MODE: configEnv.mode },
+    customEnvVars: {
+      BUNDLER: 'app-vite',
+      MODE: configEnv.mode,
+      // Vite's own PROD: it sets NODE_ENV (build: production, dev: development) before loading this file.
+      PROD: process.env.NODE_ENV === 'production',
+    },
   });
 
   debuglog('Runtime environment Variables:', environmentVariables);

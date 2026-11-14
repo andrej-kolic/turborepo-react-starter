@@ -21,9 +21,10 @@ function writeEnvFile(contents: string) {
 }
 
 function load(
-  customEnvVars: Record<string, string> = {
+  customEnvVars: Record<string, string | boolean> = {
     BUNDLER: 'app-vite',
     MODE: 'production',
+    PROD: true,
   },
 ) {
   return loadEnvironmentVariables({
@@ -58,6 +59,7 @@ describe('loadEnvironmentVariables', () => {
       BUILD_ENVIRONMENT: 'staging',
       BUNDLER: 'app-vite',
       MODE: 'production',
+      PROD: true,
     });
   });
 
@@ -88,8 +90,16 @@ describe('loadEnvironmentVariables', () => {
   it('throws when BUNDLER is unknown', () => {
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(() => load({ BUNDLER: 'app-webpack', MODE: 'production' })).toThrow(
-      /BUNDLER/,
+    expect(() =>
+      load({ BUNDLER: 'app-webpack', MODE: 'production', PROD: true }),
+    ).toThrow(/BUNDLER/);
+  });
+
+  it('throws naming PROD when the bundler does not set it', () => {
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(() => load({ BUNDLER: 'app-vite', MODE: 'production' })).toThrow(
+      /PROD/,
     );
   });
 
@@ -105,6 +115,7 @@ describe('defineEnvironmentVariables', () => {
     BUILD_ENVIRONMENT: 'staging',
     BUNDLER: 'app-esbuild',
     MODE: 'production',
+    PROD: false,
     APP_REACT_ENV_FILE: '.env',
     APP_REACT_TITLE: 'Test "App"',
     APP_REACT_VERSION: '1.2.3',
@@ -116,6 +127,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.BUILD_ENVIRONMENT': '"staging"',
       'import.meta.env.BUNDLER': '"app-esbuild"',
       'import.meta.env.MODE': '"production"',
+      'import.meta.env.PROD': 'false',
       'import.meta.env.APP_REACT_ENV_FILE': '".env"',
       'import.meta.env.APP_REACT_TITLE': '"Test \\"App\\""',
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',

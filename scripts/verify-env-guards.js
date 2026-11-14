@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
  * Checks each bundler's build output for the env guard lines in packages/app-core/src/env-guards.ts:
- * code behind APP_REACT_GUARD_ON (set) must ship, code behind APP_REACT_GUARD_OFF (unset) must be gone.
- * Exits 1 if either fails in any bundler app's dist folder, if no app has been built,
- * or if env-guards.ts no longer has both guard lines, since the build check would then prove nothing.
+ * code behind PROD (true in every build) and APP_REACT_GUARD_ON (set) must ship,
+ * code behind APP_REACT_GUARD_OFF (unset) must be gone.
+ * Exits 1 if any fails in any bundler app's dist folder, if no app has been built,
+ * or if env-guards.ts no longer has all three guard lines, since the build check would then prove nothing.
  *
  * Usage, after a build:
  *   node scripts/verify-env-guards.js
@@ -15,11 +16,13 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const appsDir = join(root, 'apps');
 
+const PROD_TEXT = 'env-guard:prod';
 const ON_TEXT = 'env-guard:on';
 const OFF_TEXT = 'env-guard:off';
 
 const GUARD_SOURCE = 'packages/app-core/src/env-guards.ts';
 const GUARD_LINES = [
+  `if (import.meta.env.PROD) console.debug('${PROD_TEXT}');`,
   `if (import.meta.env.APP_REACT_GUARD_ON) console.debug('${ON_TEXT}');`,
   `if (import.meta.env.APP_REACT_GUARD_OFF) console.debug('${OFF_TEXT}');`,
 ];
@@ -63,6 +66,11 @@ if (builds.length === 0) {
 const errors = [];
 for (const { app, distDir } of builds) {
   const scripts = readBuildScripts(distDir);
+  if (!scripts.includes(PROD_TEXT)) {
+    errors.push(
+      `${app}: '${PROD_TEXT}' is missing: the build dropped code behind import.meta.env.PROD, which every build sets to true.`,
+    );
+  }
   if (!scripts.includes(ON_TEXT)) {
     errors.push(
       `${app}: '${ON_TEXT}' is missing: the build dropped code behind APP_REACT_GUARD_ON, which packages/app-core/.env sets to "true".`,
@@ -81,5 +89,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind a set value and drop it behind an unset one.`,
+  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind PROD and a set value, and drop it behind an unset one.`,
 );

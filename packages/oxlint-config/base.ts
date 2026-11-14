@@ -32,7 +32,8 @@ export default defineConfig({
     'no-console': 'warn',
     'import/no-cycle': 'error',
     'import/no-unassigned-import': 'off',
-    'turbo/no-undeclared-env-vars': 'warn',
+    // MODE and PROD are bundler constants, not shell variables, so they stay out of turbo.json globalEnv.
+    'turbo/no-undeclared-env-vars': ['warn', { allowList: ['^(MODE|PROD)$'] }],
   },
   overrides: [
     {

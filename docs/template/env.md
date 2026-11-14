@@ -40,4 +40,20 @@ To ship code only in builds that set a value, for example a debug panel:
 
    Why: the bundlers replace only the exact text `import.meta.env.APP_REACT_DEBUG_PANEL` with the value, so the right way becomes `if (undefined)`, which the minifier removes. In the wrong ways the minifier would have to follow the value through a variable or a function: esbuild never does, and no bundler follows it through `getEnvironmentVariables()`. This also means the value needs no line in `environment.ts`.
 
-CI checks the `if` part on every build; that the whole module is left out was checked by hand, not in CI. Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` after the build. It looks at two test lines in [`packages/app-core/src/env-guards.ts`](../../packages/app-core/src/env-guards.ts): the build must keep the one behind `APP_REACT_GUARD_ON`, which is set, and leave out the one behind `APP_REACT_GUARD_OFF`, which never is.
+## Leave code out of the dev server
+
+To run code only in a production build, for example error reporting, put it inside an `if` on `import.meta.env.PROD`, the same way as above:
+
+```ts
+if (import.meta.env.PROD) {
+  void import('./error-reporting').then((module) =>
+    module.startErrorReporting(),
+  );
+}
+```
+
+`PROD` is `true` in a production build and `false` in the dev server, on all three bundlers, unless the shell sets `NODE_ENV`, as with Vite's own `PROD`. Don't use `MODE` for this: on Vite it is the `BUILD_ENVIRONMENT` in both, and on esbuild it is `N/A`. Why `PROD` works this way: [0008](decisions/0008-prod-follows-node-env.md).
+
+## What CI checks
+
+CI checks the `if` part on every build; that the whole module is left out was checked by hand, not in CI. Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` after the build. It looks at three test lines in [`packages/app-core/src/env-guards.ts`](../../packages/app-core/src/env-guards.ts): the build must keep the ones behind `PROD` and `APP_REACT_GUARD_ON`, which are set, and leave out the one behind `APP_REACT_GUARD_OFF`, which never is. That `PROD` is `false` in the dev server was checked by hand.

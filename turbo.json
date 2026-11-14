@@ -9,7 +9,6 @@
     "CI",
     "NODE_ENV",
     "NODE_DEBUG",
-    "MODE",
     "APP_REACT_ENV_FILE",
     "APP_REACT_TITLE",
     "APP_REACT_VERSION",

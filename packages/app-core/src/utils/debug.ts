@@ -14,6 +14,7 @@ export function debugLog() {
     import.meta.env.BUILD_ENVIRONMENT,
   );
   console.log('* import.meta.env.BUNDLER:', import.meta.env.BUNDLER);
+  console.log('* import.meta.env.PROD:', import.meta.env.PROD);
   console.log('* import.meta.env.MODE:', import.meta.env.MODE);
   console.log(
     '* import.meta.env.APP_REACT_TITLE:',
