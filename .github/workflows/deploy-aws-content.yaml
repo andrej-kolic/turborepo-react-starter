@@ -80,6 +80,7 @@ jobs:
           check-format: 'false'
           run-lint: 'false'
           run-tests: 'false'
+          check-size: 'false'
 
       - name: Deploy to development
         uses: ./infra/aws/.github/actions/deploy
@@ -112,6 +113,7 @@ jobs:
           check-format: 'false'
           run-lint: 'false'
           run-tests: 'false'
+          check-size: 'false'
 
       - name: Deploy to staging
         uses: ./infra/aws/.github/actions/deploy
@@ -141,6 +143,7 @@ jobs:
           check-format: 'false'
           run-lint: 'false'
           run-tests: 'false'
+          check-size: 'false'
 
       - name: Deploy to production
         uses: ./infra/aws/.github/actions/deploy

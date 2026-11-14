@@ -1,6 +1,6 @@
 # Check the bundle size
 
-CI fails when an app's production build grows past a size limit. The check is [size-limit](https://github.com/ai/size-limit) with `@size-limit/file`, which measures the built files, so it works the same for every bundler.
+CI fails when an app's production build grows past a size limit. `Build: Auto` runs the check on every PR and every push to `develop` and `main`; `Build: Manual` has a "Check bundle size" switch; deploys skip it, like the other checks. The check is [size-limit](https://github.com/ai/size-limit) with `@size-limit/file`, which measures the built files, so it works the same for every bundler.
 
 ## Run it
 
