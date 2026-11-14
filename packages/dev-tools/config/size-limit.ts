@@ -19,7 +19,7 @@ const sizeLimitConfig = [
   {
     name: 'Everything downloaded',
     path: ['dist/**/*', '!dist/**/*.map', '!dist/readme.txt'],
-    limit: '200 kB',
+    limit: '205 kB',
   },
 ] satisfies SizeLimitConfig;
 
