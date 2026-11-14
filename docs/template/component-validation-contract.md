@@ -41,11 +41,12 @@ Kebab-case, unique within a rendered page, no package prefix (`app-header`, not 
 
 ## Registry
 
-| `data-testid`    | Component                           | File                                                       |
-| ---------------- | ----------------------------------- | ---------------------------------------------------------- |
-| `app-header`     | `Header`                            | `packages/app-core/src/components/Header/index.tsx`        |
-| `resource-cards` | `ResourceCards`                     | `packages/app-core/src/components/ResourceCards/index.tsx` |
-| `scroller`       | `Scroller` (via `DynamicList` prop) | `packages/app-core/src/components/Scroller/index.tsx`      |
+| `data-testid`    | Component                           | File                                                          |
+| ---------------- | ----------------------------------- | ------------------------------------------------------------- |
+| `app-header`     | `Header`                            | `packages/app-core/src/components/Header/index.tsx`           |
+| `resource-cards` | `ResourceCards`                     | `packages/app-core/src/components/ResourceCards/index.tsx`    |
+| `scroller`       | `Scroller` (via `DynamicList` prop) | `packages/app-core/src/components/Scroller/index.tsx`         |
+| `app-error`      | `AppErrorBoundary` fallback         | `packages/app-core/src/components/AppErrorBoundary/index.tsx` |
 
 `@repo/ui` components with a `data-testid` prop:
 

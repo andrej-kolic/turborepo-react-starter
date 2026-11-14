@@ -21,7 +21,8 @@
     "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "react-error-boundary": "catalog:"
   },
   "devDependencies": {
     "@repo/client-types": "workspace:*",
