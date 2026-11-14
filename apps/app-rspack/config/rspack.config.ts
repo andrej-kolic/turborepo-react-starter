@@ -2,7 +2,10 @@ import path from 'node:path';
 import { createRequire } from 'module';
 import util from 'util';
 import { rspack, type Configuration } from '@rspack/core';
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 
 const _require = createRequire(import.meta.url);
@@ -71,14 +74,7 @@ const rspackConfig = (
     },
 
     plugins: [
-      new rspack.DefinePlugin({
-        'import.meta.env': Object.fromEntries(
-          Object.entries(environmentVariables).map(([key, value]) => [
-            key,
-            JSON.stringify(value),
-          ]),
-        ),
-      }),
+      new rspack.DefinePlugin(defineEnvironmentVariables(environmentVariables)),
 
       new rspack.HtmlRspackPlugin({
         template: `./src/index.html`,

@@ -9,8 +9,7 @@ import { z } from 'zod';
 export const environmentSchema = z.strictObject({
   BUILD_ENVIRONMENT: z.enum(['development', 'staging', 'production']),
   BUNDLER: z.enum(['app-vite', 'app-rspack', 'app-esbuild']),
-  // Optional because Vite sets MODE itself from --mode.
-  MODE: z.string().min(1).optional(),
+  MODE: z.string().min(1),
 
   APP_REACT_ENV_FILE: z.string().min(1),
   APP_REACT_TITLE: z.string().min(1),

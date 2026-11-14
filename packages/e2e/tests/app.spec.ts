@@ -1,3 +1,4 @@
+import { environmentSchema } from '@repo/client-types/env-schema';
 import { expect, test } from '../fixtures/app-target';
 import { AppPage } from '../pages/app.page';
 
@@ -15,6 +16,19 @@ test.describe('app smoke', () => {
     await appPage.expectRegisteredRegionsVisible();
 
     expect(consoleErrors).toEqual([]);
+  });
+
+  test('shows the build version and environment in the header', async ({
+    page,
+  }) => {
+    const appPage = new AppPage(page);
+    await appPage.goto();
+
+    // Format, not exact values: a TARGET_URL preview may be built from another .env.
+    const environments = environmentSchema.shape.BUILD_ENVIRONMENT.options;
+    await expect(appPage.header).toContainText(
+      new RegExp(String.raw`v\d+\.\d+\.\d+\S* - (${environments.join('|')})`),
+    );
   });
 
   test('shows the error screen on a render error and recovers on Try again', async ({

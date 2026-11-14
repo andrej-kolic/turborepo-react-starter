@@ -1,4 +1,7 @@
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import * as esbuild from 'esbuild';
 import browserslistToEsbuild from 'browserslist-to-esbuild';
@@ -57,7 +60,7 @@ const buildResult = await esbuild.build({
   target: browserslistToEsbuild(),
 
   define: {
-    'import.meta.env': JSON.stringify(environmentVariables),
+    ...defineEnvironmentVariables(environmentVariables),
     // esbuild otherwise picks React's development build whenever minify is off.
     'process.env.NODE_ENV': '"production"',
   },

@@ -11,7 +11,10 @@ const pkg = _require('./package.json') as {
   previewPort: number;
 };
 
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
@@ -26,18 +29,20 @@ if (!process.env.BUILD_ENVIRONMENT) {
   throw new Error(errorMsg);
 }
 
-// MODE is left to Vite, which sets it from --mode.
-const environmentVariables = loadEnvironmentVariables({
-  envDir: appCoreEnvDir,
-  buildEnvironment: process.env.BUILD_ENVIRONMENT,
-  customEnvVars: { BUNDLER: 'app-vite' },
-});
-
-debuglog('Runtime environment Variables:', environmentVariables);
+const buildEnvironment = process.env.BUILD_ENVIRONMENT;
 
 export default defineConfig((configEnv) => {
   // Vite's configEnv.mode should be set to the same as BUILD_ENVIRONMENT
   debuglog('configEnv:', configEnv);
+
+  // MODE is the same value Vite puts in import.meta.env.MODE itself.
+  const environmentVariables = loadEnvironmentVariables({
+    envDir: appCoreEnvDir,
+    buildEnvironment,
+    customEnvVars: { BUNDLER: 'app-vite', MODE: configEnv.mode },
+  });
+
+  debuglog('Runtime environment Variables:', environmentVariables);
 
   return {
     base: '', // generate relative paths
@@ -47,12 +52,7 @@ export default defineConfig((configEnv) => {
     // Like the other bundlers, dev does not restart on .env changes; restart it by hand.
     envDir: false,
     envPrefix: 'APP_REACT',
-    define: Object.fromEntries(
-      Object.entries(environmentVariables).map(([key, value]) => [
-        `import.meta.env.${key}`,
-        JSON.stringify(value),
-      ]),
-    ),
+    define: defineEnvironmentVariables(environmentVariables),
 
     server: {
       port: pkg.devPort,
