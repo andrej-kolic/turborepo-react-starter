@@ -5,6 +5,7 @@ import './styles.css';
 
 export type CardProps = {
   className?: string;
+  /** Shown in the circle at the top. Omit for the default picture icon; `null` leaves the circle empty. */
   image?: React.ReactNode;
   title: string;
   children?: React.ReactNode;
@@ -29,7 +30,7 @@ export function Card({
       // target="_blank"
     >
       <div className="Card__image">
-        {image ?? <img alt="icon" src={ImageIcon} />}
+        {image === undefined ? <img alt="icon" src={ImageIcon} /> : image}
       </div>
 
       {/* oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- demo click handler */}

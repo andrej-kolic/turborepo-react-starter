@@ -16,4 +16,19 @@ test.describe('app smoke', () => {
 
     expect(consoleErrors).toEqual([]);
   });
+
+  test('shows the error screen on a render error and recovers on Try again', async ({
+    page,
+  }) => {
+    const appPage = new AppPage(page);
+    await appPage.goto();
+
+    await appPage.throwDemoError();
+    await expect(appPage.appError).toContainText('Something went wrong');
+    await expect(appPage.resourceCards).toBeHidden();
+
+    await appPage.tryAgain();
+    await expect(appPage.appError).toBeHidden();
+    await appPage.expectRegisteredRegionsVisible();
+  });
 });

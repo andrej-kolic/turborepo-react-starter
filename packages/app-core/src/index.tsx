@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { debugLog } from './utils/debug';
 import { ResourceCards } from './components/ResourceCards';
 import { Scroller } from './components/Scroller';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 import '@repo/ui/theme.css';
 import './styles.css';
@@ -19,12 +20,14 @@ console.log('* 1 + 2:', add(1, 2));
 // demo: triggers the no-underscore-dangle lint warning
 const _orphan = 1;
 
-export function AppCore(props: {
+type AppCoreProps = {
   className?: string;
   title: string;
   children: React.ReactNode;
   href: string;
-}): React.JSX.Element {
+};
+
+function AppContent(props: AppCoreProps): React.JSX.Element {
   debugLog();
 
   return (
@@ -35,6 +38,14 @@ export function AppCore(props: {
 
       <Scroller />
     </main>
+  );
+}
+
+export function AppCore(props: AppCoreProps): React.JSX.Element {
+  return (
+    <AppErrorBoundary>
+      <AppContent {...props} />
+    </AppErrorBoundary>
   );
 }
 
