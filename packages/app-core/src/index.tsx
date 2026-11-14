@@ -9,6 +9,7 @@ import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 import '@repo/ui/theme.css';
 import './styles.css';
+import './env-guards';
 
 // demo: keeps a type import from @repo/commons
 const ct: CustomType = { _type: 'test' };

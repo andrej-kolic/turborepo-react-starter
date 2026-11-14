@@ -1,7 +1,10 @@
 import dotenvFlow from 'dotenv-flow';
 import util from 'util';
 import { z } from 'zod';
-import { environmentSchema } from '@repo/client-types/env-schema';
+import {
+  environmentSchema,
+  type EnvironmentVariables,
+} from '@repo/client-types/env-schema';
 
 const debuglog = util.debuglog('dev-tools');
 
@@ -73,4 +76,23 @@ export function loadEnvironmentVariables({
   }
 
   return result.data;
+}
+
+/**
+ * Bundler `define` entries that replace each `import.meta.env.<KEY>` in the schema with its value at build time.
+ * A key without a value becomes `undefined`, so the minifier drops code that an `if` on it guards.
+ * Works as Vite `define`, Rspack `DefinePlugin` and esbuild `define`.
+ */
+export function defineEnvironmentVariables(
+  environmentVariables: Readonly<EnvironmentVariables>,
+) {
+  return Object.fromEntries(
+    environmentSchema.keyof().options.map((key) => {
+      const value = environmentVariables[key];
+      return [
+        `import.meta.env.${key}`,
+        value === undefined ? 'undefined' : JSON.stringify(value),
+      ];
+    }),
+  );
 }

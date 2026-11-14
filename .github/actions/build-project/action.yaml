@@ -204,3 +204,16 @@ runs:
 
         # Run turbo with all tasks, filtered to the specific build target
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS $FILTER
+
+    # Check env guards
+
+    - shell: bash
+      run: |
+        echo " "
+        echo " "
+        echo "Check env guards"
+        echo "──────────────────────────────────────"
+        echo " "
+    - name: Check env guards
+      shell: bash
+      run: pnpm check:env-guards

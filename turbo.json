@@ -12,7 +12,9 @@
     "MODE",
     "APP_REACT_ENV_FILE",
     "APP_REACT_TITLE",
-    "APP_REACT_VERSION"
+    "APP_REACT_VERSION",
+    "APP_REACT_GUARD_ON",
+    "APP_REACT_GUARD_OFF"
   ],
   "globalPassThroughEnv": ["GITHUB_TOKEN"],
 

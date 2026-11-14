@@ -513,6 +513,9 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.65.0
+      '@repo/client-types':
+        specifier: workspace:*
+        version: link:../client-types
       '@repo/dev-tools':
         specifier: workspace:*
         version: link:../dev-tools

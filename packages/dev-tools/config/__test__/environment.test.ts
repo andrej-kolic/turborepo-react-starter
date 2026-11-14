@@ -2,7 +2,10 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { loadEnvironmentVariables } from '../environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '../environment';
 
 const VALID_ENV_FILE = [
   'APP_REACT_TITLE="Test App"',
@@ -17,7 +20,12 @@ function writeEnvFile(contents: string) {
   writeFileSync(join(envDir, '.env'), contents);
 }
 
-function load(customEnvVars: Record<string, string> = { BUNDLER: 'app-vite' }) {
+function load(
+  customEnvVars: Record<string, string> = {
+    BUNDLER: 'app-vite',
+    MODE: 'production',
+  },
+) {
   return loadEnvironmentVariables({
     envDir,
     buildEnvironment: 'staging',
@@ -49,6 +57,7 @@ describe('loadEnvironmentVariables', () => {
       APP_REACT_VERSION: '1.2.3',
       BUILD_ENVIRONMENT: 'staging',
       BUNDLER: 'app-vite',
+      MODE: 'production',
     });
   });
 
@@ -79,12 +88,46 @@ describe('loadEnvironmentVariables', () => {
   it('throws when BUNDLER is unknown', () => {
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(() => load({ BUNDLER: 'app-webpack' })).toThrow(/BUNDLER/);
+    expect(() => load({ BUNDLER: 'app-webpack', MODE: 'production' })).toThrow(
+      /BUNDLER/,
+    );
   });
 
   it('ignores variables without the prefix', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nOTHER="x"`);
 
     expect(load()).not.toHaveProperty('OTHER');
+  });
+});
+
+describe('defineEnvironmentVariables', () => {
+  const values = {
+    BUILD_ENVIRONMENT: 'staging',
+    BUNDLER: 'app-esbuild',
+    MODE: 'production',
+    APP_REACT_ENV_FILE: '.env',
+    APP_REACT_TITLE: 'Test "App"',
+    APP_REACT_VERSION: '1.2.3',
+    APP_REACT_GUARD_ON: 'true',
+  } as const;
+
+  it('defines each import.meta.env key as its value in code form', () => {
+    expect(defineEnvironmentVariables(values)).toEqual({
+      'import.meta.env.BUILD_ENVIRONMENT': '"staging"',
+      'import.meta.env.BUNDLER': '"app-esbuild"',
+      'import.meta.env.MODE': '"production"',
+      'import.meta.env.APP_REACT_ENV_FILE': '".env"',
+      'import.meta.env.APP_REACT_TITLE': '"Test \\"App\\""',
+      'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
+      'import.meta.env.APP_REACT_GUARD_ON': '"true"',
+      'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
+    });
+  });
+
+  it('defines a schema key without a value as undefined', () => {
+    expect(defineEnvironmentVariables(values)).toHaveProperty(
+      ['import.meta.env.APP_REACT_GUARD_OFF'],
+      'undefined',
+    );
   });
 });

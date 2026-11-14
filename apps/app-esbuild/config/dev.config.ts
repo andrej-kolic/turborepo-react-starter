@@ -3,7 +3,10 @@ import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { copy } from 'esbuild-plugin-copy';
 import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
 import { createRequire } from 'module';
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import util from 'util';
 import path from 'path';
@@ -79,9 +82,7 @@ async function dev() {
         watch: true, // Enable watching for dev mode
       }),
     ],
-    define: {
-      'import.meta.env': JSON.stringify(environmentVariables),
-    },
+    define: defineEnvironmentVariables(environmentVariables),
   });
 
   await ctx.watch();
