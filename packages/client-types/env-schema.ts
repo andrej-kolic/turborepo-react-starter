@@ -10,6 +10,8 @@ export const environmentSchema = z.strictObject({
   BUILD_ENVIRONMENT: z.enum(['development', 'staging', 'production']),
   BUNDLER: z.enum(['app-vite', 'app-rspack', 'app-esbuild']),
   MODE: z.string().min(1),
+  // true in a production build, false in the dev server; the same on every bundler, unlike MODE.
+  PROD: z.boolean(),
 
   APP_REACT_ENV_FILE: z.string().min(1),
   APP_REACT_TITLE: z.string().min(1),

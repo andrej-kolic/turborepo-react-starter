@@ -44,6 +44,7 @@ const rspackConfig = (
     customEnvVars: {
       BUNDLER: 'app-rspack',
       MODE: options.mode, // should be set to 'development' or 'production'
+      PROD: options.mode === 'production',
     },
   });
 

@@ -21,7 +21,7 @@ const PREFIX = 'APP_REACT';
  *
  * @param envDir directory where .env files are located
  * @param buildEnvironment environment name, e.g. 'development', 'production', 'staging'
- * @param customEnvVars extra values, e.g. BUNDLER and MODE
+ * @param customEnvVars extra values, e.g. BUNDLER, MODE and PROD
  *
  * @returns validated environment variables to be used in the app
  * @throws Error listing every invalid or unknown variable
@@ -33,7 +33,7 @@ export function loadEnvironmentVariables({
 }: {
   envDir: string;
   buildEnvironment: string;
-  customEnvVars?: Record<string, string>;
+  customEnvVars?: Record<string, string | boolean>;
 }) {
   // load .env files
   const variables = dotenvFlow.config({
