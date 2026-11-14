@@ -94,7 +94,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md)     | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)           | HAR, traces, Web Vitals — capture only, not routine verification         |
 | [`docs/template/e2e.md`](docs/template/e2e.md)                                                     | Playwright E2E: run locally, other bundler, add a test                   |
-| [`docs/template/bundle-size.md`](docs/template/bundle-size.md)                                     | Bundle size check: run it, where limits live, raise a limit              |
+| [`docs/template/bundle-size.md`](docs/template/bundle-size.md)                                     | Bundle size check: run it, block merges on it, limits, raise a limit     |
 | [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
 | [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                |

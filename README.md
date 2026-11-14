@@ -51,7 +51,7 @@ Every app builds for the `browserslist` query in the root `package.json`, `basel
 Docs about the starter itself live in `docs/template/`. The rest of `docs/` is free for the docs of the project you build from it.
 
 - [`docs/template/e2e.md`](docs/template/e2e.md): run and extend the E2E tests
-- [`docs/template/bundle-size.md`](docs/template/bundle-size.md): the bundle size check and how to raise a limit
+- [`docs/template/bundle-size.md`](docs/template/bundle-size.md): the bundle size check, how to block merges on it, and how to raise a limit
 - [`docs/template/browser-validation.md`](docs/template/browser-validation.md): check the page with `--attach`, remote URLs, SSH tunnels, Storybook
 - [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md): check a component against a design
 - [`docs/template/app-url.md`](docs/template/app-url.md): how tools find the app URL and ports

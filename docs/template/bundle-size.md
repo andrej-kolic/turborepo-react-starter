@@ -18,6 +18,16 @@ Size limit: 70 kB
 Size:       158.17 kB brotlied
 ```
 
+## Block merges that fail it
+
+A failing check blocks a merge only when a ruleset requires it. Rulesets are repository settings, not files, so a repository made from this template needs its own. On GitHub, open **Settings → Rulesets** and, unless one already requires `Build project`, choose **New ruleset → New branch ruleset**:
+
+1. Fill in **Ruleset Name**, for example `Protect develop and main`.
+2. Set **Enforcement status** to **Active**.
+3. Under **Target branches**, choose **Add target → Include by pattern** and add `develop`, then `main`.
+4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks → `Build project`**.
+5. Click **Create**.
+
 ## Limits
 
 All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
