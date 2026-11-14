@@ -21,6 +21,10 @@ catalog:
   serve: 14.2.7
   '@turbo/gen': 2.11.11
 
+  # Bundle size
+  size-limit: 14.3.0
+  '@size-limit/file': 14.3.0
+
   # Validation
   zod: 4.6.7
 

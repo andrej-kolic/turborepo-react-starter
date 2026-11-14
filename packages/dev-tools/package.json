@@ -7,7 +7,8 @@
   "exports": {
     "./config/app-port": "./config/app-port.ts",
     "./config/environment": "./config/environment.ts",
-    "./config/paths": "./config/paths.ts"
+    "./config/paths": "./config/paths.ts",
+    "./config/size-limit": "./config/size-limit.ts"
   },
   "bin": {
     "dev-tools-app-target": "./bin/app-target.js"
@@ -24,6 +25,7 @@
     "@repo/client-types": "workspace:*",
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
+    "size-limit": "catalog:",
     "tsx": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"

@@ -9,6 +9,9 @@ catalogs:
     '@playwright/test':
       specifier: 1.65.0
       version: 1.65.0
+    '@size-limit/file':
+      specifier: 14.3.0
+      version: 14.3.0
     '@testing-library/dom':
       specifier: 10.4.2
       version: 10.4.2
@@ -51,6 +54,9 @@ catalogs:
     serve:
       specifier: 14.2.7
       version: 14.2.7
+    size-limit:
+      specifier: 14.3.0
+      version: 14.3.0
     tsx:
       specifier: 4.23.15
       version: 4.23.15
@@ -150,6 +156,9 @@ importers:
       '@repo/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/oxlint-config
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.6
@@ -171,6 +180,9 @@ importers:
       serve:
         specifier: 'catalog:'
         version: 14.2.7
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
       tsx:
         specifier: 'catalog:'
         version: 4.23.15
@@ -208,6 +220,9 @@ importers:
       '@rspack/dev-server':
         specifier: 2.2.2
         version: 2.2.2(@rspack/core@2.3.2)
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.6
@@ -220,6 +235,9 @@ importers:
       serve:
         specifier: 'catalog:'
         version: 14.2.7
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
       tsx:
         specifier: 'catalog:'
         version: 4.23.15
@@ -245,6 +263,9 @@ importers:
       '@repo/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/oxlint-config
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.6
@@ -260,6 +281,9 @@ importers:
       browserslist-to-esbuild:
         specifier: 'catalog:'
         version: 2.1.1(browserslist@4.29.5)
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
       vite:
         specifier: 'catalog:'
         version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -471,6 +495,9 @@ importers:
       dotenv-flow:
         specifier: 4.1.0
         version: 4.1.0
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
       tsx:
         specifier: 'catalog:'
         version: 4.23.15
@@ -3385,6 +3412,12 @@ packages:
     resolution: {integrity: sha512-doH1gimEu3A46VX6aVxpHTeHrytJAG6HgdxntYnCFiIFHEM/ZGpG8KiZGBChchjQmG0XFIBL552kBTjVcMZXwQ==}
     engines: {node: '>=12'}
 
+  '@size-limit/file@14.3.0':
+    resolution: {integrity: sha512-GWKOi0rorXPbYmwbT926Z91t28rg5gd5hv8ywY1FNcaYf8NbibgK5K5YabYbLkV6KpGwuuixBRtIzl3ZpPzUfw==}
+    engines: {node: ^22.19.0 || ^24.5.0 || >=26.0.0}
+    peerDependencies:
+      size-limit: 14.3.0
+
   '@so-ric/colorspace@1.1.6':
     resolution: {integrity: sha512-/KiKkpHNOBgkFJwu9sh48LkHSMYGyuTcSFK/qMBdnOAlrRJzRSXAOFB5qwzaVQuDl8wAvHVMkaASQDReTahxuw==}
 
@@ -6012,6 +6045,10 @@ packages:
     resolution: {integrity: sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==}
     engines: {node: '>= 12.0.0'}
 
+  lilconfig@3.1.5:
+    resolution: {integrity: sha512-aRAOI9Ia43ygL4o1EOmC/sc/0OFxrm7qcQngiIyWaqVnSnz932ybJ07zyCcgMNGSDP8Yxaf88Xj1zHEXmvQ4SA==}
+    engines: {node: '>=14'}
+
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
@@ -7183,6 +7220,11 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  size-limit@14.3.0:
+    resolution: {integrity: sha512-SoT7DtEYQ9AkOIyrNmmHu8IyJyA3P/Q6EUVjUUinT0iBuaI6IOpWxwyI+teUxg8WdLwcTwbu9moKvw/LGlCE7g==}
+    engines: {node: ^22.19.0 || ^24.5.0 || >=26.0.0}
+    hasBin: true
 
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -10537,6 +10579,10 @@ snapshots:
     dependencies:
       escape-string-regexp: 5.0.0
 
+  '@size-limit/file@14.3.0(size-limit@14.3.0)':
+    dependencies:
+      size-limit: 14.3.0
+
   '@so-ric/colorspace@1.1.6':
     dependencies:
       color: 5.0.3
@@ -13217,6 +13263,8 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
 
+  lilconfig@3.1.5: {}
+
   lines-and-columns@1.2.4: {}
 
   lint-staged@17.6.0:
@@ -14700,6 +14748,11 @@ snapshots:
   signal-exit@3.0.7: {}
 
   signal-exit@4.1.0: {}
+
+  size-limit@14.3.0:
+    dependencies:
+      lilconfig: 3.1.5
+      nanospinner: 1.2.2
 
   slash@3.0.0: {}
 
