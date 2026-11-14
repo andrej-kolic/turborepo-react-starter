@@ -46,7 +46,7 @@ const buildResult = await esbuild.build({
   // Without it, JS refers to images relative to assets/, which breaks from index.html at the root.
   publicPath: '/',
   metafile: true,
-  //   minify: true,
+  minify: true,
   //   sourcemap: true,
   loader: {
     '.png': 'file',
