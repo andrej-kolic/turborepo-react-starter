@@ -46,3 +46,4 @@ jobs:
           check-format: 'true'
           run-lint: 'true'
           run-tests: 'true'
+          check-size: 'true'
