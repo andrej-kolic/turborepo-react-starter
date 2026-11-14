@@ -11,6 +11,7 @@
     "lint": "oxlint --type-aware",
     "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && tsc -p tsconfig.check.json",
+    "check:size": "size-limit",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
@@ -22,11 +23,13 @@
     "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
+    "@size-limit/file": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "6.3.0",
     "browserslist-to-esbuild": "catalog:",
+    "size-limit": "catalog:",
     "vite": "catalog:"
   }
 }

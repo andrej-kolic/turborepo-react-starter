@@ -21,6 +21,7 @@
     "check:audit": "pnpm audit --audit-level=high",
     "check:dependencies": "dotenv -- syncpack lint --dependency-types prod,dev",
     "check:type": "dotenv -- turbo run check:type",
+    "check:size": "dotenv -- turbo run check:size",
     "check:unused": "dotenv -- knip",
     "check:format": "dotenv -- oxfmt --check",
     "check:agents": "pnpm rules:check && rulesync generate --check -t claudecode -f skills,commands && rulesync generate --check -t cursor -f commands,mcp",

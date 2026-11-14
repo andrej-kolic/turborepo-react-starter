@@ -16,6 +16,7 @@
     "lint": "oxlint --type-aware",
     "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "check:size": "size-limit",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
+    "@size-limit/file": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -35,6 +37,7 @@
     "esbuild": "0.28.2",
     "esbuild-plugin-copy": "2.1.1",
     "serve": "catalog:",
+    "size-limit": "catalog:",
     "tsx": "catalog:"
   }
 }

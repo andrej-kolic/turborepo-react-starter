@@ -42,6 +42,10 @@ on:
         type: boolean
         description: Run tests
         default: true
+      check_size:
+        type: boolean
+        description: Check bundle size
+        default: true
 
 env:
   HUSKY: 0
@@ -90,3 +94,4 @@ jobs:
           check-format: ${{ github.event.inputs.check_format }}
           run-lint: ${{ github.event.inputs.run_lint }}
           run-tests: ${{ github.event.inputs.run_tests }}
+          check-size: ${{ github.event.inputs.check_size }}

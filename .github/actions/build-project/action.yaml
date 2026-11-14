@@ -32,6 +32,11 @@ inputs:
     required: false
     default: 'true'
 
+  check-size:
+    description: 'Run bundle size check (pnpm check:size)'
+    required: false
+    default: 'true'
+
   build-filter:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
     required: false
@@ -63,6 +68,7 @@ runs:
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
+        echo "Check size: ${{ inputs.check-size }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
         echo " "
@@ -178,6 +184,10 @@ runs:
 
         if [ "${{ inputs.run-tests }}" = "true" ]; then
           TASKS="$TASKS test"
+        fi
+
+        if [ "${{ inputs.check-size }}" = "true" ]; then
+          TASKS="$TASKS check:size"
         fi
 
         echo "Running tasks in parallel: $TASKS"

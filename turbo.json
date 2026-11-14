@@ -39,6 +39,9 @@
     "check:type": {
       "dependsOn": ["^build", "^check:type"]
     },
+    "check:size": {
+      "dependsOn": ["build"]
+    },
     "test:watch": {
       "cache": false
     },
