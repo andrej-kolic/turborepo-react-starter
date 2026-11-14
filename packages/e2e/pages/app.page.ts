@@ -11,6 +11,7 @@ export class AppPage {
   readonly header: Locator;
   readonly resourceCards: Locator;
   readonly scroller: Locator;
+  readonly appError: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -18,6 +19,7 @@ export class AppPage {
     this.header = page.getByTestId('app-header');
     this.resourceCards = page.getByTestId('resource-cards');
     this.scroller = page.getByTestId('scroller');
+    this.appError = page.getByTestId('app-error');
   }
 
   trackConsoleErrors(): string[] {
@@ -43,5 +45,13 @@ export class AppPage {
     await expect(this.header).toBeVisible();
     await expect(this.resourceCards).toBeVisible();
     await expect(this.scroller).toBeVisible();
+  }
+
+  async throwDemoError(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Throw error' }).click();
+  }
+
+  async tryAgain(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Try again' }).click();
   }
 }
