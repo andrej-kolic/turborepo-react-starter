@@ -1,8 +1,17 @@
 # Report errors to Sentry
 
-A production build with `APP_REACT_SENTRY_DSN` set sends React's errors to [Sentry](https://sentry.io): render errors the error boundary catches, the ones it doesn't, and the ones React recovers from. Each event is tagged with its `BUILD_ENVIRONMENT` (`development`, `staging` or `production`), so one Sentry project serves every environment.
+A build with `APP_REACT_SENTRY_DSN` set sends React's errors to [Sentry](https://sentry.io): render errors the error boundary catches, the ones it doesn't, and the ones React recovers from. Each event is tagged with its `BUILD_ENVIRONMENT` (`development`, `staging` or `production`), so one Sentry project serves every environment.
 
-The dev server and builds without the DSN, such as a fork of this template, send nothing and ship none of Sentry's code. Sentry's code loads after the app, in its own file. The switch is in [`packages/app-core/src/optional-features.ts`](../../packages/app-core/src/optional-features.ts); the handlers it adds are in [`packages/app-core/src/error-reporting`](../../packages/app-core/src/error-reporting/index.ts). Why it works this way: [0009](decisions/0009-optional-features-gate.md).
+Sentry's code loads after the app, in its own file. The switch is in [`packages/app-core/src/optional-features.ts`](../../packages/app-core/src/optional-features.ts); the handlers it adds are in [`packages/app-core/src/error-reporting`](../../packages/app-core/src/error-reporting/index.ts). Why it works this way: [0009](decisions/0009-optional-features-gate.md).
+
+## Which builds include Sentry's code
+
+|                            | DSN set | DSN unset or empty |
+| -------------------------- | ------- | ------------------ |
+| Dev server                 | no      | no                 |
+| Build (preview and deploy) | yes     | no                 |
+
+`BUILD_ENVIRONMENT`, building locally or in CI, and the bundler don't change this. A fork has no DSN, so it ships none.
 
 ## Turn it on
 
@@ -24,7 +33,7 @@ The DSN is the address events go to; Sentry shows it under **Project Settings â†
 
 4. Build and open the preview (`pnpm build:app`, `pnpm preview:app`). After an error, the page's network requests include one to the host in your DSN: `ingest.sentry.io`, or `ingest.de.sentry.io` for a project in the EU.
 
-To turn it off, remove the value. An empty value counts as unset.
+To turn it off, remove the value.
 
 ## What CI checks
 
