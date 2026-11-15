@@ -47,6 +47,9 @@ const buildResult = await esbuild.build({
   // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
   entryNames: 'assets/[name]-[hash]',
   assetNames: 'assets/[name]-[hash]',
+  // Puts each dynamic import() in its own file, as Vite and Rspack do, so it loads after the app.
+  splitting: true,
+  chunkNames: 'assets/[name]-[hash]',
   // Without it, JS refers to images relative to assets/, which breaks from index.html at the root.
   publicPath: '/',
   metafile: true,
