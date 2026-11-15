@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
+import { rootOptions } from '@repo/app-core/optional-features';
 import './index.css';
 
 // demo: a component export, so foo below triggers react/only-export-components
@@ -24,7 +25,7 @@ if (!root) {
   throw new Error('no root element');
 }
 
-ReactDOM.createRoot(root).render(
+ReactDOM.createRoot(root, rootOptions).render(
   <React.StrictMode>
     <Wrapper />
   </React.StrictMode>,

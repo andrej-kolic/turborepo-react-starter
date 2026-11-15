@@ -27,6 +27,13 @@ export const environmentSchema = z.strictObject({
   // Optional, like a real switch; GUARD_ON is "true" in packages/app-core/.env, and no committed file sets GUARD_OFF.
   APP_REACT_GUARD_ON: z.literal('true').optional(),
   APP_REACT_GUARD_OFF: z.literal('true').optional(),
+
+  // Unset turns error reporting off; see docs/template/error-reporting.md.
+  // An empty value counts as unset: CI passes an empty string when the repo variable doesn't exist.
+  APP_REACT_SENTRY_DSN: z
+    .union([z.url(), z.literal('')])
+    .transform((value) => value || undefined)
+    .optional(),
 });
 
 /** Validated environment values; `env.d.ts` builds `import.meta.env` types from it. */

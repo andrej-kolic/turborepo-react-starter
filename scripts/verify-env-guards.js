@@ -3,6 +3,8 @@
  * Checks each bundler's build output for the env guard lines in packages/app-core/src/env-guards.ts:
  * code behind PROD (true in every build) and APP_REACT_GUARD_ON (set) must ship,
  * code behind APP_REACT_GUARD_OFF (unset) must be gone.
+ * Also checks Sentry's guard in packages/app-core/src/optional-features.ts: Sentry's code ships only in a build
+ * with APP_REACT_SENTRY_DSN set, and never in the file index.html loads, since it loads after the app.
  * Exits 1 if any fails in any bundler app's dist folder, if no app has been built,
  * or if env-guards.ts no longer has all three guard lines, since the build check would then prove nothing.
  *
@@ -10,7 +12,7 @@
  *   node scripts/verify-env-guards.js
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,6 +21,10 @@ const appsDir = join(root, 'apps');
 const PROD_TEXT = 'env-guard:prod';
 const ON_TEXT = 'env-guard:on';
 const OFF_TEXT = 'env-guard:off';
+
+// The global every Sentry SDK sets up, and a DSN: https://<32-hex public key>@<host>/<project id>.
+const SENTRY_TEXT = '__SENTRY__';
+const DSN_PATTERN = /https?:\/\/[0-9a-f]{32}@[^\s"'`]+\/\d+/;
 
 const GUARD_SOURCE = 'packages/app-core/src/env-guards.ts';
 const GUARD_LINES = [
@@ -49,8 +55,39 @@ if (missingLines.length > 0) {
 function readBuildScripts(distDir) {
   return readdirSync(distDir, { recursive: true })
     .filter((file) => /\.[cm]?js$/.test(file))
-    .map((file) => readFileSync(join(distDir, file), 'utf8'))
-    .join('\n');
+    .map((file) => ({
+      file,
+      text: readFileSync(join(distDir, file), 'utf8'),
+    }));
+}
+
+// The scripts the page runs before the app starts, as paths relative to dist/: the ones index.html
+// loads and, following static imports, every file they import. import() calls are not followed.
+function readEagerFiles(distDir, files) {
+  const textByFile = new Map(files.map(({ file, text }) => [file, text]));
+  const html = readFileSync(join(distDir, 'index.html'), 'utf8');
+  const pending = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map(
+    ([, src]) => normalize(src.replace(/^\//, '')),
+  );
+  const eager = new Set();
+  while (pending.length > 0) {
+    const file = pending.pop();
+    if (eager.has(file) || !textByFile.has(file)) continue;
+    eager.add(file);
+    for (const [, specifier] of textByFile
+      .get(file)
+      .matchAll(/\b(?:from|import)\s*["']([^"']+\.js)["']/g)) {
+      // esbuild writes imports from the site root (its publicPath), the others relative to the file.
+      pending.push(
+        normalize(
+          specifier.startsWith('/')
+            ? specifier.slice(1)
+            : join(dirname(file), specifier),
+        ),
+      );
+    }
+  }
+  return eager;
 }
 
 const builds = readdirSync(appsDir)
@@ -65,7 +102,8 @@ if (builds.length === 0) {
 
 const errors = [];
 for (const { app, distDir } of builds) {
-  const scripts = readBuildScripts(distDir);
+  const files = readBuildScripts(distDir);
+  const scripts = files.map(({ text }) => text).join('\n');
   if (!scripts.includes(PROD_TEXT)) {
     errors.push(
       `${app}: '${PROD_TEXT}' is missing: the build dropped code behind import.meta.env.PROD, which every build sets to true.`,
@@ -81,6 +119,22 @@ for (const { app, distDir } of builds) {
       `${app}: '${OFF_TEXT}' still ships: the build kept code behind APP_REACT_GUARD_OFF, which should be unset. See docs/template/env.md.`,
     );
   }
+
+  const sentryFiles = files
+    .filter(({ text }) => text.includes(SENTRY_TEXT))
+    .map(({ file }) => file);
+  if (sentryFiles.length > 0 && !DSN_PATTERN.test(scripts)) {
+    errors.push(
+      `${app}: Sentry's code ships in a build without APP_REACT_SENTRY_DSN (${sentryFiles.join(', ')}). See docs/template/error-reporting.md.`,
+    );
+  }
+  const eagerFiles = readEagerFiles(distDir, files);
+  const eagerSentryFiles = sentryFiles.filter((file) => eagerFiles.has(file));
+  if (eagerSentryFiles.length > 0) {
+    errors.push(
+      `${app}: Sentry's code is in ${eagerSentryFiles.join(', ')}, which loads before the app starts: load it with import() instead.`,
+    );
+  }
 }
 
 if (errors.length > 0) {
@@ -89,5 +143,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind PROD and a set value, and drop it behind an unset one.`,
+  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind PROD and a set value, drop it behind an unset one, and load Sentry only with a DSN, after the app.`,
 );

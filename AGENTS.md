@@ -99,6 +99,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
 | [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                |
+| [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                |
 | [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                 |
 | [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                |
 | [`docs/template/decisions/`](docs/template/decisions/)                                             | Decision records: why the repo works this way                            |

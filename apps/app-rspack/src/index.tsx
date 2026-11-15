@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
+import { rootOptions } from '@repo/app-core/optional-features';
 import './index.css';
 
 const rootNode = document.getElementById('app');
@@ -16,7 +17,7 @@ export const Wrapper = () => (
   </AppCore>
 );
 
-createRoot(rootNode).render(
+createRoot(rootNode, rootOptions).render(
   <StrictMode>
     <Wrapper />
   </StrictMode>,

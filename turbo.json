@@ -13,7 +13,8 @@
     "APP_REACT_TITLE",
     "APP_REACT_VERSION",
     "APP_REACT_GUARD_ON",
-    "APP_REACT_GUARD_OFF"
+    "APP_REACT_GUARD_OFF",
+    "APP_REACT_SENTRY_DSN"
   ],
   "globalPassThroughEnv": ["GITHUB_TOKEN"],
 

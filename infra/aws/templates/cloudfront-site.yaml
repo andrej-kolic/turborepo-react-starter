@@ -160,7 +160,8 @@ Resources:
             AccessControlMaxAgeSec: 63072000
             Override: true
           ContentSecurityPolicy:
-            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'"
+            # connect-src: error reporting sends events to Sentry (docs/template/error-reporting.md).
+            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src https://*.sentry.io; object-src 'none'"
             Override: true
           ContentTypeOptions:
             Override: true

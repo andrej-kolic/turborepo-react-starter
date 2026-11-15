@@ -42,6 +42,8 @@ concurrency:
   cancel-in-progress: true # Cancel any in-progress runs for this group
 
 env:
+  # Sentry's DSN: unset or empty builds without error reporting (docs/template/error-reporting.md).
+  APP_REACT_SENTRY_DSN: ${{ vars.APP_REACT_SENTRY_DSN }}
   AWS_DEFAULT_REGION: us-east-1
   HUSKY: 0
   BUNDLER: >-

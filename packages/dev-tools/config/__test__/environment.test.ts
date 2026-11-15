@@ -81,6 +81,19 @@ describe('loadEnvironmentVariables', () => {
     expect(load().APP_REACT_VERSION).toBe('1.2.3-rc.1+build.5');
   });
 
+  it('treats an empty APP_REACT_SENTRY_DSN as unset', () => {
+    process.env.APP_REACT_SENTRY_DSN = '';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_SENTRY_DSN).toBeUndefined();
+  });
+
+  it('throws when APP_REACT_SENTRY_DSN is not a URL', () => {
+    writeEnvFile(`${VALID_ENV_FILE}\nAPP_REACT_SENTRY_DSN="not-a-url"`);
+
+    expect(() => load()).toThrow(/APP_REACT_SENTRY_DSN/);
+  });
+
   it('throws when an APP_REACT_* variable is not in the schema', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nAPP_REACT_TYPO="x"`);
 
@@ -133,6 +146,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
+      'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
     });
   });
 

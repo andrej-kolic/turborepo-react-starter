@@ -1,0 +1,36 @@
+# Optional features turn on in `optional-features.ts`
+
+- Status: accepted
+- Date: 2026-11-15
+
+## Context
+
+Error reporting (#158) must ship none of Sentry's code in the dev server or in a build without `APP_REACT_SENTRY_DSN`, such as a fork of this template, on all three bundlers. Each bundler leaves code out only when the minifier sees the `if` become `if (undefined)`: [env.md](../env.md#leave-code-out-of-builds-without-a-value).
+
+## Decision
+
+- [`packages/app-core/src/optional-features.ts`](../../../packages/app-core/src/optional-features.ts) holds every gate. Each reads its values straight from `import.meta.env` and writes its `import()` inside the `if`:
+
+  ```ts
+  if (import.meta.env.PROD && import.meta.env.APP_REACT_SENTRY_DSN) {
+    Object.assign(
+      rootOptions,
+      errorReportingHandlers(import('./error-reporting/sentry')),
+    );
+  }
+  ```
+
+- The feature's own code stays in its folder (`error-reporting/`) and takes the loaded module as an argument, so it never imports the module itself.
+- The apps import the result from `@repo/app-core/optional-features`, an entry of its own in `packages/app-core/package.json`.
+
+## Rejected
+
+- A shared helper such as `importSentry()` called from the gate: whether esbuild and Rspack still leave the module out through a function call is untested, and the safe failure is not obvious, since a build that ships Sentry still works.
+- Shipping Sentry in every build and turning it off at runtime: every fork downloads code it never runs.
+- [`env-guards.ts`](../../../packages/app-core/src/env-guards.ts) as the home: it holds test lines for the build check, not features.
+- Re-exporting `rootOptions` from `packages/app-core/src/index.tsx`: a file that exports components and other values makes React Fast Refresh reload the whole page (`react/only-export-components`).
+
+## Consequences
+
+- A new optional feature adds its own `if` to `optional-features.ts`, in the same shape.
+- `pnpm check:env-guards` fails a build that ships Sentry without a DSN, or loads it before the app starts.

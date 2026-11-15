@@ -11,6 +11,9 @@ catalog:
   '@types/react-dom': 19.3.0
   react-error-boundary: 6.1.6
 
+  # Error reporting
+  '@sentry/react': 11.12.0
+
   # Node
   '@types/node': '26.6.6'
 
