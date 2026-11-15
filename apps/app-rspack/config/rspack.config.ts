@@ -70,6 +70,10 @@ const rspackConfig = (
       clean: true,
     },
 
+    // Production: .map files without a sourceMappingURL comment; the deploy uploads them to Sentry and deletes them.
+    // Development keeps Rspack's default.
+    ...(options.mode === 'production' && { devtool: 'hidden-source-map' }),
+
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },

@@ -161,6 +161,12 @@ sync_site_content() {
         exit 1
     fi
 
+    # Before any upload, so no .map file is ever published: see docs/template/error-reporting.md.
+    if ! pnpm --dir "$MONOREPO_ROOT_DIR" exec dev-tools-sentry-sourcemaps "$SITE_DIR"; then
+        print_error "Source maps left in $SITE_DIR; nothing was deployed."
+        exit 1
+    fi
+
     # exit 0
 
     # Get the S3 bucket name from CloudFormation outputs

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import dotenvFlow from 'dotenv-flow';
 import util from 'util';
 import { z } from 'zod';
@@ -11,12 +12,26 @@ const debuglog = util.debuglog('dev-tools');
 // Fixed: environmentSchema only knows APP_REACT_* keys.
 const PREFIX = 'APP_REACT';
 
+// The commit checked out in `dir`, or undefined outside a git checkout (e.g. a downloaded zip).
+// Read here, not passed in, so local and CI builds get it the same way, as Sentry's bundler plugins do.
+function readGitCommit(dir: string) {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: dir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Load variables from .env files and process.env. Meant to be used in bundlers.
  * 1. Load .env files from envDir, based on buildEnvironment
  * 2. Merge with process.env (process.env has precedence)
  * 3. Filter only variables with PREFIX
- * 4. Enhance with BUILD_ENVIRONMENT and customEnvVars
+ * 4. Enhance with BUILD_ENVIRONMENT, GIT_COMMIT (the commit checked out in envDir) and customEnvVars
  * 5. Validate against `environmentSchema`
  *
  * @param envDir directory where .env files are located
@@ -59,10 +74,11 @@ export function loadEnvironmentVariables({
 
   debuglog('custom variables:', customEnvVars);
 
-  // enhance with BUILD_ENVIRONMENT and customEnvVars
+  // enhance with BUILD_ENVIRONMENT, GIT_COMMIT and customEnvVars
   const finalEnvMap = {
     ...filteredEnvMap,
     BUILD_ENVIRONMENT: buildEnvironment,
+    GIT_COMMIT: readGitCommit(envDir),
     ...customEnvVars,
   };
   debuglog('final variable map:', finalEnvMap);

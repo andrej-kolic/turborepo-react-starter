@@ -48,10 +48,12 @@ describe('rootOptions', () => {
     expect(Sentry.init).not.toHaveBeenCalled();
   });
 
-  it('startsSentryTaggedWithBuildEnvironment_whenProdAndDsnSet', async () => {
+  it('startsSentryTaggedWithBuildEnvironmentAndRelease_whenProdAndDsnSet', async () => {
     vi.stubEnv('PROD', true);
     vi.stubEnv('APP_REACT_SENTRY_DSN', DSN);
     vi.stubEnv('BUILD_ENVIRONMENT', 'staging');
+    vi.stubEnv('APP_REACT_VERSION', '1.2.3');
+    vi.stubEnv('GIT_COMMIT', 'abc1234def5678abc1234def5678abc1234def56');
 
     await loadRootOptions();
 
@@ -59,6 +61,7 @@ describe('rootOptions', () => {
       expect(Sentry.init).toHaveBeenCalledWith({
         dsn: DSN,
         environment: 'staging',
+        release: 'turborepo-react-starter@1.2.3+abc1234',
       }),
     );
   });

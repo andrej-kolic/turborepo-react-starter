@@ -86,6 +86,11 @@ jobs:
 
       - name: Deploy to development
         uses: ./infra/aws/.github/actions/deploy
+        # Source map upload (docs/template/error-reporting.md); unset skips it.
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         with:
           environment: development
           action: content
@@ -119,6 +124,11 @@ jobs:
 
       - name: Deploy to staging
         uses: ./infra/aws/.github/actions/deploy
+        # Source map upload (docs/template/error-reporting.md); unset skips it.
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         with:
           environment: staging
           action: content
@@ -149,6 +159,11 @@ jobs:
 
       - name: Deploy to production
         uses: ./infra/aws/.github/actions/deploy
+        # Source map upload (docs/template/error-reporting.md); unset skips it.
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         with:
           environment: production
           action: content

@@ -12,6 +12,11 @@ export const environmentSchema = z.strictObject({
   MODE: z.string().min(1),
   // true in a production build, false in the dev server; the same on every bundler, unlike MODE.
   PROD: z.boolean(),
+  // The git commit the build is made from, for the Sentry release name; unset outside a git checkout.
+  GIT_COMMIT: z
+    .string()
+    .regex(/^[0-9a-f]{40}$/)
+    .optional(),
 
   APP_REACT_ENV_FILE: z.string().min(1),
   APP_REACT_TITLE: z.string().min(1),

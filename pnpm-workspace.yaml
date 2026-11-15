@@ -13,6 +13,7 @@ catalog:
 
   # Error reporting
   '@sentry/react': 11.12.0
+  '@sentry/cli': 3.8.2
 
   # Node
   '@types/node': '26.6.6'
@@ -46,6 +47,7 @@ engineStrict: true
 
 allowBuilds:
   '@parcel/watcher': true
+  '@sentry/cli': true
   esbuild: true
   netlify-cli: true
   sharp: true

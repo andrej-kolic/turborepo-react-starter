@@ -85,6 +85,8 @@ export default defineConfig((configEnv) => {
 
     build: {
       target: browserslistToEsbuild(),
+      // .map files without a sourceMappingURL comment: the deploy uploads them to Sentry and deletes them.
+      sourcemap: 'hidden',
       // TODO: remove, added for readable output
       // minify: false,
       // rollupOptions: {

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -94,6 +95,34 @@ describe('loadEnvironmentVariables', () => {
     expect(() => load()).toThrow(/APP_REACT_SENTRY_DSN/);
   });
 
+  it('sets GIT_COMMIT to the commit checked out in envDir', () => {
+    writeEnvFile(VALID_ENV_FILE);
+    const git = (...args: string[]) =>
+      execFileSync('git', args, { cwd: envDir, encoding: 'utf8' }).trim();
+    git('init', '-q');
+    git(
+      '-c',
+      'user.name=test',
+      '-c',
+      'user.email=test@example.com',
+      '-c',
+      'commit.gpgsign=false',
+      'commit',
+      '-q',
+      '--allow-empty',
+      '-m',
+      'test',
+    );
+
+    expect(load().GIT_COMMIT).toBe(git('rev-parse', 'HEAD'));
+  });
+
+  it('leaves GIT_COMMIT unset outside a git checkout', () => {
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().GIT_COMMIT).toBeUndefined();
+  });
+
   it('throws when an APP_REACT_* variable is not in the schema', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nAPP_REACT_TYPO="x"`);
 
@@ -147,6 +176,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
+      'import.meta.env.GIT_COMMIT': 'undefined',
     });
   });
 

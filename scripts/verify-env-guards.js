@@ -5,6 +5,7 @@
  * code behind APP_REACT_GUARD_OFF (unset) must be gone.
  * Also checks Sentry's guard in packages/app-core/src/optional-features.ts: Sentry's code ships only in a build
  * with APP_REACT_SENTRY_DSN set, and never in the file index.html loads, since it loads after the app.
+ * Also checks that no script links a source map: maps go only to Sentry (docs/template/error-reporting.md).
  * Exits 1 if any fails in any bundler app's dist folder, if no app has been built,
  * or if env-guards.ts no longer has all three guard lines, since the build check would then prove nothing.
  *
@@ -25,6 +26,9 @@ const OFF_TEXT = 'env-guard:off';
 // The global every Sentry SDK sets up, and a DSN: https://<32-hex public key>@<host>/<project id>.
 const SENTRY_TEXT = '__SENTRY__';
 const DSN_PATTERN = /https?:\/\/[0-9a-f]{32}@[^\s"'`]+\/\d+/;
+
+// The comment that tells the browser where a script's source map is.
+const SOURCE_MAP_COMMENT = /^\/\/[#@] sourceMappingURL=/m;
 
 const GUARD_SOURCE = 'packages/app-core/src/env-guards.ts';
 const GUARD_LINES = [
@@ -120,6 +124,15 @@ for (const { app, distDir } of builds) {
     );
   }
 
+  const linkedMapFiles = files
+    .filter(({ text }) => SOURCE_MAP_COMMENT.test(text))
+    .map(({ file }) => file);
+  if (linkedMapFiles.length > 0) {
+    errors.push(
+      `${app}: ${linkedMapFiles.join(', ')} link a source map (sourceMappingURL): build hidden source maps instead. See docs/template/error-reporting.md.`,
+    );
+  }
+
   const sentryFiles = files
     .filter(({ text }) => text.includes(SENTRY_TEXT))
     .map(({ file }) => file);
@@ -143,5 +156,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind PROD and a set value, drop it behind an unset one, and load Sentry only with a DSN, after the app.`,
+  `✓ Env guards: ${builds.map(({ app }) => app).join(', ')} keep code behind PROD and a set value, drop it behind an unset one, and load Sentry only with a DSN, after the app, and link no source map.`,
 );
