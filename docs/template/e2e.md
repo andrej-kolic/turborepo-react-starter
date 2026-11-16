@@ -15,6 +15,8 @@ kill %1                                     # stop the preview
 
 `pnpm e2e` passes extra flags to Playwright.
 
+No test sends anything to Sentry, even on a build with your DSN from `.env.local`: `packages/e2e/fixtures/app-target.ts` answers every request to Sentry inside the test browser.
+
 ## Run against another bundler
 
 ```bash
@@ -48,7 +50,7 @@ kill %1
 
 1. Assert page regions with `getByTestId`, using values from the [registry](component-validation-contract.md#registry). Use `getByRole` and `getByText` for user flows (clicks, forms, navigation).
 2. Put page selectors and actions in a page class under `packages/e2e/pages/` (like `app.page.ts`).
-3. Write the spec in `packages/e2e/tests/`, using the `test` fixture from `packages/e2e/fixtures/app-target.ts`. A test that needs Sentry in the build gets `{ tag: '@sentry' }`, as `tests/web-vitals.spec.ts` does.
+3. Write the spec in `packages/e2e/tests/`, using the `test` fixture from `packages/e2e/fixtures/app-target.ts`; `pnpm lint` fails on a test that imports `test` from Playwright instead, since that test could send to Sentry. A test that needs Sentry in the build gets `{ tag: '@sentry' }`, as `tests/web-vitals.spec.ts` does.
 
 ## Choose the CI bundler
 
