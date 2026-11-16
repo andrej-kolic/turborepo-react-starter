@@ -18,6 +18,7 @@
     "test": "dotenv -- turbo run test",
     "test:watch": "dotenv -- turbo run test:watch",
     "e2e": "dotenv -- pnpm --filter @repo/e2e e2e",
+    "e2e:sentry": "dotenv -- pnpm --filter @repo/e2e e2e:sentry",
     "check:audit": "pnpm audit --audit-level=high",
     "check:dependencies": "dotenv -- syncpack lint --dependency-types prod,dev",
     "check:type": "dotenv -- turbo run check:type",

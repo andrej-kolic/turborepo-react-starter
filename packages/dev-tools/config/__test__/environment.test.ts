@@ -61,6 +61,7 @@ describe('loadEnvironmentVariables', () => {
       BUNDLER: 'app-vite',
       MODE: 'production',
       PROD: true,
+      APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
     });
   });
 
@@ -94,6 +95,32 @@ describe('loadEnvironmentVariables', () => {
 
     expect(() => load()).toThrow(/APP_REACT_SENTRY_DSN/);
   });
+
+  it('reads APP_REACT_SENTRY_TRACES_SAMPLE_RATE as a number', () => {
+    writeEnvFile(
+      `${VALID_ENV_FILE}\nAPP_REACT_SENTRY_TRACES_SAMPLE_RATE="0.25"`,
+    );
+
+    expect(load().APP_REACT_SENTRY_TRACES_SAMPLE_RATE).toBe(0.25);
+  });
+
+  it('treats an empty APP_REACT_SENTRY_TRACES_SAMPLE_RATE as unset', () => {
+    process.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE = '';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_SENTRY_TRACES_SAMPLE_RATE).toBe(0.1);
+  });
+
+  it.each(['1.5', '-0.1', 'all'])(
+    'throws when APP_REACT_SENTRY_TRACES_SAMPLE_RATE is %s',
+    (rate) => {
+      writeEnvFile(
+        `${VALID_ENV_FILE}\nAPP_REACT_SENTRY_TRACES_SAMPLE_RATE="${rate}"`,
+      );
+
+      expect(() => load()).toThrow(/APP_REACT_SENTRY_TRACES_SAMPLE_RATE/);
+    },
+  );
 
   it('sets GIT_COMMIT to the commit checked out in envDir', () => {
     writeEnvFile(VALID_ENV_FILE);
@@ -162,6 +189,7 @@ describe('defineEnvironmentVariables', () => {
     APP_REACT_TITLE: 'Test "App"',
     APP_REACT_VERSION: '1.2.3',
     APP_REACT_GUARD_ON: 'true',
+    APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
   } as const;
 
   it('defines each import.meta.env key as its value in code form', () => {
@@ -176,6 +204,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
+      'import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE': '0.1',
       'import.meta.env.GIT_COMMIT': 'undefined',
     });
   });

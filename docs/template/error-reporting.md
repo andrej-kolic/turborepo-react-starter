@@ -61,6 +61,22 @@ Errors are filed under the release `turborepo-react-starter@<APP_REACT_VERSION>+
 
 If the upload fails, for example while Sentry is down, the deploy goes ahead with a warning, as with Sentry's bundler plugins; that deploy's errors stay minified in Sentry. The deploy stops before publishing anything only if a `.map` is left in `dist/`.
 
+## Web Vitals
+
+A build with a DSN also sends three measurements of each visit to Sentry, under **Insights → Frontend → Web Vitals**: LCP (how fast the main content shows), CLS (how much the layout jumps) and INP (how fast the page responds to a click or key press). Each page view is named after its path, so the pages table has one row per page. Why this setup: [0012](decisions/0012-web-vitals-with-browser-tracing.md).
+
+Only a share of visits report: `APP_REACT_SENTRY_TRACES_SAMPLE_RATE`, from 0 to 1, default 0.1. It is not a secret, so set it in [`packages/app-core/.env`](../../packages/app-core/.env), or `.env.production` for one environment; an empty value counts as unset. `0` turns Web Vitals off and keeps error reporting.
+
+```sh
+APP_REACT_SENTRY_TRACES_SAMPLE_RATE=0.25
+```
+
+The browser sends CLS and INP only when the page is hidden, for example when the visitor switches tabs or closes it, and LCP after the first click or key press. Sentry also records the timing of the app's `fetch` and XHR requests, and adds its `sentry-trace` and `baggage` headers to requests to the app's own origin.
+
+Page names are full paths: `/users/1` and `/users/2` are two rows. After adding a router, switch to Sentry's integration for that router, so pages are named by route.
+
 ## What CI checks
 
 `pnpm check:env-guards` runs after every build in CI. It fails if a build ships Sentry's code without a DSN, loads it before the app starts instead of through `import()`, or links a source map from its JS.
+
+The `Verify: E2E` workflow also builds the app with a fake DSN and checks in Chromium that LCP, CLS and INP are sent, named after the page; the test answers Sentry's requests itself. How to run it locally: [e2e.md](e2e.md#run-the-sentry-tests).

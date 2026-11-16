@@ -31,7 +31,7 @@ const sizeLimitConfig = [
   },
   // Only builds with APP_REACT_SENTRY_DSN have the file; size-limit fails a check that finds none.
   ...(globSync(SENTRY_FILES).length > 0
-    ? [{ name: 'Sentry', path: SENTRY_FILES, limit: '33 kB' }]
+    ? [{ name: 'Sentry', path: SENTRY_FILES, limit: '57 kB' }]
     : []),
 ] satisfies SizeLimitConfig;
 

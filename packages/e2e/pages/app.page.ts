@@ -1,3 +1,13 @@
+/**
+ * Shared helper for the E2E tests that open the app's home page.
+ *
+ * It knows how to find the page's parts (header, cards, error box) and how to do what a test needs
+ * (open the page, click "Throw error", switch the tab away), so each test calls `appPage.throwDemoError()`
+ * instead of repeating how to find that button.
+ *
+ * Used by `tests/app.spec.ts` and `tests/web-vitals.spec.ts`.
+ */
+
 import {
   expect,
   type Locator,
@@ -53,5 +63,32 @@ export class AppPage {
 
   async tryAgain(): Promise<void> {
     await this.page.getByRole('button', { name: 'Try again' }).click();
+  }
+
+  /**
+   * Waits until the browser has recorded the first click or key press, and until code that waits for idle time, as web-vitals does, has seen it.
+   * The browser records it only after the next paint, so hiding the page right after a click loses it.
+   */
+  async waitForFirstInputRecorded(): Promise<void> {
+    await this.page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          new PerformanceObserver((_list, observer) => {
+            observer.disconnect();
+            requestIdleCallback(() => resolve());
+          }).observe({ type: 'first-input', buffered: true });
+        }),
+    );
+  }
+
+  /** Acts as if the visitor switched tabs; headless Chromium never hides the page by itself. */
+  async hide(): Promise<void> {
+    await this.page.evaluate(() => {
+      Object.defineProperty(document, 'visibilityState', {
+        configurable: true,
+        get: () => 'hidden',
+      });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
   }
 }

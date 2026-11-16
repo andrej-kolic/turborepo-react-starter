@@ -39,6 +39,15 @@ export const environmentSchema = z.strictObject({
     .union([z.url(), z.literal('')])
     .transform((value) => value || undefined)
     .optional(),
+  // Share of visits that send Web Vitals, 0 to 1; only builds with APP_REACT_SENTRY_DSN use it.
+  // Unset or empty is 0.1: z.coerce.number() alone would turn "" into 0 and stop Web Vitals silently.
+  APP_REACT_SENTRY_TRACES_SAMPLE_RATE: z
+    .union([
+      z.literal('').transform(() => undefined),
+      z.coerce.number().min(0).max(1),
+    ])
+    .optional()
+    .transform((value) => value ?? 0.1),
 });
 
 /** Validated environment values; `env.d.ts` builds `import.meta.env` types from it. */
