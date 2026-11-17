@@ -31,6 +31,8 @@ jobs:
 
     env:
       BUNDLER: ${{ matrix.bundler }}
+      # Perf measures what a fork ships: no optional features (docs/template/build-profiles.md).
+      BUILD_PROFILE: bare
 
     steps:
       - name: Checkout

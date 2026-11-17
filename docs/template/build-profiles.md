@@ -1,8 +1,8 @@
 # Build profiles
 
-Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size` and `pnpm check:env-guards`. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
+Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check:env-guards`, which run on both profiles, and the `Verify: Browser perf` workflow, which runs on `bare` only. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
 
-`BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Each check runs on both, so every feature is checked off and on.
+`BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
 The dev server, `pnpm build:app` and deploys take no profile: they load `.env.local` and your real values, as before.
 
