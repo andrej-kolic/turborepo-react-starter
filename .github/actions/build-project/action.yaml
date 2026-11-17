@@ -32,6 +32,11 @@ inputs:
     required: false
     default: 'true'
 
+  check-type:
+    description: 'Run type check (pnpm check:type)'
+    required: false
+    default: 'true'
+
   check-size:
     description: 'Run bundle size check (pnpm check:size)'
     required: false
@@ -68,9 +73,11 @@ runs:
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
+        echo "Check type: ${{ inputs.check-type }}"
         echo "Check size: ${{ inputs.check-size }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
+        echo "Build profile: ${BUILD_PROFILE:-none}"
         echo " "
 
     # Setup pnpm
@@ -174,10 +181,14 @@ runs:
         # Build tasks list based on inputs
         TASKS=""
 
-        # Always include build and type check for the specific filter
-        TASKS="build check:type"
+        # Always build and check env guards on the build, for the specific filter
+        TASKS="build check:env-guards"
 
         # Add conditional tasks
+        if [ "${{ inputs.check-type }}" = "true" ]; then
+          TASKS="$TASKS check:type"
+        fi
+
         if [ "${{ inputs.run-lint }}" = "true" ]; then
           TASKS="$TASKS lint"
         fi
@@ -204,16 +215,3 @@ runs:
 
         # Run turbo with all tasks, filtered to the specific build target
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS $FILTER
-
-    # Check env guards
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Check env guards"
-        echo "──────────────────────────────────────"
-        echo " "
-    - name: Check env guards
-      shell: bash
-      run: pnpm check:env-guards

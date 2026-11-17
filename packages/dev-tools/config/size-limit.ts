@@ -30,7 +30,9 @@ const sizeLimitConfig = [
     limit: '204 kB',
   },
   // Only builds with APP_REACT_SENTRY_DSN have the file; size-limit fails a check that finds none.
-  ...(globSync(SENTRY_FILES).length > 0
+  // A features build always has a DSN (docs/template/build-profiles.md), so there a missing file fails the check.
+  ...(process.env.BUILD_PROFILE === 'features' ||
+  globSync(SENTRY_FILES).length > 0
     ? [{ name: 'Sentry', path: SENTRY_FILES, limit: '57 kB' }]
     : []),
 ] satisfies SizeLimitConfig;

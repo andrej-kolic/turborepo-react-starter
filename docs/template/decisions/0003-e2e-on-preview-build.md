@@ -18,6 +18,6 @@ The repo needed a CI regression check for what users see. The agent browser tool
 
 - E2E is the CI source of truth for page regions. The agent browser tools check the same regions while coding, but are not a CI check.
 - Bundlers other than `DEFAULT_BUNDLER` get no E2E in CI, only the smoke boot check.
-- E2E is not in the Turbo task graph: it needs a running preview first.
+- E2E is not in the Turbo task graph. It starts its own preview since [0013](0013-build-profiles.md), which also gives the reason.
 
 How to run it: [`docs/template/e2e.md`](../e2e.md).

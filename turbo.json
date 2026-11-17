@@ -6,6 +6,7 @@
     "TARGET_URL",
     "BUNDLER",
     "BUILD_ENVIRONMENT",
+    "BUILD_PROFILE",
     "CI",
     "NODE_ENV",
     "NODE_DEBUG",
@@ -44,6 +45,10 @@
     },
     "check:size": {
       "dependsOn": ["build"]
+    },
+    "check:env-guards": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/scripts/verify-env-guards.js"]
     },
     "test:watch": {
       "cache": false

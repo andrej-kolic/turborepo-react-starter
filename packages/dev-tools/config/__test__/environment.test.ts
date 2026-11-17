@@ -1,8 +1,11 @@
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenvFlow from 'dotenv-flow';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { environmentSchema } from '@repo/client-types/env-schema';
 import {
   defineEnvironmentVariables,
   loadEnvironmentVariables,
@@ -17,8 +20,8 @@ const VALID_ENV_FILE = [
 let envDir: string;
 let originalEnv: NodeJS.ProcessEnv;
 
-function writeEnvFile(contents: string) {
-  writeFileSync(join(envDir, '.env'), contents);
+function writeEnvFile(contents: string, name = '.env') {
+  writeFileSync(join(envDir, name), contents);
 }
 
 function load(
@@ -38,9 +41,11 @@ function load(
 beforeEach(() => {
   envDir = mkdtempSync(join(tmpdir(), 'dev-tools-env-'));
   originalEnv = process.env;
-  // dotenv-flow writes into process.env; give each test its own copy without APP_REACT_* keys.
+  // dotenv-flow writes into process.env; give each test its own copy without APP_REACT_* keys or a profile.
   process.env = Object.fromEntries(
-    Object.entries(originalEnv).filter(([key]) => !key.startsWith('APP_REACT')),
+    Object.entries(originalEnv).filter(
+      ([key]) => !key.startsWith('APP_REACT') && key !== 'BUILD_PROFILE',
+    ),
   );
 });
 
@@ -176,6 +181,108 @@ describe('loadEnvironmentVariables', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nOTHER="x"`);
 
     expect(load()).not.toHaveProperty('OTHER');
+  });
+});
+
+describe('loadEnvironmentVariables with BUILD_PROFILE', () => {
+  beforeEach(() => {
+    writeEnvFile(VALID_ENV_FILE);
+    writeEnvFile('APP_REACT_ENV_FILE=".env.local"', '.env.local');
+    writeEnvFile('APP_REACT_ENV_FILE=".env.staging"', '.env.staging');
+    writeEnvFile('APP_REACT_GUARD_ON="true"', '.env.staging.local');
+    writeEnvFile('APP_REACT_GUARD_OFF="true"', '.env.features');
+  });
+
+  it('loads the .local files and not .env.features without a profile', () => {
+    const variables = load();
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.staging');
+    expect(variables.APP_REACT_GUARD_ON).toBe('true');
+    expect(variables.APP_REACT_GUARD_OFF).toBeUndefined();
+  });
+
+  it('treats an empty BUILD_PROFILE as unset', () => {
+    process.env.BUILD_PROFILE = '';
+
+    expect(load().APP_REACT_GUARD_ON).toBe('true');
+  });
+
+  it('loads .env and .env.<environment> only on bare', () => {
+    process.env.BUILD_PROFILE = 'bare';
+    writeEnvFile('APP_REACT_TITLE="Local title"', '.env.local');
+
+    const variables = load();
+
+    expect(variables.APP_REACT_TITLE).toBe('Test App');
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.staging');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+    expect(variables.APP_REACT_GUARD_OFF).toBeUndefined();
+  });
+
+  it('adds .env.features on features, still without the .local files', () => {
+    process.env.BUILD_PROFILE = 'features';
+
+    const variables = load();
+
+    expect(variables.APP_REACT_GUARD_OFF).toBe('true');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+  });
+
+  it('lets a shell variable win over .env.features', () => {
+    process.env.BUILD_PROFILE = 'features';
+    process.env.APP_REACT_GUARD_OFF = '';
+
+    expect(() => load()).toThrow(/APP_REACT_GUARD_OFF/);
+  });
+
+  it('throws naming the profiles when BUILD_PROFILE is unknown', () => {
+    process.env.BUILD_PROFILE = 'full';
+
+    expect(() => load()).toThrow(
+      /Unknown BUILD_PROFILE "full": use bare or features/,
+    );
+  });
+});
+
+describe('packages/app-core/.env.features', () => {
+  const appCoreDir = join(
+    dirname(fileURLToPath(import.meta.url)),
+    '../../../app-core',
+  );
+  // Not optional features: computed by the loader, or test switches for pnpm check:env-guards.
+  const notFeatures = new Set([
+    'GIT_COMMIT',
+    'APP_REACT_GUARD_ON',
+    'APP_REACT_GUARD_OFF',
+  ]);
+
+  it('sets every optional key in the env schema, so the features build turns every feature on', () => {
+    const optionalKeys = Object.entries(environmentSchema.shape)
+      .filter(([, schema]) => schema.safeParse(undefined).success)
+      .map(([key]) => key)
+      .filter((key) => !notFeatures.has(key));
+
+    const setKeys = Object.entries(
+      dotenvFlow.parse(join(appCoreDir, '.env.features')),
+    )
+      .filter(([, value]) => value !== '')
+      .map(([key]) => key);
+
+    expect(optionalKeys.length).toBeGreaterThan(0);
+    expect(setKeys).toEqual(expect.arrayContaining(optionalKeys));
+  });
+
+  it('samples every visit, so the web vitals E2E test always gets its spans', () => {
+    process.env.BUILD_PROFILE = 'features';
+
+    const variables = loadEnvironmentVariables({
+      envDir: appCoreDir,
+      buildEnvironment: 'staging',
+      customEnvVars: { BUNDLER: 'app-vite', MODE: 'production', PROD: true },
+    });
+
+    expect(variables.APP_REACT_SENTRY_TRACES_SAMPLE_RATE).toBe(1);
+    expect(variables.APP_REACT_SENTRY_DSN).toBeDefined();
   });
 });
 

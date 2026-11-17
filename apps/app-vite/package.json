@@ -12,6 +12,7 @@
     "preview": "vite preview --configLoader runner",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && tsc -p tsconfig.check.json",
     "check:size": "size-limit",
+    "check:env-guards": "node ../../scripts/verify-env-guards.js",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {

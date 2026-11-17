@@ -49,18 +49,31 @@ on:
 
 env:
   HUSKY: 0
-  # Sentry's DSN: unset or empty builds without error reporting (docs/template/error-reporting.md).
-  APP_REACT_SENTRY_DSN: ${{ vars.APP_REACT_SENTRY_DSN }}
 
 jobs:
+  # One job per build profile (docs/template/build-profiles.md). bare runs every check; features, the build
+  # with every optional feature on, runs only the checks that depend on the build: size and env guards.
+  # No Sentry DSN from the repo: features has its own fake one, and an empty value would override it.
   build:
-    name: Build project
+    # "Build project" and "Build project (features)" are the names the branch ruleset requires.
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: bare
+            name: Build project
+            all-checks: 'true'
+          - profile: features
+            name: Build project (features)
+            all-checks: 'false'
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    # To use Remote Caching, uncomment the next lines and follow the steps below.
-    # env:
-    #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-    #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    env:
+      BUILD_PROFILE: ${{ matrix.profile }}
+      # To use Remote Caching, uncomment the next lines and follow the steps below.
+      # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
       - name: Set BUNDLER environment variable
@@ -91,9 +104,10 @@ jobs:
         with:
           build-filter: ${{ steps.set-bundler.outputs.bundler }}
           build-environment: ${{ github.event.inputs.build_environment }}
-          check-dependencies: ${{ github.event.inputs.check_dependencies }}
-          check-unused: ${{ github.event.inputs.check_unused }}
-          check-format: ${{ github.event.inputs.check_format }}
-          run-lint: ${{ github.event.inputs.run_lint }}
-          run-tests: ${{ github.event.inputs.run_tests }}
+          check-dependencies: ${{ matrix.all-checks == 'true' && github.event.inputs.check_dependencies || 'false' }}
+          check-unused: ${{ matrix.all-checks == 'true' && github.event.inputs.check_unused || 'false' }}
+          check-format: ${{ matrix.all-checks == 'true' && github.event.inputs.check_format || 'false' }}
+          check-type: ${{ matrix.all-checks }}
+          run-lint: ${{ matrix.all-checks == 'true' && github.event.inputs.run_lint || 'false' }}
+          run-tests: ${{ matrix.all-checks == 'true' && github.event.inputs.run_tests || 'false' }}
           check-size: ${{ github.event.inputs.check_size }}
