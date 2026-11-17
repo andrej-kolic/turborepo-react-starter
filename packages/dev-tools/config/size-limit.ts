@@ -1,4 +1,7 @@
+import { globSync } from 'node:fs';
 import type { SizeLimitConfig } from 'size-limit';
+
+const SENTRY_FILES = 'dist/assets/sentry-*.js';
 
 /**
  * Size limits for a bundler app's production build, shared by all bundler apps.
@@ -8,8 +11,8 @@ import type { SizeLimitConfig } from 'size-limit';
 const sizeLimitConfig = [
   {
     name: 'JavaScript',
-    path: 'dist/assets/*.js',
-    limit: '70 kB',
+    path: ['dist/assets/*.js', `!${SENTRY_FILES}`],
+    limit: '73 kB',
   },
   {
     name: 'CSS',
@@ -18,9 +21,18 @@ const sizeLimitConfig = [
   },
   {
     name: 'Everything downloaded',
-    path: ['dist/**/*', '!dist/**/*.map', '!dist/readme.txt'],
-    limit: '205 kB',
+    path: [
+      'dist/**/*',
+      '!dist/**/*.map',
+      '!dist/readme.txt',
+      `!${SENTRY_FILES}`,
+    ],
+    limit: '204 kB',
   },
+  // Only builds with APP_REACT_SENTRY_DSN have the file; size-limit fails a check that finds none.
+  ...(globSync(SENTRY_FILES).length > 0
+    ? [{ name: 'Sentry', path: SENTRY_FILES, limit: '57 kB' }]
+    : []),
 ] satisfies SizeLimitConfig;
 
 export default sizeLimitConfig;

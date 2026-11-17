@@ -13,8 +13,8 @@ Over a limit, it fails and prints the excess:
 
 ```
 JavaScript
-Package size limit has exceeded by 88.17 kB
-Size limit: 70 kB
+Package size limit has exceeded by 85.17 kB
+Size limit: 73 kB
 Size:       158.17 kB brotlied
 ```
 
@@ -30,7 +30,7 @@ A failing check blocks a merge only when a ruleset requires it. Rulesets are rep
 
 ## Limits
 
-All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
+All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads, each without Sentry's file, and Sentry's file on its own. A build without `APP_REACT_SENTRY_DSN` has no Sentry file, so it has no Sentry check. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
 
 ## Raise a limit
 

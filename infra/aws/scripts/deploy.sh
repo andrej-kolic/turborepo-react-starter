@@ -161,6 +161,12 @@ sync_site_content() {
         exit 1
     fi
 
+    # Before any upload, so no .map file is ever published: see docs/template/error-reporting.md.
+    if ! pnpm --dir "$MONOREPO_ROOT_DIR" exec dev-tools-sentry-sourcemaps "$SITE_DIR"; then
+        print_error "Source maps left in $SITE_DIR; nothing was deployed."
+        exit 1
+    fi
+
     # exit 0
 
     # Get the S3 bucket name from CloudFormation outputs
@@ -199,16 +205,45 @@ sync_site_content() {
         exit 1
     fi
 
-    # Old assets are deleted right away: the app loads no code on demand, so an open tab
-    # already has every file it needs. Keep them for a while if that changes.
     # --size-only: without it, a local clock ahead of S3 makes sync re-upload every file
-    # cp just sent, without Cache-Control.
-    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete --size-only; then
+    # cp just sent, without Cache-Control. assets/ is left out: see delete_old_assets.
+    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete --size-only \
+        --exclude "assets/*"; then
         print_error "Failed to remove deleted files from s3://$BUCKET_NAME"
         exit 1
     fi
 
+    delete_old_assets
+
     print_success "Site content synced to s3://$BUCKET_NAME"
+}
+
+# A tab still on an older version loads code on demand (Sentry, through import()) from that
+# version's assets/ files, so they stay for OLD_ASSETS_DAYS. Every deploy re-uploads the
+# current files above, so only files no deploy has sent for that long are older.
+# Why not an S3 lifecycle rule: docs/template/decisions/0010-keep-old-assets-on-deploy.md
+OLD_ASSETS_DAYS=7
+
+delete_old_assets() {
+    local cutoff
+    cutoff=$(date -u -d "-${OLD_ASSETS_DAYS} days" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null ||
+        date -u -v-"${OLD_ASSETS_DAYS}"d +%Y-%m-%dT%H:%M:%SZ)
+
+    local old_keys
+    if ! old_keys=$(aws s3api list-objects-v2 --bucket "$BUCKET_NAME" --prefix "assets/" \
+        --query "Contents[?LastModified<'${cutoff}'].Key" --output text); then
+        print_error "Failed to list old assets in s3://$BUCKET_NAME/assets"
+        exit 1
+    fi
+
+    local key
+    for key in $old_keys; do
+        [ "$key" = "None" ] && continue
+        if ! aws s3 rm "s3://$BUCKET_NAME/$key"; then
+            print_error "Failed to delete s3://$BUCKET_NAME/$key"
+            exit 1
+        fi
+    done
 }
 
 invalidate_cloudfront_cache() {

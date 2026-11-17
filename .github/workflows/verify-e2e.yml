@@ -2,6 +2,11 @@
 # Builds the app, serves preview, runs @repo/e2e against previewUrl.
 #
 # Single bundler (DEFAULT_BUNDLER, fallback app-vite). Multi-bundler boot stays in verify-browser-smoke.yml.
+#
+# Two builds, one job each, running in parallel; each job serves its own build:
+#   e2e         without APP_REACT_SENTRY_DSN, as a fork ships it  -> every test except those tagged @sentry
+#   e2e-sentry  with a fake DSN, every visit sampled               -> only tests tagged @sentry
+# A new test goes into one of them by its tag; only a new kind of build needs a new job.
 
 name: 'Verify: E2E'
 
@@ -31,6 +36,7 @@ jobs:
           test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
+  # Build without Sentry: `pnpm e2e` runs every test except those tagged @sentry.
   e2e:
     name: Playwright E2E (${{ vars.DEFAULT_BUNDLER || 'app-vite' }})
     needs: playwright-version
@@ -111,3 +117,71 @@ jobs:
             echo "| Preview URL | ${PREVIEW_URL:-n/a} |"
             echo "| Bundler | ${BUNDLER} |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Build with Sentry: `pnpm e2e:sentry` runs only tests tagged @sentry.
+  # The fake DSN and sample rate 1 make every visit send; the tests answer Sentry's requests, so nothing reaches Sentry.
+  e2e-sentry:
+    name: Playwright E2E Sentry (${{ vars.DEFAULT_BUNDLER || 'app-vite' }})
+    needs: playwright-version
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      options: --user 1001
+    defaults:
+      run:
+        shell: bash
+    env:
+      APP_REACT_SENTRY_DSN: https://00000000000000000000000000000000@o0.ingest.sentry.io/0
+      APP_REACT_SENTRY_TRACES_SAMPLE_RATE: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve preview URL
+        id: preview
+        run: |
+          IFS=$'\t' read -r PREVIEW_URL PREVIEW_PORT <<< "$(pnpm exec dev-tools-app-target resolve --preview)"
+          echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Build app
+        run: pnpm build:app
+
+      - name: Start preview server
+        run: |
+          pnpm preview:app &
+          for i in $(seq 1 60); do
+            curl -sf "${{ steps.preview.outputs.url }}" && exit 0
+            sleep 1
+          done
+          echo "Preview did not respond at ${{ steps.preview.outputs.url }}"
+          exit 1
+
+      - name: Run Sentry E2E tests
+        run: pnpm e2e:sentry
+        env:
+          TARGET_URL: ${{ steps.preview.outputs.url }}
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-sentry-failure-${{ github.run_id }}
+          path: |
+            packages/e2e/test-results/**
+            packages/e2e/playwright-report/**
+          retention-days: 30
+          if-no-files-found: ignore

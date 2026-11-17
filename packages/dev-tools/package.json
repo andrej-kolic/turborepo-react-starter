@@ -11,7 +11,8 @@
     "./config/size-limit": "./config/size-limit.ts"
   },
   "bin": {
-    "dev-tools-app-target": "./bin/app-target.js"
+    "dev-tools-app-target": "./bin/app-target.js",
+    "dev-tools-sentry-sourcemaps": "./bin/sentry-sourcemaps.js"
   },
   "scripts": {
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
@@ -23,6 +24,7 @@
   "license": "ISC",
   "devDependencies": {
     "@repo/client-types": "workspace:*",
+    "@sentry/cli": "catalog:",
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
     "size-limit": "catalog:",

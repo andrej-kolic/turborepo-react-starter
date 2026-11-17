@@ -6,6 +6,7 @@
   "types": "./src/index.tsx",
   "exports": {
     ".": "./src/index.tsx",
+    "./optional-features": "./src/optional-features.ts",
     "./*": "./src/*"
   },
   "private": true,
@@ -20,6 +21,7 @@
   "dependencies": {
     "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@sentry/react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "catalog:"

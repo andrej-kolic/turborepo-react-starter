@@ -8,14 +8,16 @@ Used by bundler apps and tooling:
 
 - **`app-port`** — `devPort` / `previewPort` / URL resolution from `apps/*/package.json`
 - **`environment`** — `.env` loading for bundler configs, validated against the Zod schema in `@repo/client-types/env-schema` ([adding a variable](../../docs/template/env.md))
+- **`sentry-sourcemaps`** — the upload-and-delete step behind `dev-tools-sentry-sourcemaps`
 - **`paths`** — `@repo/app-core` public/env paths for bundlers
 - **`size-limit`** — bundle size limits shared by the bundler apps ([bundle size check](../../docs/template/bundle-size.md))
 
 ## `bin/` — CLI entrypoints
 
-| Command                | Purpose                                                   |
-| ---------------------- | --------------------------------------------------------- |
-| `dev-tools-app-target` | Resolve app URL/port or run a child with `TARGET_URL` set |
+| Command                                  | Purpose                                                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `dev-tools-app-target`                   | Resolve app URL/port or run a child with `TARGET_URL` set                                                                                        |
+| `dev-tools-sentry-sourcemaps <dist-dir>` | Upload a build's source maps to Sentry, then delete them ([readable stack traces](../../docs/template/error-reporting.md#readable-stack-traces)) |
 
 Subcommands:
 

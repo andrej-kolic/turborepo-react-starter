@@ -70,8 +70,27 @@ const rspackConfig = (
       clean: true,
     },
 
+    // Production: .map files without a sourceMappingURL comment; the deploy uploads them to Sentry and deletes them.
+    // Development keeps Rspack's default.
+    ...(options.mode === 'production' && { devtool: 'hidden-source-map' }),
+
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    },
+
+    // Names Sentry's lazy-loaded file sentry-*.js, as Vite and esbuild do, so the size check
+    // can measure it on its own: see packages/dev-tools/config/size-limit.ts.
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          sentry: {
+            test: /[\\/](@sentry|@sentry-internal|error-reporting[\\/]sentry)/,
+            name: 'sentry',
+            chunks: 'async',
+            enforce: true,
+          },
+        },
+      },
     },
 
     plugins: [

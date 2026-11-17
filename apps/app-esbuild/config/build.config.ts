@@ -54,7 +54,8 @@ const buildResult = await esbuild.build({
   publicPath: '/',
   metafile: true,
   minify: true,
-  //   sourcemap: true,
+  // .map files without a sourceMappingURL comment: the deploy uploads them to Sentry and deletes them.
+  sourcemap: 'external',
   loader: {
     '.png': 'file',
     '.webp': 'file',

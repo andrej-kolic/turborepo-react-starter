@@ -12,6 +12,11 @@ export const environmentSchema = z.strictObject({
   MODE: z.string().min(1),
   // true in a production build, false in the dev server; the same on every bundler, unlike MODE.
   PROD: z.boolean(),
+  // The git commit the build is made from, for the Sentry release name; unset outside a git checkout.
+  GIT_COMMIT: z
+    .string()
+    .regex(/^[0-9a-f]{40}$/)
+    .optional(),
 
   APP_REACT_ENV_FILE: z.string().min(1),
   APP_REACT_TITLE: z.string().min(1),
@@ -27,6 +32,22 @@ export const environmentSchema = z.strictObject({
   // Optional, like a real switch; GUARD_ON is "true" in packages/app-core/.env, and no committed file sets GUARD_OFF.
   APP_REACT_GUARD_ON: z.literal('true').optional(),
   APP_REACT_GUARD_OFF: z.literal('true').optional(),
+
+  // Unset turns error reporting off; see docs/template/error-reporting.md.
+  // An empty value counts as unset: CI passes an empty string when the repo variable doesn't exist.
+  APP_REACT_SENTRY_DSN: z
+    .union([z.url(), z.literal('')])
+    .transform((value) => value || undefined)
+    .optional(),
+  // Share of visits that send Web Vitals, 0 to 1; only builds with APP_REACT_SENTRY_DSN use it.
+  // Unset or empty is 0.1: z.coerce.number() alone would turn "" into 0 and stop Web Vitals silently.
+  APP_REACT_SENTRY_TRACES_SAMPLE_RATE: z
+    .union([
+      z.literal('').transform(() => undefined),
+      z.coerce.number().min(0).max(1),
+    ])
+    .optional()
+    .transform((value) => value ?? 0.1),
 });
 
 /** Validated environment values; `env.d.ts` builds `import.meta.env` types from it. */

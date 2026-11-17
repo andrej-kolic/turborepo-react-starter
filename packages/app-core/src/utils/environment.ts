@@ -9,6 +9,8 @@ const environmentVariables = Object.freeze({
   APP_REACT_ENV_FILE: import.meta.env.APP_REACT_ENV_FILE,
   APP_REACT_TITLE: import.meta.env.APP_REACT_TITLE,
   APP_REACT_VERSION: import.meta.env.APP_REACT_VERSION,
+  APP_REACT_SENTRY_TRACES_SAMPLE_RATE: import.meta.env
+    .APP_REACT_SENTRY_TRACES_SAMPLE_RATE,
 } satisfies EnvironmentVariables);
 
 // TODO: rename to getRuntimeEnvVariables() or getAppconfig()
