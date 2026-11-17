@@ -80,7 +80,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-failure-${{ matrix.profile }}-${{ github.run_id }}
+          name: e2e-failure-${{ matrix.profile }}-${{ github.run_attempt }}
           path: |
             packages/e2e/test-results/**
             packages/e2e/playwright-report/**
