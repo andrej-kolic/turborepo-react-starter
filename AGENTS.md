@@ -76,10 +76,10 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
 - Test: `pnpm test` (unit only — E2E is separate)
-- E2E: `pnpm e2e` (after `pnpm build:app` + `pnpm preview:app`)
+- E2E: `BUILD_PROFILE=bare pnpm e2e` or `BUILD_PROFILE=features` (builds and starts the preview itself; profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
-- Bundle size (builds first; CI runs it for all bundlers): `pnpm check:size`
-- Env guards (after a build; every workflow that uses `.github/actions/build-project` runs it): `pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
+- Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
+- Env guards (builds first; every workflow that uses `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`
@@ -96,6 +96,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)           | HAR, traces, Web Vitals — capture only, not routine verification         |
 | [`docs/template/e2e.md`](docs/template/e2e.md)                                                     | Playwright E2E: run locally, other bundler, add a test                   |
 | [`docs/template/bundle-size.md`](docs/template/bundle-size.md)                                     | Bundle size check: run it, block merges on it, limits, raise a limit     |
+| [`docs/template/build-profiles.md`](docs/template/build-profiles.md)                               | Build profiles `bare` / `features`: which build every check runs on      |
 | [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
 | [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                |

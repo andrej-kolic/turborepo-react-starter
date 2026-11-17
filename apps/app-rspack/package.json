@@ -14,6 +14,7 @@
     "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "check:size": "size-limit",
+    "check:env-guards": "node ../../scripts/verify-env-guards.js",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {

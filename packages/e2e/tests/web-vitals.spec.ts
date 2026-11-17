@@ -6,8 +6,8 @@ import {
 } from '../lib/sentry-spans';
 import { AppPage } from '../pages/app.page';
 
-// @sentry: runs on a build with a DSN and every visit sampled; see docs/template/e2e.md.
-test.describe('web vitals', { tag: '@sentry' }, () => {
+// @features: runs only on the features build, which has a DSN and samples every visit; see docs/template/build-profiles.md.
+test.describe('web vitals', { tag: '@features' }, () => {
   test('sends LCP, CLS and INP named after the page once the page is hidden', async ({
     page,
   }) => {

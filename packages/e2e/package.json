@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "install:browsers": "playwright install chromium --with-deps",
-    "e2e": "playwright test --grep-invert @sentry",
-    "e2e:sentry": "playwright test --grep @sentry",
+    "e2e": "playwright test --project=$BUILD_PROFILE",
     "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit"
   },

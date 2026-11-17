@@ -23,7 +23,9 @@ The DSN is the address events go to; Sentry shows it under **Project Settings â†
    APP_REACT_SENTRY_DSN="https://<key>@<org>.ingest.sentry.io/<project>"
    ```
 
-2. In CI: add a GitHub repository variable (not a secret) named `APP_REACT_SENTRY_DSN`. The build and deploy workflows pass it to the build:
+   Checks and E2E tests never load it: they run on a [build profile](build-profiles.md), which skips `.local` files.
+
+2. In CI: add a GitHub repository variable (not a secret) named `APP_REACT_SENTRY_DSN`. The deploy workflows pass it to the build; the check workflows don't, they run on build profiles:
 
    ```sh
    gh variable set APP_REACT_SENTRY_DSN --body "https://<key>@<org>.ingest.sentry.io/<project>"
@@ -81,6 +83,6 @@ Events carry no IP address: [`sentry.ts`](../../packages/app-core/src/error-repo
 
 ## What CI checks
 
-`pnpm check:env-guards` runs after every build in CI. It fails if a build ships Sentry's code without a DSN, loads it before the app starts instead of through `import()`, or links a source map from its JS.
+`pnpm check:env-guards` runs after every build in CI. It fails if a build ships Sentry's code without a DSN, loads it before the app starts instead of through `import()`, or links a source map from its JS. On the `features` [build profile](build-profiles.md), which has a fake DSN, it also fails if Sentry's code is missing, and so does `pnpm check:size`.
 
-The `Verify: E2E` workflow also builds the app with a fake DSN and checks in Chromium that LCP, CLS and INP are sent, named after the page; the test answers Sentry's requests itself. How to run it locally: [e2e.md](e2e.md#run-the-sentry-tests).
+The `Verify: E2E` workflow also tests the `features` build and checks in Chromium that LCP, CLS and INP are sent, named after the page; the test answers Sentry's requests itself. How to run it locally: `BUILD_PROFILE=features pnpm e2e` ([e2e.md](e2e.md#run-locally)).

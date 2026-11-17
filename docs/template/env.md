@@ -41,6 +41,8 @@ To ship code only in builds that set a value, the way error reporting needs `APP
 
    Why: the bundlers replace only the exact text `import.meta.env.APP_REACT_SENTRY_DSN` with the value, so the right way becomes `if (undefined)`, which the minifier removes. In the wrong ways the minifier would have to follow the value through a variable or a function: esbuild doesn't always, and no bundler follows it through `getEnvironmentVariables()`. This also means the value needs no line in `environment.ts`.
 
+4. Put a fake value in [`packages/app-core/.env.features`](../../packages/app-core/.env.features), one that sends nothing, so the `features` [build profile](build-profiles.md) turns the code on and every check runs on it. `pnpm test` fails until you do.
+
 ## Leave code out of the dev server
 
 To run code only in a production build, add `import.meta.env.PROD` to the same `if`. Error reporting does both, so the dev server never reports:
@@ -53,9 +55,9 @@ if (import.meta.env.PROD && import.meta.env.APP_REACT_SENTRY_DSN) { … }
 
 ## What CI checks
 
-Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` after the build. It checks:
+Every workflow that uses the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` on each app it builds; locally it builds every bundler app first, with the [build profile](build-profiles.md) you set (`BUILD_PROFILE=bare pnpm check:env-guards`). It checks:
 
 1. **The `if` itself**, with three test lines in [`packages/app-core/src/env-guards.ts`](../../packages/app-core/src/env-guards.ts): the build must keep the ones behind `PROD` and `APP_REACT_GUARD_ON`, which are set, and leave out the one behind `APP_REACT_GUARD_OFF`, which never is.
-2. **The whole module, for Sentry:** a build ships Sentry's code only with a DSN, and only in a file the app loads through `import()`.
+2. **The whole module, for Sentry:** a build ships Sentry's code only with a DSN, and only in a file the app loads through `import()`. A `features` build must ship it.
 
 That `PROD` is `false` in the dev server was checked by hand.

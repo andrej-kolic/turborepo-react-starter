@@ -2,7 +2,7 @@
  * Lets an E2E test read the spans (page views with their Web Vitals) the app sends to Sentry,
  * without a real Sentry project: requests are intercepted in the browser and never leave it.
  *
- * Used by `tests/web-vitals.spec.ts` (`pnpm e2e:sentry`), and by `fixtures/app-target.ts`, which
+ * Used by `tests/web-vitals.spec.ts` (on the `features` build profile), and by `fixtures/app-target.ts`, which
  * answers Sentry's requests in every test.
  */
 

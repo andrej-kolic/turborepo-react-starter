@@ -113,7 +113,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: devtools-artifacts-${{ github.run_id }}
+          name: devtools-artifacts-${{ github.run_attempt }}
           path: packages/browser-capture/artifacts/**
           retention-days: 30
           if-no-files-found: ignore

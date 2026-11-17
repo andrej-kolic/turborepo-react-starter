@@ -12,6 +12,38 @@ const debuglog = util.debuglog('dev-tools');
 // Fixed: environmentSchema only knows APP_REACT_* keys.
 const PREFIX = 'APP_REACT';
 
+// The builds every check runs on (docs/template/build-profiles.md): no optional features, or all of them.
+const BUILD_PROFILES = ['bare', 'features'] as const;
+
+type BuildProfile = (typeof BUILD_PROFILES)[number];
+
+/**
+ * The profile `BUILD_PROFILE` names, or undefined when it is unset or empty: a build without a profile,
+ * such as a deploy build.
+ *
+ * @throws Error when `BUILD_PROFILE` names no profile
+ */
+function readBuildProfile(): BuildProfile | undefined {
+  const value = process.env.BUILD_PROFILE;
+  if (!value) return undefined;
+  const profile = BUILD_PROFILES.find((name) => name === value);
+  if (!profile) {
+    throw new Error(
+      `Unknown BUILD_PROFILE "${value}": use ${BUILD_PROFILES.join(' or ')}.`,
+    );
+  }
+  return profile;
+}
+
+// With a profile, only committed files load: a check must never read a developer's secrets from a .local file.
+function envFilesForProfile(profile: BuildProfile, buildEnvironment: string) {
+  return [
+    '.env',
+    `.env.${buildEnvironment}`,
+    ...(profile === 'features' ? ['.env.features'] : []),
+  ];
+}
+
 // The commit checked out in `dir`, or undefined outside a git checkout (e.g. a downloaded zip).
 // Read here, not passed in, so local and CI builds get it the same way, as Sentry's bundler plugins do.
 function readGitCommit(dir: string) {
@@ -28,7 +60,9 @@ function readGitCommit(dir: string) {
 
 /**
  * Load variables from .env files and process.env. Meant to be used in bundlers.
- * 1. Load .env files from envDir, based on buildEnvironment
+ * 1. Load .env files from envDir, based on buildEnvironment and `BUILD_PROFILE`:
+ *    without a profile `.env`, `.env.local`, `.env.<buildEnvironment>`, `.env.<buildEnvironment>.local`;
+ *    with one `.env`, `.env.<buildEnvironment>`, and `.env.features` on `features`, no `.local` file
  * 2. Merge with process.env (process.env has precedence)
  * 3. Filter only variables with PREFIX
  * 4. Enhance with BUILD_ENVIRONMENT, GIT_COMMIT (the commit checked out in envDir) and customEnvVars
@@ -39,7 +73,7 @@ function readGitCommit(dir: string) {
  * @param customEnvVars extra values, e.g. BUNDLER, MODE and PROD
  *
  * @returns validated environment variables to be used in the app
- * @throws Error listing every invalid or unknown variable
+ * @throws Error listing every invalid or unknown variable, or when `BUILD_PROFILE` names no profile
  */
 export function loadEnvironmentVariables({
   envDir,
@@ -50,10 +84,12 @@ export function loadEnvironmentVariables({
   buildEnvironment: string;
   customEnvVars?: Record<string, string | boolean>;
 }) {
+  const profile = readBuildProfile();
   // load .env files
   const variables = dotenvFlow.config({
-    node_env: buildEnvironment,
-    default_node_env: 'development',
+    ...(profile
+      ? { files: envFilesForProfile(profile, buildEnvironment) }
+      : { node_env: buildEnvironment, default_node_env: 'development' }),
     path: envDir,
     debug: false,
   });
@@ -86,7 +122,7 @@ export function loadEnvironmentVariables({
   const result = environmentSchema.safeParse(finalEnvMap);
   if (!result.success) {
     throw new Error(
-      `Invalid environment variables (env files in ${envDir}, BUILD_ENVIRONMENT=${buildEnvironment}):\n` +
+      `Invalid environment variables (env files in ${envDir}, BUILD_ENVIRONMENT=${buildEnvironment}${profile ? `, BUILD_PROFILE=${profile}` : ''}):\n` +
         z.prettifyError(result.error),
     );
   }

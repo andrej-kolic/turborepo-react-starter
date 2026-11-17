@@ -31,6 +31,8 @@ jobs:
 
     env:
       BUNDLER: ${{ matrix.bundler }}
+      # Perf measures what a fork ships: no optional features (docs/template/build-profiles.md).
+      BUILD_PROFILE: bare
 
     steps:
       - name: Checkout
@@ -105,7 +107,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: browser-perf-${{ matrix.bundler }}-${{ github.run_id }}
+          name: browser-perf-${{ matrix.bundler }}-${{ github.run_attempt }}
           path: packages/browser-capture/artifacts/**
           retention-days: 30
           if-no-files-found: ignore

@@ -17,6 +17,7 @@
     "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "check:size": "size-limit",
+    "check:env-guards": "node ../../scripts/verify-env-guards.js",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
