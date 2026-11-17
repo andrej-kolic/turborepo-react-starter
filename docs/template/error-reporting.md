@@ -59,7 +59,7 @@ The upload needs a Sentry auth token, org slug and project slug. Without all thr
 
 Errors are filed under the release `turborepo-react-starter@<APP_REACT_VERSION>+<first 7 characters of the commit>`, made by [`release.ts`](../../packages/app-core/src/error-reporting/release.ts). The build reads the commit from git, locally and in CI alike; a build with uncommitted changes gets the last commit's. The maps are uploaded without a release: Sentry matches them by debug ID.
 
-If the upload fails, for example while Sentry is down, the deploy goes ahead with a warning, as with Sentry's bundler plugins; that deploy's errors stay minified in Sentry. The deploy stops before publishing anything only if a `.map` is left in `dist/`.
+If the upload fails, for example while Sentry is down or the `sentry-cli` binary isn't installed, the deploy goes ahead with a warning, as with Sentry's bundler plugins; that deploy's errors stay minified in Sentry. The deploy stops before publishing anything only if a `.map` is left in `dist/`.
 
 ## Web Vitals
 

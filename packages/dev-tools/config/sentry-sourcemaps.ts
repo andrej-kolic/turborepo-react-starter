@@ -63,14 +63,16 @@ function upload(sentryCli: string, distDir: string) {
  */
 export function uploadSourceMaps({
   distDir,
-  sentryCli = SentryCli.getPath(),
+  sentryCli,
 }: {
   distDir: string;
+  /** Path to the `sentry-cli` binary; defaults to the one `@sentry/cli` installed. */
   sentryCli?: string;
 }) {
   let uploaded = false;
   try {
-    uploaded = upload(sentryCli, distDir);
+    // Inside the try: getPath() throws when the binary for this platform isn't installed.
+    uploaded = upload(sentryCli ?? SentryCli.getPath(), distDir);
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
   } finally {

@@ -8,6 +8,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { SentryCli } from '@sentry/cli';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { uploadSourceMaps } from '../sentry-sourcemaps';
 
@@ -106,6 +107,20 @@ describe('uploadSourceMaps', () => {
 
     expect(upload()).toBe(true);
     expect(sentryCliCommands()).not.toContainEqual(['sourcemaps', 'upload']);
+  });
+
+  it('warns, passes and still deletes the maps when the sentry-cli binary is missing', () => {
+    vi.spyOn(SentryCli, 'getPath').mockImplementation(() => {
+      throw new Error(
+        'Sentry CLI binary for this platform/architecture not found!',
+      );
+    });
+
+    expect(uploadSourceMaps({ distDir })).toBe(true);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('upload failed'),
+    );
+    expect(existsSync(join(distDir, 'assets/index.js.map'))).toBe(false);
   });
 
   it('fails when a map is left after the delete', () => {
