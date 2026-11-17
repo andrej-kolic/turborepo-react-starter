@@ -20,6 +20,8 @@ Sentry.init({
     }),
   ],
   tracesSampleRate: import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE,
+  // Errors and Web Vitals don't need the visitor's IP, which is personal data; SDK 11 sends it by default.
+  dataCollection: { userInfo: false },
 });
 
 export const reportError = Sentry.reactErrorHandler();

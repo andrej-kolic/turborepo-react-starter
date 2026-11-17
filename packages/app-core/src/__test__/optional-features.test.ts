@@ -70,7 +70,21 @@ describe('rootOptions', () => {
         release: 'turborepo-react-starter@1.2.3+abc1234',
         integrations: [{ name: 'BrowserTracing' }],
         tracesSampleRate: '0.25',
+        dataCollection: { userInfo: false },
       }),
+    );
+  });
+
+  it('sendsNoUserInfo_whenProdAndDsnSet', async () => {
+    vi.stubEnv('PROD', true);
+    vi.stubEnv('APP_REACT_SENTRY_DSN', DSN);
+
+    await loadRootOptions();
+
+    await vi.waitFor(() =>
+      expect(Sentry.init).toHaveBeenCalledWith(
+        expect.objectContaining({ dataCollection: { userInfo: false } }),
+      ),
     );
   });
 

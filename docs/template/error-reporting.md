@@ -75,6 +75,10 @@ The browser sends CLS and INP only when the page is hidden, for example when the
 
 Page names are full paths: `/users/1` and `/users/2` are two rows. After adding a router, switch to Sentry's integration for that router, so pages are named by route.
 
+## Visitor data
+
+Events carry no IP address: [`sentry.ts`](../../packages/app-core/src/error-reporting/sentry.ts) sets `dataCollection: { userInfo: false }`, where Sentry's SDK 11 sends it by default. Sentry still looks up the visitor's city and country from the IP address of the connection each event arrives on, and stores them with the event; the IP itself is dropped. To drop those too, add a rule in Sentry under **Project Settings → Security & Privacy → Advanced Data Scrubbing**: remove anything from `$user.geo.**` ([Sentry's docs](https://docs.sentry.io/security-legal-pii/scrubbing/server-side-scrubbing/)).
+
 ## What CI checks
 
 `pnpm check:env-guards` runs after every build in CI. It fails if a build ships Sentry's code without a DSN, loads it before the app starts instead of through `import()`, or links a source map from its JS.
