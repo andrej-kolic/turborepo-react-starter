@@ -29,7 +29,7 @@ The DSN is the address events go to; Sentry shows it under **Project Settings â†
    gh variable set APP_REACT_SENTRY_DSN --body "https://<key>@<org>.ingest.sentry.io/<project>"
    ```
 
-3. On AWS: deploy the infrastructure once for each environment, with the `Deploy: AWS: Infrastructure` workflow or `./infra/aws/scripts/deploy.sh infra <environment>`. Until then the site's security headers block requests to Sentry.
+3. Where you deploy: if the site sends a `Content-Security-Policy` header, its `connect-src` must allow the host in your DSN, or the browser blocks every request to Sentry. Of the deploys in this repo, only AWS sends one; Netlify's [`_headers`](../../infra/netlify/_headers) has none. AWS allows `https://*.sentry.io` ([`cloudfront-site.yaml`](../../infra/aws/templates/cloudfront-site.yaml)); for a self-hosted Sentry, add its host there. Deploy the AWS infrastructure once for each environment, with the `Deploy: AWS: Infrastructure` workflow or `./infra/aws/scripts/deploy.sh infra <environment>`; until then the old header blocks Sentry.
 
 4. Build and open the preview (`pnpm build:app`, `pnpm preview:app`). After an error, the page's network requests include one to the host in your DSN: `ingest.sentry.io`, or `ingest.de.sentry.io` for a project in the EU.
 
