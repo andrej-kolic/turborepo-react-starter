@@ -1,9 +1,9 @@
 name: 'Build Project'
-description: 'Set up the repo, then run the code checks and the build, its env guard check and size check with Turborepo'
+description: "Checks the code, builds one app, then checks the build's size and env guards"
 
 inputs:
   run-build:
-    description: "Build, then check env guards and size; 'false' runs only the code checks"
+    description: "Build the project and check the build; 'false' skips both and runs only the code checks"
     required: false
     default: 'true'
 
