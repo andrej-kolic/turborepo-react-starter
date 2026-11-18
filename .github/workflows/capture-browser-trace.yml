@@ -1,5 +1,8 @@
 name: 'Capture: Browser trace'
 
+# A /capture-trace comment on a PR traces that PR's code; a manual run traces the chosen branch.
+# The capture job runs the PR's code, so it gets a read-only token and no secrets. Only the comment
+# job can write to the PR, and it never checks out the PR: it reads the capture results only through env.
 on:
   workflow_dispatch:
     inputs:
@@ -9,11 +12,7 @@ on:
   issue_comment:
     types: [created]
 
-# issue_comment on PRs needs issues:write and pull-requests:write to reply on the thread.
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   # ─── Main capture job ────────────────────────────────────────────────────────
@@ -21,6 +20,8 @@ jobs:
     name: Capture browser trace artifacts
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     env:
       HUSKY: 0
@@ -29,46 +30,44 @@ jobs:
       CHROME_DEBUG_PORT: 9222
       BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
 
-    # Only run on manual dispatch or when a PR collaborator comments /capture-trace
+    # Only on manual dispatch, or when the owner, a member or a collaborator comments /capture-trace on a PR.
     if: |
       github.event_name == 'workflow_dispatch' ||
       (
+        github.event.issue.pull_request &&
         contains(github.event.comment.body, '/capture-trace') &&
         contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
       )
 
-    # Expose step outputs for the ops summary and PR comment
+    # Read by the comment job through env only: the PR's code can shape them.
     outputs:
       capture_duration_ms: ${{ steps.capture.outputs.capture_duration_ms }}
+      target_url: ${{ steps.capture.outputs.target_url }}
       artifact_size_bytes: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
 
     steps:
       # ── Checkout ─────────────────────────────────────────────────────────────
+      # The PR's head commit as it is when the job starts; a push after the comment is traced instead.
       - name: Checkout
         uses: actions/checkout@v6
-
-      # ── pnpm + Node setup with dependency cache ───────────────────────────────
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js (with pnpm cache)
-        uses: actions/setup-node@v6
         with:
-          node-version: 26
-          cache: 'pnpm'
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
+          persist-credentials: false
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Resolve trace URL
         id: trace-url
         env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_URL: ${{ inputs.url }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           URL=""
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.url }}" ]; then
-            URL="${{ inputs.url }}"
-          elif [ "${{ github.event_name }}" = "issue_comment" ] && [ -n "$COMMENT_BODY" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_URL" ]; then
+            URL="$INPUT_URL"
+          elif [ "$EVENT_NAME" = "issue_comment" ] && [ -n "$COMMENT_BODY" ]; then
             URL=$(printf '%s\n' "$COMMENT_BODY" | grep -oE 'https?://[^[:space:>)]+' | head -1 || true)
           fi
           echo "url=${URL}" >> "$GITHUB_OUTPUT"
@@ -83,19 +82,25 @@ jobs:
         run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
 
       - name: Setup Chrome (headless)
+        env:
+          TRACE_URL: ${{ steps.trace-url.outputs.url }}
         run: |
-          if [ -n "${{ steps.trace-url.outputs.url }}" ]; then
-            pnpm browser:setup -- --url "${{ steps.trace-url.outputs.url }}"
+          if [ -n "$TRACE_URL" ]; then
+            pnpm browser:setup -- --url "$TRACE_URL"
           else
             pnpm browser:setup
           fi
 
       - name: Record trace
         id: capture
+        env:
+          TRACE_URL: ${{ steps.trace-url.outputs.url }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           CAPTURE_START_MS=$(date +%s%3N)
-          if [ -n "${{ steps.trace-url.outputs.url }}" ]; then
-            TARGET_URL="${{ steps.trace-url.outputs.url }}"
+          if [ -n "$TRACE_URL" ]; then
+            TARGET_URL="$TRACE_URL"
           else
             TARGET_URL=$(pnpm exec dev-tools-app-target url)
           fi
@@ -105,9 +110,6 @@ jobs:
           echo "Trace recorded in ${DURATION_MS}ms (${TARGET_URL})"
           echo "capture_duration_ms=${DURATION_MS}" >> "$GITHUB_OUTPUT"
           echo "target_url=${TARGET_URL}" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
 
       # ── Upload artifacts ──────────────────────────────────────────────────────
       - name: Upload artifacts
@@ -137,10 +139,14 @@ jobs:
       # ── Job Summary (ops metrics) ─────────────────────────────────────────────
       - name: Write ops summary
         if: always()
+        env:
+          CAPTURE: ${{ steps.capture.outputs.capture_duration_ms }}
+          TRACE_URL: ${{ steps.capture.outputs.target_url }}
+          SIZE: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
+          ACTOR: ${{ github.actor }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          CAPTURE="${{ steps.capture.outputs.capture_duration_ms }}"
-          TRACE_URL="${{ steps.capture.outputs.target_url }}"
-          SIZE="${{ steps.artifact-size.outputs.artifact_size_bytes }}"
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
           # Human-readable size
@@ -157,9 +163,9 @@ jobs:
           | Metric | Value |
           |--------|-------|
           | Run ID | [\`${GITHUB_RUN_ID}\`](${RUN_URL}) |
-          | Actor | \`${{ github.actor }}\` |
-          | Trigger | \`${{ github.event_name }}\` |
-          | Branch | \`${{ github.ref_name }}\` |
+          | Actor | \`${ACTOR}\` |
+          | Trigger | \`${EVENT_NAME}\` |
+          | Branch | \`${REF_NAME}\` |
           | Trace URL | ${TRACE_URL:-local dev app} |
           | Capture duration | ${CAPTURE:-n/a} ms |
           | Artifact size | ${SIZE_HUMAN} (${SIZE:-n/a} bytes) |
@@ -168,40 +174,52 @@ jobs:
           Artifacts: [Download from run page](${RUN_URL})
           EOF
 
-      # ── Comment on PR with run link + metrics ─────────────────────────────────
+  # ─── PR comment job ──────────────────────────────────────────────────────────
+  # Never checks out the PR; reads the capture results only through env.
+  comment:
+    name: Comment on PR
+    needs: capture
+    # A cancelled capture gets no comment: it did not fail.
+    if: always() && github.event_name == 'issue_comment' && needs.capture.result != 'skipped' && needs.capture.result != 'cancelled'
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
       - name: Comment on PR with run link
-        if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
         uses: actions/github-script@v9
         env:
-          CAPTURE_DURATION_MS: ${{ steps.capture.outputs.capture_duration_ms }}
-          TRACE_URL: ${{ steps.capture.outputs.target_url }}
-          ARTIFACT_SIZE_BYTES: ${{ steps.artifact-size.outputs.artifact_size_bytes }}
+          CAPTURE_RESULT: ${{ needs.capture.result }}
+          CAPTURE_DURATION_MS: ${{ needs.capture.outputs.capture_duration_ms }}
+          TRACE_URL: ${{ needs.capture.outputs.target_url }}
+          ARTIFACT_SIZE_BYTES: ${{ needs.capture.outputs.artifact_size_bytes }}
         with:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const sizeKb = process.env.ARTIFACT_SIZE_BYTES
-              ? (Number(process.env.ARTIFACT_SIZE_BYTES) / 1024).toFixed(1) + ' KB'
-              : 'n/a';
-            const body = [
-              '## ✅ Browser trace capture complete',
-              '',
-              '| Metric | Value |',
-              '|--------|-------|',
-              `| Trace URL | ${process.env.TRACE_URL ?? 'local dev app'} |`,
-              `| Capture duration | ${process.env.CAPTURE_DURATION_MS ?? 'n/a'} ms |`,
-              `| Artifact size | ${sizeKb} |`,
-              `| Retention | 30 days |`,
-              '',
-              `Artifacts are attached to this workflow run: ${runUrl}`,
-              '',
-              'Files: `metadata.json`, `har.json`, `trace.zip`, `console.json`, `performance.json`',
-              'View trace locally: `npx playwright show-trace trace-*/trace.zip`',
-            ].join('\n');
-            const issue_number = context.payload.issue.number;
+            const body =
+              process.env.CAPTURE_RESULT === 'success'
+                ? [
+                    '## ✅ Browser trace capture complete',
+                    '',
+                    '| Metric | Value |',
+                    '|--------|-------|',
+                    `| Trace URL | ${process.env.TRACE_URL || 'local dev app'} |`,
+                    `| Capture duration | ${process.env.CAPTURE_DURATION_MS || 'n/a'} ms |`,
+                    `| Artifact size | ${process.env.ARTIFACT_SIZE_BYTES ? (Number(process.env.ARTIFACT_SIZE_BYTES) / 1024).toFixed(1) + ' KB' : 'n/a'} |`,
+                    `| Retention | 30 days |`,
+                    '',
+                    `Artifacts are attached to this workflow run: ${runUrl}`,
+                    '',
+                    'Files: `metadata.json`, `har.json`, `trace.zip`, `console.json`, `performance.json`',
+                    'View trace locally: `npx playwright show-trace trace-*/trace.zip`',
+                  ].join('\n')
+                : `## ❌ Browser trace capture failed\n\nThe capture job encountered an error. Check the [run logs](${runUrl}) for details.\n\n**Run ID:** \`${process.env.GITHUB_RUN_ID}\``;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue_number,
+              issue_number: context.payload.issue.number,
               body,
             });
 
@@ -215,6 +233,9 @@ jobs:
     steps:
       - name: Post failure summary
         uses: actions/github-script@v9
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
         with:
           script: |
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
@@ -222,21 +243,7 @@ jobs:
               .addHeading('❌ Browser trace capture failed')
               .addRaw(`The \`capture-browser-trace.yml\` capture job failed for run [\`${process.env.GITHUB_RUN_ID}\`](${runUrl}).`)
               .addBreak()
-              .addRaw(`**Trigger:** \`${{ github.event_name }}\` | **Actor:** \`${{ github.actor }}\``)
+              .addRaw(`**Trigger:** \`${process.env.EVENT_NAME}\` | **Actor:** \`${process.env.ACTOR}\``)
               .addBreak()
               .addRaw(`Check the [run logs](${runUrl}) for details.`)
               .write();
-
-      - name: Comment failure on PR
-        if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/capture-trace') }}
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            const issue_number = context.payload.issue.number;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue_number,
-              body: `## ❌ Browser trace capture failed\n\nThe capture job encountered an error. Check the [run logs](${runUrl}) for details.\n\n**Run ID:** \`${process.env.GITHUB_RUN_ID}\``,
-            });

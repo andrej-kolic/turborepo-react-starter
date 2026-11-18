@@ -64,11 +64,11 @@ Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch a
 ## Validation map
 
 - While developing: browser snapshot / screenshot / validate (browser-tools)
-- CI regression: Playwright E2E on preview build (`DEFAULT_BUNDLER` in CI; `BUNDLER` in `.env` locally)
-- Multi-bundler boot: verify-browser-smoke.yml (dev server HTTP 200, all bundlers)
+- CI regression: Playwright E2E on every bundler's preview build in verify-build.yml: the full suite on `DEFAULT_BUNDLER`, the `@smoke` test on the others (`BUNDLER` in `.env` locally)
+- Multi-bundler boot: verify-dev.yml (every bundler's dev server, `@smoke` test)
 - Debug on failure: Playwright trace (+ optional browser-capture)
 
-E2E runs against a **production preview** build — not the dev server. How to run it: [`docs/template/e2e.md`](docs/template/e2e.md); why: [`docs/template/decisions/0003-e2e-on-preview-build.md`](docs/template/decisions/0003-e2e-on-preview-build.md).
+E2E runs against a **production preview** build; only the `@smoke` test also runs on the dev server, in verify-dev.yml. How to run it: [`docs/template/e2e.md`](docs/template/e2e.md); why: [`docs/template/decisions/0003-e2e-on-preview-build.md`](docs/template/decisions/0003-e2e-on-preview-build.md).
 
 ## Common commands
 
@@ -79,7 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - E2E: `BUILD_PROFILE=bare pnpm e2e` or `BUILD_PROFILE=features` (builds and starts the preview itself; profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
-- Env guards (builds first; every workflow that uses `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
+- Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`

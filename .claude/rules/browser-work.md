@@ -5,7 +5,7 @@ paths:
   - .claude/skills/x-browser-*/**
   - docs/template/browser-validation.md
   - docs/template/app-url.md
-  - .github/workflows/verify-browser-smoke.yml
+  - .github/workflows/verify-dev.yml
   - .github/workflows/capture-browser-trace.yml
 ---
 # Browser work

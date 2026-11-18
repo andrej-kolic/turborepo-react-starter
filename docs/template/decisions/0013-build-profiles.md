@@ -15,7 +15,7 @@ Optional features are switched on by env values, such as `APP_REACT_SENTRY_DSN` 
 - Every check gets its build from Turbo, which caches each profile's build separately (`BUILD_PROFILE` is in `globalEnv`): `check:env-guards` became a per-app task after `build`, like `check:size`, and E2E starts `pnpm preview:app` through Playwright's [`webServer`](https://playwright.dev/docs/test-webserver), never reusing a running preview.
 - E2E stays out of the Turbo graph: as a Turbo task ([Turborepo's Playwright guide](https://turborepo.dev/docs/guides/tools/playwright)) it would depend on, and build, all three apps, while CI tests one ([0003](0003-e2e-on-preview-build.md)).
 - Playwright has one project per profile; `bare` leaves out tests tagged `@features`. The `e2e` script in `packages/e2e/package.json` fails without `BUILD_PROFILE` and runs its project. Not in `playwright.config.ts`: knip loads that config with only `BUNDLER` set.
-- CI: `Build: Auto` and `Build: Manual` run a `features` job next to the one that runs every check; it runs only the size and env guard checks. `Verify: E2E` runs once per profile. Check workflows no longer pass the repo's DSN: an empty repo variable is `""`, which would win over `.env.features`. Deploys take no profile and keep it.
+- CI: `Verify: Build` runs one job per bundler and profile; each builds, checks size and env guards, and runs Playwright on that build. Check workflows no longer pass the repo's DSN: an empty repo variable is `""`, which would win over `.env.features`. Deploys take no profile and keep it.
 
 ## Rejected
 

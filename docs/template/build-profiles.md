@@ -1,6 +1,6 @@
 # Build profiles
 
-Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check:env-guards`, which run on both profiles, and the `Verify: Browser perf` workflow, which runs on `bare` only. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
+Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check:env-guards`, which run on both profiles, and the `Verify: Perf` workflow, which runs on `bare` only. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
 
 `BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
@@ -27,7 +27,7 @@ BUILD_PROFILE=bare pnpm build:app             # or preview:app, to look at one b
 
 Each check builds first through Turbo, which caches each profile's build separately, so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
 
-CI runs each check once per profile: `Build: Auto` and `Build: Manual` have a `Build project (features)` job, which runs only the size and env guard checks, and `Verify: E2E` runs one job per profile.
+CI runs each check once per profile: `Verify: Build` has a `Build (<bundler>, <profile>)` job for every bundler and profile, which builds, checks size and env guards, and runs Playwright on that build's preview.
 
 ## Add an optional feature
 
