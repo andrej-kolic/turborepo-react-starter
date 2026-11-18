@@ -37,4 +37,4 @@ With `TARGET_URL`, E2E builds and starts nothing, and tests whatever runs there:
 
 ## Choose the CI bundler
 
-Set the GitHub repo variable `DEFAULT_BUNDLER` to `app-vite`, `app-rspack` or `app-esbuild` (fallback `app-vite`). [`.github/workflows/verify-e2e.yml`](../../.github/workflows/verify-e2e.yml) tests that bundler once per build profile, runs each job in the Playwright container that matches the catalog version, and uploads the report and traces on failure.
+Set the GitHub repo variable `DEFAULT_BUNDLER` to `app-vite`, `app-rspack` or `app-esbuild` (fallback `app-vite`). [`.github/workflows/verify-build.yml`](../../.github/workflows/verify-build.yml) runs the full suite on that bundler and the `@smoke` test on the other two, once per build profile, in the Playwright container that matches the catalog version, and uploads the report and traces on failure.

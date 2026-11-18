@@ -3,20 +3,22 @@ import { expect, test } from '../fixtures/app-target';
 import { AppPage } from '../pages/app.page';
 
 test.describe('app smoke', () => {
-  test('loads with registered page regions and no console errors', async ({
-    page,
-    appTarget,
-  }) => {
-    const appPage = new AppPage(page);
-    const consoleErrors = appPage.trackConsoleErrors();
+  // @smoke: CI runs only this test on the dev servers and on the bundlers other than DEFAULT_BUNDLER.
+  test(
+    'loads with registered page regions and no console errors',
+    { tag: '@smoke' },
+    async ({ page, appTarget }) => {
+      const appPage = new AppPage(page);
+      const consoleErrors = appPage.trackConsoleErrors();
 
-    const response = await appPage.goto();
-    expect(response?.status()).toBeLessThan(500);
-    appPage.expectOnOrigin(appTarget.url);
-    await appPage.expectRegisteredRegionsVisible();
+      const response = await appPage.goto();
+      expect(response?.status()).toBeLessThan(500);
+      appPage.expectOnOrigin(appTarget.url);
+      await appPage.expectRegisteredRegionsVisible();
 
-    expect(consoleErrors).toEqual([]);
-  });
+      expect(consoleErrors).toEqual([]);
+    },
+  );
 
   test('shows the build version and environment in the header', async ({
     page,

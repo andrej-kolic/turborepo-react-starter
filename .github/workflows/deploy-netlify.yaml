@@ -51,19 +51,19 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v6
+      # Builds and checks env guards before the deploy; the code checks already ran on the PR.
+      - name: Build project
+        uses: ./.github/actions/build-project
         with:
-          node-version: 26
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: BUILD_ENVIRONMENT=${{ env.BUILD_ENVIRONMENT }} BUNDLER=${{ env.BUNDLER }} pnpm build:app
+          build-filter: ${{ env.BUNDLER }}
+          build-environment: ${{ env.BUILD_ENVIRONMENT }}
+          check-dependencies: 'false'
+          check-unused: 'false'
+          check-format: 'false'
+          check-type: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
+          check-size: 'false'
 
       - name: Log Build output
         run: ls apps/${{ env.BUNDLER }}/dist

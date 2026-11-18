@@ -60,6 +60,8 @@ export default defineConfig((configEnv) => {
     define: defineEnvironmentVariables(environmentVariables),
 
     server: {
+      // Every address, as rspack and esbuild do; see docs/template/decisions/0014.
+      host: true,
       port: pkg.devPort,
       strictPort: true,
       watch: {

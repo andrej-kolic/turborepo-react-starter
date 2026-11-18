@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+# A new push to a PR cancels its older run of this workflow only.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   HUSKY: 0
 
@@ -27,17 +32,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 26
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup
+        uses: ./.github/actions/setup
 
       # Every commit in the PR, or every commit in the push.
       - name: Lint commit messages

@@ -15,4 +15,4 @@ Bundlers change faster than apps: Vite 8 moved to Rolldown, and teams move betwe
 
 - Moving the app to another bundler means writing a new app shell, not changing `app-core`.
 - Every new build plugin (CSS, router codegen, i18n) must work on all three bundlers. Check that before adopting one; esbuild has the fewest plugins.
-- CI starts all three dev servers in `verify-browser-smoke.yml`.
+- CI opens all three dev servers in a browser in `verify-dev.yml`, and all three production builds in `verify-build.yml`.

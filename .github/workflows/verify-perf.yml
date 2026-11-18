@@ -1,15 +1,21 @@
-# Production-preview perf gate — capture tier.
-# Builds the app, serves preview, records Web Vitals, and fails when LCP exceeds budget.
+# Production-preview perf check, weekly and on demand, not on PRs.
+# Builds each bundler's bare app, serves its preview, records Web Vitals once, and fails when LCP exceeds budget.
 #
 # Matrix: all bundler apps. Preview URL/port via dev-tools-app-target → app-port.ts.
 
-name: 'Verify: Browser perf'
+name: 'Verify: Perf'
 
 on:
-  pull_request:
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   HUSKY: 0
@@ -20,7 +26,7 @@ env:
 
 jobs:
   perf:
-    name: Browser perf (${{ matrix.bundler }})
+    name: Perf (${{ matrix.bundler }})
     timeout-minutes: 20
     runs-on: ubuntu-latest
 
@@ -38,17 +44,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js (with pnpm cache)
-        uses: actions/setup-node@v6
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Resolve preview URL
         id: preview

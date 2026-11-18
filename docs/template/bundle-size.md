@@ -1,6 +1,6 @@
 # Check the bundle size
 
-CI fails when an app's production build grows past a size limit. `Build: Auto` runs the check on every PR and every push to `develop` and `main`; `Build: Manual` has a "Check bundle size" switch; deploys skip it, like the other checks. The check is [size-limit](https://github.com/ai/size-limit) with `@size-limit/file`, which measures the built files, so it works the same for every bundler.
+CI fails when an app's production build grows past a size limit. `Verify: Build` runs the check for every bundler and build profile on every PR and every push to `develop` and `main`; deploys skip it, like the other checks. The check is [size-limit](https://github.com/ai/size-limit) with `@size-limit/file`, which measures the built files, so it works the same for every bundler.
 
 ## Run it
 
@@ -22,12 +22,12 @@ Size:       158.17 kB brotlied
 
 ## Block merges that fail it
 
-A failing check blocks a merge only when a ruleset requires it. Rulesets are repository settings, not files, so a repository made from this template needs its own. On GitHub, open **Settings → Rulesets**. If a ruleset already requires `Build project`, add `Build project (features)` to it as in step 4. Otherwise choose **New ruleset → New branch ruleset**:
+A failing check blocks a merge only when a ruleset requires it. Rulesets are repository settings, not files, so a repository made from this template needs its own. On GitHub, open **Settings → Rulesets**. If a ruleset already requires checks, add the four in step 4 to it. Otherwise choose **New ruleset → New branch ruleset**:
 
 1. Fill in **Ruleset Name**, for example `Protect develop and main`.
 2. Set **Enforcement status** to **Active**.
 3. Under **Target branches**, choose **Add target → Include by pattern** and add `develop`, then `main`.
-4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks → `Build project`**, then **Add checks → `Build project (features)`**.
+4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks** for each of `Code checks`, `Lint commit messages`, `All builds passed` and `All dev servers passed`. The size check fails `All builds passed`.
 5. Click **Create**.
 
 ## Limits

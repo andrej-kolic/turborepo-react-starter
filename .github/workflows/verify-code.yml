@@ -1,0 +1,38 @@
+# Code checks that need no build: format, lint, types, unused code, dependencies, unit tests.
+# The builds and their browser tests run in verify-build.yml.
+
+name: 'Verify: Code'
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a PR cancels its older run of this workflow only.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: 0
+
+jobs:
+  code:
+    # Required by the "Protect develop and main" ruleset.
+    name: Code checks
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Code checks
+        uses: ./.github/actions/build-project
+        with:
+          run-build: 'false'
+          build-environment: ${{ github.ref == 'refs/heads/main' && 'staging' || 'development' }}
