@@ -38,8 +38,8 @@ jobs:
           test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
-  dev:
-    name: Dev server (${{ matrix.bundler }})
+  smoke-test:
+    name: Smoke test (${{ matrix.bundler }})
     needs: playwright-version
     strategy:
       fail-fast: false
@@ -85,7 +85,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: dev-failure-${{ matrix.bundler }}-${{ github.run_attempt }}
+          name: smoke-test-failure-${{ matrix.bundler }}-${{ github.run_attempt }}
           path: |
             /tmp/dev-app.log
             packages/e2e/test-results/**
@@ -97,7 +97,7 @@ jobs:
   # so this runs even when a job above failed, and fails unless every one of them succeeded.
   all-passed:
     name: All dev servers passed
-    needs: [playwright-version, dev]
+    needs: [playwright-version, smoke-test]
     if: always()
     timeout-minutes: 5
     runs-on: ubuntu-latest
