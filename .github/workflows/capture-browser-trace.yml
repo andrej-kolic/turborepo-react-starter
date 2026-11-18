@@ -1,8 +1,7 @@
 name: 'Capture: Browser trace'
 
-# A /capture-trace comment on a PR traces that PR's code; a manual run traces the chosen branch.
-# The capture job runs the PR's code, so it gets a read-only token and no secrets. Only the comment
-# job can write to the PR, and it never checks out the PR: it reads the capture results only through env.
+# Records a browser trace: comment /capture-trace on a PR to trace its code, or run it by hand on a branch.
+# The PR's code runs with read-only access and no secrets; a separate job posts the result comment.
 on:
   workflow_dispatch:
     inputs:
