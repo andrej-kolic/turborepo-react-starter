@@ -37,35 +37,17 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # Log input
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Log input"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Log input
       shell: bash
       run: |
         echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         echo "GITHUB_REF: $GITHUB_REF"
-        echo "github.head_ref: ${{ github.head_ref }}"
+        echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
         echo " "
         echo "inputs.environment: ${{ inputs.environment }}"
         echo "inputs.action: ${{ inputs.action }}"
         echo " "
 
-    # Configure AWS credentials using OIDC
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Configure AWS credentials using OIDC"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Configure AWS credentials using OIDC
       uses: aws-actions/configure-aws-credentials@v6
       with:
@@ -73,28 +55,10 @@ runs:
         role-session-name: github-actions-${{ inputs.environment }}
         aws-region: ${{ inputs.aws-region }}
 
-    # Deploy to environment
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Deploy to ${{ inputs.environment }}"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Deploy to ${{ inputs.environment }}
       shell: bash
       run: ./infra/aws/scripts/deploy.sh ${{ inputs.action }} ${{ inputs.environment }}
 
-    # Get deployment outputs
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Get deployment outputs"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Get deployment outputs
       id: get-outputs
       shell: bash
@@ -116,15 +80,6 @@ runs:
           echo "Distribution ID found: $distribution_id"
         fi
 
-    # Calculate variables
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Calculate variables"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Calculate variables
       id: calculate-vars
       shell: bash
@@ -143,16 +98,6 @@ runs:
         echo "CREATE_RELEASE=$CREATE_RELEASE"
         echo "CREATE_RELEASE=$CREATE_RELEASE" >> $GITHUB_ENV
 
-    # Comment PR with deployment info
-
-    - shell: bash
-      if: env.COMMENT_PR == 'true'
-      run: |
-        echo " "
-        echo " "
-        echo "Comment PR with deployment info"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Comment PR with deployment info
       if: env.COMMENT_PR == 'true'
       uses: actions/github-script@v9
@@ -168,16 +113,6 @@ runs:
             body: `🚀 **Development Environment Deployed**\n\n**Website URL:** ${websiteUrl}\n\n*This deployment is automatically updated with each push to this PR.*`
           });
 
-    # Create GitHub release
-
-    - shell: bash
-      if: env.CREATE_RELEASE == 'true'
-      run: |
-        echo " "
-        echo " "
-        echo "Create GitHub release"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Create GitHub release
       if: env.CREATE_RELEASE == 'true'
       uses: softprops/action-gh-release@v2
