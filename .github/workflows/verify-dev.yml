@@ -58,6 +58,8 @@ jobs:
       BUNDLER: ${{ matrix.bundler }}
       # The e2e script needs a profile. The dev server reads it too: with any profile it loads no .local env file.
       BUILD_PROFILE: bare
+      # On CI, Turbo holds a task's output until it exits, so a dev server that never exits logs nothing.
+      TURBO_LOG_ORDER: stream
 
     steps:
       - name: Checkout
