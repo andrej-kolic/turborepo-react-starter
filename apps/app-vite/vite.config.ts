@@ -60,6 +60,9 @@ export default defineConfig((configEnv) => {
     define: defineEnvironmentVariables(environmentVariables),
 
     server: {
+      // Every address, as rspack and esbuild do. Vite's default listens on only the one address
+      // localhost resolves to first, and in CI's Playwright container nothing reached it there.
+      host: true,
       port: pkg.devPort,
       strictPort: true,
       watch: {
