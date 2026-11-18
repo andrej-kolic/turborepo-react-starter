@@ -1,4 +1,4 @@
-# Code checks that need no build: format, lint, types, unused code, dependencies, unit tests.
+# Code checks that need no build: workflow files, format, lint, types, unused code, dependencies, unit tests.
 # The builds and their browser tests run in verify-build.yml.
 
 name: 'Verify: Code'
@@ -30,6 +30,20 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v6
+
+      # Pinned with its checksum, so a new actionlint release can't fail PRs that changed nothing.
+      - name: Install actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+        run: |
+          archive="$RUNNER_TEMP/actionlint.tar.gz"
+          curl -fsSL -o "$archive" "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "$ACTIONLINT_SHA256  $archive" | sha256sum -c -
+          tar -xzf "$archive" -C "$RUNNER_TEMP" actionlint
+
+      - name: Lint workflow files
+        run: '"$RUNNER_TEMP/actionlint" -color'
 
       - name: Code checks
         uses: ./.github/actions/build-project

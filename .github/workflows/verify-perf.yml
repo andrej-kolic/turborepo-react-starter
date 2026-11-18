@@ -61,7 +61,7 @@ jobs:
       - name: Start preview server
         run: |
           pnpm preview:app &
-          for i in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             curl -sf "${{ steps.preview.outputs.url }}" && exit 0
             sleep 1
           done
@@ -80,7 +80,7 @@ jobs:
 
       - name: Assert LCP budget
         run: |
-          PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
+          PERF_DIR=$(find packages/browser-capture/artifacts -maxdepth 1 -type d -name 'performance-*' 2>/dev/null | sort | tail -1)
           if [ -z "$PERF_DIR" ]; then
             echo "No performance artifacts found"
             exit 1
@@ -121,7 +121,7 @@ jobs:
             echo "|--------|-------|--------|"
             echo "| Preview URL | ${PREVIEW_URL:-n/a} | — |"
 
-            PERF_DIR=$(ls -d packages/browser-capture/artifacts/performance-* 2>/dev/null | tail -1)
+            PERF_DIR=$(find packages/browser-capture/artifacts -maxdepth 1 -type d -name 'performance-*' 2>/dev/null | sort | tail -1)
             if [ -n "$PERF_DIR" ] && [ -f "$PERF_DIR/performance.json" ]; then
               PERF_FILE="${PERF_DIR%/}/performance.json"
               node -e "
