@@ -33,18 +33,21 @@ test.describe('app smoke', () => {
     );
   });
 
-  test('shows the error screen on a render error and recovers on Try again', async ({
+  test('shows the route error screen on a page error and recovers on Try again', async ({
     page,
   }) => {
     const appPage = new AppPage(page);
     await appPage.goto();
 
     await appPage.throwDemoError();
-    await expect(appPage.appError).toContainText('Something went wrong');
+    await expect(appPage.routeError).toContainText('Something went wrong');
     await expect(appPage.resourceCards).toBeHidden();
+    // the layout around the page stays
+    await expect(appPage.header).toBeVisible();
+    await expect(appPage.appError).toBeHidden();
 
     await appPage.tryAgain();
-    await expect(appPage.appError).toBeHidden();
+    await expect(appPage.routeError).toBeHidden();
     await appPage.expectRegisteredRegionsVisible();
   });
 });

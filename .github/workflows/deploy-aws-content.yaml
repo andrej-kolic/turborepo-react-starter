@@ -83,6 +83,7 @@ jobs:
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           run-lint: 'false'
           run-tests: 'false'
           check-size: 'false'

@@ -60,6 +60,7 @@ jobs:
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           check-type: 'false'
           run-lint: 'false'
           run-tests: 'false'

@@ -1,11 +1,9 @@
 import React from 'react';
 import { add } from '@repo/ui/utils';
 import type { CustomType } from '@repo/commons';
-import { Header } from './components/Header';
-import { debugLog } from './utils/debug';
-import { ResourceCards } from './components/ResourceCards';
-import { Scroller } from './components/Scroller';
+import { RouterProvider } from '@tanstack/react-router';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
+import { router } from './router';
 
 import '@repo/ui/theme.css';
 import './styles.css';
@@ -28,24 +26,10 @@ type AppCoreProps = {
   href: string;
 };
 
-function AppContent(props: AppCoreProps): React.JSX.Element {
-  debugLog();
-
-  return (
-    <main className="AppCore">
-      <Header title={props.title} />
-
-      <ResourceCards />
-
-      <Scroller />
-    </main>
-  );
-}
-
 export function AppCore(props: AppCoreProps): React.JSX.Element {
   return (
     <AppErrorBoundary>
-      <AppContent {...props} />
+      <RouterProvider router={router} context={{ title: props.title }} />
     </AppErrorBoundary>
   );
 }

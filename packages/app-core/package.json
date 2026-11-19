@@ -12,8 +12,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "dev": "tsr watch",
     "lint": "oxlint --type-aware",
     "generate:component": "turbo gen react-component",
+    "generate:routes": "tsr generate",
     "test": "vitest run",
     "test:watch": "vitest",
     "check:type": "tsc --noEmit"
@@ -22,6 +24,7 @@
     "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
     "@sentry/react": "catalog:",
+    "@tanstack/react-router": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "catalog:"
@@ -30,6 +33,7 @@
     "@repo/client-types": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@tanstack/router-cli": "catalog:",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",

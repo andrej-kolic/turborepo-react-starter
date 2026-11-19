@@ -1,7 +1,7 @@
 /**
  * Shared helper for the E2E tests that open the app's home page.
  *
- * It knows how to find the page's parts (header, cards, error box) and how to do what a test needs
+ * It knows how to find the page's parts (header, cards, error screens) and how to do what a test needs
  * (open the page, click "Throw error", switch the tab away), so each test calls `appPage.throwDemoError()`
  * instead of repeating how to find that button.
  *
@@ -21,6 +21,7 @@ export class AppPage {
   readonly header: Locator;
   readonly resourceCards: Locator;
   readonly scroller: Locator;
+  readonly routeError: Locator;
   readonly appError: Locator;
 
   constructor(page: Page) {
@@ -29,6 +30,7 @@ export class AppPage {
     this.header = page.getByTestId('app-header');
     this.resourceCards = page.getByTestId('resource-cards');
     this.scroller = page.getByTestId('scroller');
+    this.routeError = page.getByTestId('route-error');
     this.appError = page.getByTestId('app-error');
   }
 

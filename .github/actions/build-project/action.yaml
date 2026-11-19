@@ -22,6 +22,11 @@ inputs:
     required: false
     default: 'true'
 
+  check-route-tree:
+    description: 'Fail when the committed app-core route tree (routeTree.gen.ts) differs from a fresh generate'
+    required: false
+    default: 'true'
+
   run-lint:
     description: 'Run linting (pnpm lint)'
     required: false
@@ -61,6 +66,7 @@ runs:
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
         echo "Check unused: ${{ inputs.check-unused }}"
         echo "Check format: ${{ inputs.check-format }}"
+        echo "Check route tree: ${{ inputs.check-route-tree }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Check type: ${{ inputs.check-type }}"
@@ -87,6 +93,13 @@ runs:
       if: inputs.check-format == 'true'
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
+
+    - name: Check route tree
+      if: inputs.check-route-tree == 'true'
+      shell: bash
+      run: |
+        pnpm --filter @repo/app-core generate:routes
+        git diff --exit-code packages/app-core/src/routeTree.gen.ts
 
     - name: Build and run quality checks
       shell: bash
