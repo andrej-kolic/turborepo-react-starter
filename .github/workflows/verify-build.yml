@@ -84,7 +84,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Build, check env guards and size
+      - name: Build, check env guards, page split and size
         uses: ./.github/actions/build-project
         with:
           build-filter: ${{ matrix.bundler }}
@@ -92,6 +92,7 @@ jobs:
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           check-type: 'false'
           run-lint: 'false'
           run-tests: 'false'
@@ -135,6 +136,7 @@ jobs:
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           check-type: 'false'
           run-lint: 'false'
           run-tests: 'false'

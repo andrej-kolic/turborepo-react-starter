@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react';
+import { router } from '../router';
 import { sentryRelease } from './release';
 
 Sentry.init({
@@ -10,14 +11,9 @@ Sentry.init({
     import.meta.env.GIT_COMMIT,
   ),
   integrations: [
-    Sentry.browserTracingIntegration({
-      // Name each page view after its path, so Sentry's Web Vitals table has one row per page
-      // instead of one "Pageload" row for all. Why: decision 0012.
-      beforeStartSpan: (options) => ({
-        ...options,
-        name: window.location.pathname,
-      }),
-    }),
+    // Names each page view after its route (`/`, `/about`), so Sentry's Web Vitals table has one
+    // row per page. Why: decision 0012.
+    Sentry.tanstackRouterBrowserTracingIntegration(router),
   ],
   tracesSampleRate: import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE,
   // Errors and Web Vitals don't need the visitor's IP, which is personal data; SDK 11 sends it by default.

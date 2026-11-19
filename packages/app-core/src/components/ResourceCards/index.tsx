@@ -36,9 +36,9 @@ export function ResourceCards() {
 
       <Card
         title="Public image"
-        image={<img src="images/image-file.svg" alt="icon" />}
+        image={<img src="/images/image-file.svg" alt="icon" />}
       >
-        <div>{'<img src="images/pic.svg" />'}</div>
+        <div>{'<img src="/images/pic.svg" />'}</div>
       </Card>
 
       <Card
@@ -54,7 +54,7 @@ export function ResourceCards() {
           <img alt="" src={LinkIcon} style={{ position: 'relative', top: 3 }} />
         }
       >
-        <a href="readme.txt" target="_blank" rel="noopener">
+        <a href="/readme.txt" target="_blank" rel="noopener">
           Readme
         </a>
       </Card>

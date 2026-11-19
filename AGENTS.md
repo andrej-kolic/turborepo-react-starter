@@ -80,6 +80,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
 - Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
+- Page split (builds first; runs where env guards run): `pnpm check:page-split` fails when a page's component is in the scripts that load before the app starts
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`
@@ -89,21 +90,22 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 Docs about the starter itself live in `docs/template/`. Put docs for the project built from it in the rest of `docs/`, not in `docs/template/`.
 
-| Doc                                                                                                | Purpose                                                                  |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`README.md`](README.md)                                                                           | Human-oriented package inventory and basic commands                      |
-| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md)     | Browser **verify** workflow — tier A → B → C (read before any DOM check) |
-| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)           | HAR, traces, Web Vitals — capture only, not routine verification         |
-| [`docs/template/e2e.md`](docs/template/e2e.md)                                                     | Playwright E2E: run locally, other bundler, add a test                   |
-| [`docs/template/bundle-size.md`](docs/template/bundle-size.md)                                     | Bundle size check: run it, block merges on it, limits, raise a limit     |
-| [`docs/template/build-profiles.md`](docs/template/build-profiles.md)                               | Build profiles `bare` / `features`: which build every check runs on      |
-| [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook            |
-| [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`              |
-| [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                |
-| [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                |
-| [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                 |
-| [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                |
-| [`docs/template/decisions/`](docs/template/decisions/)                                             | Decision records: why the repo works this way                            |
+| Doc                                                                                                | Purpose                                                                      |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`README.md`](README.md)                                                                           | Human-oriented package inventory and basic commands                          |
+| [`.claude/skills/x-browser-validation/SKILL.md`](.claude/skills/x-browser-validation/SKILL.md)     | Browser **verify** workflow — tier A → B → C (read before any DOM check)     |
+| [`.claude/skills/x-browser-capture/SKILL.md`](.claude/skills/x-browser-capture/SKILL.md)           | HAR, traces, Web Vitals — capture only, not routine verification             |
+| [`docs/template/routing.md`](docs/template/routing.md)                                             | Add a route: two files per page, regenerate the route tree, deep-link limits |
+| [`docs/template/e2e.md`](docs/template/e2e.md)                                                     | Playwright E2E: run locally, other bundler, add a test                       |
+| [`docs/template/bundle-size.md`](docs/template/bundle-size.md)                                     | Bundle size check: run it, block merges on it, limits, raise a limit         |
+| [`docs/template/build-profiles.md`](docs/template/build-profiles.md)                               | Build profiles `bare` / `features`: which build every check runs on          |
+| [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook                |
+| [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`                  |
+| [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                    |
+| [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                    |
+| [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                     |
+| [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                    |
+| [`docs/template/decisions/`](docs/template/decisions/)                                             | Decision records: why the repo works this way                                |
 
 Pick the **lightest** tool for the question: `pnpm test` (logic) · `pnpm e2e` (CI regression) ·
 Storybook (isolated UI) · browser-validation skill (live dev DOM/text) · browser-capture skill (artifacts).

@@ -5,7 +5,7 @@ import { AppPage } from '../pages/app.page';
 test.describe('app smoke', () => {
   // @smoke: CI runs only this test on the dev servers and on the bundlers other than DEFAULT_BUNDLER.
   test(
-    'loads with registered page regions and no console errors',
+    'loads the home page, follows a link, and opens a deep link with its assets, with no console errors',
     { tag: '@smoke' },
     async ({ page, appTarget }) => {
       const appPage = new AppPage(page);
@@ -15,6 +15,14 @@ test.describe('app smoke', () => {
       expect(response?.status()).toBeLessThan(500);
       appPage.expectOnOrigin(appTarget.url);
       await appPage.expectRegisteredRegionsVisible();
+
+      await appPage.openAboutByLink();
+      await expect(appPage.aboutPage).toBeVisible();
+      expect(new URL(page.url()).pathname).toBe('/about');
+
+      const deepLink = await appPage.gotoAssetImports();
+      expect(deepLink?.status()).toBeLessThan(500);
+      await appPage.expectAssetsLoaded();
 
       expect(consoleErrors).toEqual([]);
     },
@@ -33,15 +41,34 @@ test.describe('app smoke', () => {
     );
   });
 
-  test('shows the error screen on a render error and recovers on Try again', async ({
+  test('shows the route error screen on a page error and recovers on Try again', async ({
+    page,
+  }) => {
+    const appPage = new AppPage(page);
+    await appPage.gotoAssetImports();
+
+    await appPage.throwDemoError();
+    await expect(appPage.routeError).toContainText('Something went wrong');
+    await expect(appPage.resourceCards).toBeHidden();
+    // the layout around the page stays
+    await expect(appPage.header).toBeVisible();
+    await expect(appPage.appError).toBeHidden();
+
+    await appPage.tryAgain();
+    await expect(appPage.routeError).toBeHidden();
+    await expect(appPage.resourceCards).toBeVisible();
+  });
+
+  test('shows the app error screen on an error outside the router and recovers on Try again', async ({
     page,
   }) => {
     const appPage = new AppPage(page);
     await appPage.goto();
 
-    await appPage.throwDemoError();
+    await appPage.throwAppError();
     await expect(appPage.appError).toContainText('Something went wrong');
-    await expect(appPage.resourceCards).toBeHidden();
+    // the whole app is replaced, layout included
+    await expect(appPage.header).toBeHidden();
 
     await appPage.tryAgain();
     await expect(appPage.appError).toBeHidden();

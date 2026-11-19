@@ -12,12 +12,12 @@ const sizeLimitConfig = [
   {
     name: 'JavaScript',
     path: ['dist/assets/*.js', `!${SENTRY_FILES}`],
-    limit: '73 kB',
+    limit: '105 kB',
   },
   {
     name: 'CSS',
     path: 'dist/assets/*.css',
-    limit: '2 kB',
+    limit: '3 kB',
   },
   {
     name: 'Everything downloaded',
@@ -27,7 +27,7 @@ const sizeLimitConfig = [
       '!dist/readme.txt',
       `!${SENTRY_FILES}`,
     ],
-    limit: '204 kB',
+    limit: '237 kB',
   },
   // Only builds with APP_REACT_SENTRY_DSN have the file; size-limit fails a check that finds none.
   // A features build always has a DSN (docs/template/build-profiles.md), so there a missing file fails the check.

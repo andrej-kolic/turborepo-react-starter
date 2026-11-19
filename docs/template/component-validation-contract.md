@@ -47,6 +47,9 @@ Kebab-case, unique within a rendered page, no package prefix (`app-header`, not 
 | `resource-cards` | `ResourceCards`                     | `packages/app-core/src/components/ResourceCards/index.tsx`    |
 | `scroller`       | `Scroller` (via `DynamicList` prop) | `packages/app-core/src/components/Scroller/index.tsx`         |
 | `app-error`      | `AppErrorBoundary` fallback         | `packages/app-core/src/components/AppErrorBoundary/index.tsx` |
+| `route-error`    | `RouteError` (router error screen)  | `packages/app-core/src/components/RouteError/index.tsx`       |
+| `not-found`      | `NotFound` (no route matches)       | `packages/app-core/src/components/NotFound/index.tsx`         |
+| `about-page`     | `AboutPage` (`/about`)              | `packages/app-core/src/routes/about.lazy.tsx`                 |
 
 `@repo/ui` components with a `data-testid` prop:
 

@@ -1,5 +1,5 @@
 name: 'Build Project'
-description: "Checks the code, builds one app, then checks the build's size and env guards"
+description: "Checks the code, builds one app, then checks the build's size, env guards and page split"
 
 inputs:
   run-build:
@@ -19,6 +19,11 @@ inputs:
 
   check-format:
     description: 'Run format check (pnpm check:format)'
+    required: false
+    default: 'true'
+
+  check-route-tree:
+    description: 'Fail when the committed app-core route tree (routeTree.gen.ts) differs from a fresh generate'
     required: false
     default: 'true'
 
@@ -61,6 +66,7 @@ runs:
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
         echo "Check unused: ${{ inputs.check-unused }}"
         echo "Check format: ${{ inputs.check-format }}"
+        echo "Check route tree: ${{ inputs.check-route-tree }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Check type: ${{ inputs.check-type }}"
@@ -88,14 +94,23 @@ runs:
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
+    - name: Check route tree
+      if: inputs.check-route-tree == 'true'
+      shell: bash
+      run: |
+        pnpm --filter @repo/app-core generate:routes
+        # git diff ignores untracked files, so first fail when the tree is not committed at all
+        git ls-files --error-unmatch packages/app-core/src/routeTree.gen.ts
+        git diff --exit-code packages/app-core/src/routeTree.gen.ts
+
     - name: Build and run quality checks
       shell: bash
       run: |
         TASKS=""
 
-        # The build and the checks that run on it: env guards always, size when asked.
+        # The build and the checks that run on it: env guards and page split always, size when asked.
         if [ "${{ inputs.run-build }}" = "true" ]; then
-          TASKS="build check:env-guards"
+          TASKS="build check:env-guards check:page-split"
           if [ "${{ inputs.check-size }}" = "true" ]; then
             TASKS="$TASKS check:size"
           fi
