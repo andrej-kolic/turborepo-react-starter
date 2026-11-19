@@ -21,6 +21,7 @@ export class AppPage {
   readonly header: Locator;
   readonly resourceCards: Locator;
   readonly scroller: Locator;
+  readonly aboutPage: Locator;
   readonly routeError: Locator;
   readonly appError: Locator;
 
@@ -30,6 +31,7 @@ export class AppPage {
     this.header = page.getByTestId('app-header');
     this.resourceCards = page.getByTestId('resource-cards');
     this.scroller = page.getByTestId('scroller');
+    this.aboutPage = page.getByTestId('about-page');
     this.routeError = page.getByTestId('route-error');
     this.appError = page.getByTestId('app-error');
   }
@@ -83,6 +85,13 @@ export class AppPage {
       new URL(readmeHref ?? '', this.page.url()).href,
     );
     expect(readme.headers()['content-type']).toContain('text/plain');
+  }
+
+  async openAboutByLink(): Promise<void> {
+    await this.page
+      .getByRole('navigation', { name: 'Main' })
+      .getByRole('link', { name: 'About' })
+      .click();
   }
 
   async throwDemoError(): Promise<void> {

@@ -5,7 +5,7 @@ import { AppPage } from '../pages/app.page';
 test.describe('app smoke', () => {
   // @smoke: CI runs only this test on the dev servers and on the bundlers other than DEFAULT_BUNDLER.
   test(
-    'loads the home page and a deep link with their assets and no console errors',
+    'loads the home page, follows a link, and opens a deep link with its assets, with no console errors',
     { tag: '@smoke' },
     async ({ page, appTarget }) => {
       const appPage = new AppPage(page);
@@ -15,6 +15,10 @@ test.describe('app smoke', () => {
       expect(response?.status()).toBeLessThan(500);
       appPage.expectOnOrigin(appTarget.url);
       await appPage.expectRegisteredRegionsVisible();
+
+      await appPage.openAboutByLink();
+      await expect(appPage.aboutPage).toBeVisible();
+      expect(new URL(page.url()).pathname).toBe('/about');
 
       const deepLink = await appPage.gotoAssetImports();
       expect(deepLink?.status()).toBeLessThan(500);
