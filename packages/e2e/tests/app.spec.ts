@@ -50,4 +50,20 @@ test.describe('app smoke', () => {
     await expect(appPage.routeError).toBeHidden();
     await appPage.expectRegisteredRegionsVisible();
   });
+
+  test('shows the app error screen on an error outside the router and recovers on Try again', async ({
+    page,
+  }) => {
+    const appPage = new AppPage(page);
+    await appPage.goto();
+
+    await appPage.throwAppError();
+    await expect(appPage.appError).toContainText('Something went wrong');
+    // the whole app is replaced, layout included
+    await expect(appPage.header).toBeHidden();
+
+    await appPage.tryAgain();
+    await expect(appPage.appError).toBeHidden();
+    await appPage.expectRegisteredRegionsVisible();
+  });
 });

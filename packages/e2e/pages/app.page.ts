@@ -2,7 +2,7 @@
  * Shared helper for the E2E tests that open the app's home page.
  *
  * It knows how to find the page's parts (header, cards, error screens) and how to do what a test needs
- * (open the page, click "Throw error", switch the tab away), so each test calls `appPage.throwDemoError()`
+ * (open the page, click "Throw error" or "Throw app error", switch the tab away), so each test calls `appPage.throwDemoError()`
  * instead of repeating how to find that button.
  *
  * Used by `tests/app.spec.ts` and `tests/web-vitals.spec.ts`.
@@ -61,6 +61,10 @@ export class AppPage {
 
   async throwDemoError(): Promise<void> {
     await this.page.getByRole('button', { name: 'Throw error' }).click();
+  }
+
+  async throwAppError(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Throw app error' }).click();
   }
 
   async tryAgain(): Promise<void> {

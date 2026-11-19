@@ -3,6 +3,7 @@ import { add } from '@repo/ui/utils';
 import type { CustomType } from '@repo/commons';
 import { RouterProvider } from '@tanstack/react-router';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
+import { AppErrorDemo } from './components/AppErrorDemo';
 import { router } from './router';
 
 import '@repo/ui/theme.css';
@@ -30,6 +31,7 @@ export function AppCore(props: AppCoreProps): React.JSX.Element {
   return (
     <AppErrorBoundary>
       <RouterProvider router={router} context={{ title: props.title }} />
+      <AppErrorDemo />
     </AppErrorBoundary>
   );
 }
