@@ -1,7 +1,12 @@
 import * as esbuild from 'esbuild';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { copy } from 'esbuild-plugin-copy';
+import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
 import { createRequire } from 'module';
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import util from 'util';
 import path from 'path';
@@ -31,7 +36,8 @@ const environmentVariables = loadEnvironmentVariables({
   buildEnvironment: process.env.BUILD_ENVIRONMENT,
   customEnvVars: {
     BUNDLER: 'app-esbuild',
-    MODE: 'N/A', // esbuild does not have modes like vite/webpack,
+    MODE: 'N/A', // esbuild does not have modes like vite/rspack,
+    PROD: false,
   },
 });
 
@@ -45,12 +51,29 @@ async function dev() {
     metafile: true,
     sourcemap: true,
     loader: {
+      '.png': 'file',
       '.webp': 'file',
       '.svg': 'file',
     },
     format: 'esm',
+    target: browserslistToEsbuild(),
     logLevel: 'info',
+    // esbuild has no HMR; its dev server only signals rebuilds on /esbuild,
+    // so reload the page on each one. Lives here to stay out of prod builds.
+    banner: {
+      js: "new EventSource('/esbuild').addEventListener('change', () => location.reload());",
+    },
     plugins: [
+      htmlPlugin({
+        files: [
+          {
+            entryPoints: ['src/index.tsx'],
+            filename: 'index.html',
+            htmlTemplate: 'src/index.html',
+            scriptLoading: 'module',
+          },
+        ],
+      }),
       copy({
         resolveFrom: 'cwd',
         assets: {
@@ -60,9 +83,7 @@ async function dev() {
         watch: true, // Enable watching for dev mode
       }),
     ],
-    define: {
-      'import.meta.env': JSON.stringify(environmentVariables),
-    },
+    define: defineEnvironmentVariables(environmentVariables),
   });
 
   await ctx.watch();

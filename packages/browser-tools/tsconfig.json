@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/typescript-config/node.json",
+  "compilerOptions": {
+    "lib": ["es2023", "DOM"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true
+  },
+  "include": ["bin/**/*.js", "src/**/*.js", "vitest.config.ts"]
+}

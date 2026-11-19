@@ -7,14 +7,15 @@
   "exports": {
     "./config/app-port": "./config/app-port.ts",
     "./config/environment": "./config/environment.ts",
-    "./config/paths": "./config/paths.ts"
+    "./config/paths": "./config/paths.ts",
+    "./config/size-limit": "./config/size-limit.ts"
   },
   "bin": {
-    "dev-tools-app-target": "./bin/app-target.js"
+    "dev-tools-app-target": "./bin/app-target.js",
+    "dev-tools-sentry-sourcemaps": "./bin/sentry-sourcemaps.js"
   },
   "scripts": {
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "check:type:go": "tsgo --noEmit && tsgo --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -22,9 +23,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@repo/client-types": "workspace:*",
+    "@sentry/cli": "catalog:",
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
+    "size-limit": "catalog:",
     "tsx": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zod": "catalog:"
   }
 }

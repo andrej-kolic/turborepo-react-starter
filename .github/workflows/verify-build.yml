@@ -1,0 +1,157 @@
+# Every production build, checked and opened in a browser: 3 bundlers × 2 build profiles, plus Storybook.
+# Each app job builds once, checks env guards and bundle size, then runs Playwright on that build's preview:
+# the full suite on DEFAULT_BUNDLER, the @smoke test on the other two. Profiles: docs/template/build-profiles.md.
+# No Sentry DSN from the repo: features has its own fake one, and an empty value would override it.
+
+name: 'Verify: Build'
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a PR cancels its older run of this workflow only.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: 0
+  BUILD_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'staging' || 'development' }}
+
+jobs:
+  playwright-version:
+    name: Resolve Playwright version
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Read @playwright/test from the pnpm catalog
+        id: version
+        run: |
+          version="$(yq -r '.catalog["@playwright/test"] // ""' pnpm-workspace.yaml)"
+          test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+  # Any other value matches no matrix bundler, so no job would run the full suite and the run would pass.
+  default-bundler:
+    name: Check DEFAULT_BUNDLER
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check DEFAULT_BUNDLER names a matrix bundler
+        env:
+          DEFAULT_BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
+        run: |
+          case "$DEFAULT_BUNDLER" in
+            app-vite | app-rspack | app-esbuild) echo "DEFAULT_BUNDLER: $DEFAULT_BUNDLER" ;;
+            *) echo "::error::DEFAULT_BUNDLER \"$DEFAULT_BUNDLER\" is not app-vite, app-rspack or app-esbuild"; exit 1 ;;
+          esac
+
+  app:
+    # The bundlers are written here, not read from DEFAULT_BUNDLER, so the job names never change.
+    name: Build (${{ matrix.bundler }}, ${{ matrix.profile }})
+    needs: playwright-version
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler: [app-vite, app-rspack, app-esbuild]
+        profile: [bare, features]
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    # Browsers and their system libraries come with the image, so CI needs no apt mirror.
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      options: --user 1001
+    defaults:
+      run:
+        shell: bash
+    # The same env for the build and for Playwright's preview, so the preview reuses Turbo's cached build.
+    env:
+      BUNDLER: ${{ matrix.bundler }}
+      BUILD_PROFILE: ${{ matrix.profile }}
+      FULL_SUITE: ${{ matrix.bundler == (vars.DEFAULT_BUNDLER || 'app-vite') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build, check env guards and size
+        uses: ./.github/actions/build-project
+        with:
+          build-filter: ${{ matrix.bundler }}
+          build-environment: ${{ env.BUILD_ENVIRONMENT }}
+          check-dependencies: 'false'
+          check-unused: 'false'
+          check-format: 'false'
+          check-type: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
+
+      # Playwright starts the preview first (webServer in packages/e2e/playwright.config.ts).
+      - name: Run E2E tests (${{ env.FULL_SUITE == 'true' && 'full suite' || '@smoke' }})
+        run: |
+          if [ "$FULL_SUITE" = "true" ]; then
+            pnpm e2e
+          else
+            pnpm e2e --grep @smoke
+          fi
+
+      # Attempt in the name: a re-run of a failed job would otherwise hit a
+      # name conflict, since artifact names are unique per workflow run.
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-failure-${{ matrix.bundler }}-${{ matrix.profile }}-${{ github.run_attempt }}
+          path: |
+            packages/e2e/test-results/**
+            packages/e2e/playwright-report/**
+          retention-days: 30
+          if-no-files-found: ignore
+
+  storybook:
+    name: Build (ui-storybook)
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build Storybook
+        uses: ./.github/actions/build-project
+        with:
+          build-filter: ui-storybook
+          build-environment: ${{ env.BUILD_ENVIRONMENT }}
+          check-dependencies: 'false'
+          check-unused: 'false'
+          check-format: 'false'
+          check-type: 'false'
+          run-lint: 'false'
+          run-tests: 'false'
+          check-size: 'false'
+
+  # Required by the "Protect develop and main" ruleset. GitHub counts a skipped job as passed,
+  # so this runs even when a job above failed, and fails unless every one of them succeeded.
+  all-passed:
+    name: All builds passed
+    needs: [default-bundler, playwright-version, app, storybook]
+    if: always()
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check every build job succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS" | jq -e 'to_entries | all(.value.result == "success")' > /dev/null

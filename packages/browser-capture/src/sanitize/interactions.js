@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { readJson } from '../artifact-io/read.js';
 import { isSensitiveField, redactPii } from './redact.js';
 
 /**
@@ -10,7 +11,8 @@ import { isSensitiveField, redactPii } from './redact.js';
 export function sanitizeInteractionLog(interactionsPath) {
   if (!fs.existsSync(interactionsPath)) return { valuesRedacted: 0 };
 
-  const data = JSON.parse(fs.readFileSync(interactionsPath, 'utf8'));
+  /** @type {import('../types.js').InteractionsArtifact | null} */
+  const data = readJson(interactionsPath);
   let valuesRedacted = 0;
 
   for (const interaction of data?.interactions ?? []) {

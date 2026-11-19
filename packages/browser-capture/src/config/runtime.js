@@ -6,8 +6,8 @@ let sanitizeEnabled = true;
  *
  * @param {{ isMcpServer: boolean }} params
  */
-export function initRuntime({ isMcpServer }) {
-  isMcpServerMode = isMcpServer;
+export function initRuntime({ isMcpServer: enabled }) {
+  isMcpServerMode = enabled;
 }
 
 export function isMcpServer() {

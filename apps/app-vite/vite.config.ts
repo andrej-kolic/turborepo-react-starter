@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import util from 'util';
 import { createRequire } from 'module';
 
@@ -10,6 +11,10 @@ const pkg = _require('./package.json') as {
   previewPort: number;
 };
 
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
@@ -24,26 +29,39 @@ if (!process.env.BUILD_ENVIRONMENT) {
   throw new Error(errorMsg);
 }
 
+const buildEnvironment = process.env.BUILD_ENVIRONMENT;
+
 export default defineConfig((configEnv) => {
   // Vite's configEnv.mode should be set to the same as BUILD_ENVIRONMENT
   debuglog('configEnv:', configEnv);
 
+  // MODE is the same value Vite puts in import.meta.env.MODE itself.
+  const environmentVariables = loadEnvironmentVariables({
+    envDir: appCoreEnvDir,
+    buildEnvironment,
+    customEnvVars: {
+      BUNDLER: 'app-vite',
+      MODE: configEnv.mode,
+      // Vite's own PROD: it sets NODE_ENV (build: production, dev: development) before loading this file.
+      PROD: process.env.NODE_ENV === 'production',
+    },
+  });
+
+  debuglog('Runtime environment Variables:', environmentVariables);
+
   return {
     base: '', // generate relative paths
 
-    // do not use loadEnvironmentVariables from '@repo/dev-tools/config/environment', but Vite's native mechanism
-    // behavior is same as in getEnvVariables()
-    // NOTE: alternatively use loadEnvironmentVariables for consistency across all apps
-    envDir: appCoreEnvDir,
+    // .env files are read by loadEnvironmentVariables, the same as in the other bundlers.
+    // It puts them into process.env, where Vite still finds them for %APP_REACT_*% in index.html.
+    // Like the other bundlers, dev does not restart on .env changes; restart it by hand.
+    envDir: false,
     envPrefix: 'APP_REACT',
-    define: {
-      'import.meta.env.BUNDLER': JSON.stringify('app-vite'),
-      'import.meta.env.BUILD_ENVIRONMENT': JSON.stringify(
-        process.env.BUILD_ENVIRONMENT,
-      ),
-    },
+    define: defineEnvironmentVariables(environmentVariables),
 
     server: {
+      // Every address, as rspack and esbuild do; see docs/template/decisions/0014.
+      host: true,
       port: pkg.devPort,
       strictPort: true,
       watch: {
@@ -60,20 +78,23 @@ export default defineConfig((configEnv) => {
 
     // Exclude workspace packages from pre-bundling so Vite's transform pipeline handles them.
     // JIT packages (@repo/ui, @repo/app-core): raw .tsx source.
-    // Compiled package (@repo/commons): dist/ updates from tsup/tsc watch.
+    // Compiled package (@repo/commons): dist/ updates from tsdown watch.
     optimizeDeps: {
       exclude: ['@repo/ui', '@repo/app-core', '@repo/commons'],
     },
 
     publicDir: appCorePublic,
 
-    // TODO: remove, added for readable output
-    // build: {
-    //   minify: false,
-    //   rollupOptions: {
-    //     // external: ["react", "react-dom", "react/jsx-runtime"],
-    //     treeshake: false,
-    //   },
-    // },
+    build: {
+      target: browserslistToEsbuild(),
+      // .map files without a sourceMappingURL comment: the deploy uploads them to Sentry and deletes them.
+      sourcemap: 'hidden',
+      // TODO: remove, added for readable output
+      // minify: false,
+      // rollupOptions: {
+      //   // external: ["react", "react-dom", "react/jsx-runtime"],
+      //   treeshake: false,
+      // },
+    },
   };
 });

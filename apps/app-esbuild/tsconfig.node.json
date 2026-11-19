@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "skipLibCheck": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "strictNullChecks": true
+    "strict": true
   },
-  "include": ["config/**/*.ts", "scripts/**/*.ts", "../../@types"]
+  "include": ["config/**/*.ts", "scripts/**/*.ts"]
 }

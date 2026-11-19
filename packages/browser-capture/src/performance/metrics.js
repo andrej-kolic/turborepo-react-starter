@@ -3,9 +3,10 @@
  *
  * @param {import('playwright-core').Page} page
  * @param {import('playwright-core').CDPSession} cdpSession
- * @returns {Promise<object>}
+ * @returns {Promise<import('../types.js').PerformancePayload>}
  */
 export async function getPerformanceMetrics(page, cdpSession) {
+  /** @type {import('../types.js').PerformancePayload['browserMetrics']} */
   let browserMetrics = [];
 
   try {
@@ -16,6 +17,7 @@ export async function getPerformanceMetrics(page, cdpSession) {
     // Performance domain unavailable; continue without browser metrics.
   }
 
+  /** @type {import('../types.js').PerformancePayload['runtimeMetrics']} */
   let runtimeMetrics = {
     navigationStart: null,
     lcpEntries: [],
@@ -29,7 +31,12 @@ export async function getPerformanceMetrics(page, cdpSession) {
 
   try {
     runtimeMetrics = await page.evaluate(() => {
-      const state = window.__BROWSER_CAPTURE_PERF__ || {
+      const perfWindow =
+        /** @type {Window & { __BROWSER_CAPTURE_PERF__?: import('../types.js').PerfObserverState }} */ (
+          window
+        );
+      /** @type {import('../types.js').PerfObserverState} */
+      const state = perfWindow.__BROWSER_CAPTURE_PERF__ || {
         navigationStart: performance.timeOrigin,
         lcpEntries: [],
         clsEntries: [],
@@ -40,14 +47,17 @@ export async function getPerformanceMetrics(page, cdpSession) {
 
       return {
         ...state,
-        navigation: performance.getEntriesByType('navigation').map((entry) => ({
-          name: entry.name,
-          startTime: entry.startTime,
-          duration: entry.duration,
-          domContentLoadedEventEnd: entry.domContentLoadedEventEnd,
-          loadEventEnd: entry.loadEventEnd,
-          responseEnd: entry.responseEnd,
-        })),
+        navigation: performance
+          .getEntriesByType('navigation')
+          .filter((entry) => entry instanceof PerformanceNavigationTiming)
+          .map((entry) => ({
+            name: entry.name,
+            startTime: entry.startTime,
+            duration: entry.duration,
+            domContentLoadedEventEnd: entry.domContentLoadedEventEnd,
+            loadEventEnd: entry.loadEventEnd,
+            responseEnd: entry.responseEnd,
+          })),
         paints: performance.getEntriesByType('paint').map((entry) => ({
           name: entry.name,
           startTime: entry.startTime,
@@ -62,7 +72,7 @@ export async function getPerformanceMetrics(page, cdpSession) {
     browserMetrics.map((metric) => [metric.name, metric.value]),
   );
   const inpCandidates = (runtimeMetrics.inpEntries || []).filter(
-    (entry) => Number(entry.interactionId) > 0,
+    (entry) => entry.interactionId > 0,
   );
   const lcpEntry = (runtimeMetrics.lcpEntries || []).at(-1) ?? null;
 

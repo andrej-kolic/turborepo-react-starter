@@ -8,10 +8,11 @@
   "scripts": {
     "dev": "vite --configLoader runner --mode ${BUILD_ENVIRONMENT}",
     "build": "tsc && vite build --configLoader runner --mode ${BUILD_ENVIRONMENT}",
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware",
     "preview": "vite preview --configLoader runner",
-    "check:type": "tsc --noEmit",
-    "check:type:go": "tsgo --noEmit",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && tsc -p tsconfig.check.json",
+    "check:size": "size-limit",
+    "check:env-guards": "node ../../scripts/verify-env-guards.js",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
@@ -20,15 +21,16 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
+    "@size-limit/file": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-react": "6.3.0",
+    "browserslist-to-esbuild": "catalog:",
+    "size-limit": "catalog:",
     "vite": "catalog:"
-  },
-  "_devDependencies": {
-    "eslint-plugin-react-refresh": "^0.4.12"
   }
 }

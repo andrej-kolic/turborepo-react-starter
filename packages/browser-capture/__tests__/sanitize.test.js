@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { readJson } from '../src/artifact-io/read.js';
 import { SAFE_HAR_HEADERS, sanitizeHar } from '../src/sanitize/har.js';
 import { sanitizeConsoleLog } from '../src/sanitize/console.js';
 import { sanitizeInteractionLog } from '../src/sanitize/interactions.js';
@@ -65,6 +66,7 @@ describe('isSensitiveField', () => {
 });
 
 describe('sanitizeHar', () => {
+  /** @type {string[]} */
   const tmpDirs = [];
 
   afterEach(() => {
@@ -106,21 +108,30 @@ describe('sanitizeHar', () => {
     );
 
     const result = sanitizeHar(harPath);
-    const har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
-    const entry = har.log.entries[0];
+    /** @type {unknown} */
+    const har = readJson(harPath);
 
-    expect(entry.request.headers[0].value).toBe('[REDACTED]');
-    expect(entry.request.headers[1].value).toBe('application/json');
-    expect(entry.request.queryString[0].value).toBe('[REDACTED]');
-    expect(entry.request.queryString[1].value).toBe('1');
-    expect(entry.request.postData.params[0].value).toBe('[REDACTED]');
-    expect(entry.response.headers[0].value).toBe('[REDACTED]');
+    expect(har).toMatchObject({
+      log: {
+        entries: [
+          {
+            request: {
+              headers: [{ value: '[REDACTED]' }, { value: 'application/json' }],
+              queryString: [{ value: '[REDACTED]' }, { value: '1' }],
+              postData: { params: [{ value: '[REDACTED]' }] },
+            },
+            response: { headers: [{ value: '[REDACTED]' }] },
+          },
+        ],
+      },
+    });
     expect(result.headersRedacted).toBe(2);
     expect(result.paramsRedacted).toBe(2);
   });
 });
 
 describe('sanitizeConsoleLog', () => {
+  /** @type {string[]} */
   const tmpDirs = [];
 
   afterEach(() => {
@@ -141,14 +152,18 @@ describe('sanitizeConsoleLog', () => {
     );
 
     const result = sanitizeConsoleLog(consolePath);
-    const data = JSON.parse(fs.readFileSync(consolePath, 'utf8'));
+    /** @type {unknown} */
+    const data = readJson(consolePath);
 
-    expect(data.entries[0].text).toBe('Logged in as [REDACTED-EMAIL]');
+    expect(data).toMatchObject({
+      entries: [{ text: 'Logged in as [REDACTED-EMAIL]' }],
+    });
     expect(result.messagesRedacted).toBe(1);
   });
 });
 
 describe('sanitizeInteractionLog', () => {
+  /** @type {string[]} */
   const tmpDirs = [];
 
   afterEach(() => {
@@ -180,10 +195,15 @@ describe('sanitizeInteractionLog', () => {
     );
 
     const result = sanitizeInteractionLog(interactionsPath);
-    const data = JSON.parse(fs.readFileSync(interactionsPath, 'utf8'));
+    /** @type {unknown} */
+    const data = readJson(interactionsPath);
 
-    expect(data.interactions[0].value).toBe('[REDACTED]');
-    expect(data.interactions[1].value).toBe('Reach me at [REDACTED-EMAIL]');
+    expect(data).toMatchObject({
+      interactions: [
+        { value: '[REDACTED]' },
+        { value: 'Reach me at [REDACTED-EMAIL]' },
+      ],
+    });
     expect(result.valuesRedacted).toBe(2);
   });
 });

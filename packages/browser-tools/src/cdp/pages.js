@@ -21,8 +21,8 @@ export async function findPageAtOrigin(browser, url) {
     return null;
   }
 
-  for (const context of [...browser.contexts()].reverse()) {
-    for (const page of [...context.pages()].reverse()) {
+  for (const context of browser.contexts().toReversed()) {
+    for (const page of context.pages().toReversed()) {
       try {
         if (new URL(page.url()).origin === origin) {
           return page;
@@ -44,16 +44,15 @@ export async function findPageAtOrigin(browser, url) {
  */
 export function findRecentPage(browser) {
   for (const context of browser.contexts()) {
-    const pages = [...context.pages()].reverse();
-    if (pages.length === 0) {
-      continue;
-    }
-
+    const pages = context.pages().toReversed();
     const page =
       pages.find((p) => {
         const url = p.url();
         return url !== 'about:blank' && !url.startsWith('devtools://');
       }) ?? pages[0];
+    if (!page) {
+      continue;
+    }
 
     return { context, page };
   }

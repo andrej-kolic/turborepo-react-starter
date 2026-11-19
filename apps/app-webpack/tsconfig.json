@@ -1,7 +1,0 @@
-{
-  "extends": "@repo/typescript-config/webpack.json",
-
-  "include": ["src", "../../@types"],
-  "exclude": ["node_modules", "dist", "build"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}

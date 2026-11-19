@@ -13,7 +13,7 @@ export { formatPageSnapshot } from './format.js';
  *
  * @param {string} url
  * @param {import('../session.js').SessionOptions} [options]
- * @returns {Promise<{ found: boolean, snapshot?: Awaited<ReturnType<typeof buildPageSnapshot>>, diagnostics?: object }>}
+ * @returns {Promise<{ found: boolean, snapshot?: Awaited<ReturnType<typeof buildPageSnapshot>>, diagnostics?: import('../session.js').PageDiagnostics }>}
  */
 export async function takePageSnapshot(url, options = {}) {
   const timeout = selectorTimeout(options);

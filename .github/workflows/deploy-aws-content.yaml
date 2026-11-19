@@ -24,7 +24,7 @@ on:
         options:
           - default
           - app-vite
-          - app-webpack
+          - app-rspack
           - app-esbuild
       environment:
         description: 'Deployment environment'
@@ -42,6 +42,8 @@ concurrency:
   cancel-in-progress: true # Cancel any in-progress runs for this group
 
 env:
+  # Sentry's DSN: unset or empty builds without error reporting (docs/template/error-reporting.md).
+  APP_REACT_SENTRY_DSN: ${{ vars.APP_REACT_SENTRY_DSN }}
   AWS_DEFAULT_REGION: us-east-1
   HUSKY: 0
   BUNDLER: >-
@@ -58,14 +60,17 @@ permissions:
   pull-requests: write
 
 jobs:
-  # Deploy to development environment
-  deploy-development:
+  # Picks the environment from the event: a push to develop or a PR from develop deploys development,
+  # a push to main deploys staging, a manual run deploys the chosen one. A PR into main from any other
+  # branch deploys nothing.
+  deploy:
+    name: Deploy (${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref == 'refs/heads/main' && 'staging' || 'development' }})
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')) ||
       (github.event_name == 'pull_request' && github.head_ref == 'develop') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
-    environment: development
+      github.event_name == 'workflow_dispatch'
+    environment: &deploy-environment ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref == 'refs/heads/main' && 'staging' || 'development' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -74,77 +79,26 @@ jobs:
         uses: ./.github/actions/build-project
         with:
           build-filter: ${{ env.BUNDLER }}
-          build-environment: development
+          build-environment: *deploy-environment
           check-dependencies: 'false'
+          check-unused: 'false'
           check-format: 'false'
           run-lint: 'false'
           run-tests: 'false'
+          check-size: 'false'
 
-      - name: Deploy to development
+      - name: Deploy
         uses: ./infra/aws/.github/actions/deploy
+        # Source map upload (docs/template/error-reporting.md); unset skips it.
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         with:
-          environment: development
+          environment: *deploy-environment
           action: content
           aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
           comment-pr: ${{ github.event_name == 'pull_request' }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-  # Deploy to staging environment
-  deploy-staging:
-    runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'push' && (github.ref == 'refs/heads/main')) ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
-    environment: staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Build project
-        uses: ./.github/actions/build-project
-        with:
-          build-filter: ${{ env.BUNDLER }}
-          build-environment: staging
-          check-dependencies: 'false'
-          check-format: 'false'
-          run-lint: 'false'
-          run-tests: 'false'
-
-      - name: Deploy to staging
-        uses: ./infra/aws/.github/actions/deploy
-        with:
-          environment: staging
-          action: content
-          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-
-  # Deploy to production environment
-  deploy-production:
-    runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Build project
-        uses: ./.github/actions/build-project
-        with:
-          build-filter: ${{ env.BUNDLER }}
-          build-environment: production
-          check-dependencies: 'false'
-          check-format: 'false'
-          run-lint: 'false'
-          run-tests: 'false'
-
-      - name: Deploy to production
-        uses: ./infra/aws/.github/actions/deploy
-        with:
-          environment: production
-          action: content
-          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-          create-release: 'true'
+          create-release: ${{ github.event_name == 'workflow_dispatch' && inputs.environment == 'production' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -7,7 +7,7 @@ import { loadAppEndpoints } from '@repo/dev-tools/config/app-port';
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { devPort } = loadAppEndpoints('ui-storybook');
 
-const args = ['dev', '-p', String(devPort)];
+const args = ['dev', '-p', String(devPort), '--no-open'];
 if (process.env.STORYBOOK_OPTIONS) {
   args.push(...process.env.STORYBOOK_OPTIONS.split(/\s+/).filter(Boolean));
 }

@@ -5,28 +5,30 @@ import { Header } from './components/Header';
 import { debugLog } from './utils/debug';
 import { ResourceCards } from './components/ResourceCards';
 import { Scroller } from './components/Scroller';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 import '@repo/ui/theme.css';
 import './styles.css';
+import './env-guards';
 
-// TODO remove
-/* _eslint no-console: "error" */
-
-// TODO remove
+// demo: keeps a type import from @repo/commons
 const ct: CustomType = { _type: 'test' };
 console.log('* custom type:', ct);
 
-// TODO remove
+// demo: keeps a runtime import from @repo/ui
 console.log('* 1 + 2:', add(1, 2));
 
+// demo: triggers the no-underscore-dangle lint warning
 const _orphan = 1;
 
-export function AppCore(props: {
+type AppCoreProps = {
   className?: string;
   title: string;
   children: React.ReactNode;
   href: string;
-}): React.JSX.Element {
+};
+
+function AppContent(props: AppCoreProps): React.JSX.Element {
   debugLog();
 
   return (
@@ -40,7 +42,15 @@ export function AppCore(props: {
   );
 }
 
-// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+export function AppCore(props: AppCoreProps): React.JSX.Element {
+  return (
+    <AppErrorBoundary>
+      <AppContent {...props} />
+    </AppErrorBoundary>
+  );
+}
+
+// demo: triggers the react/only-export-components lint warning
 export const foo = () => {
   //
 };

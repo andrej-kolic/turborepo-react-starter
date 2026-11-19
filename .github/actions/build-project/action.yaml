@@ -1,14 +1,19 @@
 name: 'Build Project'
-description: 'Setup Node.js environment, install dependencies, and run build pipeline with optional checks using Turborepo parallel execution'
+description: "Checks the code, builds one app, then checks the build's size and env guards"
 
 inputs:
-  node-version:
-    description: 'Node.js version to use'
+  run-build:
+    description: "Build the project and check the build; 'false' skips both and runs only the code checks"
     required: false
-    default: '24'
+    default: 'true'
 
   check-dependencies:
     description: 'Run dependency check (pnpm check:dependencies)'
+    required: false
+    default: 'true'
+
+  check-unused:
+    description: 'Run unused code check (pnpm check:unused)'
     required: false
     default: 'true'
 
@@ -27,6 +32,16 @@ inputs:
     required: false
     default: 'true'
 
+  check-type:
+    description: 'Run type check (pnpm check:type)'
+    required: false
+    default: 'true'
+
+  check-size:
+    description: "Run bundle size check (pnpm check:size); needs run-build 'true'"
+    required: false
+    default: 'true'
+
   build-filter:
     description: 'Build filter for specific packages/apps (e.g., app-vite)'
     required: false
@@ -39,117 +54,57 @@ runs:
   using: 'composite'
 
   steps:
-    # Log input
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Log input"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Log input
       shell: bash
       run: |
-        echo " "
-        echo "Node.js version: ${{ inputs.node-version }}"
+        echo "Run build: ${{ inputs.run-build }}"
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
+        echo "Check unused: ${{ inputs.check-unused }}"
         echo "Check format: ${{ inputs.check-format }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
+        echo "Check type: ${{ inputs.check-type }}"
+        echo "Check size: ${{ inputs.check-size }}"
         echo "Build filter: ${{ inputs.build-filter }}"
         echo "Build environment: ${{ inputs.build-environment }}"
-        echo " "
+        echo "Build profile: ${BUILD_PROFILE:-none}"
 
-    # Setup pnpm
+    - name: Setup
+      uses: ./.github/actions/setup
 
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Setup pnpm"
-        echo "──────────────────────────────────────"
-        echo " "
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
-
-    # Setup Setup Node.js
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Setup Node.js"
-        echo "──────────────────────────────────────"
-        echo " "
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'pnpm'
-
-    # Install dependencies
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Install dependencies"
-        echo "──────────────────────────────────────"
-        echo " "
-    - name: Install dependencies
-      shell: bash
-      run: pnpm install
-
-    # Check dependencies
-
-    - if: inputs.check-dependencies == 'true'
-      shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Check dependencies"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Check dependencies
       if: inputs.check-dependencies == 'true'
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:dependencies
 
-    # Check format
-
-    - if: inputs.check-format == 'true'
+    - name: Check unused
+      if: inputs.check-unused == 'true'
       shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Check format"
-        echo "──────────────────────────────────────"
-        echo " "
+      # knip loads packages/e2e/playwright.config.ts, which needs BUNDLER set; any bundler works.
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=app-vite pnpm check:unused
+
     - name: Check format
       if: inputs.check-format == 'true'
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
-    # Build and run quality checks
-
-    - shell: bash
-      run: |
-        echo " "
-        echo " "
-        echo "Build and run quality checks"
-        echo "──────────────────────────────────────"
-        echo " "
     - name: Build and run quality checks
       shell: bash
       run: |
-        # Build tasks list based on inputs
         TASKS=""
 
-        # Always include build for the specific filter
-        TASKS="build"
+        # The build and the checks that run on it: env guards always, size when asked.
+        if [ "${{ inputs.run-build }}" = "true" ]; then
+          TASKS="build check:env-guards"
+          if [ "${{ inputs.check-size }}" = "true" ]; then
+            TASKS="$TASKS check:size"
+          fi
+        fi
 
-        # Add conditional tasks
+        if [ "${{ inputs.check-type }}" = "true" ]; then
+          TASKS="$TASKS check:type"
+        fi
+
         if [ "${{ inputs.run-lint }}" = "true" ]; then
           TASKS="$TASKS lint"
         fi
@@ -158,17 +113,18 @@ runs:
           TASKS="$TASKS test"
         fi
 
-        echo "Running tasks in parallel: $TASKS"
-        echo " "
+        if [ -z "$TASKS" ]; then
+          echo "No Turbo tasks to run."
+          exit 0
+        fi
 
-        # Add conditional filter
+        echo "Running tasks in parallel: $TASKS"
+
         FILTER=""
         if [ -n "${{ inputs.build-filter }}" ]; then
           FILTER="--filter ${{ inputs.build-filter }}..."
         else
           echo "No build filter provided, running tasks ($TASKS) across the entire monorepo."
-          echo " "
         fi
 
-        # Run turbo with all tasks, filtered to the specific build target
         BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm turbo $TASKS $FILTER

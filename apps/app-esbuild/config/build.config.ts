@@ -1,8 +1,14 @@
-import { loadEnvironmentVariables } from '@repo/dev-tools/config/environment';
+import {
+  defineEnvironmentVariables,
+  loadEnvironmentVariables,
+} from '@repo/dev-tools/config/environment';
 import { createPaths } from '@repo/dev-tools/config/paths';
 import * as esbuild from 'esbuild';
+import browserslistToEsbuild from 'browserslist-to-esbuild';
 import util from 'util';
 import { copy } from 'esbuild-plugin-copy';
+import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
+import fs from 'fs';
 import path from 'path';
 
 const debuglog = util.debuglog('app-esbuild');
@@ -24,49 +30,68 @@ const environmentVariables = loadEnvironmentVariables({
   buildEnvironment: process.env.BUILD_ENVIRONMENT,
   customEnvVars: {
     BUNDLER: 'app-esbuild',
-    MODE: 'N/A', // esbuild does not have modes like vite/webpack,
+    MODE: 'N/A', // esbuild does not have modes like vite/rspack,
+    PROD: true,
   },
 });
 
 debuglog('Runtime environment Variables:', environmentVariables);
 
-async function bundle() {
-  try {
-    const buildResult = await esbuild.build({
-      entryPoints: ['src/index.tsx'],
-      bundle: true,
-      outdir: BUILD_DIR,
-      metafile: true,
-      //   minify: true,
-      //   sourcemap: true,
-      loader: {
-        '.webp': 'file',
-        '.svg': 'file',
-      },
-      format: 'esm',
+// Leftovers from earlier builds would otherwise be deployed with the new ones.
+fs.rmSync(BUILD_DIR, { recursive: true, force: true });
 
-      define: {
-        'import.meta.env': JSON.stringify(environmentVariables),
-      },
+const buildResult = await esbuild.build({
+  entryPoints: ['src/index.tsx'],
+  bundle: true,
+  outdir: BUILD_DIR,
+  // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
+  entryNames: 'assets/[name]-[hash]',
+  assetNames: 'assets/[name]-[hash]',
+  // Puts each dynamic import() in its own file, as Vite and Rspack do, so it loads after the app.
+  splitting: true,
+  chunkNames: 'assets/[name]-[hash]',
+  // Without it, JS refers to images relative to assets/, which breaks from index.html at the root.
+  publicPath: '/',
+  metafile: true,
+  minify: true,
+  // .map files without a sourceMappingURL comment: the deploy uploads them to Sentry and deletes them.
+  sourcemap: 'external',
+  loader: {
+    '.png': 'file',
+    '.webp': 'file',
+    '.svg': 'file',
+  },
+  format: 'esm',
+  target: browserslistToEsbuild(),
 
-      plugins: [
-        copy({
-          resolveFrom: 'cwd',
-          assets: {
-            from: [publicDir],
-            to: [BUILD_DIR],
-          },
-          watch: false,
-        }),
+  define: {
+    ...defineEnvironmentVariables(environmentVariables),
+    // esbuild otherwise picks React's development build whenever minify is off.
+    'process.env.NODE_ENV': '"production"',
+  },
+
+  plugins: [
+    htmlPlugin({
+      files: [
+        {
+          entryPoints: ['src/index.tsx'],
+          filename: 'index.html',
+          htmlTemplate: 'src/index.html',
+          scriptLoading: 'module',
+        },
       ],
+    }),
+    copy({
+      resolveFrom: 'cwd',
+      assets: {
+        from: [publicDir],
+        to: [BUILD_DIR],
+      },
+      watch: false,
+    }),
+  ],
 
-      // external: ['react', 'react-dom'],
-    });
+  // external: ['react', 'react-dom'],
+});
 
-    debuglog('Build successful:', buildResult);
-  } catch (err) {
-    debuglog('Error during build:', err);
-  }
-}
-
-void bundle();
+debuglog('Build successful:', buildResult);

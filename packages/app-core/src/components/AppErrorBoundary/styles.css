@@ -1,0 +1,26 @@
+.AppErrorBoundary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 24px;
+  color: var(--color-text-primary);
+}
+
+/* same glow as the header title, so text stays readable on the photo background */
+.AppErrorBoundary__title,
+.AppErrorBoundary__message {
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.95),
+    0 0 42px rgba(255, 255, 255, 0.6);
+}
+
+.AppErrorBoundary__title {
+  margin: 0;
+}
+
+.AppErrorBoundary__message {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

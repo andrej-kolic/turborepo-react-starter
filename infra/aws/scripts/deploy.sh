@@ -17,6 +17,9 @@ ACTION=${1}
 ENVIRONMENT=${2}
 CONFIG_FILE="${ROOT_DIR}/deploy-config.json"
 BUNDLER_NAME="${BUNDLER:-app-vite}"
+# Every bundler writes content-hashed files to assets/: a changed file gets a new name,
+# so browsers and CloudFront may keep these for a year without checking.
+ASSETS_CACHE_CONTROL="public, max-age=31536000, immutable"
 
 get_aws_account_id() {
     print_info "Checking AWS credentials..."
@@ -149,12 +152,18 @@ sync_site_content() {
     # Replace this with your actual site build/output directory
     # SITE_DIR="./www"
     # SITE_DIR="../../apps/app-vite/dist"
-    # SITE_DIR="../../apps/app-webpack/dist"
+    # SITE_DIR="../../apps/app-rspack/dist"
     print_debug "PWD (deploy.sh): $PWD"
     SITE_DIR="$(realpath "${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist")"
     print_debug "Distribution dir: $SITE_DIR"
     if [ ! -d "$SITE_DIR" ]; then
         print_error "Site directory '$SITE_DIR' does not exist or is not a directory."
+        exit 1
+    fi
+
+    # Before any upload, so no .map file is ever published: see docs/template/error-reporting.md.
+    if ! pnpm --dir "$MONOREPO_ROOT_DIR" exec dev-tools-sentry-sourcemaps "$SITE_DIR"; then
+        print_error "Source maps left in $SITE_DIR; nothing was deployed."
         exit 1
     fi
 
@@ -174,12 +183,67 @@ sync_site_content() {
 
     print_info "BUCKET_NAME: $BUCKET_NAME"
 
-    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete; then
-        print_error "Failed to sync site content to s3://$BUCKET_NAME"
+    # Upload order: hashed assets, then other files, then index.html, so a new page never
+    # points to a file that isn't uploaded yet. cp (not sync) re-sends every file, so each
+    # one gets its Cache-Control even when its content is unchanged.
+    if ! aws s3 cp "$SITE_DIR/assets" "s3://$BUCKET_NAME/assets" --recursive \
+        --cache-control "$ASSETS_CACHE_CONTROL"; then
+        print_error "Failed to upload assets to s3://$BUCKET_NAME/assets"
         exit 1
     fi
 
+    # no-cache: browsers may store the file but must check for a newer one before using it.
+    if ! aws s3 cp "$SITE_DIR" "s3://$BUCKET_NAME" --recursive \
+        --exclude "assets/*" --exclude "index.html" --cache-control "no-cache"; then
+        print_error "Failed to upload site files to s3://$BUCKET_NAME"
+        exit 1
+    fi
+
+    if ! aws s3 cp "$SITE_DIR/index.html" "s3://$BUCKET_NAME/index.html" \
+        --cache-control "no-cache"; then
+        print_error "Failed to upload index.html to s3://$BUCKET_NAME"
+        exit 1
+    fi
+
+    # --size-only: without it, a local clock ahead of S3 makes sync re-upload every file
+    # cp just sent, without Cache-Control. assets/ is left out: see delete_old_assets.
+    if ! aws s3 sync "$SITE_DIR" "s3://$BUCKET_NAME" --delete --size-only \
+        --exclude "assets/*"; then
+        print_error "Failed to remove deleted files from s3://$BUCKET_NAME"
+        exit 1
+    fi
+
+    delete_old_assets
+
     print_success "Site content synced to s3://$BUCKET_NAME"
+}
+
+# A tab still on an older version loads code on demand (Sentry, through import()) from that
+# version's assets/ files, so they stay for OLD_ASSETS_DAYS. Every deploy re-uploads the
+# current files above, so only files no deploy has sent for that long are older.
+# Why not an S3 lifecycle rule: docs/template/decisions/0010-keep-old-assets-on-deploy.md
+OLD_ASSETS_DAYS=7
+
+delete_old_assets() {
+    local cutoff
+    cutoff=$(date -u -d "-${OLD_ASSETS_DAYS} days" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null ||
+        date -u -v-"${OLD_ASSETS_DAYS}"d +%Y-%m-%dT%H:%M:%SZ)
+
+    local old_keys
+    if ! old_keys=$(aws s3api list-objects-v2 --bucket "$BUCKET_NAME" --prefix "assets/" \
+        --query "Contents[?LastModified<'${cutoff}'].Key" --output text); then
+        print_error "Failed to list old assets in s3://$BUCKET_NAME/assets"
+        exit 1
+    fi
+
+    local key
+    for key in $old_keys; do
+        [ "$key" = "None" ] && continue
+        if ! aws s3 rm "s3://$BUCKET_NAME/$key"; then
+            print_error "Failed to delete s3://$BUCKET_NAME/$key"
+            exit 1
+        fi
+    done
 }
 
 invalidate_cloudfront_cache() {

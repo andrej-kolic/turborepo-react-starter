@@ -1,18 +1,22 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local", "prettier.config.js"],
+  "globalDependencies": ["**/.env.*local", ".oxfmtrc.jsonc"],
 
   "globalEnv": [
     "TARGET_URL",
     "BUNDLER",
     "BUILD_ENVIRONMENT",
+    "BUILD_PROFILE",
     "CI",
     "NODE_ENV",
     "NODE_DEBUG",
-    "MODE",
     "APP_REACT_ENV_FILE",
     "APP_REACT_TITLE",
-    "APP_REACT_VERSION"
+    "APP_REACT_VERSION",
+    "APP_REACT_GUARD_ON",
+    "APP_REACT_GUARD_OFF",
+    "APP_REACT_SENTRY_DSN",
+    "APP_REACT_SENTRY_TRACES_SAMPLE_RATE"
   ],
   "globalPassThroughEnv": ["GITHUB_TOKEN"],
 
@@ -39,8 +43,12 @@
     "check:type": {
       "dependsOn": ["^build", "^check:type"]
     },
-    "check:type:go": {
-      "dependsOn": ["^build", "^check:type:go"]
+    "check:size": {
+      "dependsOn": ["build"]
+    },
+    "check:env-guards": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/scripts/verify-env-guards.js"]
     },
     "test:watch": {
       "cache": false

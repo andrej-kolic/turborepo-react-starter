@@ -13,12 +13,21 @@ import {
 /**
  * @param {import('playwright-core').Page} page
  * @param {string} expression
+ * @returns {Promise<unknown>}
  */
 async function runPageExpression(page, expression) {
   return page.evaluate(async (expr) => {
-    const result = new Function(`return (${expr})`)();
-    const value = typeof result === 'function' ? result() : result;
-    return value instanceof Promise ? await value : value;
+    // The eval command exists to run the caller's own expression in the page.
+    // oxlint-disable-next-line typescript/no-implied-eval, typescript/no-unsafe-call
+    const result = /** @type {unknown} */ (new Function(`return (${expr})`)());
+    const value =
+      typeof result === 'function'
+        ? // oxlint-disable-next-line typescript/no-unsafe-call
+          /** @type {unknown} */ (result())
+        : result;
+    return value instanceof Promise
+      ? /** @type {unknown} */ (await value)
+      : value;
   }, expression);
 }
 
@@ -38,9 +47,9 @@ async function readLocatorContent(page, selector) {
 
 /**
  * @param {PageSession} session
- * @param {string} [selector]
+ * @param {string | undefined} selector
  * @param {'png' | 'jpeg'} type
- * @param {boolean} [fullPage]
+ * @param {boolean | undefined} fullPage
  * @param {number} timeout
  */
 async function captureScreenshot(session, selector, type, fullPage, timeout) {

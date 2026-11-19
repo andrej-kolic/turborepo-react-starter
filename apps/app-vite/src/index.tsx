@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AppCore } from '@repo/app-core';
+import { rootOptions } from '@repo/app-core/optional-features';
 import './index.css';
 
-// TODO: // remove
+// demo: a component export, so foo below triggers react/only-export-components
 export const Wrapper = () => {
   // console.log("@ process.env:", process.env);
   // console.log("@ process.env.API_URL:", process.env.API_URL);
@@ -24,13 +25,13 @@ if (!root) {
   throw new Error('no root element');
 }
 
-ReactDOM.createRoot(root).render(
+ReactDOM.createRoot(root, rootOptions).render(
   <React.StrictMode>
     <Wrapper />
   </React.StrictMode>,
 );
 
-// TODO: remove - example of lint warning for eslint-plugin-react-refresh
+// demo: triggers the react/only-export-components lint warning
 export const foo = () => {
   //
 };

@@ -39,16 +39,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Check dependencies
         run: pnpm check:dependencies

@@ -1,0 +1,110 @@
+# Every bundler's dev server, opened in a browser: starts `pnpm dev:app` and runs the @smoke Playwright test on it.
+# The production builds are tested in verify-build.yml.
+
+name: 'Verify: Dev server'
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a PR cancels its older run of this workflow only.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: 0
+  # Every dev server stops with an error without it.
+  BUILD_ENVIRONMENT: development
+
+jobs:
+  playwright-version:
+    name: Resolve Playwright version
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Read @playwright/test from the pnpm catalog
+        id: version
+        run: |
+          version="$(yq -r '.catalog["@playwright/test"] // ""' pnpm-workspace.yaml)"
+          test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+  smoke-test:
+    name: Smoke test (${{ matrix.bundler }})
+    needs: playwright-version
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler: [app-vite, app-rspack, app-esbuild]
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      options: --user 1001
+    defaults:
+      run:
+        shell: bash
+    env:
+      # pnpm dev:app and dev-tools-app-target both read it.
+      BUNDLER: ${{ matrix.bundler }}
+      # The e2e script needs a profile. The dev server reads it too: with any profile it loads no .local env file.
+      BUILD_PROFILE: bare
+      # On CI, Turbo holds a task's output until it exits, so a dev server that never exits logs nothing.
+      TURBO_LOG_ORDER: stream
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Start the dev server
+        run: pnpm browser:ensure-app -- --log-file /tmp/dev-app.log
+
+      # TARGET_URL makes Playwright test the dev server instead of starting a preview.
+      - name: Run E2E smoke test
+        run: |
+          TARGET_URL=$(pnpm exec dev-tools-app-target url)
+          export TARGET_URL
+          echo "Testing ${TARGET_URL}"
+          pnpm e2e --grep @smoke
+
+      # Attempt in the name: a re-run of a failed job would otherwise hit a
+      # name conflict, since artifact names are unique per workflow run.
+      - name: Upload dev server log and Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-test-failure-${{ matrix.bundler }}-${{ github.run_attempt }}
+          path: |
+            /tmp/dev-app.log
+            packages/e2e/test-results/**
+            packages/e2e/playwright-report/**
+          retention-days: 30
+          if-no-files-found: ignore
+
+  # Required by the "Protect develop and main" ruleset. GitHub counts a skipped job as passed,
+  # so this runs even when a job above failed, and fails unless every one of them succeeded.
+  all-passed:
+    name: All dev servers passed
+    needs: [playwright-version, smoke-test]
+    if: always()
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check every dev server job succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS" | jq -e 'to_entries | all(.value.result == "success")' > /dev/null

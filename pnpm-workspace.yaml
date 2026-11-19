@@ -5,35 +5,49 @@ packages:
 
 catalog:
   # React ecosystem
-  react: 19.2.7
-  react-dom: 19.2.7
-  '@types/react': 19.2.17
-  '@types/react-dom': 19.2.3
+  react: 19.3.1
+  react-dom: 19.3.1
+  '@types/react': 19.3.0
+  '@types/react-dom': 19.3.0
+  react-error-boundary: 6.1.6
+
+  # Error reporting
+  '@sentry/react': 11.12.0
+  '@sentry/cli': 3.8.2
 
   # Node
-  '@types/node': '24.6.2'
+  '@types/node': '26.6.6'
 
   # Build tools
-  vite: 8.0.16
-  tsx: '4.22.4'
-  serve: 14.2.6
-  '@turbo/gen': 2.9.18
+  vite: 8.3.8
+  browserslist-to-esbuild: 2.1.1
+  tsx: '4.23.15'
+  serve: 14.2.7
+  '@turbo/gen': 2.11.11
+
+  # Bundle size
+  size-limit: 14.3.0
+  '@size-limit/file': 14.3.0
+
+  # Validation
+  zod: 4.6.7
 
   # Browser capture
-  playwright-core: 1.61.0
+  playwright-core: 1.65.0
 
   # Testing
-  '@playwright/test': 1.61.0
-  vitest: 4.1.9
-  jsdom: 29.1.1
-  '@testing-library/dom': '10.4.1'
-  '@testing-library/jest-dom': '6.9.1'
-  '@testing-library/react': 16.3.2
-  '@testing-library/user-event': '14.6.1'
+  '@playwright/test': 1.65.0
+  vitest: 5.1.0
+  jsdom: 31.0.0
+  '@testing-library/dom': '10.4.2'
+  '@testing-library/jest-dom': '7.0.1'
+  '@testing-library/react': 16.3.3
+
+engineStrict: true
 
 allowBuilds:
   '@parcel/watcher': true
-  '@typescript/native-preview': true
+  '@sentry/cli': true
   esbuild: true
   netlify-cli: true
   sharp: true
@@ -43,7 +57,6 @@ allowBuilds:
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
-  - '@typescript/native-preview'
   - core-js-pure
   - esbuild
   - netlify-cli
@@ -51,12 +64,8 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 minimumReleaseAgeExclude:
-  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260527.2'
-  - '@typescript/native-preview@7.0.0-dev.20260527.2'
   - rulesync@8.29.0
+
+overrides:
+  # serve 14.2.7 (latest) pins compression 1.8.1, which has a high-severity advisory
+  'serve>compression': 1.8.2

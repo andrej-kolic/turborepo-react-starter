@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { readJson } from '../artifact-io/read.js';
 import { redactPii } from './redact.js';
 
 /**
@@ -10,7 +11,8 @@ import { redactPii } from './redact.js';
 export function sanitizeConsoleLog(consolePath) {
   if (!fs.existsSync(consolePath)) return { messagesRedacted: 0 };
 
-  const data = JSON.parse(fs.readFileSync(consolePath, 'utf8'));
+  /** @type {import('../types.js').ConsoleArtifact | null} */
+  const data = readJson(consolePath);
   let messagesRedacted = 0;
 
   for (const entry of data?.entries ?? []) {

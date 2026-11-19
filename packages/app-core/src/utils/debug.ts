@@ -14,6 +14,7 @@ export function debugLog() {
     import.meta.env.BUILD_ENVIRONMENT,
   );
   console.log('* import.meta.env.BUNDLER:', import.meta.env.BUNDLER);
+  console.log('* import.meta.env.PROD:', import.meta.env.PROD);
   console.log('* import.meta.env.MODE:', import.meta.env.MODE);
   console.log(
     '* import.meta.env.APP_REACT_TITLE:',
@@ -23,13 +24,4 @@ export function debugLog() {
     '* import.meta.env.APP_REACT_ENV_FILE:',
     import.meta.env.APP_REACT_ENV_FILE,
   );
-
-  // // @ts-ignore - external
-  // console.log("* import.meta.env.APP_REACT_ROOT_TEST:", import.meta.env.APP_REACT_ROOT_TEST, typeof import.meta.env.APP_REACT_ROOT_TEST, import.meta.env.APP_REACT_ROOT_TEST?.length);
-  // // @ts-ignore - external
-  // console.log("* import.meta.env.APP_REACT_HOME:", import.meta.env?.APP_REACT_HOME);
-  // // @ts-ignore - excluded
-  // console.log("* import.meta.env.HOME:", import.meta.env?.HOME);
-  // // @ts-ignore - excluded
-  // console.log("* import.meta.env.NO_PREFIX:", import.meta.env?.NO_PREFIX);
 }

@@ -7,17 +7,22 @@
     "browser-capture": "./bin/browser-capture.js"
   },
   "scripts": {
+    "lint": "oxlint --type-aware",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:type": "tsc --noEmit"
   },
   "dependencies": {
     "@jridgewell/trace-mapping": "0.3.31",
-    "@modelcontextprotocol/sdk": "1.29.0",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "@repo/browser-tools": "workspace:*",
     "playwright-core": "catalog:",
-    "zod": "3.25.76"
+    "zod": "catalog:"
   },
   "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "vitest": "catalog:"
   }
 }

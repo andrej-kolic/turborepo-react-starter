@@ -5,16 +5,15 @@
   "type": "module",
   "scripts": {
     "install:browsers": "playwright install chromium --with-deps",
-    "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui",
-    "e2e:headed": "playwright test --headed",
-    "lint": "eslint .",
+    "e2e": "playwright test --project=$BUILD_PROFILE",
+    "lint": "oxlint --type-aware",
     "check:type": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
+    "@repo/client-types": "workspace:*",
     "@repo/dev-tools": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "catalog:"
   }

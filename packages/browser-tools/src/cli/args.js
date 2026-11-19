@@ -20,16 +20,19 @@ export function isTruthyFlag(value) {
  * @returns {{ positionals: string[], options: Record<string, string | boolean> }}
  */
 export function parseArgs(argv) {
+  /** @type {string[]} */
   const positionals = [];
+  /** @type {Record<string, string | boolean>} */
   const options = {};
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
+    if (arg === undefined) continue;
     if (!arg.startsWith('--')) {
       positionals.push(arg);
       continue;
     }
     const withoutPrefix = arg.slice(2);
-    const [key, inlineValue] = withoutPrefix.split('=', 2);
+    const [key = '', inlineValue] = withoutPrefix.split('=', 2);
     if (inlineValue !== undefined) {
       options[key] = inlineValue;
       continue;

@@ -2,13 +2,16 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { readJson } from '../src/artifact-io/read.js';
 import { HarRecorder } from '../src/capture/har-recorder.js';
 
 describe('HarRecorder', () => {
   it('writes a minimal HAR 1.2 document', () => {
     const recorder = new HarRecorder();
     recorder.entries.set(
-      {},
+      /** @type {import('playwright-core').Request} */ (
+        /** @type {unknown} */ ({})
+      ),
       {
         startedDateTime: '2026-01-01T00:00:00.000Z',
         time: 0,
@@ -39,7 +42,8 @@ describe('HarRecorder', () => {
     const harPath = path.join(os.tmpdir(), `har-recorder-${Date.now()}.json`);
     recorder.write(harPath);
 
-    const har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
+    /** @type {{ log: { version: string, entries: unknown[] } }} */
+    const har = readJson(harPath);
     expect(har.log.version).toBe('1.2');
     expect(har.log.entries).toHaveLength(1);
     fs.unlinkSync(harPath);
@@ -50,13 +54,21 @@ describe('HarRecorder', () => {
     /** @type {Record<string, (payload: object) => void>} */
     const handlers = {};
     const page = {
+      /**
+       * @param {string} event
+       * @param {(payload: object) => void} handler
+       */
       on(event, handler) {
         handlers[event] = handler;
       },
       off() {},
     };
 
-    recorder.attach(page);
+    recorder.attach(
+      /** @type {import('playwright-core').Page} */ (
+        /** @type {unknown} */ (page)
+      ),
+    );
 
     const requestA = {
       url: () => 'http://localhost/a',
@@ -86,7 +98,8 @@ describe('HarRecorder', () => {
     const harPath = path.join(os.tmpdir(), `har-recorder-${Date.now()}.json`);
     recorder.write(harPath);
 
-    const har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
+    /** @type {{ log: { entries: unknown[] } }} */
+    const har = readJson(harPath);
     expect(har.log.entries).toHaveLength(2);
     fs.unlinkSync(harPath);
   });

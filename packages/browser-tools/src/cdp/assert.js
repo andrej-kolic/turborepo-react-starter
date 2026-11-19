@@ -8,6 +8,7 @@ import {
 
 /**
  * @typedef {import('./session.js').SessionOptions} SessionOptions
+ * @typedef {import('./session.js').PageDiagnostics} PageDiagnostics
  */
 
 /**
@@ -15,7 +16,7 @@ import {
  *
  * @param {string} url
  * @param {SessionOptions} [options]
- * @returns {Promise<{ consoleOk: boolean, diagnostics?: object }>}
+ * @returns {Promise<{ consoleOk: boolean, diagnostics?: PageDiagnostics }>}
  */
 export async function assertNoConsoleErrors(url, options = {}) {
   const timeout = selectorTimeout(options);
@@ -39,7 +40,7 @@ export async function assertNoConsoleErrors(url, options = {}) {
  * @param {string} url
  * @param {string} selector
  * @param {SessionOptions & { noConsoleErrors?: boolean }} [options]
- * @returns {Promise<{ found: boolean, consoleOk?: boolean, diagnostics?: object }>}
+ * @returns {Promise<{ found: boolean, consoleOk?: boolean, diagnostics?: PageDiagnostics }>}
  */
 export async function assertSelectorExists(url, selector, options = {}) {
   const timeout = selectorTimeout(options);
@@ -78,7 +79,7 @@ export async function assertSelectorExists(url, selector, options = {}) {
  * @param {string} selector
  * @param {string} text
  * @param {SessionOptions & { noConsoleErrors?: boolean }} [options]
- * @returns {Promise<{ selectorFound: boolean, textFound: boolean, consoleOk?: boolean, diagnostics?: object }>}
+ * @returns {Promise<{ selectorFound: boolean, textFound: boolean, consoleOk?: boolean, diagnostics?: PageDiagnostics }>}
  */
 export async function assertTextVisible(url, selector, text, options = {}) {
   const timeout = selectorTimeout(options);

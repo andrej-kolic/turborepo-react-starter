@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { buildMetadata } from '../artifact-io/metadata.js';
+import { buildMetadata, fetchBrowserInfo } from '../artifact-io/metadata.js';
 import { ensureArtifactsDirectory } from '../artifact-io/paths.js';
 import { writeJson } from '../artifact-io/write.js';
 import {
@@ -10,7 +10,6 @@ import {
 } from './capture-session.js';
 import {
   attachConsoleListeners,
-  fetchCdpJson,
   withAttachedSession,
 } from '@repo/browser-tools/cdp';
 import { log } from '../config/log.js';
@@ -26,7 +25,7 @@ import { sanitizeArtifacts } from '../sanitize/index.js';
  *
  * @param {string | undefined} url
  * @param {Record<string, string | boolean>} [options]
- * @returns {Promise<object>}
+ * @returns {Promise<import('../types.js').TraceResult>}
  */
 export async function recordTrace(url, options = {}) {
   return runCaptureSession({
@@ -38,9 +37,13 @@ export async function recordTrace(url, options = {}) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordTraceAttached(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('trace');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
   const harPath = path.join(artifactsDir, 'har.json');
   const tracePath = path.join(artifactsDir, 'trace.zip');
 
@@ -50,7 +53,7 @@ async function recordTraceAttached(targetUrl, durationMs) {
     harRecorder.attach(page);
     let tracingStarted = false;
     let requestCount = 0;
-    /** @type {ReturnType<typeof attachConsoleListeners> | null} */
+    /** @type {import('@repo/browser-tools/cdp').FullListener | null} */
     let consoleListener = null;
 
     page.on('request', () => {
@@ -112,9 +115,13 @@ async function recordTraceAttached(targetUrl, durationMs) {
   });
 }
 
+/**
+ * @param {string} targetUrl
+ * @param {number} durationMs
+ */
 async function recordTraceIsolated(targetUrl, durationMs) {
   const artifactsDir = ensureArtifactsDirectory('trace');
-  const browserInfo = await fetchCdpJson('/json/version');
+  const browserInfo = await fetchBrowserInfo();
   const harPath = path.join(artifactsDir, 'har.json');
   const tracePath = path.join(artifactsDir, 'trace.zip');
 
@@ -123,7 +130,7 @@ async function recordTraceIsolated(targetUrl, durationMs) {
     async ({ context }) => {
       let tracingStarted = false;
       let requestCount = 0;
-      /** @type {ReturnType<typeof attachConsoleListeners> | null} */
+      /** @type {import('@repo/browser-tools/cdp').FullListener | null} */
       let consoleListener = null;
 
       try {
