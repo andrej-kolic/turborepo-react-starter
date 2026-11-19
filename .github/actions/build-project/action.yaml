@@ -99,6 +99,8 @@ runs:
       shell: bash
       run: |
         pnpm --filter @repo/app-core generate:routes
+        # git diff ignores untracked files, so first fail when the tree is not committed at all
+        git ls-files --error-unmatch packages/app-core/src/routeTree.gen.ts
         git diff --exit-code packages/app-core/src/routeTree.gen.ts
 
     - name: Build and run quality checks
