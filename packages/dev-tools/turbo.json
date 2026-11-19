@@ -2,7 +2,11 @@
   "extends": ["//"],
   "tasks": {
     "test": {
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/app-core/.env*"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/packages/app-core/.env*",
+        "$TURBO_ROOT$/packages/app-core/src/env-guards.ts"
+      ]
     }
   }
 }

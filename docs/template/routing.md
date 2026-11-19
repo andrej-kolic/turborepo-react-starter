@@ -41,7 +41,7 @@ Pages are [TanStack Router](https://tanstack.com/router) file-based routes in [`
 
 3. Link to it with `<Link to="/contact">`; the menu is [`components/MainNav`](../../packages/app-core/src/components/MainNav/index.tsx). A link to a path that doesn't exist fails `pnpm check:type`.
 
-4. Add the page's `data-testid` to `PAGES` in [`scripts/verify-page-split.js`](../../scripts/verify-page-split.js) and to the [test ID registry](component-validation-contract.md#registry). `pnpm check:page-split` then fails if the page's component ever lands in the main bundle.
+4. Add the page's `data-testid` to `PAGES` in [`packages/dev-tools/config/page-split-check.ts`](../../packages/dev-tools/config/page-split-check.ts) and to the [test ID registry](component-validation-contract.md#registry). `pnpm check:page-split` then fails if the page's component ever lands in the main bundle.
 
 ## What goes in which file
 

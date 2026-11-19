@@ -12,6 +12,8 @@
   },
   "bin": {
     "dev-tools-app-target": "./bin/app-target.js",
+    "dev-tools-check-env-guards": "./bin/check-env-guards.js",
+    "dev-tools-check-page-split": "./bin/check-page-split.js",
     "dev-tools-sentry-sourcemaps": "./bin/sentry-sourcemaps.js"
   },
   "scripts": {

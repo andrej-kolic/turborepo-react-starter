@@ -17,8 +17,8 @@
     "preview": "tsx ./scripts/preview.ts",
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "check:size": "size-limit",
-    "check:env-guards": "node ../../scripts/verify-env-guards.js",
-    "check:page-split": "node ../../scripts/verify-page-split.js",
+    "check:env-guards": "dev-tools-check-env-guards",
+    "check:page-split": "dev-tools-check-page-split",
     "clear:output": "rm -rf ./dist ./dev"
   },
   "dependencies": {
