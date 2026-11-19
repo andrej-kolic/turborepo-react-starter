@@ -1,6 +1,6 @@
 # Web Vitals go to Sentry through browser tracing, named by path
 
-- Status: accepted
+- Status: accepted; page naming superseded by issue #160, which names page views by route with `tanstackRouterBrowserTracingIntegration(router)`
 - Date: 2026-11-16
 
 ## Context

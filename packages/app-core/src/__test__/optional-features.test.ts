@@ -6,9 +6,9 @@ const reportError = vi.fn<(error: unknown, errorInfo: ErrorInfo) => void>();
 // The SDK sends events over the network; replace it at that boundary.
 vi.mock('@sentry/react', () => ({
   init: vi.fn<typeof Sentry.init>(),
-  browserTracingIntegration: vi.fn<() => { name: string }>(() => ({
-    name: 'BrowserTracing',
-  })),
+  tanstackRouterBrowserTracingIntegration: vi.fn<() => { name: string }>(
+    () => ({ name: 'BrowserTracing' }),
+  ),
   reactErrorHandler: vi.fn<() => typeof reportError>(() => reportError),
 }));
 
@@ -33,7 +33,6 @@ describe('rootOptions', () => {
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
     vi.doUnmock('../error-reporting/sentry');
-    window.history.pushState({}, '', '/');
   });
 
   it('hasNoHandlers_whenDsnIsUnset', async () => {
@@ -88,21 +87,19 @@ describe('rootOptions', () => {
     );
   });
 
-  it('namesEachPageViewAfterItsPath_whenProdAndDsnSet', async () => {
+  it('tracesPageViewsThroughTheAppRouter_whenProdAndDsnSet', async () => {
     vi.stubEnv('PROD', true);
     vi.stubEnv('APP_REACT_SENTRY_DSN', DSN);
-    window.history.pushState({}, '', '/checkout');
 
     await loadRootOptions();
-    await vi.waitFor(() =>
-      expect(Sentry.browserTracingIntegration).toHaveBeenCalled(),
-    );
-    const options = vi.mocked(Sentry.browserTracingIntegration).mock
-      .lastCall?.[0];
+    // the router that loadRootOptions just loaded, after resetModules
+    const { router } = await import('../router');
 
-    expect(
-      options?.beforeStartSpan?.({ name: 'Pageload', op: 'pageload' }),
-    ).toEqual({ name: '/checkout', op: 'pageload' });
+    await vi.waitFor(() =>
+      expect(
+        Sentry.tanstackRouterBrowserTracingIntegration,
+      ).toHaveBeenCalledWith(router),
+    );
   });
 
   it.each(['onCaughtError', 'onUncaughtError', 'onRecoverableError'] as const)(

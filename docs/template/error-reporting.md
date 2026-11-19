@@ -65,7 +65,7 @@ If the upload fails, for example while Sentry is down or the `sentry-cli` binary
 
 ## Web Vitals
 
-A build with a DSN also sends three measurements of each visit to Sentry, under **Insights → Frontend → Web Vitals**: LCP (how fast the main content shows), CLS (how much the layout jumps) and INP (how fast the page responds to a click or key press). Each page view is named after its path, so the pages table has one row per page. Why this setup: [0012](decisions/0012-web-vitals-with-browser-tracing.md).
+A build with a DSN also sends three measurements of each visit to Sentry, under **Insights → Frontend → Web Vitals**: LCP (how fast the main content shows), CLS (how much the layout jumps) and INP (how fast the page responds to a click or key press). Each page view is named after its route (`/`, `/about`, `/users/$id`), so the pages table has one row per page; a URL that matches no route is named `Pageload`. Why this setup: [0012](decisions/0012-web-vitals-with-browser-tracing.md).
 
 Only a share of visits report: `APP_REACT_SENTRY_TRACES_SAMPLE_RATE`, from 0 to 1, default 0.1. It is not a secret, so set it in [`packages/app-core/.env`](../../packages/app-core/.env), or `.env.production` for one environment; an empty value counts as unset. `0` turns Web Vitals off and keeps error reporting.
 
@@ -74,8 +74,6 @@ APP_REACT_SENTRY_TRACES_SAMPLE_RATE=0.25
 ```
 
 The browser sends CLS and INP only when the page is hidden, for example when the visitor switches tabs or closes it, and LCP after the first click or key press. Sentry also records the timing of the app's `fetch` and XHR requests, and adds its `sentry-trace` and `baggage` headers to requests to the app's own origin.
-
-Page names are full paths: `/users/1` and `/users/2` are two rows. After adding a router, switch to Sentry's integration for that router, so pages are named by route.
 
 ## Visitor data
 
