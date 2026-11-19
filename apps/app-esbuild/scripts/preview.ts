@@ -7,7 +7,8 @@ import { loadAppEndpoints } from '@repo/dev-tools/config/app-port';
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { previewPort } = loadAppEndpoints('app-esbuild');
 
-const result = spawnSync('serve', ['./dist', '-p', String(previewPort)], {
+// -s: serve index.html for paths with no file, so deep links like /about load the app.
+const result = spawnSync('serve', ['-s', './dist', '-p', String(previewPort)], {
   stdio: 'inherit',
   cwd: appRoot,
   env: process.env,

@@ -62,6 +62,8 @@ const rspackConfig = (
     // Content-hashed names under assets/ let hosts cache them for a year (see infra deploy).
     output: {
       path: distPath,
+      // Absolute asset URLs, so a deep link like /about/x still loads /assets/...; the app must be served from the domain root.
+      publicPath: '/',
       filename: `assets/[name]${hash}.js`,
       chunkFilename: `assets/[name]${hash}.js`,
       cssFilename: `assets/[name]${hash}.css`,

@@ -48,6 +48,7 @@ async function dev() {
     entryPoints: ['src/index.tsx'],
     bundle: true,
     outdir: DEV_DIR,
+    publicPath: '/',
     metafile: true,
     sourcemap: true,
     loader: {
@@ -90,6 +91,8 @@ async function dev() {
 
   const { hosts, port } = await ctx.serve({
     servedir: DEV_DIR,
+    // Serve index.html for paths with no file, so deep links like /about load the app.
+    fallback: path.join(DEV_DIR, 'index.html'),
     port: pkg.devPort,
   });
 

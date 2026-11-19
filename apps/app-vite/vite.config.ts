@@ -50,7 +50,8 @@ export default defineConfig((configEnv) => {
   debuglog('Runtime environment Variables:', environmentVariables);
 
   return {
-    base: '', // generate relative paths
+    // Absolute asset URLs, so a deep link like /about/x still loads /assets/...; the app must be served from the domain root.
+    base: '/',
 
     // .env files are read by loadEnvironmentVariables, the same as in the other bundlers.
     // It puts them into process.env, where Vite still finds them for %APP_REACT_*% in index.html.
