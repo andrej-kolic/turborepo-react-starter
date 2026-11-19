@@ -34,7 +34,7 @@ jobs:
           echo ""
 
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Configure AWS credentials (Admin access required for OIDC setup)
         uses: aws-actions/configure-aws-credentials@v6
