@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as DemoAssetImportsRouteImport } from './routes/demo/asset-imports'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,42 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+const DemoAssetImportsRoute = DemoAssetImportsRouteImport.update({
+  id: '/demo/asset-imports',
+  path: '/demo/asset-imports',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/demo/asset-imports.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/' | '/about' | '/demo/asset-imports'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/' | '/about' | '/demo/asset-imports'
+  id: '__root__' | '/' | '/about' | '/demo/asset-imports'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  DemoAssetImportsRoute: typeof DemoAssetImportsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +77,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo/asset-imports': {
+      id: '/demo/asset-imports'
+      path: '/demo/asset-imports'
+      fullPath: '/demo/asset-imports'
+      preLoaderRoute: typeof DemoAssetImportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  DemoAssetImportsRoute: DemoAssetImportsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

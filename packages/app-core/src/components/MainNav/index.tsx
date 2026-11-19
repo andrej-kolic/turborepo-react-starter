@@ -9,6 +9,9 @@ export function MainNav(): React.ReactNode {
       <Link to="/" className="MainNav__link" activeOptions={{ exact: true }}>
         Home
       </Link>
+      <Link to="/demo/asset-imports" className="MainNav__link">
+        Asset imports
+      </Link>
       <Link to="/about" className="MainNav__link">
         About
       </Link>

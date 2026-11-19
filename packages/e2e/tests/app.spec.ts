@@ -5,7 +5,7 @@ import { AppPage } from '../pages/app.page';
 test.describe('app smoke', () => {
   // @smoke: CI runs only this test on the dev servers and on the bundlers other than DEFAULT_BUNDLER.
   test(
-    'loads with registered page regions and no console errors',
+    'loads the home page and a deep link with their assets and no console errors',
     { tag: '@smoke' },
     async ({ page, appTarget }) => {
       const appPage = new AppPage(page);
@@ -15,6 +15,10 @@ test.describe('app smoke', () => {
       expect(response?.status()).toBeLessThan(500);
       appPage.expectOnOrigin(appTarget.url);
       await appPage.expectRegisteredRegionsVisible();
+
+      const deepLink = await appPage.gotoAssetImports();
+      expect(deepLink?.status()).toBeLessThan(500);
+      await appPage.expectAssetsLoaded();
 
       expect(consoleErrors).toEqual([]);
     },
@@ -37,7 +41,7 @@ test.describe('app smoke', () => {
     page,
   }) => {
     const appPage = new AppPage(page);
-    await appPage.goto();
+    await appPage.gotoAssetImports();
 
     await appPage.throwDemoError();
     await expect(appPage.routeError).toContainText('Something went wrong');
@@ -48,7 +52,7 @@ test.describe('app smoke', () => {
 
     await appPage.tryAgain();
     await expect(appPage.routeError).toBeHidden();
-    await appPage.expectRegisteredRegionsVisible();
+    await expect(appPage.resourceCards).toBeVisible();
   });
 
   test('shows the app error screen on an error outside the router and recovers on Try again', async ({

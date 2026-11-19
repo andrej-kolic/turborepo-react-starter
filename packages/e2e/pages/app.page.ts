@@ -1,8 +1,8 @@
 /**
- * Shared helper for the E2E tests that open the app's home page.
+ * Shared helper for the E2E tests that open the app's pages: the home page and the asset imports page.
  *
- * It knows how to find the page's parts (header, cards, error screens) and how to do what a test needs
- * (open the page, click "Throw error" or "Throw app error", switch the tab away), so each test calls `appPage.throwDemoError()`
+ * It knows how to find the pages' parts (header, cards, error screens) and how to do what a test needs
+ * (open a page, click "Throw error" or "Throw app error", switch the tab away), so each test calls `appPage.throwDemoError()`
  * instead of repeating how to find that button.
  *
  * Used by `tests/app.spec.ts` and `tests/web-vitals.spec.ts`.
@@ -48,6 +48,11 @@ export class AppPage {
     return this.page.goto('/');
   }
 
+  /** Opens the asset imports page directly, two levels deep, as a deep link or reload would. */
+  gotoAssetImports(): Promise<Response | null> {
+    return this.page.goto('/demo/asset-imports');
+  }
+
   expectOnOrigin(appUrl: string): void {
     expect(this.page.url()).toBe(new URL('/', appUrl).href);
   }
@@ -55,8 +60,29 @@ export class AppPage {
   async expectRegisteredRegionsVisible(): Promise<void> {
     await expect(this.main).toBeVisible();
     await expect(this.header).toBeVisible();
-    await expect(this.resourceCards).toBeVisible();
     await expect(this.scroller).toBeVisible();
+  }
+
+  /**
+   * Checks that every way the asset imports page loads an asset worked: each card image has
+   * decoded, and the public text file is served as itself, not as the app's index.html fallback.
+   */
+  async expectAssetsLoaded(): Promise<void> {
+    await expect(this.resourceCards).toBeVisible();
+    const images = this.resourceCards.locator('img');
+    await expect(images).not.toHaveCount(0);
+    for (const image of await images.all()) {
+      await expect
+        .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+        .toBeGreaterThan(0);
+    }
+    const readmeHref = await this.resourceCards
+      .getByRole('link', { name: 'Readme' })
+      .getAttribute('href');
+    const readme = await this.page.request.get(
+      new URL(readmeHref ?? '', this.page.url()).href,
+    );
+    expect(readme.headers()['content-type']).toContain('text/plain');
   }
 
   async throwDemoError(): Promise<void> {

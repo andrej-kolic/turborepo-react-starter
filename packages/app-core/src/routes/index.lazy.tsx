@@ -1,8 +1,7 @@
-/** Home page (`/`): the resource cards and the scroller demo. */
+/** Home page (`/`): the scroller demo. */
 
 import React from 'react';
 import { createLazyFileRoute } from '@tanstack/react-router';
-import { ResourceCards } from '../components/ResourceCards';
 import { Scroller } from '../components/Scroller';
 
 export const Route = createLazyFileRoute('/')({
@@ -10,10 +9,5 @@ export const Route = createLazyFileRoute('/')({
 });
 
 function HomePage(): React.JSX.Element {
-  return (
-    <>
-      <ResourceCards />
-      <Scroller />
-    </>
-  );
+  return <Scroller />;
 }
