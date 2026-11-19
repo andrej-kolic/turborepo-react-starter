@@ -15,8 +15,8 @@ Over a limit, it fails and prints the excess:
 
 ```
 JavaScript
-Package size limit has exceeded by 85.17 kB
-Size limit: 73 kB
+Package size limit has exceeded by 53.17 kB
+Size limit: 105 kB
 Size:       158.17 kB brotlied
 ```
 
