@@ -20,6 +20,11 @@ const distDir = join(appDir, 'dist');
 // Each page's component file (a .lazy.tsx route) and the data-testid only that component renders.
 const PAGES = [
   {
+    path: '/',
+    source: 'packages/app-core/src/components/Scroller/index.tsx',
+    testId: 'scroller',
+  },
+  {
     path: '/about',
     source: 'packages/app-core/src/routes/about.lazy.tsx',
     testId: 'about-page',
