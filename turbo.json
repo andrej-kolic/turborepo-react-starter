@@ -47,20 +47,10 @@
       "dependsOn": ["build"]
     },
     "check:env-guards": {
-      "dependsOn": ["build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/scripts/verify-env-guards.js",
-        "$TURBO_ROOT$/scripts/build-output.js"
-      ]
+      "dependsOn": ["build"]
     },
     "check:page-split": {
-      "dependsOn": ["build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/scripts/verify-page-split.js",
-        "$TURBO_ROOT$/scripts/build-output.js"
-      ]
+      "dependsOn": ["build"]
     },
     "test:watch": {
       "cache": false
