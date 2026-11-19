@@ -1,3 +1,7 @@
+/* The app's global styles: load this file once at the app root. It brings the design tokens,
+   which @repo/ui components' styles also use. */
+@import './tokens.css';
+
 body {
   font-family: var(--font-family-body);
 }
