@@ -23,17 +23,17 @@
   "dependencies": {
     "@repo/commons": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@sentry/react": "catalog:",
-    "@tanstack/react-router": "catalog:",
+    "@sentry/react": "11.12.0",
+    "@tanstack/react-router": "1.170.46",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-error-boundary": "catalog:"
+    "react-error-boundary": "6.1.6"
   },
   "devDependencies": {
     "@repo/client-types": "workspace:*",
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@tanstack/router-cli": "catalog:",
+    "@tanstack/router-cli": "1.168.0",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",

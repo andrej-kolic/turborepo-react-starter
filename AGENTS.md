@@ -11,6 +11,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 - Scope work with `pnpm --filter <pkg> <script>`.
 - Internal packages use `@repo/` prefix and `workspace:*` in `package.json`.
 - Extend `@repo/typescript-config` and `@repo/oxlint-config`.
+- An external dependency used by two or more packages gets its version in the `pnpm-workspace.yaml` catalog and `catalog:` in each `package.json`. One used by a single package is pinned in that package, unless it must match a catalog entry's version (`@playwright/test` matches `playwright-core`, `turbo` matches `@turbo/gen`).
 - Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:unused` · `pnpm check:agents` · `pnpm quality-checks`
 - Commit messages and PR titles: Conventional Commits, subject starts lowercase, header at most 72 characters (aim for 50). Enforced by the `commit-msg` hook and the `Verify: Commits` workflow (PRs, and pushes to `develop`/`main`); rules in `commitlint.config.js`.
 

@@ -65,11 +65,11 @@
     "lint-staged": "17.6.0",
     "modern-web-guidance": "1.0.0",
     "oxfmt": "0.78.0",
-    "oxlint": "1.93.0",
+    "oxlint": "catalog:",
     "oxlint-tsgolint": "7.0.2006",
     "rulesync": "43.8.1",
     "syncpack": "15.3.3",
-    "turbo": "2.11.11",
+    "turbo": "catalog:",
     "typescript": "7.0.2"
   },
   "engines": {
