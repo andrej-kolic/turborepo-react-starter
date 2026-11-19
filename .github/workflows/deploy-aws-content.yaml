@@ -73,7 +73,7 @@ jobs:
     environment: &deploy-environment ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref == 'refs/heads/main' && 'staging' || 'development' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build project
         uses: ./.github/actions/build-project
