@@ -45,14 +45,17 @@ jobs:
       - name: Check dependencies
         run: pnpm check:dependencies
 
+      - name: Build Storybook
+        run: pnpm build:ui
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Storybook
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/ui-storybook/storybook-static
+
       - id: publish-storybook
         name: Publish Storybook
-        uses: bitovi/github-actions-storybook-to-github-pages@v1.0.3
-        with:
-          # install_command: pnpm install
-          install_command: echo Skipping install, dependencies installed manually
-
-          build_command: STORYBOOK_OPTIONS=${{ env.STORYBOOK_OPTIONS }} pnpm build:ui
-
-          path: apps/ui-storybook/storybook-static
-          checkout: false
+        uses: actions/deploy-pages@v5
