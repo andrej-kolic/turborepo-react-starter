@@ -34,4 +34,4 @@ Each setup below was tested on 2026-11-16 in real Sentry: a Vite preview build w
 
 - Sentry's own file grows from about 28.5 kB to 47.5 kB on Vite and 49.2 kB on esbuild (brotli, 2026-11-16); its limit is 57 kB. A build without a DSN still ships none of it.
 - Sentry also records the timing of `fetch` and XHR requests, and adds its `sentry-trace` and `baggage` headers to requests to the app's own origin only (`@sentry/browser` 11.12.0 `tracing/request.js`, `shouldAttachHeaders`).
-- Pages are named by their full path, so `/users/1` and `/users/2` are two rows. An app that adds a router should switch to Sentry's integration for that router, so page names are routes, as Outline does with `reactRouterV5BrowserTracingIntegration`. For this repo that is #160 (TanStack Router).
+- Pages are named by their full path, so `/users/1` and `/users/2` are two rows. An app that adds a router should switch to Sentry's integration for that router, so page names are routes, as Outline does with `reactRouterV5BrowserTracingIntegration`. This repo does so since [0015](0015-file-based-routing.md) (TanStack Router).
