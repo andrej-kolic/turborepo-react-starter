@@ -11,7 +11,7 @@ catalog:
   '@types/react-dom': 19.3.0
   react-error-boundary: 6.1.6
 
-  # Routing (router-cli's @tanstack/router-generator must match router-plugin's for this react-router)
+  # Routing
   '@tanstack/react-router': 1.170.46
   '@tanstack/router-cli': 1.168.0
 
