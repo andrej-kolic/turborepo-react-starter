@@ -24,7 +24,7 @@
   "license": "ISC",
   "devDependencies": {
     "@repo/client-types": "workspace:*",
-    "@sentry/cli": "catalog:",
+    "@sentry/cli": "3.8.2",
     "@types/node": "catalog:",
     "dotenv-flow": "4.1.0",
     "size-limit": "catalog:",

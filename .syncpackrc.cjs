@@ -2,7 +2,8 @@
 
 /** @type {import("syncpack").RcFile} */
 const config = {
-  // Include pnpm catalog definitions so syncpack can resolve catalog: specifiers
+  // With the pnpm catalog as a source, syncpack fails any package that pins a
+  // catalog dependency instead of using catalog: (DiffersToCatalog)
   source: [
     'package.json',
     'pnpm-workspace.yaml',
@@ -32,27 +33,6 @@ const config = {
     //     dependencyTypes: ["!dev"],
     //     isBanned: true,
     //   },
-    {
-      label: 'Catalogued deps must reference catalog, not pin directly',
-      dependencyTypes: ['dev', 'prod'],
-      dependencies: [
-        'react',
-        'react-dom',
-        '@types/react',
-        '@types/react-dom',
-        '@types/node',
-        'vite',
-        'tsx',
-        'serve',
-        '@turbo/gen',
-        'vitest',
-        'jsdom',
-        '@testing-library/dom',
-        '@testing-library/jest-dom',
-        '@testing-library/react',
-      ],
-      pinVersion: 'catalog:',
-    },
   ],
 
   // semverGroups: [
