@@ -1,5 +1,5 @@
 name: 'Build Project'
-description: "Checks the code, builds one app, then checks the build's size and env guards"
+description: "Checks the code, builds one app, then checks the build's size, env guards and page split"
 
 inputs:
   run-build:
@@ -106,9 +106,9 @@ runs:
       run: |
         TASKS=""
 
-        # The build and the checks that run on it: env guards always, size when asked.
+        # The build and the checks that run on it: env guards and page split always, size when asked.
         if [ "${{ inputs.run-build }}" = "true" ]; then
-          TASKS="build check:env-guards"
+          TASKS="build check:env-guards check:page-split"
           if [ "${{ inputs.check-size }}" = "true" ]; then
             TASKS="$TASKS check:size"
           fi

@@ -80,6 +80,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
 - Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
+- Page split (builds first; runs where env guards run): `pnpm check:page-split` fails when a page's component is in the scripts that load before the app starts
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`

@@ -13,9 +13,10 @@
  * Usage: each bundler app's `check:env-guards` script, run in the app's folder by Turbo after its build:
  *   pnpm check:env-guards
  */
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { basename, dirname, join, normalize, resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readBuildScripts, readEagerFiles } from './build-output.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const appDir = process.cwd();
@@ -57,45 +58,6 @@ if (missingLines.length > 0) {
       .join('\n'),
   );
   process.exit(1);
-}
-
-// JavaScript only: a source map holds the original source, with both lines in it.
-function readBuildScripts(distDir) {
-  return readdirSync(distDir, { recursive: true })
-    .filter((file) => /\.[cm]?js$/.test(file))
-    .map((file) => ({
-      file,
-      text: readFileSync(join(distDir, file), 'utf8'),
-    }));
-}
-
-// The scripts the page runs before the app starts, as paths relative to dist/: the ones index.html
-// loads and, following static imports, every file they import. import() calls are not followed.
-function readEagerFiles(distDir, files) {
-  const textByFile = new Map(files.map(({ file, text }) => [file, text]));
-  const html = readFileSync(join(distDir, 'index.html'), 'utf8');
-  const pending = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map(
-    ([, src]) => normalize(src.replace(/^\//, '')),
-  );
-  const eager = new Set();
-  while (pending.length > 0) {
-    const file = pending.pop();
-    if (eager.has(file) || !textByFile.has(file)) continue;
-    eager.add(file);
-    for (const [, specifier] of textByFile
-      .get(file)
-      .matchAll(/\b(?:from|import)\s*["']([^"']+\.js)["']/g)) {
-      // esbuild writes imports from the site root (its publicPath), the others relative to the file.
-      pending.push(
-        normalize(
-          specifier.startsWith('/')
-            ? specifier.slice(1)
-            : join(dirname(file), specifier),
-        ),
-      );
-    }
-  }
-  return eager;
 }
 
 if (!existsSync(distDir)) {

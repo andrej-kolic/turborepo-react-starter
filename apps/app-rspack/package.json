@@ -15,6 +15,7 @@
     "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "check:size": "size-limit",
     "check:env-guards": "node ../../scripts/verify-env-guards.js",
+    "check:page-split": "node ../../scripts/verify-page-split.js",
     "clear:output": "rm -rf ./dist"
   },
   "dependencies": {
