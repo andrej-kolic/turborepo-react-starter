@@ -11,7 +11,7 @@ A missing or misspelled `APP_REACT_*` value built fine and reached the app as `u
 
 - `loadEnvironmentVariables` validates every value against a Zod schema when a bundler config loads, so a bad env stops the build in all three bundlers.
 - The schema is strict: an `APP_REACT_*` key it does not list fails too.
-- `import.meta.env` types are generated from the schema; app-vite turns on Vite's `strictImportMetaEnv`.
+- `import.meta.env` types are generated from the schema; web-vite turns on Vite's `strictImportMetaEnv`.
 - The schema lives in `packages/client-types/env-schema.ts`, beside those types, until the React Native app needs its own package.
 
 ## Consequences

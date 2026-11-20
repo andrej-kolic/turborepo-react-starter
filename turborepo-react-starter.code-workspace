@@ -5,16 +5,16 @@
 			"path": "."
 		},
 		{
-			"name": "🚀 app-esbuild",
-			"path": "apps/app-esbuild"
+			"name": "🚀 web-esbuild",
+			"path": "apps/web-esbuild"
 		},
 		{
-			"name": "🚀 app-vite",
-			"path": "apps/app-vite"
+			"name": "🚀 web-vite",
+			"path": "apps/web-vite"
 		},
 		{
-			"name": "🚀 app-rspack",
-			"path": "apps/app-rspack"
+			"name": "🚀 web-rspack",
+			"path": "apps/web-rspack"
 		},
 		{
 			"name": "🚀 ui-storybook",
@@ -29,8 +29,8 @@
 			"path": "infra/netlify"
 		},
 		{
-			"name": "📦 @repo/app-core",
-			"path": "packages/app-core"
+			"name": "📦 @repo/web",
+			"path": "packages/web"
 		},
 		{
 			"name": "📦 @repo/browser-capture",

@@ -10,7 +10,7 @@ Used by bundler apps and tooling:
 - **`environment`** — `.env` loading for bundler configs, validated against the Zod schema in `@repo/client-types/env-schema` ([adding a variable](../../docs/template/env.md))
 - **`sentry-sourcemaps`** — the upload-and-delete step behind `dev-tools-sentry-sourcemaps`
 - **`env-guards-check`**, **`page-split-check`** — the build output checks behind `dev-tools-check-env-guards` and `dev-tools-check-page-split`, reading the build through **`build-output`**
-- **`paths`** — `@repo/app-core` public/env paths for bundlers
+- **`paths`** — `@repo/web` public/env paths for bundlers
 - **`size-limit`** — bundle size limits shared by the bundler apps ([bundle size check](../../docs/template/bundle-size.md))
 
 ## `bin/` — CLI entrypoints

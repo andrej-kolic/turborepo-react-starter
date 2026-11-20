@@ -16,7 +16,7 @@ export AWS_PAGER=""
 ACTION=${1}
 ENVIRONMENT=${2}
 CONFIG_FILE="${ROOT_DIR}/deploy-config.json"
-BUNDLER_NAME="${BUNDLER:-app-vite}"
+BUNDLER_NAME="${BUNDLER:-web-vite}"
 # Every bundler writes content-hashed files to assets/: a changed file gets a new name,
 # so browsers and CloudFront may keep these for a year without checking.
 ASSETS_CACHE_CONTROL="public, max-age=31536000, immutable"
@@ -151,8 +151,8 @@ sync_site_content() {
 
     # Replace this with your actual site build/output directory
     # SITE_DIR="./www"
-    # SITE_DIR="../../apps/app-vite/dist"
-    # SITE_DIR="../../apps/app-rspack/dist"
+    # SITE_DIR="../../apps/web-vite/dist"
+    # SITE_DIR="../../apps/web-rspack/dist"
     print_debug "PWD (deploy.sh): $PWD"
     SITE_DIR="$(realpath "${MONOREPO_ROOT_DIR}/apps/${BUNDLER_NAME}/dist")"
     print_debug "Distribution dir: $SITE_DIR"

@@ -4,8 +4,8 @@
     "test": {
       "inputs": [
         "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/packages/app-core/.env*",
-        "$TURBO_ROOT$/packages/app-core/src/env-guards.ts"
+        "$TURBO_ROOT$/packages/web/.env*",
+        "$TURBO_ROOT$/packages/web/src/env-guards.ts"
       ]
     }
   }

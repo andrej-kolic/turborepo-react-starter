@@ -68,7 +68,7 @@ function portFromUrl(url: string): string {
  * Read devPort and previewPort from apps/<appDirName>/package.json and return localhost URLs.
  * Throws if the file is missing or ports are invalid.
  *
- * @param appDirName e.g. app-vite, ui-storybook
+ * @param appDirName e.g. web-vite, ui-storybook
  */
 export function loadAppEndpoints(
   appDirName: string,

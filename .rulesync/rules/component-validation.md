@@ -5,7 +5,7 @@ targets:
   - claudecode
 description: data-testid and semantic HTML for agent-checkable page regions
 globs:
-  - packages/app-core/**/*.tsx
+  - packages/web/**/*.tsx
   - packages/ui/**/*.tsx
 cursor:
   alwaysApply: false

@@ -1,6 +1,6 @@
 # Add a route
 
-Pages are [TanStack Router](https://tanstack.com/router) file-based routes in [`packages/app-core/src/routes/`](../../packages/app-core/src/routes/). The router CLI (`tsr`) turns that folder into `packages/app-core/src/routeTree.gen.ts`, which is committed; the bundler apps don't know routes exist. Why this setup: [0015](decisions/0015-file-based-routing.md).
+Pages are [TanStack Router](https://tanstack.com/router) file-based routes in [`packages/web/src/routes/`](../../packages/web/src/routes/). The router CLI (`tsr`) turns that folder into `packages/web/src/routeTree.gen.ts`, which is committed; the bundler apps don't know routes exist. Why this setup: [0015](decisions/0015-file-based-routing.md).
 
 ## Add a page
 
@@ -34,12 +34,12 @@ Pages are [TanStack Router](https://tanstack.com/router) file-based routes in [`
 2. Regenerate the route tree. `pnpm dev:app` does it on every save; without the dev server, run:
 
    ```bash
-   pnpm --filter @repo/app-core generate:routes
+   pnpm --filter @repo/web generate:routes
    ```
 
    Commit `routeTree.gen.ts` with the route. `Verify: Code` fails when the committed file differs from a fresh one.
 
-3. Link to it with `<Link to="/contact">`; the menu is [`components/MainNav`](../../packages/app-core/src/components/MainNav/index.tsx). A link to a path that doesn't exist fails `pnpm check:type`.
+3. Link to it with `<Link to="/contact">`; the menu is [`components/MainNav`](../../packages/web/src/components/MainNav/index.tsx). A link to a path that doesn't exist fails `pnpm check:type`.
 
 4. Add the page's `data-testid` to `PAGES` in [`packages/dev-tools/config/page-split-check.ts`](../../packages/dev-tools/config/page-split-check.ts) and to the [test ID registry](component-validation-contract.md#registry). `pnpm check:page-split` then fails if the page's component ever lands in the main bundle.
 
@@ -64,11 +64,11 @@ const search = route.useSearch();
 
 ## Errors and unknown paths
 
-A page that throws shows [`RouteError`](../../packages/app-core/src/components/RouteError/index.tsx) in its place, with the header and menu still there; a route's own `errorComponent` replaces it. A path no route matches shows [`NotFound`](../../packages/app-core/src/components/NotFound/index.tsx). Only errors outside the router reach `AppErrorBoundary`.
+A page that throws shows [`RouteError`](../../packages/web/src/components/RouteError/index.tsx) in its place, with the header and menu still there; a route's own `errorComponent` replaces it. A path no route matches shows [`NotFound`](../../packages/web/src/components/NotFound/index.tsx). Only errors outside the router reach `AppErrorBoundary`.
 
 ## Serving deep links
 
 Every dev server, preview server, Netlify and CloudFront serves `index.html` for a path with no file, so opening or reloading `/contact` works. Two limits:
 
-- **The app must be served from the domain root.** Asset URLs are absolute (`/assets/…`), so `example.com/` works and `example.com/app/` doesn't. Public files in `packages/app-core/public/` need absolute paths too: `/images/pic.svg`, not `images/pic.svg`.
+- **The app must be served from the domain root.** Asset URLs are absolute (`/assets/…`), so `example.com/` works and `example.com/app/` doesn't. Public files in `packages/web/public/` need absolute paths too: `/images/pic.svg`, not `images/pic.svg`.
 - **A path whose last part has a dot is a file on CloudFront.** `/users/jane.doe` gets a 404 there, not the app. Its rewrite function is in [`infra/aws/templates/cloudfront-site.yaml`](../../infra/aws/templates/cloudfront-site.yaml).

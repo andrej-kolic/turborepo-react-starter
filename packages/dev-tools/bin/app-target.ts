@@ -52,7 +52,7 @@ function resolveTargetsOrExit(mode: AppTargetMode) {
   }
 
   console.error(
-    `Error: could not resolve ${mode} target.\n  Set BUNDLER (e.g. app-vite) or TARGET_URL before invoking dev-tools-app-target.`,
+    `Error: could not resolve ${mode} target.\n  Set BUNDLER (e.g. web-vite) or TARGET_URL before invoking dev-tools-app-target.`,
   );
   process.exit(1);
 }

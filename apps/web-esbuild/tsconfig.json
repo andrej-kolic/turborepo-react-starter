@@ -1,0 +1,14 @@
+{
+  "extends": "@repo/typescript-config/esbuild.json",
+  "compilerOptions": {
+    "paths": {
+      "~web/*": ["../../packages/web/src/*"],
+      "~ui/*": ["../../packages/ui/src/*"]
+    }
+  },
+
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "dev"],
+
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

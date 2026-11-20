@@ -4,7 +4,7 @@ Canonical instructions for AI agents working in this repository.
 
 ## Product overview
 
-Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/app-core` served by one of three bundler apps (`app-vite`, `app-rspack`, `app-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
+Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The main product is `@repo/web` served by one of three bundler apps (`web-vite`, `web-rspack`, `web-esbuild`). There is no backend, database, or Docker Compose stack for local dev.
 
 ## Monorepo conventions
 
@@ -20,7 +20,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 Root scripts use `dotenv-cli` and expect a repo-root `.env`. Copy from `.env.example` if missing. Important variables:
 
 - `BUILD_ENVIRONMENT` — required (e.g. `staging`)
-- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in `.env.example`: `app-vite`)
+- `BUNDLER` — which app to run with `dev:app` / `build:app` (default in `.env.example`: `web-vite`)
 
 ## Node.js version
 
@@ -40,7 +40,7 @@ This VM may also expose `/exec-daemon/node` (Node 22) earlier on `PATH`. Use `nv
 
 ## `@repo/commons` build artifact
 
-`@repo/commons` is a compiled package on purpose: apps import it from `dist/`, which is not committed. Every Turbo task (`pnpm dev:app`, `pnpm build`, `pnpm lint`, `pnpm test`) builds it first. Running an app's script without Turbo (e.g. `pnpm --filter app-vite dev`) skips that build; if it fails with `Can't resolve '@repo/commons'`, run:
+`@repo/commons` is a compiled package on purpose: apps import it from `dist/`, which is not committed. Every Turbo task (`pnpm dev:app`, `pnpm build`, `pnpm lint`, `pnpm test`) builds it first. Running an app's script without Turbo (e.g. `pnpm --filter web-vite dev`) skips that build; if it fails with `Can't resolve '@repo/commons'`, run:
 
 ```bash
 pnpm --filter @repo/commons build
@@ -54,7 +54,7 @@ Repo CLI helpers for port/URL resolution live in **`@repo/dev-tools`** (`dev-too
 
 | Service                  | Start                                                                          |
 | ------------------------ | ------------------------------------------------------------------------------ |
-| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`app-vite`, `app-rspack`, `app-esbuild`) |
+| **app** (active bundler) | `pnpm dev:app` — `BUNDLER` in `.env` (`web-vite`, `web-rspack`, `web-esbuild`) |
 | ui-storybook             | `pnpm dev:ui`                                                                  |
 
 `pnpm browser:ensure-app` prints the resolved dev URL, so agents do not need to look up ports.
@@ -129,6 +129,6 @@ The `concision`, `conversation-style`, `documentation`, `git`, `jsdoc`, `securit
 
 ## Gotchas
 
-- **Lint** may report `no-console` warnings in app-core/ui; they are warnings, not errors.
+- **Lint** may report `no-console` warnings in web/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
 - **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.

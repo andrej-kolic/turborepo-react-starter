@@ -26,7 +26,7 @@ function writeEnvFile(contents: string, name = '.env') {
 
 function load(
   customEnvVars: Record<string, string | boolean> = {
-    BUNDLER: 'app-vite',
+    BUNDLER: 'web-vite',
     MODE: 'production',
     PROD: true,
   },
@@ -63,7 +63,7 @@ describe('loadEnvironmentVariables', () => {
       APP_REACT_ENV_FILE: '.env',
       APP_REACT_VERSION: '1.2.3',
       BUILD_ENVIRONMENT: 'staging',
-      BUNDLER: 'app-vite',
+      BUNDLER: 'web-vite',
       MODE: 'production',
       PROD: true,
       APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
@@ -172,7 +172,7 @@ describe('loadEnvironmentVariables', () => {
   it('throws naming PROD when the bundler does not set it', () => {
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(() => load({ BUNDLER: 'app-vite', MODE: 'production' })).toThrow(
+    expect(() => load({ BUNDLER: 'web-vite', MODE: 'production' })).toThrow(
       /PROD/,
     );
   });
@@ -244,11 +244,8 @@ describe('loadEnvironmentVariables with BUILD_PROFILE', () => {
   });
 });
 
-describe('packages/app-core/.env.features', () => {
-  const appCoreDir = join(
-    dirname(fileURLToPath(import.meta.url)),
-    '../../../app-core',
-  );
+describe('packages/web/.env.features', () => {
+  const webDir = join(dirname(fileURLToPath(import.meta.url)), '../../../web');
   // Not optional features: computed by the loader, or test switches for pnpm check:env-guards.
   const notFeatures = new Set([
     'GIT_COMMIT',
@@ -263,7 +260,7 @@ describe('packages/app-core/.env.features', () => {
       .filter((key) => !notFeatures.has(key));
 
     const setKeys = Object.entries(
-      dotenvFlow.parse(join(appCoreDir, '.env.features')),
+      dotenvFlow.parse(join(webDir, '.env.features')),
     )
       .filter(([, value]) => value !== '')
       .map(([key]) => key);
@@ -276,9 +273,9 @@ describe('packages/app-core/.env.features', () => {
     process.env.BUILD_PROFILE = 'features';
 
     const variables = loadEnvironmentVariables({
-      envDir: appCoreDir,
+      envDir: webDir,
       buildEnvironment: 'staging',
-      customEnvVars: { BUNDLER: 'app-vite', MODE: 'production', PROD: true },
+      customEnvVars: { BUNDLER: 'web-vite', MODE: 'production', PROD: true },
     });
 
     expect(variables.APP_REACT_SENTRY_TRACES_SAMPLE_RATE).toBe(1);
@@ -289,7 +286,7 @@ describe('packages/app-core/.env.features', () => {
 describe('defineEnvironmentVariables', () => {
   const values = {
     BUILD_ENVIRONMENT: 'staging',
-    BUNDLER: 'app-esbuild',
+    BUNDLER: 'web-esbuild',
     MODE: 'production',
     PROD: false,
     APP_REACT_ENV_FILE: '.env',
@@ -302,7 +299,7 @@ describe('defineEnvironmentVariables', () => {
   it('defines each import.meta.env key as its value in code form', () => {
     expect(defineEnvironmentVariables(values)).toEqual({
       'import.meta.env.BUILD_ENVIRONMENT': '"staging"',
-      'import.meta.env.BUNDLER': '"app-esbuild"',
+      'import.meta.env.BUNDLER': '"web-esbuild"',
       'import.meta.env.MODE': '"production"',
       'import.meta.env.PROD': 'false',
       'import.meta.env.APP_REACT_ENV_FILE': '".env"',

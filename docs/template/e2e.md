@@ -1,6 +1,6 @@
 # Playwright E2E
 
-How to run and extend the Playwright regression tests for `@repo/app-core`. Why they run on the preview build: [`decisions/0003-e2e-on-preview-build.md`](decisions/0003-e2e-on-preview-build.md).
+How to run and extend the Playwright regression tests for `@repo/web`. Why they run on the preview build: [`decisions/0003-e2e-on-preview-build.md`](decisions/0003-e2e-on-preview-build.md).
 
 ## Run locally
 
@@ -18,7 +18,7 @@ No test sends anything to Sentry: `features` builds with a fake DSN, and `packag
 
 ```bash
 unset TARGET_URL
-BUNDLER=app-rspack BUILD_PROFILE=bare pnpm e2e
+BUNDLER=web-rspack BUILD_PROFILE=bare pnpm e2e
 ```
 
 ## Run against a preview that is already up
@@ -37,4 +37,4 @@ With `TARGET_URL`, E2E builds and starts nothing, and tests whatever runs there:
 
 ## Choose the CI bundler
 
-Set the GitHub repo variable `DEFAULT_BUNDLER` to `app-vite`, `app-rspack` or `app-esbuild` (fallback `app-vite`). [`.github/workflows/verify-build.yml`](../../.github/workflows/verify-build.yml) runs the full suite on that bundler and the `@smoke` test on the other two, once per build profile, in the Playwright container that matches the catalog version, and uploads the report and traces on failure.
+Set the GitHub repo variable `DEFAULT_BUNDLER` to `web-vite`, `web-rspack` or `web-esbuild` (fallback `web-vite`). [`.github/workflows/verify-build.yml`](../../.github/workflows/verify-build.yml) runs the full suite on that bundler and the `@smoke` test on the other two, once per build profile, in the Playwright container that matches the catalog version, and uploads the report and traces on failure.

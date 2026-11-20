@@ -1,13 +1,13 @@
 # Turborepo React starter
 
-Monorepo starter for frontend projects: one React app (`@repo/app-core`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with oxfmt.
+Monorepo starter for frontend projects: one React app (`@repo/web`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with oxfmt.
 
 ## Quick start
 
 ```bash
 cp .env.example .env
 pnpm install
-pnpm dev:app    # app on the bundler set by BUNDLER in .env (default app-vite)
+pnpm dev:app    # app on the bundler set by BUNDLER in .env (default web-vite)
 pnpm dev:ui     # Storybook for @repo/ui
 ```
 
@@ -25,12 +25,12 @@ pnpm dev:ui     # Storybook for @repo/ui
 
 Apps (`apps/`):
 
-- `app-vite`, `app-rspack`, `app-esbuild`: the same app on three bundlers
+- `web-vite`, `web-rspack`, `web-esbuild`: the same app on three bundlers
 - `ui-storybook`: Storybook for `@repo/ui`
 
 Packages (`packages/`) export source with no build step of their own, except `commons`:
 
-- `app-core`: the React app, developed as a library
+- `web`: the React app, developed as a library
 - `ui`: stub React component library
 - `commons`: stub shared library, compiled with tsdown; apps import its `dist/`, which Turbo builds first
 - `client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports) and the Zod schema the build validates env values against

@@ -12,17 +12,17 @@ export type Page = { path: string; source: string; testId: string };
 export const PAGES: readonly Page[] = [
   {
     path: '/',
-    source: 'packages/app-core/src/components/Scroller/index.tsx',
+    source: 'packages/web/src/components/Scroller/index.tsx',
     testId: 'scroller',
   },
   {
     path: '/about',
-    source: 'packages/app-core/src/routes/about.lazy.tsx',
+    source: 'packages/web/src/routes/about.lazy.tsx',
     testId: 'about-page',
   },
   {
     path: '/demo/asset-imports',
-    source: 'packages/app-core/src/components/ResourceCards/index.tsx',
+    source: 'packages/web/src/components/ResourceCards/index.tsx',
     testId: 'resource-cards',
   },
 ];

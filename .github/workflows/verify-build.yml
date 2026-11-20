@@ -49,11 +49,11 @@ jobs:
     steps:
       - name: Check DEFAULT_BUNDLER names a matrix bundler
         env:
-          DEFAULT_BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
+          DEFAULT_BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'web-vite' }}
         run: |
           case "$DEFAULT_BUNDLER" in
-            app-vite | app-rspack | app-esbuild) echo "DEFAULT_BUNDLER: $DEFAULT_BUNDLER" ;;
-            *) echo "::error::DEFAULT_BUNDLER \"$DEFAULT_BUNDLER\" is not app-vite, app-rspack or app-esbuild"; exit 1 ;;
+            web-vite | web-rspack | web-esbuild) echo "DEFAULT_BUNDLER: $DEFAULT_BUNDLER" ;;
+            *) echo "::error::DEFAULT_BUNDLER \"$DEFAULT_BUNDLER\" is not web-vite, web-rspack or web-esbuild"; exit 1 ;;
           esac
 
   app:
@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bundler: [app-vite, app-rspack, app-esbuild]
+        bundler: [web-vite, web-rspack, web-esbuild]
         profile: [bare, features]
     timeout-minutes: 20
     runs-on: ubuntu-latest
@@ -78,7 +78,7 @@ jobs:
     env:
       BUNDLER: ${{ matrix.bundler }}
       BUILD_PROFILE: ${{ matrix.profile }}
-      FULL_SUITE: ${{ matrix.bundler == (vars.DEFAULT_BUNDLER || 'app-vite') }}
+      FULL_SUITE: ${{ matrix.bundler == (vars.DEFAULT_BUNDLER || 'web-vite') }}
 
     steps:
       - name: Checkout

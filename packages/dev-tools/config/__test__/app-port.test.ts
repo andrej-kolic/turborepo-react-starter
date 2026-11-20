@@ -15,7 +15,7 @@ const repoRoot = resolve(
 describe('resolveAppTargets', () => {
   it('uses TARGET_URL override in dev mode', () => {
     const targets = resolveAppTargets(
-      { TARGET_URL: 'http://localhost:9999', BUNDLER: 'app-vite' },
+      { TARGET_URL: 'http://localhost:9999', BUNDLER: 'web-vite' },
       'dev',
     );
     expect(targets).toEqual({
@@ -27,7 +27,7 @@ describe('resolveAppTargets', () => {
 
   it('uses TARGET_URL override in preview mode', () => {
     const targets = resolveAppTargets(
-      { TARGET_URL: 'http://localhost:9999', BUNDLER: 'app-vite' },
+      { TARGET_URL: 'http://localhost:9999', BUNDLER: 'web-vite' },
       'preview',
     );
     expect(targets).toEqual({
@@ -62,8 +62,8 @@ describe('resolveAppTargets', () => {
   });
 
   it('resolves dev targets from BUNDLER when override is unset', () => {
-    const { devPort, devUrl } = loadAppEndpoints('app-vite', repoRoot);
-    const targets = resolveAppTargets({ BUNDLER: 'app-vite' }, 'dev');
+    const { devPort, devUrl } = loadAppEndpoints('web-vite', repoRoot);
+    const targets = resolveAppTargets({ BUNDLER: 'web-vite' }, 'dev');
     expect(targets).toMatchObject({
       url: devUrl,
       port: String(devPort),
@@ -73,8 +73,8 @@ describe('resolveAppTargets', () => {
   });
 
   it('resolves preview targets from BUNDLER when override is unset', () => {
-    const { previewPort, previewUrl } = loadAppEndpoints('app-vite', repoRoot);
-    const targets = resolveAppTargets({ BUNDLER: 'app-vite' }, 'preview');
+    const { previewPort, previewUrl } = loadAppEndpoints('web-vite', repoRoot);
+    const targets = resolveAppTargets({ BUNDLER: 'web-vite' }, 'preview');
     expect(targets).toMatchObject({
       url: previewUrl,
       port: String(previewPort),
@@ -90,11 +90,11 @@ describe('resolveAppTargets', () => {
 
 describe('warnIfStaleLocalTargetUrlOverride', () => {
   it('warns when localhost TARGET_URL overrides preview default', () => {
-    const { devUrl, previewUrl } = loadAppEndpoints('app-vite', repoRoot);
+    const { devUrl, previewUrl } = loadAppEndpoints('web-vite', repoRoot);
     const warnings: string[] = [];
 
     warnIfStaleLocalTargetUrlOverride(
-      { TARGET_URL: devUrl, BUNDLER: 'app-vite' },
+      { TARGET_URL: devUrl, BUNDLER: 'web-vite' },
       'preview',
       (message) => warnings.push(message),
     );
@@ -105,11 +105,11 @@ describe('warnIfStaleLocalTargetUrlOverride', () => {
   });
 
   it('does not warn when TARGET_URL matches mode default', () => {
-    const { previewUrl } = loadAppEndpoints('app-vite', repoRoot);
+    const { previewUrl } = loadAppEndpoints('web-vite', repoRoot);
     const warnings: string[] = [];
 
     warnIfStaleLocalTargetUrlOverride(
-      { TARGET_URL: previewUrl, BUNDLER: 'app-vite' },
+      { TARGET_URL: previewUrl, BUNDLER: 'web-vite' },
       'preview',
       (message) => warnings.push(message),
     );
@@ -121,7 +121,7 @@ describe('warnIfStaleLocalTargetUrlOverride', () => {
     const warnings: string[] = [];
 
     warnIfStaleLocalTargetUrlOverride(
-      { TARGET_URL: 'https://preview.example.com', BUNDLER: 'app-vite' },
+      { TARGET_URL: 'https://preview.example.com', BUNDLER: 'web-vite' },
       'preview',
       (message) => warnings.push(message),
     );
@@ -133,7 +133,7 @@ describe('warnIfStaleLocalTargetUrlOverride', () => {
     const warnings: string[] = [];
 
     warnIfStaleLocalTargetUrlOverride(
-      { BUNDLER: 'app-vite' },
+      { BUNDLER: 'web-vite' },
       'preview',
       (message) => warnings.push(message),
     );
