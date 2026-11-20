@@ -4,7 +4,7 @@ import { AppCore } from '@repo/app-core';
 import { rootOptions } from '@repo/app-core/optional-features';
 import './index.css';
 
-const rootNode = document.getElementById('app');
+const rootNode = document.getElementById('root');
 
 if (!rootNode) {
   throw new Error('no root element');

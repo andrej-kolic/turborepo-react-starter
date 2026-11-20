@@ -51,7 +51,7 @@ To run code only in a production build, add `import.meta.env.PROD` to the same `
 if (import.meta.env.PROD && import.meta.env.APP_REACT_SENTRY_DSN) { … }
 ```
 
-`PROD` is `true` in a production build and `false` in the dev server, on all three bundlers, unless the shell sets `NODE_ENV`, as with Vite's own `PROD`. Don't use `MODE` for this: on Vite it is the `BUILD_ENVIRONMENT` in both, and on esbuild it is `N/A`. Why `PROD` works this way: [0008](decisions/0008-prod-follows-node-env.md).
+`PROD` is `true` in a production build and `false` in the dev server, on all three bundlers, unless the shell sets `NODE_ENV`, as with Vite's own `PROD`. Don't use `MODE` for this: it is the `BUILD_ENVIRONMENT` on all three bundlers, the same in a build and in the dev server. Why `PROD` works this way: [0008](decisions/0008-prod-follows-node-env.md).
 
 ## What CI checks
 

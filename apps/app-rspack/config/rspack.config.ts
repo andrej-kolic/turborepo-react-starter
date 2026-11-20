@@ -43,7 +43,8 @@ const rspackConfig = (
     buildEnvironment: process.env.BUILD_ENVIRONMENT,
     customEnvVars: {
       BUNDLER: 'app-rspack',
-      MODE: options.mode, // should be set to 'development' or 'production'
+      // The build environment, as in Vite (--mode); options.mode is only Rspack's own build mode.
+      MODE: process.env.BUILD_ENVIRONMENT,
       PROD: options.mode === 'production',
     },
   });
@@ -102,6 +103,7 @@ const rspackConfig = (
         template: `./src/index.html`,
         templateParameters: {
           title: process.env.APP_REACT_TITLE ?? '',
+          mode: process.env.BUILD_ENVIRONMENT,
         },
       }),
 

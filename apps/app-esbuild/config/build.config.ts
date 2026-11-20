@@ -25,12 +25,15 @@ const BUILD_DIR = 'dist';
 const { appCorePublic, appCoreEnvDir } = createPaths(import.meta.url);
 const publicDir = path.join(appCorePublic, '**', '*');
 
+// The build environment, as in Vite (--mode); esbuild has no modes of its own.
+const MODE = process.env.BUILD_ENVIRONMENT;
+
 const environmentVariables = loadEnvironmentVariables({
   envDir: appCoreEnvDir,
   buildEnvironment: process.env.BUILD_ENVIRONMENT,
   customEnvVars: {
     BUNDLER: 'app-esbuild',
-    MODE: 'N/A', // esbuild does not have modes like vite/rspack,
+    MODE,
     PROD: true,
   },
 });
@@ -78,6 +81,7 @@ const buildResult = await esbuild.build({
           filename: 'index.html',
           htmlTemplate: 'src/index.html',
           scriptLoading: 'module',
+          define: { title: process.env.APP_REACT_TITLE ?? '', mode: MODE },
         },
       ],
     }),
