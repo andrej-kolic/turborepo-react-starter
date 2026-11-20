@@ -67,9 +67,6 @@ onlyBuiltDependencies:
   - sharp
   - unrs-resolver
 
-minimumReleaseAgeExclude:
-  - rulesync@8.29.0
-
 overrides:
   # serve 14.2.7 (latest) pins compression 1.8.1, which has a high-severity advisory
   'serve>compression': 1.8.2
