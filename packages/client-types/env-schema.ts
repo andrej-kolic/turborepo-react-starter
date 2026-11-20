@@ -10,7 +10,7 @@ export const environmentSchema = z.strictObject({
   BUILD_ENVIRONMENT: z.enum(['development', 'staging', 'production']),
   BUNDLER: z.enum(['app-vite', 'app-rspack', 'app-esbuild']),
   MODE: z.string().min(1),
-  // true in a production build, false in the dev server; the same on every bundler, unlike MODE.
+  // true in a production build, false in the dev server; MODE names the build environment instead.
   PROD: z.boolean(),
   // The git commit the build is made from, for the Sentry release name; unset outside a git checkout.
   GIT_COMMIT: z
