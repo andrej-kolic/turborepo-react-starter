@@ -32,6 +32,8 @@ nvm use 26
 
 Use `node -v` to confirm before debugging version-specific issues. **pnpm** is pinned via `packageManager` in root `package.json`.
 
+The `engines` floor in root `package.json` is lower than `.nvmrc` on purpose; raising it breaks Dependabot: [`0016`](docs/template/decisions/0016-node-engines-floor.md).
+
 ### Cursor Cloud
 
 This VM may also expose `/exec-daemon/node` (Node 22) earlier on `PATH`. Use `nvm use 26` before debugging version-specific issues.
@@ -104,6 +106,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`                  |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                    |
 | [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                    |
+| [`docs/template/dependency-updates.md`](docs/template/dependency-updates.md)                       | Dependabot PRs: review them, run it now, turn on security updates            |
 | [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                     |
 | [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                    |
 | [`docs/template/decisions/`](docs/template/decisions/)                                             | Decision records: why the repo works this way                                |
