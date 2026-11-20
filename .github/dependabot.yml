@@ -12,3 +12,18 @@ updates:
       github-actions:
         patterns:
           - '*'
+
+  # "/" covers every workspace package: Dependabot reads pnpm-workspace.yaml and updates the root
+  # pnpm-lock.yaml. Per-package entries leave the lockfile out (dependabot-core#11135).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    # Majors are left out, so each gets its own PR.
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - minor
+          - patch
