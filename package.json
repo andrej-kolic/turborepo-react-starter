@@ -73,7 +73,7 @@
     "typescript": "7.0.2"
   },
   "engines": {
-    "node": ">=26.0.0"
+    "node": ">=24.15.0"
   },
   "packageManager": "pnpm@12.21.0",
   "name": "turborepo-react-starter"
