@@ -23,9 +23,9 @@ on:
         default: default
         options:
           - default
-          - app-vite
-          - app-rspack
-          - app-esbuild
+          - web-vite
+          - web-rspack
+          - web-esbuild
       environment:
         description: 'Deployment environment'
         required: true

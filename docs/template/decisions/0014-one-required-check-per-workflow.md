@@ -7,7 +7,7 @@
 
 CI didn't match the project's structure, 3 bundlers each with a dev server and 2 builds, so the goal is one workflow each for code, commits, builds and dev servers, covering every bundler and blocking the merge when it fails.
 
-Only `Build project` and `Build project (features)` blocked a merge; E2E, perf, dev server and commit message checks could fail and the PR still merged. The dev server check passed any server that answered HTTP 200: with `packages/app-core/src/index.tsx` broken, app-vite and app-rspack still answered 200. The rspack and esbuild production builds were never opened in a browser on a PR. Test runs and quotes: [#174's evidence comment](https://github.com/andrej-kolic/turborepo-react-starter/issues/174#issuecomment-6982314210).
+Only `Build project` and `Build project (features)` blocked a merge; E2E, perf, dev server and commit message checks could fail and the PR still merged. The dev server check passed any server that answered HTTP 200: with `packages/web/src/index.tsx` broken, web-vite and web-rspack still answered 200. The rspack and esbuild production builds were never opened in a browser on a PR. Test runs and quotes: [#174's evidence comment](https://github.com/andrej-kolic/turborepo-react-starter/issues/174#issuecomment-6982314210).
 
 ## Decision
 

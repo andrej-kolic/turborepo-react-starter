@@ -23,7 +23,7 @@ inputs:
     default: 'true'
 
   check-route-tree:
-    description: 'Fail when the committed app-core route tree (routeTree.gen.ts) differs from a fresh generate'
+    description: 'Fail when the committed web route tree (routeTree.gen.ts) differs from a fresh generate'
     required: false
     default: 'true'
 
@@ -48,7 +48,7 @@ inputs:
     default: 'true'
 
   build-filter:
-    description: 'Build filter for specific packages/apps (e.g., app-vite)'
+    description: 'Build filter for specific packages/apps (e.g., web-vite)'
     required: false
 
   build-environment:
@@ -87,7 +87,7 @@ runs:
       if: inputs.check-unused == 'true'
       shell: bash
       # knip loads packages/e2e/playwright.config.ts, which needs BUNDLER set; any bundler works.
-      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=app-vite pnpm check:unused
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=web-vite pnpm check:unused
 
     - name: Check format
       if: inputs.check-format == 'true'
@@ -98,10 +98,10 @@ runs:
       if: inputs.check-route-tree == 'true'
       shell: bash
       run: |
-        pnpm --filter @repo/app-core generate:routes
+        pnpm --filter @repo/web generate:routes
         # git diff ignores untracked files, so first fail when the tree is not committed at all
-        git ls-files --error-unmatch packages/app-core/src/routeTree.gen.ts
-        git diff --exit-code packages/app-core/src/routeTree.gen.ts
+        git ls-files --error-unmatch packages/web/src/routeTree.gen.ts
+        git diff --exit-code packages/web/src/routeTree.gen.ts
 
     - name: Build and run quality checks
       shell: bash

@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bundler: [app-vite, app-rspack, app-esbuild]
+        bundler: [web-vite, web-rspack, web-esbuild]
     timeout-minutes: 15
     runs-on: ubuntu-latest
     container:

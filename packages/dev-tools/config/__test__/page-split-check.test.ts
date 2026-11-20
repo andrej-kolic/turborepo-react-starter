@@ -6,7 +6,7 @@ import { createApp } from './build-fixture';
 const PAGES = [
   {
     path: '/about',
-    source: 'packages/app-core/src/routes/about.lazy.tsx',
+    source: 'packages/web/src/routes/about.lazy.tsx',
     testId: 'about-page',
   },
 ];
@@ -56,7 +56,7 @@ describe('checkPageSplit', () => {
 
   it('fails when no script has the page data-testid', () => {
     expect(check({ 'assets/index.js': 'main' })).toEqual([
-      "app-test: no script has 'about-page', the data-testid of /about in packages/app-core/src/routes/about.lazy.tsx: update PAGES in packages/dev-tools/config/page-split-check.ts.",
+      "app-test: no script has 'about-page', the data-testid of /about in packages/web/src/routes/about.lazy.tsx: update PAGES in packages/dev-tools/config/page-split-check.ts.",
     ]);
   });
 

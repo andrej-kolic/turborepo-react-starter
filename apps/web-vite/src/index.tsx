@@ -1,0 +1,37 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { WebApp } from '@repo/web';
+import { rootOptions } from '@repo/web/optional-features';
+import './index.css';
+
+// demo: a component export, so foo below triggers react/only-export-components
+export const Wrapper = () => {
+  // console.log("@ process.env:", process.env);
+  // console.log("@ process.env.API_URL:", process.env.API_URL);
+
+  // console.log("@ import.meta.env:", import.meta.env);
+  // console.log("@ import.meta.env.APP_REACT_TITLE:", import.meta.env.APP_REACT_TITLE);
+
+  return (
+    <WebApp title="web-vite" href="#">
+      <div>trt</div>
+    </WebApp>
+  );
+};
+
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('no root element');
+}
+
+ReactDOM.createRoot(root, rootOptions).render(
+  <React.StrictMode>
+    <Wrapper />
+  </React.StrictMode>,
+);
+
+// demo: triggers the react/only-export-components lint warning
+export const foo = () => {
+  //
+};

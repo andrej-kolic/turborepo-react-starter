@@ -8,7 +8,7 @@ import { z } from 'zod';
  */
 export const environmentSchema = z.strictObject({
   BUILD_ENVIRONMENT: z.enum(['development', 'staging', 'production']),
-  BUNDLER: z.enum(['app-vite', 'app-rspack', 'app-esbuild']),
+  BUNDLER: z.enum(['web-vite', 'web-rspack', 'web-esbuild']),
   MODE: z.string().min(1),
   // true in a production build, false in the dev server; MODE names the build environment instead.
   PROD: z.boolean(),
@@ -29,7 +29,7 @@ export const environmentSchema = z.strictObject({
     ),
 
   // Test switches: `pnpm check:env-guards` checks that every build keeps the code GUARD_ON guards and drops the code GUARD_OFF guards.
-  // Optional, like a real switch; GUARD_ON is "true" in packages/app-core/.env, and no committed file sets GUARD_OFF.
+  // Optional, like a real switch; GUARD_ON is "true" in packages/web/.env, and no committed file sets GUARD_OFF.
   APP_REACT_GUARD_ON: z.literal('true').optional(),
   APP_REACT_GUARD_OFF: z.literal('true').optional(),
 

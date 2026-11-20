@@ -37,7 +37,7 @@ afterEach(() => {
 });
 
 describe('checkEnvGuards', () => {
-  it('passes a build that keeps the set guards and has no Sentry, reading app-core env-guards.ts', () => {
+  it('passes a build that keeps the set guards and has no Sentry, reading web env-guards.ts', () => {
     expect(check({ 'assets/index.js': GUARDED })).toEqual([]);
   });
 
@@ -54,7 +54,7 @@ describe('checkEnvGuards', () => {
     );
 
     expect(errors).toEqual([
-      "packages/app-core/src/env-guards.ts no longer has: if (import.meta.env.APP_REACT_GUARD_ON) console.debug('env-guard:on');",
+      "packages/web/src/env-guards.ts no longer has: if (import.meta.env.APP_REACT_GUARD_ON) console.debug('env-guard:on');",
     ]);
   });
 

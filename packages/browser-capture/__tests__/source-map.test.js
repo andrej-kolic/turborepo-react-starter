@@ -4,7 +4,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resolveSourceLocation } from '../src/interactions/source-map.js';
 
-const SOURCE = 'packages/app-core/src/components/Header/index.tsx';
+const SOURCE = 'packages/web/src/components/Header/index.tsx';
 
 /**
  * A source map whose first generated position maps to line 1 of `source`.
@@ -63,7 +63,7 @@ describe('resolveSourceLocation', () => {
       'http://localhost:8080/assets/main.js':
         'x\n//# sourceMappingURL=main.js.map',
       'http://localhost:8080/assets/main.js.map': sourceMap(
-        `webpack://app-rspack/${SOURCE}`,
+        `webpack://web-rspack/${SOURCE}`,
       ),
     });
 

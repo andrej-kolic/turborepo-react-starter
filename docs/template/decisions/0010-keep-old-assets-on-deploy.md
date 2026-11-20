@@ -11,7 +11,7 @@ The app loads some code only when it needs it, through `import()`: Sentry's, sin
 
 - [`infra/aws/scripts/deploy.sh`](../../../infra/aws/scripts/deploy.sh) leaves `assets/` out of `sync --delete`. `delete_old_assets` then deletes only the `assets/` files older than `OLD_ASSETS_DAYS` (7).
 - Every deploy re-sends all current files with `aws s3 cp`, which resets their age, so only files no deploy has sent for 7 days are deleted.
-- A tab whose file is gone anyway runs without Sentry: the `import()` failure is caught in `packages/app-core/src/error-reporting/index.ts`.
+- A tab whose file is gone anyway runs without Sentry: the `import()` failure is caught in `packages/web/src/error-reporting/index.ts`.
 
 ## Rejected
 

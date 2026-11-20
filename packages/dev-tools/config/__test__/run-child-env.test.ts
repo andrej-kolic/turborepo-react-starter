@@ -11,12 +11,12 @@ const repoRoot = resolve(
 
 describe('resolveRunChildEnv', () => {
   it('passes through pre-set TARGET_URL without resolving from BUNDLER', () => {
-    const { devUrl } = loadAppEndpoints('app-vite', repoRoot);
+    const { devUrl } = loadAppEndpoints('web-vite', repoRoot);
 
     const env = resolveRunChildEnv(
       {
         TARGET_URL: 'http://localhost:9999',
-        BUNDLER: 'app-vite',
+        BUNDLER: 'web-vite',
       },
       { warn: () => {} },
     );
@@ -26,11 +26,11 @@ describe('resolveRunChildEnv', () => {
   });
 
   it('warns when passthrough TARGET_URL differs from dev default', () => {
-    const { devUrl, previewUrl } = loadAppEndpoints('app-vite', repoRoot);
+    const { devUrl, previewUrl } = loadAppEndpoints('web-vite', repoRoot);
     const warnings: string[] = [];
 
     resolveRunChildEnv(
-      { TARGET_URL: previewUrl, BUNDLER: 'app-vite' },
+      { TARGET_URL: previewUrl, BUNDLER: 'web-vite' },
       { warn: (message) => warnings.push(message) },
     );
 
@@ -40,9 +40,9 @@ describe('resolveRunChildEnv', () => {
   });
 
   it('injects TARGET_URL from BUNDLER dev default when unset', () => {
-    const { devUrl } = loadAppEndpoints('app-vite', repoRoot);
+    const { devUrl } = loadAppEndpoints('web-vite', repoRoot);
 
-    const env = resolveRunChildEnv({ BUNDLER: 'app-vite' });
+    const env = resolveRunChildEnv({ BUNDLER: 'web-vite' });
 
     expect(env.TARGET_URL).toBe(devUrl);
   });

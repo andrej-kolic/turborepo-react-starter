@@ -1,6 +1,6 @@
 /**
  * The check behind `dev-tools-check-env-guards`: a bundler app's build output against the env guard
- * lines in packages/app-core/src/env-guards.ts, Sentry's guard in packages/app-core/src/optional-features.ts,
+ * lines in packages/web/src/env-guards.ts, Sentry's guard in packages/web/src/optional-features.ts,
  * and the rule that no script links a source map (docs/template/error-reporting.md).
  */
 import { existsSync, readFileSync } from 'node:fs';
@@ -19,7 +19,7 @@ const DSN_PATTERN = /https?:\/\/[0-9a-f]{32}@[^\s"'`]+\/\d+/;
 // The comment that tells the browser where a script's source map is.
 const SOURCE_MAP_COMMENT = /^\/\/[#@] sourceMappingURL=/m;
 
-const GUARD_SOURCE = 'packages/app-core/src/env-guards.ts';
+const GUARD_SOURCE = 'packages/web/src/env-guards.ts';
 
 // The lines env-guards.ts must have, so a build that drops or keeps them proves the guards work.
 const GUARD_LINES = [
@@ -46,7 +46,7 @@ export function checkEnvGuards({
 }: {
   appDir: string;
   isFeaturesBuild: boolean;
-  /** env-guards.ts; defaults to app-core's. */
+  /** env-guards.ts; defaults to web's. */
   guardSourcePath?: string;
 }) {
   // Whole lines only: a commented-out guard line must not count.
@@ -80,7 +80,7 @@ export function checkEnvGuards({
   }
   if (!scripts.includes(ON_TEXT)) {
     errors.push(
-      `'${ON_TEXT}' is missing: the build dropped code behind APP_REACT_GUARD_ON, which packages/app-core/.env sets to "true".`,
+      `'${ON_TEXT}' is missing: the build dropped code behind APP_REACT_GUARD_ON, which packages/web/.env sets to "true".`,
     );
   }
   if (scripts.includes(OFF_TEXT)) {
@@ -108,7 +108,7 @@ export function checkEnvGuards({
   }
   if (isFeaturesBuild && sentryFiles.length === 0) {
     errors.push(
-      `Sentry's code is missing from a BUILD_PROFILE=features build: packages/app-core/.env.features sets APP_REACT_SENTRY_DSN, so the build should load Sentry. See docs/template/build-profiles.md.`,
+      `Sentry's code is missing from a BUILD_PROFILE=features build: packages/web/.env.features sets APP_REACT_SENTRY_DSN, so the build should load Sentry. See docs/template/build-profiles.md.`,
     );
   }
   const eagerFiles = readEagerFiles(distDir, files);

@@ -12,7 +12,7 @@ The dev server, `pnpm build:app` and deploys take no profile: they load `.env.lo
 | `features` | `.env`, `.env.<BUILD_ENVIRONMENT>`, `.env.features` (fake values)                  | all                    |
 | none       | `.env`, `.env.local`, `.env.<BUILD_ENVIRONMENT>`, `.env.<BUILD_ENVIRONMENT>.local` | won't run              |
 
-The files are in `packages/app-core/`. Shell and CI variables still win over every file.
+The files are in `packages/web/`. Shell and CI variables still win over every file.
 
 ## Run a check on a profile
 
@@ -31,6 +31,6 @@ CI runs each check once per profile: `Verify: Build` has a `Build (<bundler>, <p
 
 ## Add an optional feature
 
-Put its fake values in [`packages/app-core/.env.features`](../../packages/app-core/.env.features), so the `features` build turns it on. `pnpm test` fails while an optional key in [`env-schema.ts`](../../packages/client-types/env-schema.ts) is missing from that file. An E2E test that needs the feature gets `{ tag: '@features' }`, as [`tests/web-vitals.spec.ts`](../../packages/e2e/tests/web-vitals.spec.ts) does.
+Put its fake values in [`packages/web/.env.features`](../../packages/web/.env.features), so the `features` build turns it on. `pnpm test` fails while an optional key in [`env-schema.ts`](../../packages/client-types/env-schema.ts) is missing from that file. An E2E test that needs the feature gets `{ tag: '@features' }`, as [`tests/web-vitals.spec.ts`](../../packages/e2e/tests/web-vitals.spec.ts) does.
 
 Values in `.env.features` are committed: use fake ones that send nothing, as the Sentry DSN does (E2E tests answer every request to Sentry in the browser).

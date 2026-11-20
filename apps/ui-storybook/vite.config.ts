@@ -6,5 +6,5 @@ export default defineConfig({
   build: {
     target: browserslistToEsbuild(),
   },
-  // publicDir: appCorePublic
+  // publicDir: webPublic
 });

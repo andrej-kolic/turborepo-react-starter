@@ -302,162 +302,6 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
-  apps/app-esbuild:
-    dependencies:
-      '@repo/app-core':
-        specifier: workspace:*
-        version: link:../../packages/app-core
-      react:
-        specifier: 'catalog:'
-        version: 19.3.1
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.1(react@19.3.1)
-    devDependencies:
-      '@craftamap/esbuild-plugin-html':
-        specifier: 0.9.0
-        version: 0.9.0(esbuild@0.28.2)(supports-color@11.0.0)
-      '@repo/client-types':
-        specifier: workspace:*
-        version: link:../../packages/client-types
-      '@repo/dev-tools':
-        specifier: workspace:*
-        version: link:../../packages/dev-tools
-      '@repo/oxlint-config':
-        specifier: workspace:*
-        version: link:../../packages/oxlint-config
-      '@size-limit/file':
-        specifier: 'catalog:'
-        version: 14.3.0(size-limit@14.3.0)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      browserslist-to-esbuild:
-        specifier: 'catalog:'
-        version: 2.1.1(browserslist@4.29.5)
-      esbuild:
-        specifier: 0.28.2
-        version: 0.28.2
-      esbuild-plugin-copy:
-        specifier: 2.1.1
-        version: 2.1.1(esbuild@0.28.2)
-      serve:
-        specifier: 'catalog:'
-        version: 14.2.8(supports-color@11.0.0)
-      size-limit:
-        specifier: 'catalog:'
-        version: 14.3.0
-      tsx:
-        specifier: 'catalog:'
-        version: 4.23.15
-
-  apps/app-rspack:
-    dependencies:
-      '@repo/app-core':
-        specifier: workspace:*
-        version: link:../../packages/app-core
-      react:
-        specifier: 'catalog:'
-        version: 19.3.1
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.1(react@19.3.1)
-    devDependencies:
-      '@repo/client-types':
-        specifier: workspace:*
-        version: link:../../packages/client-types
-      '@repo/dev-tools':
-        specifier: workspace:*
-        version: link:../../packages/dev-tools
-      '@repo/oxlint-config':
-        specifier: workspace:*
-        version: link:../../packages/oxlint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
-      '@rspack/cli':
-        specifier: 2.3.3
-        version: 2.3.3(@rspack/core@2.3.3)(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))
-      '@rspack/core':
-        specifier: 2.3.3
-        version: 2.3.3
-      '@rspack/dev-server':
-        specifier: 2.2.2
-        version: 2.2.2(@rspack/core@2.3.3)
-      '@size-limit/file':
-        specifier: 'catalog:'
-        version: 14.3.0(size-limit@14.3.0)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      serve:
-        specifier: 'catalog:'
-        version: 14.2.8(supports-color@11.0.0)
-      size-limit:
-        specifier: 'catalog:'
-        version: 14.3.0
-      tsx:
-        specifier: 'catalog:'
-        version: 4.23.15
-
-  apps/app-vite:
-    dependencies:
-      '@repo/app-core':
-        specifier: workspace:*
-        version: link:../../packages/app-core
-      react:
-        specifier: 'catalog:'
-        version: 19.3.1
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.1(react@19.3.1)
-    devDependencies:
-      '@repo/client-types':
-        specifier: workspace:*
-        version: link:../../packages/client-types
-      '@repo/dev-tools':
-        specifier: workspace:*
-        version: link:../../packages/dev-tools
-      '@repo/oxlint-config':
-        specifier: workspace:*
-        version: link:../../packages/oxlint-config
-      '@size-limit/file':
-        specifier: 'catalog:'
-        version: 14.3.0(size-limit@14.3.0)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.6
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      '@vitejs/plugin-react':
-        specifier: 6.3.0
-        version: 6.3.0(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
-      browserslist-to-esbuild:
-        specifier: 'catalog:'
-        version: 2.1.1(browserslist@4.29.5)
-      size-limit:
-        specifier: 'catalog:'
-        version: 14.3.0
-      vite:
-        specifier: 'catalog:'
-        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-
   apps/ui-storybook:
     dependencies:
       '@repo/ui':
@@ -516,6 +360,162 @@ importers:
         specifier: 'catalog:'
         version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
+  apps/web-esbuild:
+    dependencies:
+      '@repo/web':
+        specifier: workspace:*
+        version: link:../../packages/web
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@craftamap/esbuild-plugin-html':
+        specifier: 0.9.0
+        version: 0.9.0(esbuild@0.28.2)(supports-color@11.0.0)
+      '@repo/client-types':
+        specifier: workspace:*
+        version: link:../../packages/client-types
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
+      '@repo/oxlint-config':
+        specifier: workspace:*
+        version: link:../../packages/oxlint-config
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      browserslist-to-esbuild:
+        specifier: 'catalog:'
+        version: 2.1.1(browserslist@4.29.5)
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
+      esbuild-plugin-copy:
+        specifier: 2.1.1
+        version: 2.1.1(esbuild@0.28.2)
+      serve:
+        specifier: 'catalog:'
+        version: 14.2.8(supports-color@11.0.0)
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.15
+
+  apps/web-rspack:
+    dependencies:
+      '@repo/web':
+        specifier: workspace:*
+        version: link:../../packages/web
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@repo/client-types':
+        specifier: workspace:*
+        version: link:../../packages/client-types
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
+      '@repo/oxlint-config':
+        specifier: workspace:*
+        version: link:../../packages/oxlint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@rspack/cli':
+        specifier: 2.3.3
+        version: 2.3.3(@rspack/core@2.3.3)(@rspack/dev-server@2.2.2(@rspack/core@2.3.3))
+      '@rspack/core':
+        specifier: 2.3.3
+        version: 2.3.3
+      '@rspack/dev-server':
+        specifier: 2.2.2
+        version: 2.2.2(@rspack/core@2.3.3)
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      serve:
+        specifier: 'catalog:'
+        version: 14.2.8(supports-color@11.0.0)
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.15
+
+  apps/web-vite:
+    dependencies:
+      '@repo/web':
+        specifier: workspace:*
+        version: link:../../packages/web
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@repo/client-types':
+        specifier: workspace:*
+        version: link:../../packages/client-types
+      '@repo/dev-tools':
+        specifier: workspace:*
+        version: link:../../packages/dev-tools
+      '@repo/oxlint-config':
+        specifier: workspace:*
+        version: link:../../packages/oxlint-config
+      '@size-limit/file':
+        specifier: 'catalog:'
+        version: 14.3.0(size-limit@14.3.0)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: 6.3.0
+        version: 6.3.0(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      browserslist-to-esbuild:
+        specifier: 'catalog:'
+        version: 2.1.1(browserslist@4.29.5)
+      size-limit:
+        specifier: 'catalog:'
+        version: 14.3.0
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+
   infra/aws: {}
 
   infra/netlify:
@@ -523,67 +523,6 @@ importers:
       netlify-cli:
         specifier: 27.20.0
         version: 27.20.0(@types/node@26.6.6)(bare-buffer@3.7.1)(picomatch@4.0.7)(supports-color@11.0.0)
-
-  packages/app-core:
-    dependencies:
-      '@repo/commons':
-        specifier: workspace:*
-        version: link:../commons
-      '@repo/ui':
-        specifier: workspace:*
-        version: link:../ui
-      '@sentry/react':
-        specifier: 11.13.0
-        version: 11.13.0(react@19.3.1)
-      '@tanstack/react-router':
-        specifier: 1.170.46
-        version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      react:
-        specifier: 'catalog:'
-        version: 19.3.1
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.3.1(react@19.3.1)
-      react-error-boundary:
-        specifier: 6.1.6
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
-    devDependencies:
-      '@repo/client-types':
-        specifier: workspace:*
-        version: link:../client-types
-      '@repo/oxlint-config':
-        specifier: workspace:*
-        version: link:../oxlint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@tanstack/router-cli':
-        specifier: 1.168.0
-        version: 1.168.0(supports-color@11.0.0)
-      '@testing-library/dom':
-        specifier: 'catalog:'
-        version: 10.4.2
-      '@testing-library/jest-dom':
-        specifier: 'catalog:'
-        version: 7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))
-      '@testing-library/react':
-        specifier: 'catalog:'
-        version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@turbo/gen':
-        specifier: 'catalog:'
-        version: 2.11.11(@types/node@26.6.6)
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      jsdom:
-        specifier: 'catalog:'
-        version: 31.0.1
-      vitest:
-        specifier: 'catalog:'
-        version: 5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/browser-capture:
     dependencies:
@@ -766,6 +705,67 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.3.1
+      vitest:
+        specifier: 'catalog:'
+        version: 5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/web:
+    dependencies:
+      '@repo/commons':
+        specifier: workspace:*
+        version: link:../commons
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@sentry/react':
+        specifier: 11.13.0
+        version: 11.13.0(react@19.3.1)
+      '@tanstack/react-router':
+        specifier: 1.170.46
+        version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      react-error-boundary:
+        specifier: 6.1.6
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
+    devDependencies:
+      '@repo/client-types':
+        specifier: workspace:*
+        version: link:../client-types
+      '@repo/oxlint-config':
+        specifier: workspace:*
+        version: link:../oxlint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@tanstack/router-cli':
+        specifier: 1.168.0
+        version: 1.168.0(supports-color@11.0.0)
+      '@testing-library/dom':
+        specifier: 'catalog:'
+        version: 10.4.2
+      '@testing-library/jest-dom':
+        specifier: 'catalog:'
+        version: 7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@turbo/gen':
+        specifier: 'catalog:'
+        version: 2.11.11(@types/node@26.6.6)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      jsdom:
+        specifier: 'catalog:'
+        version: 31.0.1
       vitest:
         specifier: 'catalog:'
         version: 5.1.0(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))

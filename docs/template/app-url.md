@@ -4,7 +4,7 @@ Reference for how browser tools, capture and E2E find the app URL. Why it works 
 
 ## Ports
 
-Each bundler app declares `devPort` and `previewPort` in its `package.json` (e.g. `apps/app-vite/package.json`). Bundler configs and `@repo/dev-tools/config/app-port` read them from there; browser tooling gets the URL through `dev-tools-app-target run` ([CLI chains](#cli-chains)). Vite uses `strictPort: true`, so the declared port is the listening port. `PORT` is not read; set `TARGET_URL` instead.
+Each bundler app declares `devPort` and `previewPort` in its `package.json` (e.g. `apps/web-vite/package.json`). Bundler configs and `@repo/dev-tools/config/app-port` read them from there; browser tooling gets the URL through `dev-tools-app-target run` ([CLI chains](#cli-chains)). Vite uses `strictPort: true`, so the declared port is the listening port. `PORT` is not read; set `TARGET_URL` instead.
 
 ## Resolution order
 
