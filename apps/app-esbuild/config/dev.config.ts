@@ -75,6 +75,7 @@ async function dev() {
             filename: 'index.html',
             htmlTemplate: 'src/index.html',
             scriptLoading: 'module',
+            define: { title: process.env.APP_REACT_TITLE ?? '', mode: MODE },
           },
         ],
       }),

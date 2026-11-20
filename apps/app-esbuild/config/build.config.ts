@@ -81,6 +81,7 @@ const buildResult = await esbuild.build({
           filename: 'index.html',
           htmlTemplate: 'src/index.html',
           scriptLoading: 'module',
+          define: { title: process.env.APP_REACT_TITLE ?? '', mode: MODE },
         },
       ],
     }),

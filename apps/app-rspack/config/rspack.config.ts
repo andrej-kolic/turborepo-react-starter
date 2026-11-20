@@ -103,6 +103,7 @@ const rspackConfig = (
         template: `./src/index.html`,
         templateParameters: {
           title: process.env.APP_REACT_TITLE ?? '',
+          mode: process.env.BUILD_ENVIRONMENT,
         },
       }),
 
