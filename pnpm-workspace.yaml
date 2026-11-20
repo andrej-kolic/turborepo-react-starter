@@ -18,14 +18,14 @@ catalog:
   vite: 8.3.8
   browserslist-to-esbuild: 2.1.1
   tsx: '4.23.15'
-  serve: 14.2.7
+  serve: 14.2.8
   '@turbo/gen': 2.11.11
   # turbo: only the root uses it, but `turbo gen` runs @turbo/gen at turbo's
   # own version, so the installed @turbo/gen types must match it.
   turbo: 2.11.11
 
   # Lint
-  oxlint: 1.93.0
+  oxlint: 1.94.0
 
   # Bundle size
   size-limit: 14.3.0
@@ -35,14 +35,14 @@ catalog:
   zod: 4.6.7
 
   # Browser capture
-  playwright-core: 1.65.0
+  playwright-core: 1.65.1
 
   # Testing
   # @playwright/test: only e2e uses it, but it must match playwright-core, and CI reads the
   # Playwright container version from here (verify-build.yml, verify-dev.yml).
-  '@playwright/test': 1.65.0
+  '@playwright/test': 1.65.1
   vitest: 5.1.0
-  jsdom: 31.0.0
+  jsdom: 31.0.1
   '@testing-library/dom': '10.4.2'
   '@testing-library/jest-dom': '7.0.1'
   '@testing-library/react': 16.3.3
