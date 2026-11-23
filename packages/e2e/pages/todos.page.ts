@@ -29,6 +29,17 @@ export class TodosPage {
     return this.page.goto('/todos');
   }
 
+  /** Collects the URL of every request for the mocked API's script (`msw-browser-*.js`), from now on. */
+  trackMockApiScripts(): string[] {
+    const urls: string[] = [];
+    this.page.on('request', (request) => {
+      if (/\/msw-browser-[^/]*\.js$/.test(new URL(request.url()).pathname)) {
+        urls.push(request.url());
+      }
+    });
+    return urls;
+  }
+
   /** Follows a link in the main navigation, as a visitor would: the page doesn't reload. */
   async openByLink(name: 'Todos' | 'Settings' | 'About'): Promise<void> {
     await this.page
