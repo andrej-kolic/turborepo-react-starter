@@ -19,7 +19,8 @@
     "check:size": "size-limit",
     "check:env-guards": "dev-tools-check-env-guards",
     "check:page-split": "dev-tools-check-page-split",
-    "clear:output": "rm -rf ./dist ./dev"
+    "clear:output": "rm -rf ./dev",
+    "clear:dist": "rm -rf ./dist"
   },
   "dependencies": {
     "@repo/web": "workspace:*",

@@ -2,6 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "dependsOn": ["^build", "clear:dist"],
       "env": ["BUILD_ENVIRONMENT", "APP_REACT_*"],
       "passThroughEnv": ["BUNDLER", "MODE"]
     },

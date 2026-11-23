@@ -1,7 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", ".oxfmtrc.jsonc"],
-
   "globalEnv": [
     "TARGET_URL",
     "BUNDLER",
@@ -20,7 +19,6 @@
     "APP_REACT_SENTRY_TRACES_SAMPLE_RATE"
   ],
   "globalPassThroughEnv": ["GITHUB_TOKEN"],
-
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -57,6 +55,10 @@
       "cache": false
     },
     "clear:output": {
+      "cache": false,
+      "dependsOn": ["clear:dist"]
+    },
+    "clear:dist": {
       "cache": false
     }
   }
