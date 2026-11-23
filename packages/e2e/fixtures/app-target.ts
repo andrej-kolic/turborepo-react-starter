@@ -25,7 +25,8 @@ export const test = base.extend<AppTargetFixtures>({
   appTarget: async ({}, use) => {
     await use(resolvePreviewAppTarget());
   },
-  // On the browser context, so `captureSentrySpans` (a page route) still sees the requests: page routes win.
+  // On the browser context, which still sees requests once the mocked API's service worker runs on the page.
+  // `captureSentrySpans` adds its own context route later, and the route added last runs first.
   blockSentry: [
     async ({ context }, use) => {
       await context.route(SENTRY_ENVELOPE, (route) =>

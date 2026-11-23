@@ -34,6 +34,10 @@ catalog:
   # Validation
   zod: 4.6.7
 
+  # State and API mocking (@repo/core, @repo/web)
+  zustand: 5.1.0
+  msw: 3.0.7
+
   # Browser capture
   playwright-core: 1.65.1
 

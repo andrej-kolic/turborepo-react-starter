@@ -50,6 +50,8 @@ Kebab-case, unique within a rendered page, no package prefix (`app-header`, not 
 | `route-error`    | `RouteError` (router error screen)  | `packages/web/src/components/RouteError/index.tsx`       |
 | `not-found`      | `NotFound` (no route matches)       | `packages/web/src/components/NotFound/index.tsx`         |
 | `about-page`     | `AboutPage` (`/about`)              | `packages/web/src/routes/about.lazy.tsx`                 |
+| `todos-page`     | `TodosPage` (`/todos`)              | `packages/web/src/routes/todos.lazy.tsx`                 |
+| `settings-page`  | `SettingsPage` (`/settings`)        | `packages/web/src/routes/settings.lazy.tsx`              |
 
 `@repo/ui` components with a `data-testid` prop:
 

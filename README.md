@@ -31,6 +31,7 @@ Apps (`apps/`):
 Packages (`packages/`) export source with no build step of their own, except `commons`:
 
 - `web`: the React app, developed as a library
+- `core`: logic every client shares (todo API, models, settings store, mocked API), with no React, DOM or Node APIs
 - `ui`: stub React component library
 - `commons`: stub shared library, compiled with tsdown; apps import its `dist/`, which Turbo builds first
 - `client-types`: bundler-neutral types for client code (`import.meta.env`, asset imports) and the Zod schema the build validates env values against

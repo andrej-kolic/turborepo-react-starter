@@ -33,6 +33,19 @@ export const environmentSchema = z.strictObject({
   APP_REACT_GUARD_ON: z.literal('true').optional(),
   APP_REACT_GUARD_OFF: z.literal('true').optional(),
 
+  // The todo API's base URL. Unset or empty serves the mocked API in the browser instead; see docs/template/env.md.
+  // Trailing slashes are dropped: the API functions append paths that start with one.
+  APP_REACT_API_URL: z
+    .union([
+      z.url().refine((url) => !/[?#]/.test(url), {
+        message:
+          'must not have a query string or #: the API functions append paths to it',
+      }),
+      z.literal(''),
+    ])
+    .transform((value) => value.replace(/\/+$/, '') || undefined)
+    .optional(),
+
   // Unset turns error reporting off; see docs/template/error-reporting.md.
   // An empty value counts as unset: CI passes an empty string when the repo variable doesn't exist.
   APP_REACT_SENTRY_DSN: z

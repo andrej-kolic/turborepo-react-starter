@@ -123,6 +123,28 @@ describe('checkEnvGuards', () => {
     ]);
   });
 
+  it('fails when MSW loads before the app starts', () => {
+    const errors = check({
+      'assets/index.js': `${GUARDED}import "./msw-browser.js";`,
+      'assets/msw-browser.js': 'worker.postMessage("MOCKING_ENABLED");',
+    });
+
+    expect(errors).toEqual([
+      expect.stringContaining(
+        "MSW's code is in assets/msw-browser.js, which loads before the app starts",
+      ),
+    ]);
+  });
+
+  it('passes a build that loads MSW after the app', () => {
+    const errors = check({
+      'assets/index.js': `${GUARDED}import("./msw-browser.js");`,
+      'assets/msw-browser.js': 'worker.postMessage("MOCKING_ENABLED");',
+    });
+
+    expect(errors).toEqual([]);
+  });
+
   it('fails a features build without Sentry', () => {
     const errors = check(
       { 'assets/index.js': GUARDED },

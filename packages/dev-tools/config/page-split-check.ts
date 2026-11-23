@@ -21,6 +21,16 @@ export const PAGES: readonly Page[] = [
     testId: 'about-page',
   },
   {
+    path: '/todos',
+    source: 'packages/web/src/routes/todos.lazy.tsx',
+    testId: 'todos-page',
+  },
+  {
+    path: '/settings',
+    source: 'packages/web/src/routes/settings.lazy.tsx',
+    testId: 'settings-page',
+  },
+  {
     path: '/demo/asset-imports',
     source: 'packages/web/src/components/ResourceCards/index.tsx',
     testId: 'resource-cards',

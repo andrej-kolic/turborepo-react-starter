@@ -4,6 +4,8 @@ Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check
 
 `BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
+Neither profile sets `APP_REACT_API_URL`, so both ship the mocked todo API, `bare` included: MSW in its own file, which only todo page visitors download ([env.md](env.md#turn-code-on-when-a-value-is-unset)).
+
 The dev server, `pnpm build:app` and deploys take no profile: they load `.env.local` and your real values, as before.
 
 | Profile    | Env files the build loads                                                          | E2E tests              |

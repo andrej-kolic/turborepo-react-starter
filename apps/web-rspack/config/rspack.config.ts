@@ -15,6 +15,8 @@ const pkg = _require('../package.json') as {
 
 const { webPublic, webEnvDir } = createPaths(import.meta.url);
 const distPath = path.resolve('dist');
+// The module startMockApi() loads in @repo/web.
+const MSW_ENTRY = /[\\/]core[\\/]src[\\/]mocks[\\/]msw-browser\.ts$/;
 
 const debuglog = util.debuglog('web-rspack');
 
@@ -81,14 +83,29 @@ const rspackConfig = (
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
 
-    // Names Sentry's lazy-loaded file sentry-*.js, as Vite and esbuild do, so the size check
-    // can measure it on its own: see packages/dev-tools/config/size-limit.ts.
+    // Names the lazy-loaded files of Sentry and of the mocked API (MSW) sentry-*.js and msw-browser-*.js,
+    // as Vite and esbuild do, so the size check can measure each on its own: see packages/dev-tools/config/size-limit.ts.
     optimization: {
       splitChunks: {
         cacheGroups: {
           sentry: {
             test: /[\\/](@sentry|@sentry-internal|error-reporting[\\/]sentry)/,
             name: 'sentry',
+            chunks: 'async',
+            enforce: true,
+          },
+          // Every module only the mocked API's file uses, so code shared with other files, such as Zod,
+          // stays out of it. Rspack drops webpackChunkName comments, so the file is found by its entry.
+          mswBrowser: {
+            test: (module, { chunkGraph }) =>
+              chunkGraph
+                .getModuleChunks(module)
+                .every((chunk) =>
+                  chunkGraph
+                    .getChunkModules(chunk)
+                    .some((m) => MSW_ENTRY.test(m.nameForCondition() ?? '')),
+                ),
+            name: 'msw-browser',
             chunks: 'async',
             enforce: true,
           },

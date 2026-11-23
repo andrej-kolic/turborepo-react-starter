@@ -34,3 +34,4 @@ Error reporting (#158) must ship none of Sentry's code in the dev server or in a
 
 - A new optional feature adds its own `if` to `optional-features.ts`, in the same shape.
 - `pnpm check:env-guards` fails a build that ships Sentry without a DSN, or loads it before the app starts.
+- A gate whose code a page must wait for exports a function instead: `startMockApi()` starts the mocked API (#202) the first time it is called and resolves once it answers, and the todo route's loader awaits it. Its `if` is on an unset value, `!import.meta.env.APP_REACT_API_URL`.

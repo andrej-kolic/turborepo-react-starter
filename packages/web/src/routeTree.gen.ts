@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TodosRouteImport } from './routes/todos'
 import { Route as DemoAssetImportsRouteImport } from './routes/demo/asset-imports'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/settings.lazy').then((d) => d.Route))
+const TodosRoute = TodosRouteImport.update({
+  id: '/todos',
+  path: '/todos',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/todos.lazy').then((d) => d.Route))
 const DemoAssetImportsRoute = DemoAssetImportsRouteImport.update({
   id: '/demo/asset-imports',
   path: '/demo/asset-imports',
@@ -34,30 +46,39 @@ const DemoAssetImportsRoute = DemoAssetImportsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/settings': typeof SettingsRoute
+  '/todos': typeof TodosRoute
   '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/settings': typeof SettingsRoute
+  '/todos': typeof TodosRoute
   '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/settings': typeof SettingsRoute
+  '/todos': typeof TodosRoute
   '/demo/asset-imports': typeof DemoAssetImportsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/demo/asset-imports'
+  fullPaths: '/' | '/about' | '/settings' | '/todos' | '/demo/asset-imports'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/demo/asset-imports'
-  id: '__root__' | '/' | '/about' | '/demo/asset-imports'
+  to: '/' | '/about' | '/settings' | '/todos' | '/demo/asset-imports'
+  id:
+    '__root__' | '/' | '/about' | '/settings' | '/todos' | '/demo/asset-imports'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  SettingsRoute: typeof SettingsRoute
+  TodosRoute: typeof TodosRoute
   DemoAssetImportsRoute: typeof DemoAssetImportsRoute
 }
 
@@ -77,6 +98,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/todos': {
+      id: '/todos'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof TodosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/asset-imports': {
       id: '/demo/asset-imports'
       path: '/demo/asset-imports'
@@ -90,6 +125,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  SettingsRoute: SettingsRoute,
+  TodosRoute: TodosRoute,
   DemoAssetImportsRoute: DemoAssetImportsRoute,
 }
 export const routeTree = rootRouteImport

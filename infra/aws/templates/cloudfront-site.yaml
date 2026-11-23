@@ -187,8 +187,9 @@ Resources:
             AccessControlMaxAgeSec: 63072000
             Override: true
           ContentSecurityPolicy:
-            # connect-src: error reporting sends events to Sentry (docs/template/error-reporting.md).
-            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src https://*.sentry.io; object-src 'none'"
+            # connect-src: 'self' for the mocked todo API at /api (docs/template/env.md), Sentry for
+            # error reporting (docs/template/error-reporting.md). Add APP_REACT_API_URL's origin when it is set.
+            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://*.sentry.io; object-src 'none'"
             Override: true
           ContentTypeOptions:
             Override: true

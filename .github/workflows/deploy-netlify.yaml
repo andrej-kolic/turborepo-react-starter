@@ -26,6 +26,8 @@ env:
   HUSKY: 0
   # Sentry's DSN: unset or empty builds without error reporting (docs/template/error-reporting.md).
   APP_REACT_SENTRY_DSN: ${{ vars.APP_REACT_SENTRY_DSN }}
+  # The todo API's base URL: unset or empty serves the mocked API in the browser (docs/template/env.md).
+  APP_REACT_API_URL: ${{ vars.APP_REACT_API_URL }}
   # SELECTED_ENVIRONMENT: ${{ github.ref_name }}
   BRANCH_NAME: ${{ github.ref_name }}
   BUILD_ENVIRONMENT: ${{ github.event.inputs.environment }}

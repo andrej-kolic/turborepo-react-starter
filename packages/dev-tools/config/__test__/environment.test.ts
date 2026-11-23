@@ -95,6 +95,27 @@ describe('loadEnvironmentVariables', () => {
     expect(load().APP_REACT_SENTRY_DSN).toBeUndefined();
   });
 
+  it('treats an empty APP_REACT_API_URL as unset', () => {
+    process.env.APP_REACT_API_URL = '';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_API_URL).toBeUndefined();
+  });
+
+  it('drops trailing slashes from APP_REACT_API_URL', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com/v1//';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_API_URL).toBe('https://api.example.com/v1');
+  });
+
+  it('rejects an APP_REACT_API_URL with a query string', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com/v1?key=1';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(() => load()).toThrow(/must not have a query string or #/);
+  });
+
   it('throws when APP_REACT_SENTRY_DSN is not a URL', () => {
     writeEnvFile(`${VALID_ENV_FILE}\nAPP_REACT_SENTRY_DSN="not-a-url"`);
 
@@ -246,11 +267,13 @@ describe('loadEnvironmentVariables with BUILD_PROFILE', () => {
 
 describe('packages/web/.env.features', () => {
   const webDir = join(dirname(fileURLToPath(import.meta.url)), '../../../web');
-  // Not optional features: computed by the loader, or test switches for pnpm check:env-guards.
+  // Not optional features: computed by the loader, test switches for pnpm check:env-guards, or configuration
+  // whose unset value turns code on (APP_REACT_API_URL: the mocked API), which the features build keeps unset.
   const notFeatures = new Set([
     'GIT_COMMIT',
     'APP_REACT_GUARD_ON',
     'APP_REACT_GUARD_OFF',
+    'APP_REACT_API_URL',
   ]);
 
   it('sets every optional key in the env schema, so the features build turns every feature on', () => {
@@ -307,6 +330,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
+      'import.meta.env.APP_REACT_API_URL': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE': '0.1',
       'import.meta.env.GIT_COMMIT': 'undefined',
