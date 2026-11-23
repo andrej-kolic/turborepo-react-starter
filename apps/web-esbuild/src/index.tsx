@@ -7,6 +7,14 @@ import './index.css';
 
 console.log('* in app'); // demo: triggers the no-console lint warning
 
+// esbuild has no HMR; its dev server signals each rebuild on /esbuild. The production build drops this.
+// Where and how, per https://esbuild.github.io/api/#live-reload
+if (!import.meta.env.PROD) {
+  new EventSource('/esbuild').addEventListener('change', () => {
+    location.reload();
+  });
+}
+
 // demo: a component export, so foo below triggers react/only-export-components
 export const Wrapper = () => (
   <WebApp title="web-esbuild" href="#">
