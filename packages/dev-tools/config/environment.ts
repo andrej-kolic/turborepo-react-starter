@@ -35,13 +35,27 @@ function readBuildProfile(): BuildProfile | undefined {
   return profile;
 }
 
-// With a profile, only committed files load: a check must never read a developer's secrets from a .local file.
-function envFilesForProfile(profile: BuildProfile, buildEnvironment: string) {
-  return [
+/**
+ * The env files to load, in order: a later file beats an earlier one (docs/template/env.md).
+ * Each file is followed by its `.local` twin, except with a profile: a check must never read a developer's
+ * secrets from a .local file.
+ */
+function envFiles({
+  buildEnvironment,
+  devServer,
+  profile,
+}: {
+  buildEnvironment: string;
+  devServer: boolean;
+  profile: BuildProfile | undefined;
+}) {
+  const files = [
     '.env',
     `.env.${buildEnvironment}`,
+    ...(devServer ? ['.env.dev-server'] : []),
     ...(profile === 'features' ? ['.env.features'] : []),
   ];
+  return profile ? files : files.flatMap((file) => [file, `${file}.local`]);
 }
 
 // The commit checked out in `dir`, or undefined outside a git checkout (e.g. a downloaded zip).
@@ -60,9 +74,9 @@ function readGitCommit(dir: string) {
 
 /**
  * Load variables from .env files and process.env. Meant to be used in bundlers.
- * 1. Load .env files from envDir, based on buildEnvironment and `BUILD_PROFILE`:
- *    without a profile `.env`, `.env.local`, `.env.<buildEnvironment>`, `.env.<buildEnvironment>.local`;
- *    with one `.env`, `.env.<buildEnvironment>`, and `.env.features` on `features`, no `.local` file
+ * 1. Load .env files from envDir, a later one beating an earlier one: `.env`, `.env.<buildEnvironment>`,
+ *    `.env.dev-server` for the dev server, `.env.features` on the `features` profile. Each is followed by
+ *    its `.local` twin, unless `BUILD_PROFILE` is set
  * 2. Merge with process.env (process.env has precedence)
  * 3. Filter only variables with PREFIX
  * 4. Enhance with BUILD_ENVIRONMENT, GIT_COMMIT (the commit checked out in envDir) and customEnvVars
@@ -70,6 +84,7 @@ function readGitCommit(dir: string) {
  *
  * @param envDir directory where .env files are located
  * @param buildEnvironment environment name, e.g. 'development', 'production', 'staging'
+ * @param devServer true for the dev server, false for a build or a preview of one
  * @param customEnvVars extra values, e.g. BUNDLER, MODE and PROD
  *
  * @returns validated environment variables to be used in the app
@@ -78,18 +93,18 @@ function readGitCommit(dir: string) {
 export function loadEnvironmentVariables({
   envDir,
   buildEnvironment,
+  devServer,
   customEnvVars,
 }: {
   envDir: string;
   buildEnvironment: string;
+  devServer: boolean;
   customEnvVars?: Record<string, string | boolean>;
 }) {
   const profile = readBuildProfile();
   // load .env files
   const variables = dotenvFlow.config({
-    ...(profile
-      ? { files: envFilesForProfile(profile, buildEnvironment) }
-      : { node_env: buildEnvironment, default_node_env: 'development' }),
+    files: envFiles({ buildEnvironment, devServer, profile }),
     path: envDir,
     debug: false,
   });

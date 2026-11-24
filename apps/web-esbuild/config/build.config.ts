@@ -31,6 +31,7 @@ const MODE = process.env.BUILD_ENVIRONMENT;
 const environmentVariables = loadEnvironmentVariables({
   envDir: webEnvDir,
   buildEnvironment: process.env.BUILD_ENVIRONMENT,
+  devServer: false,
   customEnvVars: {
     BUNDLER: 'web-esbuild',
     MODE,

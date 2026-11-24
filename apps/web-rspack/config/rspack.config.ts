@@ -23,11 +23,11 @@ const debuglog = util.debuglog('web-rspack');
 type RspackConfigOptions = {
   mode: 'development' | 'production';
   config: string;
-  env: Record<string, string>;
+  env: Record<string, string | boolean>;
 };
 
 const rspackConfig = (
-  env: Record<string, string>,
+  env: Record<string, string | boolean>,
   options: RspackConfigOptions,
 ): Configuration => {
   debuglog('RspackConfigOptions:', options);
@@ -43,6 +43,8 @@ const rspackConfig = (
   const environmentVariables = loadEnvironmentVariables({
     envDir: webEnvDir,
     buildEnvironment: process.env.BUILD_ENVIRONMENT,
+    // The Rspack CLI sets RSPACK_SERVE only for `rspack serve`; --mode can be development in a build too.
+    devServer: env.RSPACK_SERVE === true,
     customEnvVars: {
       BUNDLER: 'web-rspack',
       // The build environment, as in Vite (--mode); options.mode is only Rspack's own build mode.
