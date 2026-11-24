@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Run from your laptop, this deploys a build that read your .local env files, like any local build
-# (docs/template/env.md#which-env-files-load). Loading the stage's values from GitHub instead
-# (gh variable list --env <stage>) can come later: docs/template/decisions/0020-env-file-layers.md.
-
 echo "Deploying to Netlify..."
 
 # echo " "
