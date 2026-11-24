@@ -16,8 +16,8 @@ Over a limit, it fails and prints the excess:
 ```
 JavaScript
 Package size limit has exceeded by 53.17 kB
-Size limit: 105 kB
-Size:       158.17 kB brotlied
+Size limit: 135 kB
+Size:       188.17 kB brotlied
 ```
 
 ## Block merges that fail it
@@ -32,7 +32,7 @@ A failing check blocks a merge only when a ruleset requires it. Rulesets are rep
 
 ## Limits
 
-All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads, each without Sentry's file, and Sentry's file on its own. A build without `APP_REACT_SENTRY_DSN` has no Sentry file, so it has no Sentry check; a `features` build always has one, so there a missing file fails. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
+All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads, each without the Sentry and mocked API files, then each of those on its own. A build without `APP_REACT_SENTRY_DSN` has no Sentry file, so it has no Sentry check; a `features` build always has one, so there a missing file fails. The mocked API's check covers `msw-browser-*.js` and `mockServiceWorker.js`, which only todo page visitors download; a build with `APP_REACT_API_URL` has no `msw-browser` file, so it has no such check, and a build on either profile fails without one. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
 
 ## Raise a limit
 

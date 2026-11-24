@@ -3,11 +3,11 @@
 Every value ends up in the JavaScript the browser downloads, so never put a secret here. Why the build checks the values: [0007](decisions/0007-env-validated-at-build.md).
 
 1. Set `APP_REACT_<NAME>` in [`packages/web/.env`](../../packages/web/.env). For one environment only, use `.env.staging` or `.env.production` instead. In CI, set it in the pipeline.
-2. Add it to [`packages/client-types/env-schema.ts`](../../packages/client-types/env-schema.ts), for example `APP_REACT_API_URL: z.url()`.
-3. Add it to [`packages/web/src/utils/environment.ts`](../../packages/web/src/utils/environment.ts) as `APP_REACT_API_URL: import.meta.env.APP_REACT_API_URL`. Write the whole name each time: the bundlers replace `import.meta.env.APP_REACT_API_URL` with its value, but `import.meta.env` on its own is `undefined` on esbuild and Rspack.
+2. Add it to [`packages/client-types/env-schema.ts`](../../packages/client-types/env-schema.ts), for example `APP_REACT_HELP_URL: z.url()`.
+3. Add it to [`packages/web/src/utils/environment.ts`](../../packages/web/src/utils/environment.ts) as `APP_REACT_HELP_URL: import.meta.env.APP_REACT_HELP_URL`. Write the whole name each time: the bundlers replace `import.meta.env.APP_REACT_HELP_URL` with its value, but `import.meta.env` on its own is `undefined` on esbuild and Rspack.
 4. Restart the dev server.
 
-If you miss a step, the build fails (`✖ Unrecognized key: "APP_REACT_API_URL"`) or the type check does.
+If you miss a step, the build fails (`✖ Unrecognized key: "APP_REACT_HELP_URL"`) or the type check does.
 
 ## Leave code out of builds without a value
 
@@ -43,6 +43,22 @@ To ship code only in builds that set a value, the way error reporting needs `APP
 
 4. Put a fake value in [`packages/web/.env.features`](../../packages/web/.env.features), one that sends nothing, so the `features` [build profile](build-profiles.md) turns the code on and every check runs on it. `pnpm test` fails until you do.
 
+## Turn code on when a value is unset
+
+The mocked todo API works the other way: it runs while `APP_REACT_API_URL` is unset, and a build with a URL leaves it out. Write the `if` on the missing value, with the same rules as above:
+
+```ts
+if (!import.meta.env.APP_REACT_API_URL) {
+  mockApi ??= import('@repo/core/mocks/browser').then(…);
+}
+```
+
+Code that must wait for it gets a function to await: `startMockApi()` in [`optional-features.ts`](../../packages/web/src/optional-features.ts), which the todo route's loader awaits before its first request. Only that page loads MSW.
+
+Such a value is configuration, not an optional feature: [`.env.features`](../../packages/web/.env.features) leaves it unset, so both [build profiles](build-profiles.md) run the code. List it in `notFeatures` in [`environment.test.ts`](../../packages/dev-tools/config/__test__/environment.test.ts), or `pnpm test` asks for it in `.env.features`.
+
+On AWS, the site's `Content-Security-Policy` header lets the page call only its own address and Sentry. With `APP_REACT_API_URL` set, add its origin to `connect-src` in [`cloudfront-site.yaml`](../../infra/aws/templates/cloudfront-site.yaml) and deploy the AWS infrastructure (`Deploy: AWS: Infrastructure`), or the browser blocks every todo request.
+
 ## Leave code out of the dev server
 
 To run code only in a production build, add `import.meta.env.PROD` to the same `if`. Error reporting does both, so the dev server never reports:
@@ -59,5 +75,6 @@ Every workflow that builds through the build action, [`.github/actions/build-pro
 
 1. **The `if` itself**, with three test lines in [`packages/web/src/env-guards.ts`](../../packages/web/src/env-guards.ts): the build must keep the ones behind `PROD` and `APP_REACT_GUARD_ON`, which are set, and leave out the one behind `APP_REACT_GUARD_OFF`, which never is.
 2. **The whole module, for Sentry:** a build ships Sentry's code only with a DSN, and only in a file the app loads through `import()`. A `features` build must ship it.
+3. **The whole module, for the mocked API:** MSW's code ships only in a file the app loads through `import()`.
 
 That `PROD` is `false` in the dev server was checked by hand.

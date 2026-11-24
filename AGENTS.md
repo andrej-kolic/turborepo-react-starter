@@ -104,6 +104,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`docs/template/build-profiles.md`](docs/template/build-profiles.md)                               | Build profiles `bare` / `features`: which build every check runs on          |
 | [`docs/template/browser-validation.md`](docs/template/browser-validation.md)                       | Special setups: `--attach`, remote URL, SSH tunnel, Storybook                |
 | [`docs/template/app-url.md`](docs/template/app-url.md)                                             | URL resolution, ports, `TARGET_URL`, `dev-tools-app-target`                  |
+| [`docs/template/core.md`](docs/template/core.md)                                                   | Add a feature to `@repo/core`: what may go in it, API, model, mock, store    |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                    |
 | [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                    |
 | [`docs/template/dependency-updates.md`](docs/template/dependency-updates.md)                       | Dependabot PRs: review them, run it now, turn on security updates            |

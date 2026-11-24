@@ -78,10 +78,10 @@ export default defineConfig((configEnv) => {
     plugins: [react()],
 
     // Exclude workspace packages from pre-bundling so Vite's transform pipeline handles them.
-    // JIT packages (@repo/ui, @repo/web): raw .tsx source.
+    // JIT packages (@repo/ui, @repo/web, @repo/core): raw .ts/.tsx source.
     // Compiled package (@repo/commons): dist/ updates from tsdown watch.
     optimizeDeps: {
-      exclude: ['@repo/ui', '@repo/web', '@repo/commons'],
+      exclude: ['@repo/ui', '@repo/web', '@repo/core', '@repo/commons'],
     },
 
     publicDir: webPublic,

@@ -12,6 +12,12 @@ export function MainNav(): React.ReactNode {
       <Link to="/demo/asset-imports" className="MainNav__link">
         Asset imports
       </Link>
+      <Link to="/todos" className="MainNav__link">
+        Todos
+      </Link>
+      <Link to="/settings" className="MainNav__link">
+        Settings
+      </Link>
       <Link to="/about" className="MainNav__link">
         About
       </Link>

@@ -4,6 +4,8 @@ Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check
 
 `BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
+Neither profile sets `APP_REACT_API_URL`, so both ship the mocked todo API, `bare` included: MSW in its own file, which only todo page visitors download ([env.md](env.md#turn-code-on-when-a-value-is-unset)).
+
 The dev server, `pnpm build:app` and deploys take no profile: they load `.env.local` and your real values, as before.
 
 | Profile    | Env files the build loads                                                          | E2E tests              |
@@ -25,7 +27,7 @@ BUILD_PROFILE=features pnpm check:env-guards  # the same
 BUILD_PROFILE=bare pnpm build:app             # or preview:app, to look at one build
 ```
 
-Each check builds first through Turbo, which caches each profile's build separately, so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
+Each check builds first through Turbo, which caches each profile's build separately. Each app empties its `dist/` before its build ([0018](decisions/0018-clear-dist-before-build.md)), so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
 
 CI runs each check once per profile: `Verify: Build` has a `Build (<bundler>, <profile>)` job for every bundler and profile, which builds, checks size and env guards, and runs Playwright on that build's preview.
 

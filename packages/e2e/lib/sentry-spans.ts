@@ -33,7 +33,8 @@ export type SentrySpan = {
  */
 export async function captureSentrySpans(page: Page): Promise<SentrySpan[]> {
   const spans: SentrySpan[] = [];
-  await page.route(SENTRY_ENVELOPE, async (route) => {
+  // On the browser context: once the mocked API's service worker runs, page routes miss the page's requests.
+  await page.context().route(SENTRY_ENVELOPE, async (route) => {
     // An envelope is one JSON value per line; a span item's payload holds its spans in `items`.
     for (const line of (route.request().postData() ?? '').split('\n')) {
       if (!line.startsWith('{')) continue;
