@@ -39,6 +39,8 @@ export default defineConfig((configEnv) => {
   const environmentVariables = loadEnvironmentVariables({
     envDir: webEnvDir,
     buildEnvironment,
+    // `vite preview` also runs as 'serve'; it serves a build, so it loads a build's files.
+    devServer: configEnv.command === 'serve' && !configEnv.isPreview,
     customEnvVars: {
       BUNDLER: 'web-vite',
       MODE: configEnv.mode,

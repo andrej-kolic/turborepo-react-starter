@@ -24,16 +24,17 @@ function writeEnvFile(contents: string, name = '.env') {
   writeFileSync(join(envDir, name), contents);
 }
 
-function load(
-  customEnvVars: Record<string, string | boolean> = {
-    BUNDLER: 'web-vite',
-    MODE: 'production',
-    PROD: true,
-  },
-) {
+function load({
+  devServer = false,
+  customEnvVars = { BUNDLER: 'web-vite', MODE: 'production', PROD: true },
+}: {
+  devServer?: boolean;
+  customEnvVars?: Record<string, string | boolean>;
+} = {}) {
   return loadEnvironmentVariables({
     envDir,
     buildEnvironment: 'staging',
+    devServer,
     customEnvVars,
   });
 }
@@ -186,16 +187,22 @@ describe('loadEnvironmentVariables', () => {
     writeEnvFile(VALID_ENV_FILE);
 
     expect(() =>
-      load({ BUNDLER: 'app-webpack', MODE: 'production', PROD: true }),
+      load({
+        customEnvVars: {
+          BUNDLER: 'app-webpack',
+          MODE: 'production',
+          PROD: true,
+        },
+      }),
     ).toThrow(/BUNDLER/);
   });
 
   it('throws naming PROD when the bundler does not set it', () => {
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(() => load({ BUNDLER: 'web-vite', MODE: 'production' })).toThrow(
-      /PROD/,
-    );
+    expect(() =>
+      load({ customEnvVars: { BUNDLER: 'web-vite', MODE: 'production' } }),
+    ).toThrow(/PROD/);
   });
 
   it('ignores variables without the prefix', () => {
@@ -265,6 +272,65 @@ describe('loadEnvironmentVariables with BUILD_PROFILE', () => {
   });
 });
 
+describe('loadEnvironmentVariables for the dev server', () => {
+  beforeEach(() => {
+    writeEnvFile(VALID_ENV_FILE);
+    writeEnvFile('APP_REACT_ENV_FILE=".env.staging"', '.env.staging');
+    writeEnvFile('APP_REACT_TITLE="Stage local title"', '.env.staging.local');
+    writeEnvFile(
+      'APP_REACT_ENV_FILE=".env.dev-server"\nAPP_REACT_TITLE="Dev server title"',
+      '.env.dev-server',
+    );
+    writeEnvFile('APP_REACT_GUARD_ON="true"', '.env.dev-server.local');
+  });
+
+  it('loads .env.dev-server and its .local twin for the dev server', () => {
+    const variables = load({ devServer: true });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.dev-server');
+    expect(variables.APP_REACT_GUARD_ON).toBe('true');
+  });
+
+  it("lets .env.dev-server beat the stage's .local file", () => {
+    expect(load({ devServer: true }).APP_REACT_TITLE).toBe('Dev server title');
+  });
+
+  it('lets .env.dev-server.local beat .env.dev-server', () => {
+    writeEnvFile(
+      'APP_REACT_ENV_FILE=".env.dev-server.local"',
+      '.env.dev-server.local',
+    );
+
+    expect(load({ devServer: true }).APP_REACT_ENV_FILE).toBe(
+      '.env.dev-server.local',
+    );
+  });
+
+  it('loads neither .env.dev-server nor its twin for a build', () => {
+    const variables = load({ devServer: false });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.staging');
+    expect(variables.APP_REACT_TITLE).toBe('Stage local title');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+  });
+
+  it('loads .env.dev-server but not its twin on a profile', () => {
+    process.env.BUILD_PROFILE = 'bare';
+
+    const variables = load({ devServer: true });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.dev-server');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+  });
+
+  it('lets .env.features beat .env.dev-server on the features profile', () => {
+    process.env.BUILD_PROFILE = 'features';
+    writeEnvFile('APP_REACT_ENV_FILE=".env.features"', '.env.features');
+
+    expect(load({ devServer: true }).APP_REACT_ENV_FILE).toBe('.env.features');
+  });
+});
+
 describe('packages/web/.env.features', () => {
   const webDir = join(dirname(fileURLToPath(import.meta.url)), '../../../web');
   // Not optional features: computed by the loader, test switches for pnpm check:env-guards, or configuration
@@ -298,6 +364,7 @@ describe('packages/web/.env.features', () => {
     const variables = loadEnvironmentVariables({
       envDir: webDir,
       buildEnvironment: 'staging',
+      devServer: false,
       customEnvVars: { BUNDLER: 'web-vite', MODE: 'production', PROD: true },
     });
 

@@ -2,12 +2,44 @@
 
 Every value ends up in the JavaScript the browser downloads, so never put a secret here. Why the build checks the values: [0007](decisions/0007-env-validated-at-build.md).
 
-1. Set `APP_REACT_<NAME>` in [`packages/web/.env`](../../packages/web/.env). For one environment only, use `.env.staging` or `.env.production` instead. In CI, set it in the pipeline.
+1. Set `APP_REACT_<NAME>` in [`packages/web/.env`](../../packages/web/.env). For one environment only, use `.env.development`, `.env.staging` or `.env.production` instead; for the dev server only, `.env.dev-server`. In CI, set it in the pipeline.
 2. Add it to [`packages/client-types/env-schema.ts`](../../packages/client-types/env-schema.ts), for example `APP_REACT_HELP_URL: z.url()`.
 3. Add it to [`packages/web/src/utils/environment.ts`](../../packages/web/src/utils/environment.ts) as `APP_REACT_HELP_URL: import.meta.env.APP_REACT_HELP_URL`. Write the whole name each time: the bundlers replace `import.meta.env.APP_REACT_HELP_URL` with its value, but `import.meta.env` on its own is `undefined` on esbuild and Rspack.
 4. Restart the dev server.
 
 If you miss a step, the build fails (`✖ Unrecognized key: "APP_REACT_HELP_URL"`) or the type check does.
+
+## Which env files load
+
+Three switches decide it:
+
+1. **Stage**, `BUILD_ENVIRONMENT`: which deployment, `development`, `staging` or `production`. Locally it comes from the root `.env`, in CI from each workflow. `MODE` is the same value.
+2. **Dev server or build**: `pnpm dev:app` or `pnpm build:app`. In code, `PROD` tells them apart.
+3. **Profile**, `BUILD_PROFILE`: which check build, `bare` or `features` ([build-profiles.md](build-profiles.md)).
+
+The files in [`packages/web`](../../packages/web) load in this order, and a later file beats an earlier one. A value exported in the shell or set in CI beats every file.
+
+1. `.env`
+2. `.env.<BUILD_ENVIRONMENT>`
+3. `.env.dev-server`, in the dev server only
+4. `.env.features`, on the `features` profile only
+
+Each file is followed by its `.local` twin (`.env.staging.local`, `.env.dev-server.local`), which git ignores; a run with `BUILD_PROFILE` set skips every twin. So the dev server on `staging` loads `.env` → `.env.local` → `.env.staging` → `.env.staging.local` → `.env.dev-server` → `.env.dev-server.local`.
+
+Put each value in one kind of file, so two never set the same key: per-stage values such as addresses in the stage's file, dev-server defaults such as debug flags in `.env.dev-server`. The one exception is `APP_REACT_ENV_FILE`: every file sets it, so its value names the file that won. To change a dev-server default on your machine, use `.env.dev-server.local`: `.env.local` loads before `.env.dev-server` and loses.
+
+| Run                                                                                                                      |                        `.env`                         | `.env.<stage>` | `.env.dev-server` | `.env.features` | `.local` twins   |
+| ------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------: | :------------: | :---------------: | :-------------: | ---------------- |
+| You develop (`pnpm dev:app`)                                                                                             |                           ✓                           |       ✓        |         ✓         |                 | read             |
+| Local build, deploy from your laptop (`pnpm build:app`, `deploy:aws`, `deploy:netlify`)                                  |                           ✓                           |       ✓        |                   |                 | read             |
+| Preview (`pnpm preview:app`): serves the build before it; only `vite preview` runs the loader again, with a build's list |                           ✓                           |       ✓        |                   |                 | as that build    |
+| Deploy from CI, with env guards and page split on the deploy build                                                       |                           ✓                           |       ✓        |                   |                 | none exist in CI |
+| Check build, `bare` (E2E, size, env guards, page split, perf)                                                            |                           ✓                           |       ✓        |                   |                 | skipped          |
+| Check build, `features` (the same checks)                                                                                |                           ✓                           |       ✓        |                   |        ✓        | skipped          |
+| Dev server boot check (`verify-dev.yml`, `bare`)                                                                         |                           ✓                           |       ✓        |         ✓         |                 | skipped          |
+| Unit tests                                                                                                               | no files: each test sets its values with `vi.stubEnv` |                |                   |                 |                  |
+
+Why it works this way: [0020](decisions/0020-env-file-layers.md).
 
 ## Leave code out of builds without a value
 

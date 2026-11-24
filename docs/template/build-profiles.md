@@ -6,7 +6,7 @@ Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check
 
 Neither profile sets `APP_REACT_API_URL`, so both ship the mocked todo API, `bare` included: MSW in its own file, which only todo page visitors download ([env.md](env.md#turn-code-on-when-a-value-is-unset)).
 
-The dev server, `pnpm build:app` and deploys take no profile: they load `.env.local` and your real values, as before.
+The dev server, `pnpm build:app` and deploys take no profile: they load the `.local` files and your real values, and the dev server also loads `.env.dev-server` ([env.md](env.md#which-env-files-load)).
 
 | Profile    | Env files the build loads                                                          | E2E tests              |
 | ---------- | ---------------------------------------------------------------------------------- | ---------------------- |
@@ -14,7 +14,7 @@ The dev server, `pnpm build:app` and deploys take no profile: they load `.env.lo
 | `features` | `.env`, `.env.<BUILD_ENVIRONMENT>`, `.env.features` (fake values)                  | all                    |
 | none       | `.env`, `.env.local`, `.env.<BUILD_ENVIRONMENT>`, `.env.<BUILD_ENVIRONMENT>.local` | won't run              |
 
-The files are in `packages/web/`. Shell and CI variables still win over every file.
+The files are in `packages/web/`. A dev server on a profile, as in `verify-dev.yml` on `bare`, also loads `.env.dev-server` after `.env.<BUILD_ENVIRONMENT>`, without its `.local` twin. Shell and CI variables still win over every file.
 
 ## Run a check on a profile
 

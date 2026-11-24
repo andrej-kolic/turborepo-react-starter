@@ -3,6 +3,10 @@
 # Deploy script for AWS CloudFormation Static Site
 # Usage: ./deploy.sh <action> [environment]
 
+# Run from your laptop, this deploys a build that read your .local env files, like any local build
+# (docs/template/env.md#which-env-files-load). Loading the stage's values from GitHub instead
+# (gh variable list --env <stage>) can come later: docs/template/decisions/0020-env-file-layers.md.
+
 SCRIPTS_DIR=$(dirname "$0")
 ROOT_DIR=$(dirname "$0")/..
 MONOREPO_ROOT_DIR=$(dirname "$0")/../../..
