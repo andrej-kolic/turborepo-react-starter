@@ -5,7 +5,8 @@
 
 import * as z from 'zod';
 
-// No .transform: @msw/data stores a schema's output, so the mock keeps the API's format.
+// No .transform: it runs on every check, and the mock (@msw/data) checks each todo as it saves it,
+// so the mock would store and send the app's shape instead of the server's.
 export const todoDtoSchema = z.object({
   id: z.string(),
   title: z.string(),
