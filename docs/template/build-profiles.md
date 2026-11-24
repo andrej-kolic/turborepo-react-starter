@@ -27,7 +27,7 @@ BUILD_PROFILE=features pnpm check:env-guards  # the same
 BUILD_PROFILE=bare pnpm build:app             # or preview:app, to look at one build
 ```
 
-Each check builds first through Turbo, which caches each profile's build separately. Before each app build, the uncached `clear:dist` task empties the app's `dist/`, because a cache hit copies the cached files in without deleting old ones, so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
+Each check builds first through Turbo, which caches each profile's build separately. Each app empties its `dist/` before its build ([0018](decisions/0018-clear-dist-before-build.md)), so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
 
 CI runs each check once per profile: `Verify: Build` has a `Build (<bundler>, <profile>)` job for every bundler and profile, which builds, checks size and env guards, and runs Playwright on that build's preview.
 
