@@ -15,6 +15,7 @@ const VALID_ENV_FILE = [
   'APP_REACT_TITLE="Test App"',
   'APP_REACT_ENV_FILE=".env"',
   'APP_REACT_VERSION="1.2.3"',
+  'APP_REACT_API_URL="mock"',
 ].join('\n');
 
 let envDir: string;
@@ -63,6 +64,7 @@ describe('loadEnvironmentVariables', () => {
       APP_REACT_TITLE: 'Test App',
       APP_REACT_ENV_FILE: '.env',
       APP_REACT_VERSION: '1.2.3',
+      APP_REACT_API_URL: 'mock',
       BUILD_ENVIRONMENT: 'staging',
       BUNDLER: 'web-vite',
       MODE: 'production',
@@ -96,11 +98,31 @@ describe('loadEnvironmentVariables', () => {
     expect(load().APP_REACT_SENTRY_DSN).toBeUndefined();
   });
 
-  it('treats an empty APP_REACT_API_URL as unset', () => {
-    process.env.APP_REACT_API_URL = '';
+  it('throws saying what to set when APP_REACT_API_URL is missing', () => {
+    writeEnvFile(VALID_ENV_FILE.replace('APP_REACT_API_URL="mock"', ''));
+
+    expect(() => load()).toThrow(
+      /must be "mock" or the API's URL.*\n.*APP_REACT_API_URL/,
+    );
+  });
+
+  it.each(['', 'true', 'not-a-url'])(
+    'throws saying what to set when APP_REACT_API_URL is "%s"',
+    (value) => {
+      process.env.APP_REACT_API_URL = value;
+      writeEnvFile(VALID_ENV_FILE);
+
+      expect(() => load()).toThrow(
+        /must be "mock" or the API's URL.*\n.*APP_REACT_API_URL/,
+      );
+    },
+  );
+
+  it('lets a URL from the shell beat "mock" in the file', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com';
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(load().APP_REACT_API_URL).toBeUndefined();
+    expect(load().APP_REACT_API_URL).toBe('https://api.example.com');
   });
 
   it('drops trailing slashes from APP_REACT_API_URL', () => {
@@ -333,13 +355,11 @@ describe('loadEnvironmentVariables for the dev server', () => {
 
 describe('packages/web/.env.features', () => {
   const webDir = join(dirname(fileURLToPath(import.meta.url)), '../../../web');
-  // Not optional features: computed by the loader, test switches for pnpm check:env-guards, or configuration
-  // whose unset value turns code on (APP_REACT_API_URL: the mocked API), which the features build keeps unset.
+  // Not optional features: computed by the loader, or test switches for pnpm check:env-guards.
   const notFeatures = new Set([
     'GIT_COMMIT',
     'APP_REACT_GUARD_ON',
     'APP_REACT_GUARD_OFF',
-    'APP_REACT_API_URL',
   ]);
 
   it('sets every optional key in the env schema, so the features build turns every feature on', () => {
@@ -382,6 +402,7 @@ describe('defineEnvironmentVariables', () => {
     APP_REACT_ENV_FILE: '.env',
     APP_REACT_TITLE: 'Test "App"',
     APP_REACT_VERSION: '1.2.3',
+    APP_REACT_API_URL: 'mock',
     APP_REACT_GUARD_ON: 'true',
     APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
   } as const;
@@ -397,7 +418,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
-      'import.meta.env.APP_REACT_API_URL': 'undefined',
+      'import.meta.env.APP_REACT_API_URL': '"mock"',
       'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE': '0.1',
       'import.meta.env.GIT_COMMIT': 'undefined',

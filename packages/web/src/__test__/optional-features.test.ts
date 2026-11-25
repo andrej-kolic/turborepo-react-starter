@@ -138,7 +138,7 @@ describe('rootOptions', () => {
   });
 });
 
-describe('startMockApi', () => {
+describe('mocked API', () => {
   const start = vi.fn<() => Promise<undefined>>(() =>
     Promise.resolve(undefined),
   );
@@ -146,12 +146,11 @@ describe('startMockApi', () => {
     () => ({ start }),
   );
 
-  async function loadStartMockApi() {
+  function loadOptionalFeatures() {
     vi.resetModules();
     // The service worker needs a real browser; replace MSW's browser setup at that boundary.
     vi.doMock('@repo/core/mocks/browser', () => ({ createWorker }));
-    const { startMockApi } = await import('../optional-features');
-    return startMockApi;
+    return import('../optional-features');
   }
 
   beforeEach(() => vi.clearAllMocks());
@@ -161,12 +160,10 @@ describe('startMockApi', () => {
     vi.doUnmock('@repo/core/mocks/browser');
   });
 
-  it('startsTheWorkerOnceAtTheApiPath_whenApiUrlIsUnset', async () => {
-    vi.stubEnv('APP_REACT_API_URL', undefined);
-    const startMockApi = await loadStartMockApi();
+  it('startsTheWorkerAtTheApiPath_whenApiUrlIsMock', async () => {
+    vi.stubEnv('APP_REACT_API_URL', 'mock');
 
-    await Promise.all([startMockApi(), startMockApi()]);
-    await startMockApi();
+    await loadOptionalFeatures();
 
     expect(createWorker).toHaveBeenCalledExactlyOnceWith('/api');
     expect(start).toHaveBeenCalledExactlyOnceWith({
@@ -174,23 +171,47 @@ describe('startMockApi', () => {
     });
   });
 
-  it('startsNoWorker_whenApiUrlIsSet', async () => {
-    vi.stubEnv('APP_REACT_API_URL', 'https://api.example.com');
-    const startMockApi = await loadStartMockApi();
+  it('finishesLoadingAndLogsTheError_whenTheWorkerFailsToStart', async () => {
+    vi.stubEnv('APP_REACT_API_URL', 'mock');
+    const error = new Error('no service worker');
+    start.mockRejectedValueOnce(error);
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
 
-    await startMockApi();
+    const { rootOptions } = await loadOptionalFeatures();
 
-    expect(createWorker).not.toHaveBeenCalled();
+    expect(rootOptions).toBeDefined();
+    expect(consoleError).toHaveBeenCalledWith(expect.any(String), error);
+    consoleError.mockRestore();
   });
 
-  it('triesAgain_whenTheWorkerFailedToStart', async () => {
-    vi.stubEnv('APP_REACT_API_URL', undefined);
-    start.mockRejectedValueOnce(new Error('no service worker'));
-    const startMockApi = await loadStartMockApi();
+  it('finishesLoadingOnlyOnceTheWorkerAnswers_whenApiUrlIsMock', async () => {
+    vi.stubEnv('APP_REACT_API_URL', 'mock');
+    let workerStarted: () => void = () => {};
+    start.mockReturnValueOnce(
+      new Promise((resolve) => {
+        workerStarted = () => resolve(undefined);
+      }),
+    );
+    let loaded = false;
 
-    await expect(startMockApi()).rejects.toThrow('no service worker');
-    await startMockApi();
+    const loading = loadOptionalFeatures().then(() => {
+      loaded = true;
+    });
+    await vi.waitFor(() => expect(start).toHaveBeenCalled());
+    expect(loaded).toBe(false);
 
-    expect(start).toHaveBeenCalledTimes(2);
+    workerStarted();
+    await loading;
+    expect(loaded).toBe(true);
+  });
+
+  it('startsNoWorker_whenApiUrlIsAUrl', async () => {
+    vi.stubEnv('APP_REACT_API_URL', 'https://api.example.com');
+
+    await loadOptionalFeatures();
+
+    expect(createWorker).not.toHaveBeenCalled();
   });
 });

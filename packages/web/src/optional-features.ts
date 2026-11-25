@@ -8,38 +8,23 @@ import { errorReportingHandlers } from './error-reporting';
  */
 export const rootOptions: RootOptions = {};
 
-let mockApi: Promise<void> | undefined;
-
-/**
- * Starts the mocked todo API the first time it is called, and resolves once it answers requests.
- * The todo route's loader awaits it before its first request. Resolves at once in builds with
- * `APP_REACT_API_URL`, which ship no mock.
- */
-export function startMockApi(): Promise<void> {
-  // Each feature reads its values straight from import.meta.env and writes import() inside the if,
-  // so the bundler can drop the import(): see docs/template/env.md.
-  if (!import.meta.env.APP_REACT_API_URL) {
-    mockApi ??= import('@repo/core/mocks/browser')
-      .then(({ createWorker }) =>
-        // The worker sees every request the page makes (scripts, images, Sentry reports);
-        // 'bypass' sends those with no handler to the network without MSW's default console warning.
-        createWorker(apiBaseUrl).start({ onUnhandledFrame: 'bypass' }),
-      )
-      .then(
-        () => undefined,
-        (error: unknown) => {
-          // Lets the next visit to the todo page try again.
-          mockApi = undefined;
-          throw error;
-        },
-      );
-  }
-  return mockApi ?? Promise.resolve();
-}
-
 if (import.meta.env.PROD && import.meta.env.APP_REACT_SENTRY_DSN) {
   Object.assign(
     rootOptions,
     errorReportingHandlers(import('./error-reporting/sentry')),
   );
+}
+
+// Before the first render, as MSW's docs show (https://mswjs.io/docs/integrations/browser): the apps import this
+// file, so they render only once the mocked API answers requests. Builds with an API URL ship no MSW code.
+if (import.meta.env.APP_REACT_API_URL === 'mock') {
+  try {
+    const { createWorker } = await import('@repo/core/mocks/browser');
+    // The worker sees every request the page makes (scripts, images, Sentry reports);
+    // 'bypass' sends those with no handler to the network without MSW's default console warning.
+    await createWorker(apiBaseUrl).start({ onUnhandledFrame: 'bypass' });
+  } catch (error) {
+    // An error here would stop the apps from rendering; caught, only the todo page fails.
+    console.error('The mocked API did not start:', error);
+  }
 }

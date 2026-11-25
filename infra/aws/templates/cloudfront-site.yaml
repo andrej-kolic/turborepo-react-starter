@@ -188,7 +188,7 @@ Resources:
             Override: true
           ContentSecurityPolicy:
             # connect-src: 'self' for the mocked todo API at /api (docs/template/env.md), Sentry for
-            # error reporting (docs/template/error-reporting.md). Add APP_REACT_API_URL's origin when it is set.
+            # error reporting (docs/template/error-reporting.md). Add APP_REACT_API_URL's origin when it is a URL.
             ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://*.sentry.io; object-src 'none'"
             Override: true
           ContentTypeOptions:

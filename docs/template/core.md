@@ -40,7 +40,5 @@ Make it with `createStore` from `zustand/vanilla`, taking its storage as an argu
 ## Use it in the web app
 
 1. Pass `apiBaseUrl` from [`packages/web/src/api.ts`](../../packages/web/src/api.ts) to every API function.
-2. In the page's route loader (`routes/<page>.tsx`), as [`routes/todos.tsx`](../../packages/web/src/routes/todos.tsx) does:
-   1. Load `core` with `import('@repo/core')` inside the loader, never an import at the top of the file. The route file is in the main bundle, which every visitor downloads before any page shows; `import()` puts `core` and Zod in a separate file, downloaded only when the page opens.
-   2. Await `startMockApi()` before the first request. A build without `APP_REACT_API_URL`, deploys included, has no real API, so the mocked API answers every request and must be running first; in a build with the URL it does nothing ([env.md](env.md#turn-code-on-when-a-value-is-unset)).
+2. In the page's route loader (`routes/<page>.tsx`), as [`routes/todos.tsx`](../../packages/web/src/routes/todos.tsx) does, load `core` with `import('@repo/core')` inside the loader, never an import at the top of the file. The route file is in the main bundle, which every visitor downloads before any page shows; `import()` puts `core` and Zod in a separate file, downloaded only when the page opens.
 3. In the `.lazy.tsx` component, import from `@repo/core` normally. Adding the page itself: [routing.md](routing.md).

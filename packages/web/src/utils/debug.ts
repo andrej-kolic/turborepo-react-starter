@@ -24,4 +24,9 @@ export function debugLog() {
     '* import.meta.env.APP_REACT_ENV_FILE:',
     import.meta.env.APP_REACT_ENV_FILE,
   );
+
+  console.log(
+    '* import.meta.env.APP_REACT_API_URL:',
+    import.meta.env.APP_REACT_API_URL,
+  );
 }

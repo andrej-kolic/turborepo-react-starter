@@ -35,7 +35,7 @@ const GUARD_LINES = [
  * Checks the build in `<appDir>/dist`: code behind PROD (true in every build) and APP_REACT_GUARD_ON (set)
  * must ship, code behind APP_REACT_GUARD_OFF (unset) must be gone. Sentry's code ships only with
  * APP_REACT_SENTRY_DSN set, must ship on a features build (docs/template/build-profiles.md),
- * and never loads before the app starts. MSW's code never loads before the app starts either.
+ * and never loads before the app starts. MSW's code is only in a file the app loads through import().
  * No script may link a source map.
  *
  * Also fails when env-guards.ts no longer has all of `GUARD_LINES`, or when there is no dist folder,
@@ -127,7 +127,7 @@ export function checkEnvGuards({
     .map(({ file }) => file);
   if (eagerMswFiles.length > 0) {
     errors.push(
-      `MSW's code is in ${eagerMswFiles.join(', ')}, which loads before the app starts: load it with import() instead.`,
+      `MSW's code is in ${eagerMswFiles.join(', ')}, which the page loads without import(): load it with import() instead.`,
     );
   }
 

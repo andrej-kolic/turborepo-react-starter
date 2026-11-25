@@ -2,7 +2,7 @@ import { globSync } from 'node:fs';
 import type { SizeLimitConfig } from 'size-limit';
 
 const SENTRY_FILES = 'dist/assets/sentry-*.js';
-// The mocked API: MSW's code and its service worker, which only todo page visitors download.
+// The mocked API: MSW's code and its service worker, which builds with APP_REACT_API_URL="mock" load before the first render.
 const MSW_CODE = 'dist/assets/msw-browser-*.js';
 const MSW_FILES = [MSW_CODE, 'dist/mockServiceWorker.js'];
 
@@ -33,8 +33,8 @@ const sizeLimitConfig = [
     ],
     limit: '268 kB',
   },
-  // Only builds without APP_REACT_API_URL have the MSW file. Neither profile sets it, so there a missing file fails the check.
-  ...(process.env.BUILD_PROFILE || globSync(MSW_CODE).length > 0
+  // Only builds with APP_REACT_API_URL="mock" have the MSW file. Under another name it would count in JavaScript above, and fail that check.
+  ...(globSync(MSW_CODE).length > 0
     ? [{ name: 'Mocked API (MSW)', path: MSW_FILES, limit: '100 kB' }]
     : []),
   // Only builds with APP_REACT_SENTRY_DSN have the file; size-limit fails a check that finds none.

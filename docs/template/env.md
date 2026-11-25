@@ -75,21 +75,30 @@ To ship code only in builds that set a value, the way error reporting needs `APP
 
 4. Put a fake value in [`packages/web/.env.features`](../../packages/web/.env.features), one that sends nothing, so the `features` [build profile](build-profiles.md) turns the code on and every check runs on it. `pnpm test` fails until you do.
 
-## Turn code on when a value is unset
+## The mocked API
 
-The mocked todo API works the other way: it runs while `APP_REACT_API_URL` is unset, and a build with a URL leaves it out. Write the `if` on the missing value, with the same rules as above:
+`APP_REACT_API_URL` is the todo API's URL, or `"mock"`, which starts the mocked todo API (MSW) in the browser before the app renders: in the dev server and in every build, deploys included. [`packages/web/.env`](../../packages/web/.env) sets it to `"mock"`. A missing or empty value fails the build. Its `if` in [`optional-features.ts`](../../packages/web/src/optional-features.ts) follows the rules above:
 
 ```ts
-if (!import.meta.env.APP_REACT_API_URL) {
-  mockApi ??= import('@repo/core/mocks/browser').then(…);
+if (import.meta.env.APP_REACT_API_URL === 'mock') {
+  try {
+    const { createWorker } = await import('@repo/core/mocks/browser');
+    await createWorker(apiBaseUrl).start(…);
+  } catch (error) { … }
 }
 ```
 
-Code that must wait for it gets a function to await: `startMockApi()` in [`optional-features.ts`](../../packages/web/src/optional-features.ts), which the todo route's loader awaits before its first request. Only that page loads MSW.
+The apps import that file, so the `await` makes them render only once the mock answers. Every page downloads MSW before it shows. A failed start is logged and the apps render without the mock, so only its pages fail.
 
-Such a value is configuration, not an optional feature: [`.env.features`](../../packages/web/.env.features) leaves it unset, so both [build profiles](build-profiles.md) run the code. List it in `notFeatures` in [`environment.test.ts`](../../packages/dev-tools/config/__test__/environment.test.ts), or `pnpm test` asks for it in `.env.features`.
+Use a real API:
 
-On AWS, the site's `Content-Security-Policy` header lets the page call only its own address and Sentry. With `APP_REACT_API_URL` set, add its origin to `connect-src` in [`cloudfront-site.yaml`](../../infra/aws/templates/cloudfront-site.yaml) and deploy the AWS infrastructure (`Deploy: AWS: Infrastructure`), or the browser blocks every todo request.
+1. The same one for every stage: replace `"mock"` in `.env` with the URL.
+2. One per stage: delete the line from `.env` and set the URL in each stage's file. A stage without one then fails its build; with `"mock"` left in `.env`, it would show fake todos.
+3. On your machine: set the URL in `.env.local`, or in the stage's twin, such as `.env.staging.local`, when the stage's file sets one.
+4. For one build: `APP_REACT_API_URL=https://api.example.com pnpm build:app`.
+5. For deploys from GitHub: set the variable `APP_REACT_API_URL` (Settings > Secrets and variables > Actions > Variables). It beats the files; unset or empty, they decide. For one stage, set it on that stage's GitHub environment (Settings > Environments); that beats the repo's variable.
+
+On AWS, the site's `Content-Security-Policy` header lets the page call only its own address and Sentry. With an API URL, add its origin to `connect-src` in [`cloudfront-site.yaml`](../../infra/aws/templates/cloudfront-site.yaml) and deploy the AWS infrastructure (`Deploy: AWS: Infrastructure`), or the browser blocks every todo request.
 
 ## Leave code out of the dev server
 
