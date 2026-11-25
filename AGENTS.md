@@ -79,7 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
 - Test: `pnpm test` (unit only — E2E is separate)
-- E2E: `BUILD_PROFILE=bare pnpm e2e` or `BUILD_PROFILE=features` (builds and starts the preview itself; profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
+- E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
 - Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
