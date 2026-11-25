@@ -10,7 +10,7 @@ const target = resolvePreviewAppTarget();
 // it would run both profiles' tests on a single build, one made with the developer's `.env.local`.
 const profile = readBuildProfile() ?? 'bare';
 
-// A build with the mock inside the app gets only the tests of that mock, every other build all the rest.
+// If the app has the fake API built in, run only the tests tagged @in-app-mock. Otherwise run all the others.
 const only = IN_APP_MOCK ? /@in-app-mock/ : /.*/;
 const never = IN_APP_MOCK ? [] : [/@in-app-mock/];
 
@@ -41,7 +41,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ].filter(({ name }) => name === profile),
-  // Builds the BUNDLER app with that profile and API address, and serves it: Turbo's `preview` depends on `build`.
+  // Builds the app and starts it. Turbo's `preview` task runs `build` first.
   // Never an already running preview, which may be another profile's build. TARGET_URL means a preview is up.
   webServer: process.env.TARGET_URL
     ? undefined

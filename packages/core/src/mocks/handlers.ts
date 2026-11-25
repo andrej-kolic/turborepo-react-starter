@@ -4,9 +4,9 @@
  * In the browser, everything in this file runs on the page's main thread, beside React: the
  * service worker (`mockServiceWorker.js`) only passes each request here and the reply back to
  * `fetch`. In unit tests it runs in the Node test process. Zustand plays no part.
- * In E2E tests it runs in Playwright's worker process, through `@msw/playwright`.
- * The list starts as the 3 sample todos; changes last until the process ends (in a browser, until the
- * page reloads) or `resetTodos()` runs.
+ * In E2E tests, this code runs in Playwright's process, not in the browser.
+ * The list starts with the 3 sample todos. Changes are lost when the page reloads, the process ends
+ * or `resetTodos()` is called.
  */
 
 import { Collection } from '@msw/data';
@@ -39,14 +39,14 @@ const SAMPLE_TODOS: readonly TodoDto[] = [
   },
 ];
 
-// The list itself, a variable wherever this file runs (see the header); each record is checked
-// against todoDtoSchema.
+// All todos of the fake API. Each one is checked against todoDtoSchema.
 const todos = new Collection({ schema: todoDtoSchema });
 let lastId = 0;
 
 /**
- * Replaces the mocked todos with `list`, by default the 3 samples; tests call it before each test.
- * @throws when a todo in `list` does not match the API's format
+ * Replaces all todos with `list`, or with the 3 sample todos if you pass no list.
+ * Tests call it before each test.
+ * @throws when a todo in `list` doesn't match the API's format
  */
 export async function resetTodos(
   list: readonly TodoDto[] = SAMPLE_TODOS,
@@ -56,7 +56,7 @@ export async function resetTodos(
     // NOTE: index is always below list.length.
     ...list[index]!,
   }));
-  // Above every number in use, so a new todo's id is free; an id that isn't a number can't clash with one.
+  // Continue from the highest id, so that a new todo never gets an id that is already used.
   lastId = Math.max(0, ...list.map(({ id }) => Number(id) || 0));
 }
 
@@ -71,16 +71,13 @@ async function readJson(request: Request): Promise<unknown> {
   }
 }
 
-/**
- * Handlers for the todo API at `baseUrl`, the same base URL the API functions are given.
- * Where each one runs depends on the environment (see the header); the comments inside describe the browser.
- */
+/** Creates the fake todo API at `baseUrl`. Use the same `baseUrl` as the API functions. */
 export function createHandlers(baseUrl: string) {
   return [
     // GET /todos: every todo, oldest first.
     http.get(`${baseUrl}/todos`, async () => {
-      // Runs on the page's main thread: the service worker caught the page's fetch and passed it here.
-      // Wait until the first fill of the in-memory list (`todos`, a variable in this file), with the 3 sample todos, is done.
+      // In the browser, the service worker passes each request to this code.
+      // Wait until the sample todos are in the list.
       await ready;
       // Read every todo from that list, oldest first, and reply with them as JSON (200).
       // The service worker hands this reply back to the page's fetch.
@@ -91,8 +88,8 @@ export function createHandlers(baseUrl: string) {
 
     // POST /todos {title}: adds a not-done todo with the next id; 201 with it, 400 on a bad body.
     http.post(`${baseUrl}/todos`, async ({ request }) => {
-      // Runs on the page's main thread: the service worker caught the page's fetch and passed it here.
-      // Wait until the first fill of the in-memory list (`todos`, a variable in this file), with the 3 sample todos, is done.
+      // In the browser, the service worker passes each request to this code.
+      // Wait until the sample todos are in the list.
       await ready;
       // Read the JSON body and check it with Zod: it needs a string title; other keys are dropped.
       const body = createTodoDtoSchema.safeParse(await readJson(request));
@@ -115,8 +112,8 @@ export function createHandlers(baseUrl: string) {
     http.patch<{ id: string }>(
       `${baseUrl}/todos/:id`,
       async ({ params, request }) => {
-        // Runs on the page's main thread: the service worker caught the page's fetch and passed it here.
-        // Wait until the first fill of the in-memory list (`todos`, a variable in this file), with the 3 sample todos, is done.
+        // In the browser, the service worker passes each request to this code.
+        // Wait until the sample todos are in the list.
         await ready;
         // Read the JSON body and check it with Zod: keep only title and is_done, drop other keys.
         const body = updateTodoDtoSchema.safeParse(await readJson(request));
@@ -139,8 +136,8 @@ export function createHandlers(baseUrl: string) {
 
     // DELETE /todos/:id: removes the todo; 204, or 404 when no todo has the id.
     http.delete<{ id: string }>(`${baseUrl}/todos/:id`, async ({ params }) => {
-      // Runs on the page's main thread: the service worker caught the page's fetch and passed it here.
-      // Wait until the first fill of the in-memory list (`todos`, a variable in this file), with the 3 sample todos, is done.
+      // In the browser, the service worker passes each request to this code.
+      // Wait until the sample todos are in the list.
       await ready;
       // Remove the todo with this id from the in-memory list.
       // `todo` is the removed todo, or undefined when no todo has this id.

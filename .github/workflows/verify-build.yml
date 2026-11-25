@@ -1,6 +1,6 @@
 # Every production build, checked and opened in a browser: 3 bundlers × 2 build profiles, plus Storybook.
-# Each app job builds, checks env guards and bundle size, then runs the E2E tests on previews Playwright builds:
-# one with no mock inside for the full suite, one with it for the @in-app-mock test (docs/template/e2e.md).
+# Each app job builds the app and checks env guards and bundle size. Then it runs the E2E tests twice:
+# all tests with Playwright's fake API, then one test of the fake API built into the app.
 # Profiles: docs/template/build-profiles.md.
 # No Sentry DSN from the repo: features has its own fake one, and an empty value would override it.
 
@@ -59,7 +59,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # For the checked build and for Playwright's own, which differ only in APP_REACT_API_URL.
+    # Playwright builds the app again with this env. Only APP_REACT_API_URL is different.
     env:
       BUNDLER: ${{ matrix.bundler }}
       BUILD_PROFILE: ${{ matrix.profile }}
@@ -81,7 +81,7 @@ jobs:
           run-lint: 'false'
           run-tests: 'false'
 
-      # Playwright builds and starts the preview first (webServer in packages/e2e/playwright.config.ts).
+      # Playwright builds the app and starts it before the tests.
       - name: Run E2E tests
         run: pnpm e2e
 

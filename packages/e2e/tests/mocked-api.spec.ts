@@ -1,4 +1,8 @@
-/** Checks the mocked API in `fixtures/app-target.ts`: the app under test ships no mock of its own, and a request the mock doesn't know fails the test. */
+/**
+ * This file tests the test setup, not a feature. It tests that:
+ * 1. The E2E tests use Playwright's fake API, not the one built into the app.
+ * 2. A test fails when the app sends a request that the fake API doesn't support.
+ */
 
 import { expect, test } from '../fixtures/app-target';
 import { API_URL } from '../lib/api-url';
@@ -26,13 +30,13 @@ test('shows todos on a build that loads no mock and starts no service worker', a
   ).toBe(0);
 });
 
-// An address with a file extension too: @msw/playwright skips those unless told otherwise.
+// `/unknown.json` is here because the library ignores addresses that look like files by default.
 for (const path of ['/unknown', '/unknown.json']) {
   test.fail(
     `fails on a request the mock has no handler for: ${path}`,
     async ({ page }) => {
       await page.goto('/');
-      // Caught, so only the fixture's check can fail the test.
+      // Ignore fetch errors, so that the test can fail only because of the unsupported request.
       await page.evaluate(
         (url) =>
           fetch(url).then(

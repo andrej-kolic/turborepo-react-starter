@@ -1,10 +1,9 @@
 /**
- * The `test` and `expect` every E2E test imports, instead of importing them from Playwright.
- *
- * It adds three things to each test: `appTarget`, the URL of the preview under test; a step that answers
- * every request to Sentry inside the test browser; and `network`, which answers the todo API's requests
- * with the mock from `@repo/core`. So no test run sends anything to a real Sentry project, even on a build
- * with your DSN from `.env.local` or on a deployed staging site, and none needs a real API.
+ * Every E2E test imports `test` and `expect` from this file, not from Playwright.
+ * This file adds three things to each test:
+ * 1. `appTarget`: the URL of the app being tested.
+ * 2. `blockSentry`: it stops requests to Sentry, so tests never send anything to a real Sentry project.
+ * 3. `network`: a fake todo API, so tests don't need a real one.
  */
 
 import { defineNetworkFixture, type NetworkFixture } from '@msw/playwright';
@@ -22,9 +21,9 @@ type AppTargetFixtures = {
   /** Runs in every test without being asked for: answers each request to Sentry with HTTP 200 in the browser. */
   blockSentry: void;
   /**
-   * Runs in every test without being asked for: answers requests to `API_URL` from the 3 sample todos, reset before
-   * each test. The test fails at its end if the app asked for something the mock has no handler for.
-   * Use `network.use(...)` to replace one reply, and `resetTodos(list)` from `@repo/core/mocks/handlers` to set the todos.
+   * The fake todo API. It is on in every test, and every test starts with the 3 sample todos.
+   * If the app sends a request that the fake API doesn't support, the test fails.
+   * To start with other todos, call `resetTodos(list)`. To change one endpoint's reply, call `network.use(...)`.
    */
   network: NetworkFixture;
 };
@@ -49,19 +48,19 @@ export const test = base.extend<AppTargetFixtures>({
   ],
   network: [
     async ({ context }, use) => {
-      // The todos live in this worker process, which runs many tests.
+      // Tests share these todos, so reset them. Otherwise one test's changes would show up in the next test.
       await resetTodos();
 
       const unknownRequests: string[] = [];
       const network = defineNetworkFixture({
         context,
-        // Without this, API addresses that look like a file, such as /todos.json, skip the handlers.
+        // Without this, the fake API ignores addresses that look like files, such as /todos.json.
         skipAssetRequests: false,
         handlers: IN_APP_MOCK
           ? []
           : [
               ...createHandlers(API_URL),
-              // Not `onUnhandledFrame: 'error'`: it also blocks the app's own page and files.
+              // We don't use the library's `onUnhandledFrame: 'error'` because it also blocks the app's own page and files.
               http.all(`${API_URL}/*`, ({ request }) => {
                 unknownRequests.push(`${request.method} ${request.url}`);
                 return new HttpResponse(null, { status: 501 });

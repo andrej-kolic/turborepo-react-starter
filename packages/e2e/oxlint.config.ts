@@ -1,8 +1,8 @@
 /**
  * Lint settings for the E2E tests: the shared base config, plus one rule for files in `tests/`.
  *
- * That rule fails a test that imports `test` from `@playwright/test`. Tests must import it from
- * `fixtures/app-target.ts`, which answers the requests to Sentry and to the todo API, so no test run sends anything to either.
+ * That rule fails a test that imports `test` from `@playwright/test`.
+ * Tests must import it from `fixtures/app-target.ts`, so that they never send requests to Sentry or a real API.
  */
 
 import { defineConfig } from 'oxlint';
