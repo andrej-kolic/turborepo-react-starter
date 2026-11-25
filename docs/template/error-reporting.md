@@ -83,4 +83,4 @@ Events carry no IP address: [`sentry.ts`](../../packages/web/src/error-reporting
 
 The Turbo task `check:env-guards` runs after every build in CI. It fails if a build ships Sentry's code without a DSN, loads it before the app starts instead of through `import()`, or links a source map from its JS. On the `features` [build profile](build-profiles.md), which has a fake DSN, it also fails if Sentry's code is missing, and so does `pnpm check:size`.
 
-The `Verify: Build` workflow also tests the `DEFAULT_BUNDLER` app's `features` build and checks in Chromium that LCP, CLS and INP are sent, named after the page; the test answers Sentry's requests itself. How to run it locally: `BUILD_PROFILE=features pnpm e2e` ([e2e.md](e2e.md#run-locally)).
+The `Verify: Build` workflow also tests every app's `features` build and checks in Chromium that LCP, CLS and INP are sent, named after the page; the test answers Sentry's requests itself. How to run it locally: `BUILD_PROFILE=features pnpm e2e` ([e2e.md](e2e.md#run-locally)).

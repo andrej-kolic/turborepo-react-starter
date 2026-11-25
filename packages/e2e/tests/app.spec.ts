@@ -3,7 +3,7 @@ import { expect, test } from '../fixtures/app-target';
 import { AppPage } from '../pages/app.page';
 
 test.describe('app smoke', () => {
-  // @smoke: CI runs only this test on the dev servers and on the bundlers other than DEFAULT_BUNDLER.
+  // @smoke: CI runs only this test on the dev servers.
   test(
     'loads the home page, follows a link, and opens a deep link with its assets, with no console errors',
     { tag: '@smoke' },
