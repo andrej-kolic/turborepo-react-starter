@@ -16,7 +16,7 @@ export function resolvePreviewAppTarget(
   const targets = resolveAppTargets(env, PREVIEW_MODE);
   if (!targets) {
     throw new Error(
-      'Set BUNDLER (e.g. app-vite) or TARGET_URL before running E2E tests against preview.',
+      'Set BUNDLER (e.g. web-vite) or TARGET_URL before running E2E tests against preview.',
     );
   }
 

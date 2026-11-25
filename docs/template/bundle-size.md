@@ -5,19 +5,20 @@ CI fails when an app's production build grows past a size limit. `Verify: Build`
 ## Run it
 
 ```bash
-BUILD_PROFILE=features pnpm check:size                       # all three bundler apps, builds them first
-BUILD_PROFILE=features pnpm check:size --filter "$BUNDLER"   # one app
+pnpm check:size                           # the bare profile: all three bundler apps, builds them first
+pnpm check:size --filter "$BUNDLER"       # one app
+BUILD_PROFILE=features pnpm check:size    # the features profile
 ```
 
-CI runs it on both [build profiles](build-profiles.md), `bare` and `features`; set one locally too, so your `.env.local` doesn't change the build.
+CI runs it on both [build profiles](build-profiles.md), `bare` and `features`. Without `BUILD_PROFILE`, `pnpm check:size` uses `bare`, so your `.env.local` never changes the result.
 
 Over a limit, it fails and prints the excess:
 
 ```
 JavaScript
-Package size limit has exceeded by 85.17 kB
-Size limit: 73 kB
-Size:       158.17 kB brotlied
+Package size limit has exceeded by 53.17 kB
+Size limit: 135 kB
+Size:       188.17 kB brotlied
 ```
 
 ## Block merges that fail it
@@ -27,12 +28,12 @@ A failing check blocks a merge only when a ruleset requires it. Rulesets are rep
 1. Fill in **Ruleset Name**, for example `Protect develop and main`.
 2. Set **Enforcement status** to **Active**.
 3. Under **Target branches**, choose **Add target → Include by pattern** and add `develop`, then `main`.
-4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks** for each of `Code checks`, `Lint commit messages`, `All builds passed` and `All dev servers passed`. The size check fails `All builds passed`.
+4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks** for each of `Static checks + unit tests`, `Lint commit messages`, `All builds passed` and `All dev servers passed`. The size check fails `All builds passed`.
 5. Click **Create**.
 
 ## Limits
 
-All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads, each without Sentry's file, and Sentry's file on its own. A build without `APP_REACT_SENTRY_DSN` has no Sentry file, so it has no Sentry check; a `features` build always has one, so there a missing file fails. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
+All three apps share one set of limits, in [`packages/dev-tools/config/size-limit.ts`](../../packages/dev-tools/config/size-limit.ts): JavaScript, CSS, and everything a visitor downloads, each without the Sentry and mocked API files, then each of those on its own. A build without `APP_REACT_SENTRY_DSN` has no Sentry file, so it has no Sentry check; a `features` build always has one, so there a missing file fails. The mocked API's check covers `msw-browser-*.js` and `mockServiceWorker.js`, which a build with `APP_REACT_API_URL="mock"` loads before the first render; a build with an API URL has no `msw-browser` file, so it has no such check. Each app's `.size-limit.ts` re-exports it. Sizes are Brotli-compressed, as served.
 
 ## Raise a limit
 

@@ -1,7 +1,7 @@
 ---
 alwaysApply: false
 description: data-testid and semantic HTML for agent-checkable page regions
-globs: packages/app-core/**/*.tsx,packages/ui/**/*.tsx
+globs: packages/web/**/*.tsx,packages/ui/**/*.tsx
 ---
 
 # Component validation contract

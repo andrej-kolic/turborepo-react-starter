@@ -1,0 +1,55 @@
+{
+  "name": "@repo/web",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./optional-features": "./src/optional-features.ts",
+    "./*": "./src/*"
+  },
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsr watch",
+    "lint": "oxlint --type-aware",
+    "generate:component": "turbo gen react-component",
+    "generate:routes": "tsr generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:type": "tsc --noEmit",
+    "msw:init": "msw init public --save"
+  },
+  "dependencies": {
+    "@repo/commons": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@sentry/react": "11.13.0",
+    "@tanstack/react-router": "1.170.46",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-error-boundary": "6.1.6",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/client-types": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tanstack/router-cli": "1.168.0",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@turbo/gen": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "jsdom": "catalog:",
+    "msw": "catalog:",
+    "vitest": "catalog:"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}

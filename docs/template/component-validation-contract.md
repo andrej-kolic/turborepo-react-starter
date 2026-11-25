@@ -20,7 +20,7 @@ A component gets `data-testid` when all three hold:
 
 1. It is a top-level, user-visible page region.
 2. It is not a sub-element of a region that already has one, unless a test must check it on its own (e.g. a panel that must open).
-3. It is not a `@repo/ui` primitive: unit tests find those by role. A primitive that needs one exposes a `data-testid` prop (like `DynamicList`), and the `app-core` component that uses it sets the value.
+3. It is not a `@repo/ui` primitive: unit tests find those by role. A primitive that needs one exposes a `data-testid` prop (like `DynamicList`), and the `web` component that uses it sets the value.
 
 Pair the testid with a landmark element where one fits. The element gets an ARIA role for free, so unit tests and screen readers find the same region by role:
 
@@ -33,20 +33,25 @@ Pair the testid with a landmark element where one fits. The element gets an ARIA
 | --------------- | -------------------------- | ------------------ |
 | `Header`        | `<header>`                 | `banner`           |
 | `ResourceCards` | `<section aria-label="…">` | `region`           |
-| `AppCore`       | `<main>`                   | `main`             |
+| `WebApp`        | `<main>`                   | `main`             |
 
 ## Naming
 
-Kebab-case, unique within a rendered page, no package prefix (`app-header`, not `app-core-header`).
+Kebab-case, unique within a rendered page, no package prefix (`app-header`, not `web-header`).
 
 ## Registry
 
-| `data-testid`    | Component                           | File                                                          |
-| ---------------- | ----------------------------------- | ------------------------------------------------------------- |
-| `app-header`     | `Header`                            | `packages/app-core/src/components/Header/index.tsx`           |
-| `resource-cards` | `ResourceCards`                     | `packages/app-core/src/components/ResourceCards/index.tsx`    |
-| `scroller`       | `Scroller` (via `DynamicList` prop) | `packages/app-core/src/components/Scroller/index.tsx`         |
-| `app-error`      | `AppErrorBoundary` fallback         | `packages/app-core/src/components/AppErrorBoundary/index.tsx` |
+| `data-testid`    | Component                           | File                                                     |
+| ---------------- | ----------------------------------- | -------------------------------------------------------- |
+| `app-header`     | `Header`                            | `packages/web/src/components/Header/index.tsx`           |
+| `resource-cards` | `ResourceCards`                     | `packages/web/src/components/ResourceCards/index.tsx`    |
+| `scroller`       | `Scroller` (via `DynamicList` prop) | `packages/web/src/components/Scroller/index.tsx`         |
+| `app-error`      | `AppErrorBoundary` fallback         | `packages/web/src/components/AppErrorBoundary/index.tsx` |
+| `route-error`    | `RouteError` (router error screen)  | `packages/web/src/components/RouteError/index.tsx`       |
+| `not-found`      | `NotFound` (no route matches)       | `packages/web/src/components/NotFound/index.tsx`         |
+| `about-page`     | `AboutPage` (`/about`)              | `packages/web/src/routes/about.lazy.tsx`                 |
+| `todos-page`     | `TodosPage` (`/todos`)              | `packages/web/src/routes/todos.lazy.tsx`                 |
+| `settings-page`  | `SettingsPage` (`/settings`)        | `packages/web/src/routes/settings.lazy.tsx`              |
 
 `@repo/ui` components with a `data-testid` prop:
 

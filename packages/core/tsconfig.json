@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    // webworker has fetch, Request and Response but not window or document; no `types` keeps Node's out.
+    // Its self, caches, postMessage and indexedDB, which Node or React Native lack, are banned in oxlint.config.ts.
+    "lib": ["es2022", "webworker"],
+    "types": []
+  },
+  "include": ["src/**/*"],
+  // Node only: their imports (vitest, msw/node) bring in Node's types, so tsconfig.test.json checks them.
+  "exclude": ["src/__test__", "src/mocks/msw-node.ts"]
+}

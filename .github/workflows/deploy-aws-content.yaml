@@ -23,9 +23,9 @@ on:
         default: default
         options:
           - default
-          - app-vite
-          - app-rspack
-          - app-esbuild
+          - web-vite
+          - web-rspack
+          - web-esbuild
       environment:
         description: 'Deployment environment'
         required: true
@@ -73,16 +73,18 @@ jobs:
     environment: &deploy-environment ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref == 'refs/heads/main' && 'staging' || 'development' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build project
         uses: ./.github/actions/build-project
         with:
           build-filter: ${{ env.BUNDLER }}
           build-environment: *deploy-environment
+          api-url: ${{ vars.APP_REACT_API_URL }}
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           run-lint: 'false'
           run-tests: 'false'
           check-size: 'false'

@@ -15,6 +15,7 @@ const VALID_ENV_FILE = [
   'APP_REACT_TITLE="Test App"',
   'APP_REACT_ENV_FILE=".env"',
   'APP_REACT_VERSION="1.2.3"',
+  'APP_REACT_API_URL="mock"',
 ].join('\n');
 
 let envDir: string;
@@ -24,16 +25,17 @@ function writeEnvFile(contents: string, name = '.env') {
   writeFileSync(join(envDir, name), contents);
 }
 
-function load(
-  customEnvVars: Record<string, string | boolean> = {
-    BUNDLER: 'app-vite',
-    MODE: 'production',
-    PROD: true,
-  },
-) {
+function load({
+  devServer = false,
+  customEnvVars = { BUNDLER: 'web-vite', MODE: 'production', PROD: true },
+}: {
+  devServer?: boolean;
+  customEnvVars?: Record<string, string | boolean>;
+} = {}) {
   return loadEnvironmentVariables({
     envDir,
     buildEnvironment: 'staging',
+    devServer,
     customEnvVars,
   });
 }
@@ -62,8 +64,9 @@ describe('loadEnvironmentVariables', () => {
       APP_REACT_TITLE: 'Test App',
       APP_REACT_ENV_FILE: '.env',
       APP_REACT_VERSION: '1.2.3',
+      APP_REACT_API_URL: 'mock',
       BUILD_ENVIRONMENT: 'staging',
-      BUNDLER: 'app-vite',
+      BUNDLER: 'web-vite',
       MODE: 'production',
       PROD: true,
       APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
@@ -93,6 +96,47 @@ describe('loadEnvironmentVariables', () => {
     writeEnvFile(VALID_ENV_FILE);
 
     expect(load().APP_REACT_SENTRY_DSN).toBeUndefined();
+  });
+
+  it('throws saying what to set when APP_REACT_API_URL is missing', () => {
+    writeEnvFile(VALID_ENV_FILE.replace('APP_REACT_API_URL="mock"', ''));
+
+    expect(() => load()).toThrow(
+      /must be "mock" or the API's URL.*\n.*APP_REACT_API_URL/,
+    );
+  });
+
+  it.each(['', 'true', 'not-a-url'])(
+    'throws saying what to set when APP_REACT_API_URL is "%s"',
+    (value) => {
+      process.env.APP_REACT_API_URL = value;
+      writeEnvFile(VALID_ENV_FILE);
+
+      expect(() => load()).toThrow(
+        /must be "mock" or the API's URL.*\n.*APP_REACT_API_URL/,
+      );
+    },
+  );
+
+  it('lets a URL from the shell beat "mock" in the file', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_API_URL).toBe('https://api.example.com');
+  });
+
+  it('drops trailing slashes from APP_REACT_API_URL', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com/v1//';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(load().APP_REACT_API_URL).toBe('https://api.example.com/v1');
+  });
+
+  it('rejects an APP_REACT_API_URL with a query string', () => {
+    process.env.APP_REACT_API_URL = 'https://api.example.com/v1?key=1';
+    writeEnvFile(VALID_ENV_FILE);
+
+    expect(() => load()).toThrow(/must not have a query string or #/);
   });
 
   it('throws when APP_REACT_SENTRY_DSN is not a URL', () => {
@@ -165,16 +209,22 @@ describe('loadEnvironmentVariables', () => {
     writeEnvFile(VALID_ENV_FILE);
 
     expect(() =>
-      load({ BUNDLER: 'app-webpack', MODE: 'production', PROD: true }),
+      load({
+        customEnvVars: {
+          BUNDLER: 'app-webpack',
+          MODE: 'production',
+          PROD: true,
+        },
+      }),
     ).toThrow(/BUNDLER/);
   });
 
   it('throws naming PROD when the bundler does not set it', () => {
     writeEnvFile(VALID_ENV_FILE);
 
-    expect(() => load({ BUNDLER: 'app-vite', MODE: 'production' })).toThrow(
-      /PROD/,
-    );
+    expect(() =>
+      load({ customEnvVars: { BUNDLER: 'web-vite', MODE: 'production' } }),
+    ).toThrow(/PROD/);
   });
 
   it('ignores variables without the prefix', () => {
@@ -244,11 +294,67 @@ describe('loadEnvironmentVariables with BUILD_PROFILE', () => {
   });
 });
 
-describe('packages/app-core/.env.features', () => {
-  const appCoreDir = join(
-    dirname(fileURLToPath(import.meta.url)),
-    '../../../app-core',
-  );
+describe('loadEnvironmentVariables for the dev server', () => {
+  beforeEach(() => {
+    writeEnvFile(VALID_ENV_FILE);
+    writeEnvFile('APP_REACT_ENV_FILE=".env.staging"', '.env.staging');
+    writeEnvFile('APP_REACT_TITLE="Stage local title"', '.env.staging.local');
+    writeEnvFile(
+      'APP_REACT_ENV_FILE=".env.dev-server"\nAPP_REACT_TITLE="Dev server title"',
+      '.env.dev-server',
+    );
+    writeEnvFile('APP_REACT_GUARD_ON="true"', '.env.dev-server.local');
+  });
+
+  it('loads .env.dev-server and its .local twin for the dev server', () => {
+    const variables = load({ devServer: true });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.dev-server');
+    expect(variables.APP_REACT_GUARD_ON).toBe('true');
+  });
+
+  it("lets .env.dev-server beat the stage's .local file", () => {
+    expect(load({ devServer: true }).APP_REACT_TITLE).toBe('Dev server title');
+  });
+
+  it('lets .env.dev-server.local beat .env.dev-server', () => {
+    writeEnvFile(
+      'APP_REACT_ENV_FILE=".env.dev-server.local"',
+      '.env.dev-server.local',
+    );
+
+    expect(load({ devServer: true }).APP_REACT_ENV_FILE).toBe(
+      '.env.dev-server.local',
+    );
+  });
+
+  it('loads neither .env.dev-server nor its twin for a build', () => {
+    const variables = load({ devServer: false });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.staging');
+    expect(variables.APP_REACT_TITLE).toBe('Stage local title');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+  });
+
+  it('loads .env.dev-server but not its twin on a profile', () => {
+    process.env.BUILD_PROFILE = 'bare';
+
+    const variables = load({ devServer: true });
+
+    expect(variables.APP_REACT_ENV_FILE).toBe('.env.dev-server');
+    expect(variables.APP_REACT_GUARD_ON).toBeUndefined();
+  });
+
+  it('lets .env.features beat .env.dev-server on the features profile', () => {
+    process.env.BUILD_PROFILE = 'features';
+    writeEnvFile('APP_REACT_ENV_FILE=".env.features"', '.env.features');
+
+    expect(load({ devServer: true }).APP_REACT_ENV_FILE).toBe('.env.features');
+  });
+});
+
+describe('packages/web/.env.features', () => {
+  const webDir = join(dirname(fileURLToPath(import.meta.url)), '../../../web');
   // Not optional features: computed by the loader, or test switches for pnpm check:env-guards.
   const notFeatures = new Set([
     'GIT_COMMIT',
@@ -263,7 +369,7 @@ describe('packages/app-core/.env.features', () => {
       .filter((key) => !notFeatures.has(key));
 
     const setKeys = Object.entries(
-      dotenvFlow.parse(join(appCoreDir, '.env.features')),
+      dotenvFlow.parse(join(webDir, '.env.features')),
     )
       .filter(([, value]) => value !== '')
       .map(([key]) => key);
@@ -276,9 +382,10 @@ describe('packages/app-core/.env.features', () => {
     process.env.BUILD_PROFILE = 'features';
 
     const variables = loadEnvironmentVariables({
-      envDir: appCoreDir,
+      envDir: webDir,
       buildEnvironment: 'staging',
-      customEnvVars: { BUNDLER: 'app-vite', MODE: 'production', PROD: true },
+      devServer: false,
+      customEnvVars: { BUNDLER: 'web-vite', MODE: 'production', PROD: true },
     });
 
     expect(variables.APP_REACT_SENTRY_TRACES_SAMPLE_RATE).toBe(1);
@@ -289,12 +396,13 @@ describe('packages/app-core/.env.features', () => {
 describe('defineEnvironmentVariables', () => {
   const values = {
     BUILD_ENVIRONMENT: 'staging',
-    BUNDLER: 'app-esbuild',
+    BUNDLER: 'web-esbuild',
     MODE: 'production',
     PROD: false,
     APP_REACT_ENV_FILE: '.env',
     APP_REACT_TITLE: 'Test "App"',
     APP_REACT_VERSION: '1.2.3',
+    APP_REACT_API_URL: 'mock',
     APP_REACT_GUARD_ON: 'true',
     APP_REACT_SENTRY_TRACES_SAMPLE_RATE: 0.1,
   } as const;
@@ -302,7 +410,7 @@ describe('defineEnvironmentVariables', () => {
   it('defines each import.meta.env key as its value in code form', () => {
     expect(defineEnvironmentVariables(values)).toEqual({
       'import.meta.env.BUILD_ENVIRONMENT': '"staging"',
-      'import.meta.env.BUNDLER': '"app-esbuild"',
+      'import.meta.env.BUNDLER': '"web-esbuild"',
       'import.meta.env.MODE': '"production"',
       'import.meta.env.PROD': 'false',
       'import.meta.env.APP_REACT_ENV_FILE': '".env"',
@@ -310,6 +418,7 @@ describe('defineEnvironmentVariables', () => {
       'import.meta.env.APP_REACT_VERSION': '"1.2.3"',
       'import.meta.env.APP_REACT_GUARD_ON': '"true"',
       'import.meta.env.APP_REACT_GUARD_OFF': 'undefined',
+      'import.meta.env.APP_REACT_API_URL': '"mock"',
       'import.meta.env.APP_REACT_SENTRY_DSN': 'undefined',
       'import.meta.env.APP_REACT_SENTRY_TRACES_SAMPLE_RATE': '0.1',
       'import.meta.env.GIT_COMMIT': 'undefined',

@@ -79,15 +79,21 @@ Resources:
           TargetOriginId: !Sub '${ProjectName}-${Environment}-s3-origin'
           ViewerProtocolPolicy: 'redirect-to-https'
           ResponseHeadersPolicyId: !Ref ResponseHeadersPolicy
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt SpaRewriteFunction.FunctionMetadata.FunctionARN
+        # A missing file (deep links never get here: SpaRewriteFunction) is a 404, with index.html as
+        # the body, since CloudFront needs a page for it. S3 answers 403, not 404, for a missing key
+        # when the bucket can't be listed.
         CustomErrorResponses:
           - ErrorCachingMinTTL: 60
             ErrorCode: 404
             ResponseCode: 404
-            ResponsePagePath: '/404.html'
+            ResponsePagePath: '/index.html'
           - ErrorCachingMinTTL: 60
             ErrorCode: 403
-            ResponseCode: 403
-            ResponsePagePath: '/403.html'
+            ResponseCode: 404
+            ResponsePagePath: '/index.html'
         Enabled: true
         HttpVersion: 'http2'
         DefaultRootObject: 'index.html'
@@ -111,6 +117,27 @@ Resources:
           Value: !Ref ProjectName
         - Key: Environment
           Value: !Ref Environment
+
+  # Deep links like /about have no file in S3: serve index.html for any path whose last segment
+  # has no file extension, so the app's router renders it. Paths with an extension pass through,
+  # so a missing asset is still a 404. Limitation: a route whose last segment has a dot
+  # (/users/jane.doe) is treated as a file.
+  SpaRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-spa-rewrite'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: 'Serve index.html for paths without a file extension'
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          if (!/\.[^/]+$/.test(request.uri)) {
+            request.uri = '/index.html';
+          }
+          return request;
+        }
 
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -160,8 +187,9 @@ Resources:
             AccessControlMaxAgeSec: 63072000
             Override: true
           ContentSecurityPolicy:
-            # connect-src: error reporting sends events to Sentry (docs/template/error-reporting.md).
-            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src https://*.sentry.io; object-src 'none'"
+            # connect-src: 'self' for the mocked todo API at /api (docs/template/env.md), Sentry for
+            # error reporting (docs/template/error-reporting.md). Add APP_REACT_API_URL's origin when it is a URL.
+            ContentSecurityPolicy: "default-src 'none'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://*.sentry.io; object-src 'none'"
             Override: true
           ContentTypeOptions:
             Override: true

@@ -68,7 +68,7 @@ function debugStack(caller, file) {
     stack: [
       'Error: react-stack-top-frame',
       '    at exports.jsxDEV (http://localhost:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=0a0ec98b:196:25)',
-      `    at ${caller} (http://localhost:5173/@fs/repo/packages/app-core/src/${file})`,
+      `    at ${caller} (http://localhost:5173/@fs/repo/packages/web/src/${file})`,
       '    at Object.react_stack_bottom_frame (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=a6374596:14139:12)',
     ].join('\n'),
   };
@@ -80,7 +80,7 @@ describe('interaction recorder', () => {
       tag: 0,
       type: { name: 'Header' },
       return: null,
-      _debugStack: debugStack('AppCore', 'index.tsx:23:20'),
+      _debugStack: debugStack('WebApp', 'index.tsx:23:20'),
     };
 
     const [click] = recordClick({
@@ -93,7 +93,7 @@ describe('interaction recorder', () => {
     expect(click?.react).toEqual({
       componentName: 'Header',
       scriptUrl:
-        'http://localhost:5173/@fs/repo/packages/app-core/src/components/Header/index.tsx',
+        'http://localhost:5173/@fs/repo/packages/web/src/components/Header/index.tsx',
       lineNumber: 12,
       columnNumber: 25,
     });

@@ -21,8 +21,9 @@
     "check:audit": "pnpm audit --audit-level=high",
     "check:dependencies": "dotenv -- syncpack lint --dependency-types prod,dev",
     "check:type": "dotenv -- turbo run check:type",
-    "check:size": "dotenv -- turbo run check:size",
-    "check:env-guards": "dotenv -- turbo run check:env-guards",
+    "check:size": "dotenv -- sh -c 'BUILD_PROFILE=\"${BUILD_PROFILE:-bare}\" turbo run check:size \"$@\"' -- ",
+    "check:env-guards": "dotenv -- sh -c 'BUILD_PROFILE=\"${BUILD_PROFILE:-bare}\" turbo run check:env-guards \"$@\"' -- ",
+    "check:page-split": "dotenv -- sh -c 'BUILD_PROFILE=\"${BUILD_PROFILE:-bare}\" turbo run check:page-split \"$@\"' -- ",
     "check:unused": "dotenv -- knip",
     "check:format": "dotenv -- oxfmt --check",
     "check:agents": "pnpm rules:check && rulesync generate --check -t claudecode -f skills,commands && rulesync generate --check -t cursor -f commands,mcp",
@@ -61,19 +62,19 @@
     "dotenv-cli": "11.1.0",
     "husky": "9.1.7",
     "knip": "6.45.1",
-    "lint-staged": "17.6.0",
-    "modern-web-guidance": "1.0.0",
-    "oxfmt": "0.78.0",
-    "oxlint": "1.93.0",
-    "oxlint-tsgolint": "7.0.2006",
-    "rulesync": "43.8.1",
+    "lint-staged": "17.6.1",
+    "modern-web-guidance": "1.0.1",
+    "oxfmt": "0.79.0",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "7.0.2007",
+    "rulesync": "43.9.1",
     "syncpack": "15.3.3",
-    "turbo": "2.11.11",
+    "turbo": "catalog:",
     "typescript": "7.0.2"
   },
   "engines": {
-    "node": ">=26.0.0"
+    "node": ">=24.15.0"
   },
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@12.21.0",
   "name": "turborepo-react-starter"
 }

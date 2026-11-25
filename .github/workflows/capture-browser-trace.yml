@@ -27,7 +27,7 @@ jobs:
       BUILD_ENVIRONMENT: development
       CHROME_HEADLESS: 'true'
       CHROME_DEBUG_PORT: 9222
-      BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'app-vite' }}
+      BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'web-vite' }}
 
     # Only on manual dispatch, or when the owner, a member or a collaborator comments /capture-trace on a PR.
     if: |
@@ -48,7 +48,7 @@ jobs:
       # ── Checkout ─────────────────────────────────────────────────────────────
       # The PR's head commit as it is when the job starts; a push after the comment is traced instead.
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
           persist-credentials: false

@@ -10,9 +10,9 @@ on:
         default: default
         options:
           - default
-          - app-vite
-          - app-rspack
-          - app-esbuild
+          - web-vite
+          - web-rspack
+          - web-esbuild
 
       environment:
         type: choice
@@ -41,13 +41,14 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Log environment
         run: echo "Environment=${{ github.event.inputs.environment }}, Bundler=${{env.BUNDLER}}, BRANCH_NAME=${{ env.BRANCH_NAME }}"
 
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -57,9 +58,11 @@ jobs:
         with:
           build-filter: ${{ env.BUNDLER }}
           build-environment: ${{ env.BUILD_ENVIRONMENT }}
+          api-url: ${{ vars.APP_REACT_API_URL }}
           check-dependencies: 'false'
           check-unused: 'false'
           check-format: 'false'
+          check-route-tree: 'false'
           check-type: 'false'
           run-lint: 'false'
           run-tests: 'false'

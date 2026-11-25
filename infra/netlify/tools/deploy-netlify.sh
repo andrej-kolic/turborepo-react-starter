@@ -19,6 +19,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MONOREPO_ROOT_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 cp "${SCRIPT_DIR}/../_headers" "${MONOREPO_ROOT_DIR}/apps/${BUNDLER}/dist/_headers"
+cp "${SCRIPT_DIR}/../_redirects" "${MONOREPO_ROOT_DIR}/apps/${BUNDLER}/dist/_redirects"
 
 # Before the deploy, so no .map file is ever published: see docs/template/error-reporting.md.
 pnpm --dir "${MONOREPO_ROOT_DIR}" exec dev-tools-sentry-sourcemaps "${MONOREPO_ROOT_DIR}/apps/${BUNDLER}/dist"

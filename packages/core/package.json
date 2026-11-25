@@ -1,0 +1,31 @@
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./mocks/handlers": "./src/mocks/handlers.ts",
+    "./mocks/browser": "./src/mocks/msw-browser.ts",
+    "./mocks/node": "./src/mocks/msw-node.ts"
+  },
+  "scripts": {
+    "lint": "oxlint --type-aware",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:type": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@msw/data": "1.1.9",
+    "msw": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "vitest": "catalog:"
+  }
+}

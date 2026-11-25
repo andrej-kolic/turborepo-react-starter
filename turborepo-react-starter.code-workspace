@@ -5,20 +5,20 @@
 			"path": "."
 		},
 		{
-			"name": "🚀 app-esbuild",
-			"path": "apps/app-esbuild"
-		},
-		{
-			"name": "🚀 app-vite",
-			"path": "apps/app-vite"
-		},
-		{
-			"name": "🚀 app-rspack",
-			"path": "apps/app-rspack"
-		},
-		{
 			"name": "🚀 ui-storybook",
 			"path": "apps/ui-storybook"
+		},
+		{
+			"name": "🚀 web-esbuild",
+			"path": "apps/web-esbuild"
+		},
+		{
+			"name": "🚀 web-rspack",
+			"path": "apps/web-rspack"
+		},
+		{
+			"name": "🚀 web-vite",
+			"path": "apps/web-vite"
 		},
 		{
 			"name": "🛠️ @repo/infra-aws",
@@ -29,10 +29,6 @@
 			"path": "infra/netlify"
 		},
 		{
-			"name": "📦 @repo/app-core",
-			"path": "packages/app-core"
-		},
-		{
 			"name": "📦 @repo/browser-capture",
 			"path": "packages/browser-capture"
 		},
@@ -41,8 +37,16 @@
 			"path": "packages/browser-tools"
 		},
 		{
+			"name": "📦 @repo/client-types",
+			"path": "packages/client-types"
+		},
+		{
 			"name": "📦 @repo/commons",
 			"path": "packages/commons"
+		},
+		{
+			"name": "📦 @repo/core",
+			"path": "packages/core"
 		},
 		{
 			"name": "📦 @repo/dev-tools",
@@ -63,6 +67,10 @@
 		{
 			"name": "📦 @repo/ui",
 			"path": "packages/ui"
+		},
+		{
+			"name": "📦 @repo/web",
+			"path": "packages/web"
 		}
 	],
 	"settings": {

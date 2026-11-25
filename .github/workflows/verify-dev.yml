@@ -29,7 +29,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Read @playwright/test from the pnpm catalog
         id: version
@@ -39,12 +39,12 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
   smoke-test:
-    name: Smoke test (${{ matrix.bundler }})
+    name: E2E smoke test (${{ matrix.bundler }})
     needs: playwright-version
     strategy:
       fail-fast: false
       matrix:
-        bundler: [app-vite, app-rspack, app-esbuild]
+        bundler: [web-vite, web-rspack, web-esbuild]
     timeout-minutes: 15
     runs-on: ubuntu-latest
     container:
@@ -56,14 +56,14 @@ jobs:
     env:
       # pnpm dev:app and dev-tools-app-target both read it.
       BUNDLER: ${{ matrix.bundler }}
-      # The e2e script needs a profile. The dev server reads it too: with any profile it loads no .local env file.
+      # With any profile, the dev server loads no .local env file.
       BUILD_PROFILE: bare
       # On CI, Turbo holds a task's output until it exits, so a dev server that never exits logs nothing.
       TURBO_LOG_ORDER: stream
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup
         uses: ./.github/actions/setup

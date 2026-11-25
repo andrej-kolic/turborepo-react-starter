@@ -1,6 +1,6 @@
 ---
 paths:
-  - packages/app-core/**/*.tsx
+  - packages/web/**/*.tsx
   - packages/ui/**/*.tsx
 ---
 # Component validation contract

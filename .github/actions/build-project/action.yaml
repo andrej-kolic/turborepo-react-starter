@@ -1,5 +1,5 @@
 name: 'Build Project'
-description: "Checks the code, builds one app, then checks the build's size and env guards"
+description: "Checks the code, builds one app, then checks the build's size, env guards and page split"
 
 inputs:
   run-build:
@@ -19,6 +19,11 @@ inputs:
 
   check-format:
     description: 'Run format check (pnpm check:format)'
+    required: false
+    default: 'true'
+
+  check-route-tree:
+    description: 'Fail when the committed web route tree (routeTree.gen.ts) differs from a fresh generate'
     required: false
     default: 'true'
 
@@ -43,12 +48,16 @@ inputs:
     default: 'true'
 
   build-filter:
-    description: 'Build filter for specific packages/apps (e.g., app-vite)'
+    description: 'Build filter for specific packages/apps (e.g., web-vite)'
     required: false
 
   build-environment:
     description: 'Build environment (development, staging, production)'
     required: true
+
+  api-url:
+    description: "The todo API's URL, or 'mock' (docs/template/env.md); empty leaves it to the env files"
+    required: false
 
 runs:
   using: 'composite'
@@ -61,6 +70,7 @@ runs:
         echo "Check dependencies: ${{ inputs.check-dependencies }}"
         echo "Check unused: ${{ inputs.check-unused }}"
         echo "Check format: ${{ inputs.check-format }}"
+        echo "Check route tree: ${{ inputs.check-route-tree }}"
         echo "Run lint: ${{ inputs.run-lint }}"
         echo "Run tests: ${{ inputs.run-tests }}"
         echo "Check type: ${{ inputs.check-type }}"
@@ -81,21 +91,37 @@ runs:
       if: inputs.check-unused == 'true'
       shell: bash
       # knip loads packages/e2e/playwright.config.ts, which needs BUNDLER set; any bundler works.
-      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=app-vite pnpm check:unused
+      run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} BUNDLER=web-vite pnpm check:unused
 
     - name: Check format
       if: inputs.check-format == 'true'
       shell: bash
       run: BUILD_ENVIRONMENT=${{ inputs.build-environment }} pnpm check:format
 
-    - name: Build and run quality checks
+    - name: Check route tree
+      if: inputs.check-route-tree == 'true'
       shell: bash
       run: |
+        pnpm --filter @repo/web generate:routes
+        # git diff ignores untracked files, so first fail when the tree is not committed at all
+        git ls-files --error-unmatch packages/web/src/routeTree.gen.ts
+        git diff --exit-code packages/web/src/routeTree.gen.ts
+
+    - name: Build and run quality checks
+      shell: bash
+      env:
+        API_URL: ${{ inputs.api-url }}
+      run: |
+        # Set only when it has a value: an empty one would beat the env files and fail the build.
+        if [ -n "$API_URL" ]; then
+          export APP_REACT_API_URL="$API_URL"
+        fi
+
         TASKS=""
 
-        # The build and the checks that run on it: env guards always, size when asked.
+        # The build and the checks that run on it: env guards and page split always, size when asked.
         if [ "${{ inputs.run-build }}" = "true" ]; then
-          TASKS="build check:env-guards"
+          TASKS="build check:env-guards check:page-split"
           if [ "${{ inputs.check-size }}" = "true" ]; then
             TASKS="$TASKS check:size"
           fi

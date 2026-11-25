@@ -1,0 +1,3 @@
+# Copied into the build output at deploy. Paths with no file (deep links like /about) get
+# index.html with status 200, so the app's router renders them. Existing files are served first.
+/*  /index.html  200
