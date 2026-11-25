@@ -23,7 +23,7 @@ type BuildProfile = (typeof BUILD_PROFILES)[number];
  *
  * @throws Error when `BUILD_PROFILE` names no profile
  */
-function readBuildProfile(): BuildProfile | undefined {
+export function readBuildProfile(): BuildProfile | undefined {
   const value = process.env.BUILD_PROFILE;
   if (!value) return undefined;
   const profile = BUILD_PROFILES.find((name) => name === value);

@@ -12,7 +12,7 @@ The dev server, `pnpm build:app` and deploys take no profile: they load the `.lo
 | ---------- | ---------------------------------------------------------------------------------- | ---------------------- |
 | `bare`     | `.env`, `.env.<BUILD_ENVIRONMENT>`                                                 | all except `@features` |
 | `features` | `.env`, `.env.<BUILD_ENVIRONMENT>`, `.env.features` (fake values)                  | all                    |
-| none       | `.env`, `.env.local`, `.env.<BUILD_ENVIRONMENT>`, `.env.<BUILD_ENVIRONMENT>.local` | won't run              |
+| none       | `.env`, `.env.local`, `.env.<BUILD_ENVIRONMENT>`, `.env.<BUILD_ENVIRONMENT>.local` | none: E2E uses `bare`  |
 
 The files are in `packages/web/`. A dev server on a profile, as in `verify-dev.yml` on `bare`, also loads `.env.dev-server` after `.env.<BUILD_ENVIRONMENT>`, without its `.local` twin. Shell and CI variables still win over every file.
 

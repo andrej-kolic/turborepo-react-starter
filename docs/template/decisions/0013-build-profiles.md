@@ -14,7 +14,7 @@ Optional features are switched on by env values, such as `APP_REACT_SENTRY_DSN` 
 - Only `features` has a committed file, `packages/web/.env.features`. A unit test fails when the env schema gains an optional key that the file doesn't set, so a new feature can't go untested.
 - Every check gets its build from Turbo, which caches each profile's build separately (`BUILD_PROFILE` is in `globalEnv`), after each app empties its `dist/` ([0018](0018-clear-dist-before-build.md)): `check:env-guards` became a per-app task after `build`, like `check:size`, and E2E starts `pnpm preview:app` through Playwright's [`webServer`](https://playwright.dev/docs/test-webserver), never reusing a running preview.
 - E2E stays out of the Turbo graph: as a Turbo task ([Turborepo's Playwright guide](https://turborepo.dev/docs/guides/tools/playwright)) it would depend on, and build, all three apps, while CI tests one ([0003](0003-e2e-on-preview-build.md)).
-- Playwright has one project per profile; `bare` leaves out tests tagged `@features`. The `e2e` script in `packages/e2e/package.json` fails without `BUILD_PROFILE` and runs its project. Not in `playwright.config.ts`: knip loads that config with only `BUNDLER` set.
+- Playwright has one project per profile; `bare` leaves out tests tagged `@features`. `BUILD_PROFILE` picks the project, and `packages/e2e/playwright.config.ts` builds the preview with the same profile, so the tests match the build. Without `BUILD_PROFILE` both are `bare`, so plain `pnpm e2e` works. `bare` is the default because its tests pass on either build, which matters with `TARGET_URL`, where the build already exists. The config must not require `BUILD_PROFILE`: knip loads it with only `BUNDLER` set.
 - CI: `Verify: Build` runs one job per bundler and profile; each builds, checks size and env guards, and runs Playwright on that build. Check workflows no longer pass the repo's DSN: an empty repo variable is `""`, which would win over `.env.features`. Deploys take no profile and keep it.
 
 ## Rejected
@@ -24,6 +24,8 @@ Optional features are switched on by env values, such as `APP_REACT_SENTRY_DSN` 
 - Loading `.env.features` with dotenv-cli before `turbo run`: it would skip `pnpm --filter <app> build`.
 - Narrowing `check:env-guards` to `$BUNDLER`'s app: the script can't see `BUNDLER`. Recording the profile in `dist/`: adds code to all three bundlers.
 - dotenv-flow's `listFiles()`: its README calls it internal.
+- Setting E2E's default profile in the `e2e` script: `playwright test` run directly skips that script. It would run both profiles' tests on a single build, one made with the developer's `.env.local`.
+- Plain `pnpm e2e` running both profiles: they share `dist/` and the preview port, so it would be two runs, one after the other. `--ui` would open twice. With `TARGET_URL` there is only one build, and the `features` tests fail on a `bare` one.
 
 ## Consequences
 

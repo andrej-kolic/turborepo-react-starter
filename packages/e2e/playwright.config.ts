@@ -1,8 +1,13 @@
 import { resolve } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
+import { readBuildProfile } from '@repo/dev-tools/config/environment';
 import { resolvePreviewAppTarget } from './lib/resolve-preview-target';
 
 const target = resolvePreviewAppTarget();
+
+// The default is set here, not in the `e2e` script, because `playwright test` run directly skips that script:
+// it would run both profiles' tests on a single build, one made with the developer's `.env.local`.
+const profile = readBuildProfile() ?? 'bare';
 
 export default defineConfig({
   testDir: './tests',
@@ -16,7 +21,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  // One project per build profile (docs/template/build-profiles.md); the `e2e` script picks BUILD_PROFILE's.
+  // One project per build profile (docs/template/build-profiles.md); only the chosen profile's is defined.
   projects: [
     {
       name: 'bare',
@@ -27,14 +32,15 @@ export default defineConfig({
       name: 'features',
       use: { ...devices['Desktop Chrome'] },
     },
-  ],
-  // Builds the BUNDLER app with BUILD_PROFILE and serves it: Turbo's `preview` depends on `build`.
+  ].filter(({ name }) => name === profile),
+  // Builds the BUNDLER app with that profile and serves it: Turbo's `preview` depends on `build`.
   // Never an already running preview, which may be another profile's build. TARGET_URL means a preview is up.
   webServer: process.env.TARGET_URL
     ? undefined
     : {
         command: 'pnpm preview:app',
         cwd: resolve(import.meta.dirname, '../..'),
+        env: { BUILD_PROFILE: profile },
         url: target.url,
         reuseExistingServer: false,
         timeout: 300_000,
