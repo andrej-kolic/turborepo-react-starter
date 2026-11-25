@@ -4,8 +4,6 @@
  * It knows how to find the pages' parts (header, cards, error screens) and how to do what a test needs
  * (open a page, click "Throw error" or "Throw app error", switch the tab away), so each test calls `appPage.throwDemoError()`
  * instead of repeating how to find that button.
- *
- * Used by `tests/app.spec.ts` and `tests/web-vitals.spec.ts`.
  */
 
 import {

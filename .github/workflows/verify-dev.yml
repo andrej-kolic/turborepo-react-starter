@@ -93,7 +93,7 @@ jobs:
           retention-days: 30
           if-no-files-found: ignore
 
-  # Required by the "Protect develop and main" ruleset. GitHub counts a skipped job as passed,
+  # Required by the "Protect main" ruleset. GitHub counts a skipped job as passed,
   # so this runs even when a job above failed, and fails unless every one of them succeeded.
   all-passed:
     name: All dev servers passed

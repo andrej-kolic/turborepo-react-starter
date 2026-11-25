@@ -23,7 +23,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@repo/client-types": "workspace:*",
     "@sentry/cli": "3.8.2",

@@ -1,6 +1,6 @@
 # Every check runs on two build profiles, bare and features
 
-- Status: accepted
+- Status: accepted; changed on 2026-11-25 (#205): Playwright makes its own builds in CI, [0021](0021-e2e-mocks-the-api.md)
 - Date: 2026-11-17
 
 ## Context
@@ -16,7 +16,7 @@ Optional features are switched on by env values, such as `APP_REACT_SENTRY_DSN` 
 - E2E stays out of the Turbo graph: as a Turbo task ([Turborepo's Playwright guide](https://turborepo.dev/docs/guides/tools/playwright)) it would depend on, and build, all three apps, while each CI job tests one ([0003](0003-e2e-on-preview-build.md)).
 - Playwright has one project per profile; `bare` leaves out tests tagged `@features`. `BUILD_PROFILE` picks the project, and `packages/e2e/playwright.config.ts` builds the preview with the same profile, so the tests match the build. Without `BUILD_PROFILE` both are `bare`, so plain `pnpm e2e` works. `bare` is the default because its tests pass on either build, which matters with `TARGET_URL`, where the build already exists. The config must not require `BUILD_PROFILE`: knip loads it with only `BUNDLER` set.
 - Without `BUILD_PROFILE`, the root scripts `check:size`, `check:env-guards` and `check:page-split` run on `bare`, like `pnpm e2e`. Deploy workflows don't use these scripts: they call `pnpm turbo check:env-guards check:page-split`, which sets no profile, so they check the build they ship.
-- CI: `Verify: Build` runs one job per bundler and profile; each builds, checks size and env guards, and runs Playwright on that build. Check workflows no longer pass the repo's DSN: an empty repo variable is `""`, which would win over `.env.features`. Deploys take no profile and keep it.
+- CI: `Verify: Build` runs one job per bundler and profile; each builds the app and checks its size and env guards. Then Playwright builds the app again for its tests. Check workflows no longer pass the repo's DSN: an empty repo variable is `""`, which would win over `.env.features`. Deploys take no profile and keep it.
 
 ## Rejected
 

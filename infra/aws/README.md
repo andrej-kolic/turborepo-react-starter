@@ -346,4 +346,4 @@ To change the Response Header Policy of the site:
 
 ## License Summary
 
-This project is licensed under the Apache-2.0 License.
+This folder is based on the AWS sample above and is licensed under [Apache-2.0](LICENSE); see also [NOTICE](NOTICE).

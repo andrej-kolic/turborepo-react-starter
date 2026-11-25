@@ -13,7 +13,7 @@ Frontend-only **pnpm + Turborepo** monorepo (`turborepo-react-starter`). The mai
 - Extend `@repo/typescript-config` and `@repo/oxlint-config`.
 - An external dependency used by two or more packages gets its version in the `pnpm-workspace.yaml` catalog and `catalog:` in each `package.json`. One used by a single package is pinned in that package, unless it must match a catalog entry's version (`@playwright/test` matches `playwright-core`, `turbo` matches `@turbo/gen`).
 - Quality loop: `pnpm lint` · `pnpm test` · `pnpm check:type` · `pnpm check:unused` · `pnpm check:agents` · `pnpm quality-checks`
-- Commit messages and PR titles: Conventional Commits, subject starts lowercase, header at most 72 characters (aim for 50). Enforced by the `commit-msg` hook and the `Verify: Commits` workflow (PRs, and pushes to `develop`/`main`); rules in `commitlint.config.js`.
+- Commit messages and PR titles: Conventional Commits, subject starts lowercase, header at most 72 characters (aim for 50). Enforced by the `commit-msg` hook and the `Verify: Commits` workflow (PRs, and pushes to `main`); rules in `commitlint.config.js`.
 
 ## Environment file
 
@@ -79,7 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
 - Test: `pnpm test` (unit only — E2E is separate)
-- E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
+- E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview; `APP_REACT_API_URL=mock pnpm e2e` tests the mock inside the app (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `pnpm check:size` for the `bare` profile, `BUILD_PROFILE=features pnpm check:size` for `features`
 - Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `pnpm check:env-guards` for the `bare` profile, `BUILD_PROFILE=features pnpm check:env-guards` for `features`, see [`docs/template/env.md`](docs/template/env.md)

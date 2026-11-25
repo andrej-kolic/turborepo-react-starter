@@ -4,7 +4,7 @@ Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check
 
 `BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
-Both profiles ship the mocked todo API, `bare` included, while `packages/web/.env` has `APP_REACT_API_URL="mock"`, with MSW in its own file ([env.md](env.md#the-mocked-api)).
+Both profiles ship the mocked todo API, `bare` included, while `packages/web/.env` has `APP_REACT_API_URL="mock"`, with MSW in its own file ([env.md](env.md#the-mocked-api)). E2E is the exception: it builds both with a placeholder API address, so without the mock, except in the `APP_REACT_API_URL=mock` run ([e2e.md](e2e.md#run-locally)).
 
 The dev server, `pnpm build:app` and deploys take no profile: they load the `.local` files and your real values, and the dev server also loads `.env.dev-server` ([env.md](env.md#which-env-files-load)). A deploy workflow checks env guards and page split on the build it ships, so there they take no profile either.
 
@@ -30,7 +30,7 @@ BUILD_PROFILE=bare pnpm build:app             # or preview:app, to look at one b
 
 Each check builds first through Turbo, which caches each profile's build separately. Each app empties its `dist/` before its build ([0018](decisions/0018-clear-dist-before-build.md)), so a check never runs on a leftover build of the other profile. On `features`, `check:size` and `check:env-guards` fail if Sentry's code is missing from the build. How to run E2E: [e2e.md](e2e.md).
 
-CI runs each check once per profile: `Verify: Build` has a `Build + E2E (<bundler>, <profile>)` job for every bundler and profile, which builds, checks size and env guards, and runs the full E2E suite on that build's preview.
+CI runs each check once per profile: `Verify: Build` has a `Build + E2E (<bundler>, <profile>)` job for every bundler and profile, which builds, checks size and env guards, and runs the full E2E suite, for which it builds again with the placeholder API address, then the `@in-app-mock` test on a third build, with the mock inside.
 
 ## Add an optional feature
 
