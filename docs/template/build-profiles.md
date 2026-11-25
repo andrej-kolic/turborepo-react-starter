@@ -1,12 +1,12 @@
 # Build profiles
 
-Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check:env-guards`, which run on both profiles, and the `Verify: Perf` workflow, which runs on `bare` only. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
+Build profiles exist only for checks: `pnpm e2e`, `pnpm check:size`, `pnpm check:env-guards` and `pnpm check:page-split`, which run on both profiles, and the `Verify: Perf` workflow, which runs on `bare` only. A profile makes a check build the app the same way on every machine and never read a developer's secrets. Before profiles, a check built whatever was in your `.env.local`: E2E sent events to your real Sentry project, and CI, which had no DSN, never tested Sentry at all. Why this design: [`decisions/0013-build-profiles.md`](decisions/0013-build-profiles.md).
 
 `BUILD_PROFILE` names one of two builds: `bare`, with no optional features, as a fork ships it, and `features`, with every optional feature on with fake values. Running a check on both checks every feature off and on.
 
 Both profiles ship the mocked todo API, `bare` included, while `packages/web/.env` has `APP_REACT_API_URL="mock"`, with MSW in its own file ([env.md](env.md#the-mocked-api)).
 
-The dev server, `pnpm build:app` and deploys take no profile: they load the `.local` files and your real values, and the dev server also loads `.env.dev-server` ([env.md](env.md#which-env-files-load)).
+The dev server, `pnpm build:app` and deploys take no profile: they load the `.local` files and your real values, and the dev server also loads `.env.dev-server` ([env.md](env.md#which-env-files-load)). A deploy workflow checks env guards and page split on the build it ships, so there they take no profile either.
 
 | Profile    | Env files the build loads                                                          | E2E tests              |
 | ---------- | ---------------------------------------------------------------------------------- | ---------------------- |
@@ -18,12 +18,13 @@ The files are in `packages/web/`. A dev server on a profile, as in `verify-dev.y
 
 ## Run a check on a profile
 
-Set `BUILD_PROFILE` for the one command, never in `.env`: there it would also reach `pnpm deploy:aws` and ship the fake values.
+Without `BUILD_PROFILE`, the four `pnpm` checks run on `bare`. Set it for the one command, never in `.env`: there it would also reach `pnpm deploy:aws` and ship the fake values.
 
 ```bash
 BUILD_PROFILE=features pnpm e2e               # builds BUNDLER's app, serves its preview, runs the tests
 BUILD_PROFILE=features pnpm check:size        # builds every bundler app first
 BUILD_PROFILE=features pnpm check:env-guards  # the same
+BUILD_PROFILE=features pnpm check:page-split  # the same
 BUILD_PROFILE=bare pnpm build:app             # or preview:app, to look at one build
 ```
 
