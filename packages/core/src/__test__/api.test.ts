@@ -153,4 +153,37 @@ describe('resetTodos', () => {
       '3',
     ]);
   });
+
+  it('replaces the samples with the given todos, and adds new ones after them', async () => {
+    await resetTodos([
+      {
+        id: '7',
+        title: 'Book flights',
+        is_done: true,
+        created_at: '2026-11-20T10:00:00.000Z',
+      },
+    ]);
+    await createTodo(BASE_URL, 'Pack');
+
+    expect(
+      (await getTodos(BASE_URL)).map(({ id, title }) => [id, title]),
+    ).toEqual([
+      ['7', 'Book flights'],
+      ['8', 'Pack'],
+    ]);
+  });
+
+  it('leaves no todos when given an empty list', async () => {
+    await resetTodos([]);
+
+    expect(await getTodos(BASE_URL)).toEqual([]);
+  });
+
+  it("rejects a todo that does not match the API's format", async () => {
+    await expect(
+      resetTodos([
+        { id: '1', title: 'Pack', is_done: false, created_at: 'yesterday' },
+      ]),
+    ).rejects.toThrow('Failed to execute "createMany"');
+  });
 });

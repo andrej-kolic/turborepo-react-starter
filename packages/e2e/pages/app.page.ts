@@ -5,7 +5,7 @@
  * (open a page, click "Throw error" or "Throw app error", switch the tab away), so each test calls `appPage.throwDemoError()`
  * instead of repeating how to find that button.
  *
- * Used by `tests/app.spec.ts` and `tests/web-vitals.spec.ts`.
+ * Used by `tests/app.spec.ts`, `tests/sentry-blocked.spec.ts`, `tests/todos.spec.ts` and `tests/web-vitals.spec.ts`.
  */
 
 import {

@@ -1,6 +1,6 @@
 # Playwright E2E runs on the production preview build
 
-- Status: accepted; changed on 2026-11-25 (#213): CI runs the full suite on every bundler, not only on one
+- Status: accepted; changed on 2026-11-25 (#213): CI runs the full suite on every bundler, not only on one; and (#205): the tests mock the API, [0021](0021-e2e-mocks-the-api.md)
 - Date: 2026-06-24
 
 ## Context

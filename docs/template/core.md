@@ -25,7 +25,7 @@
 
 4. **Export** the functions and the model type from [`src/index.ts`](../../packages/core/src/index.ts), never the DTO.
 
-5. **Mocked API**: add handlers for the endpoints to `createHandlers(baseUrl)` in [`mocks/handlers.ts`](../../packages/core/src/mocks/handlers.ts), storing records in an `@msw/data` collection made from the DTO schema. Reply 400 to a body the schema rejects, 404 to an unknown id.
+5. **Mocked API**: add handlers for the endpoints to `createHandlers(baseUrl)` in [`mocks/handlers.ts`](../../packages/core/src/mocks/handlers.ts), storing records in an `@msw/data` collection made from the DTO schema. Reply 400 to a body the schema rejects, 404 to an unknown id. The E2E tests use the same handlers, so also reset the new records in `network` in [`fixtures/app-target.ts`](../../packages/e2e/fixtures/app-target.ts).
 
 6. **Unit tests** in `src/__test__/`, against `createServer('http://localhost/api')` from `mocks/node`, resetting the mock's data before each test. Example: [`__test__/api.test.ts`](../../packages/core/src/__test__/api.test.ts).
 

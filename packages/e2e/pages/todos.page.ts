@@ -2,7 +2,7 @@
  * Shared helper for the E2E tests of the todo and settings pages: finds their parts and does what a test needs
  * (open a page by its link, add, check off or delete a todo, change a setting).
  *
- * Used by `tests/todos.spec.ts`.
+ * Used by `tests/todos.spec.ts`, `tests/mocked-api.spec.ts` and `tests/in-app-mock.spec.ts`.
  */
 
 import type { Locator, Page, Response } from '@playwright/test';

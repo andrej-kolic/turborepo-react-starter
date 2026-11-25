@@ -1,5 +1,6 @@
 # Every production build, checked and opened in a browser: 3 bundlers × 2 build profiles, plus Storybook.
-# Each app job builds once, checks env guards and bundle size, then runs the full E2E suite on that build's preview.
+# Each app job builds, checks env guards and bundle size, then runs the E2E tests on previews Playwright builds:
+# one with no mock inside for the full suite, one with it for the @in-app-mock test (docs/template/e2e.md).
 # Profiles: docs/template/build-profiles.md.
 # No Sentry DSN from the repo: features has its own fake one, and an empty value would override it.
 
@@ -58,7 +59,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    # The same env for the build and for Playwright's preview, so the preview reuses Turbo's cached build.
+    # For the checked build and for Playwright's own, which differ only in APP_REACT_API_URL.
     env:
       BUNDLER: ${{ matrix.bundler }}
       BUILD_PROFILE: ${{ matrix.profile }}
@@ -80,9 +81,12 @@ jobs:
           run-lint: 'false'
           run-tests: 'false'
 
-      # Playwright starts the preview first (webServer in packages/e2e/playwright.config.ts).
+      # Playwright builds and starts the preview first (webServer in packages/e2e/playwright.config.ts).
       - name: Run E2E tests
         run: pnpm e2e
+
+      - name: Run the E2E test of the mock inside the app
+        run: APP_REACT_API_URL=mock pnpm e2e
 
       # Attempt in the name: a re-run of a failed job would otherwise hit a
       # name conflict, since artifact names are unique per workflow run.

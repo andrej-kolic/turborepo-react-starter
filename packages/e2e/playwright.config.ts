@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 import { readBuildProfile } from '@repo/dev-tools/config/environment';
+import { API_URL, IN_APP_MOCK } from './lib/api-url';
 import { resolvePreviewAppTarget } from './lib/resolve-preview-target';
 
 const target = resolvePreviewAppTarget();
@@ -8,6 +9,10 @@ const target = resolvePreviewAppTarget();
 // The default is set here, not in the `e2e` script, because `playwright test` run directly skips that script:
 // it would run both profiles' tests on a single build, one made with the developer's `.env.local`.
 const profile = readBuildProfile() ?? 'bare';
+
+// A build with the mock inside the app gets only the tests of that mock, every other build all the rest.
+const only = IN_APP_MOCK ? /@in-app-mock/ : /.*/;
+const never = IN_APP_MOCK ? [] : [/@in-app-mock/];
 
 export default defineConfig({
   testDir: './tests',
@@ -25,22 +30,25 @@ export default defineConfig({
   projects: [
     {
       name: 'bare',
-      grepInvert: /@features/,
+      grep: only,
+      grepInvert: [...never, /@features/],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'features',
+      grep: only,
+      grepInvert: never,
       use: { ...devices['Desktop Chrome'] },
     },
   ].filter(({ name }) => name === profile),
-  // Builds the BUNDLER app with that profile and serves it: Turbo's `preview` depends on `build`.
+  // Builds the BUNDLER app with that profile and API address, and serves it: Turbo's `preview` depends on `build`.
   // Never an already running preview, which may be another profile's build. TARGET_URL means a preview is up.
   webServer: process.env.TARGET_URL
     ? undefined
     : {
         command: 'pnpm preview:app',
         cwd: resolve(import.meta.dirname, '../..'),
-        env: { BUILD_PROFILE: profile },
+        env: { BUILD_PROFILE: profile, APP_REACT_API_URL: API_URL },
         url: target.url,
         reuseExistingServer: false,
         timeout: 300_000,
