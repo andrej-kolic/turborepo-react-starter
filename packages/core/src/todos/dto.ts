@@ -1,6 +1,6 @@
 /**
- * The todo API's JSON format, checked on every response. Used by `api.ts` and by the mocked API;
- * not exported from the package: callers get `Todo` models.
+ * The todo API's JSON format, checked on every response. Not exported from the package: callers
+ * get `Todo` models.
  */
 
 import * as z from 'zod';
