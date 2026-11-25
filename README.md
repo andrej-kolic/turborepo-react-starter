@@ -61,3 +61,7 @@ Docs about the starter itself live in `docs/template/`. The rest of `docs/` is f
 - [`docs/template/decisions/`](docs/template/decisions/): why the repo works the way it does
 - [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): Chrome, page-check and capture commands (`pnpm chrome:debug`, `pnpm browser`, `pnpm capture`) and their flags
 - [`AGENTS.md`](AGENTS.md): instructions for AI agents
+
+## License
+
+[MIT](LICENSE), except `infra/aws`, which is based on an AWS sample and stays under [Apache-2.0](infra/aws/LICENSE).
