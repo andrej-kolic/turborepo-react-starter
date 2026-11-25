@@ -62,6 +62,12 @@ Docs about the starter itself live in `docs/template/`. The rest of `docs/` is f
 - [`packages/browser-tools/README.md`](packages/browser-tools/README.md), [`packages/browser-capture/README.md`](packages/browser-capture/README.md): Chrome, page-check and capture commands (`pnpm chrome:debug`, `pnpm browser`, `pnpm capture`) and their flags
 - [`AGENTS.md`](AGENTS.md): instructions for AI agents
 
+## Contributing
+
+Issues and pull requests are welcome: see [`CONTRIBUTING.md`](CONTRIBUTING.md). Report security problems as described in [`SECURITY.md`](SECURITY.md).
+
 ## License
 
 [MIT](LICENSE), except `infra/aws`, which is based on an AWS sample and stays under [Apache-2.0](infra/aws/LICENSE).
+
+In a project you build from this starter, add your own copyright line to `LICENSE` (MIT requires keeping the existing one), and replace the contact in `CODE_OF_CONDUCT.md` and the link in `SECURITY.md`.
