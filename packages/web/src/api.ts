@@ -1,5 +1,8 @@
 /**
- * The todo API's base URL, passed to every `@repo/core` API function. Without `APP_REACT_API_URL`,
- * `/api` on the app's own address, which the mocked API answers (`startMockApi` in `optional-features.ts`).
+ * The todo API's base URL, passed to every `@repo/core` API function: `APP_REACT_API_URL`, or `/api`
+ * on the app's own address when that is "mock", which the mocked API answers (`optional-features.ts`).
  */
-export const apiBaseUrl = import.meta.env.APP_REACT_API_URL ?? '/api';
+export const apiBaseUrl =
+  import.meta.env.APP_REACT_API_URL === 'mock'
+    ? '/api'
+    : import.meta.env.APP_REACT_API_URL;

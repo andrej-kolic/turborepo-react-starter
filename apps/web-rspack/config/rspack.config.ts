@@ -15,7 +15,7 @@ const pkg = _require('../package.json') as {
 
 const { webPublic, webEnvDir } = createPaths(import.meta.url);
 const distPath = path.resolve('dist');
-// The module startMockApi() loads in @repo/web.
+// The mocked API's module, which @repo/web imports when APP_REACT_API_URL is "mock".
 const MSW_ENTRY = /[\\/]core[\\/]src[\\/]mocks[\\/]msw-browser\.ts$/;
 
 const debuglog = util.debuglog('web-rspack');

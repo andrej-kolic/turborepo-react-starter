@@ -55,6 +55,10 @@ inputs:
     description: 'Build environment (development, staging, production)'
     required: true
 
+  api-url:
+    description: "The todo API's URL, or 'mock' (docs/template/env.md); empty leaves it to the env files"
+    required: false
+
 runs:
   using: 'composite'
 
@@ -105,7 +109,14 @@ runs:
 
     - name: Build and run quality checks
       shell: bash
+      env:
+        API_URL: ${{ inputs.api-url }}
       run: |
+        # Set only when it has a value: an empty one would beat the env files and fail the build.
+        if [ -n "$API_URL" ]; then
+          export APP_REACT_API_URL="$API_URL"
+        fi
+
         TASKS=""
 
         # The build and the checks that run on it: env guards and page split always, size when asked.

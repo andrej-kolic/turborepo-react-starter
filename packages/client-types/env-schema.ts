@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 // TODO: extract into its own package (e.g. @repo/env-schema) when the React Native app needs it without the web asset types.
 
+const API_URL_MESSAGE =
+  'must be "mock" or the API\'s URL: see docs/template/env.md#the-mocked-api';
+
 /**
  * Shape of the `import.meta.env` values the bundlers inject into the app.
  * Strict: an `APP_REACT_*` variable missing from here fails the build, so add new ones here first.
@@ -33,18 +36,20 @@ export const environmentSchema = z.strictObject({
   APP_REACT_GUARD_ON: z.literal('true').optional(),
   APP_REACT_GUARD_OFF: z.literal('true').optional(),
 
-  // The todo API's base URL. Unset or empty serves the mocked API in the browser instead; see docs/template/env.md.
+  // The todo API's base URL, or "mock" to run the mocked API in the browser (docs/template/env.md#the-mocked-api).
   // Trailing slashes are dropped: the API functions append paths that start with one.
   APP_REACT_API_URL: z
-    .union([
-      z.url().refine((url) => !/[?#]/.test(url), {
-        message:
-          'must not have a query string or #: the API functions append paths to it',
-      }),
-      z.literal(''),
-    ])
-    .transform((value) => value.replace(/\/+$/, '') || undefined)
-    .optional(),
+    .union(
+      [
+        z.literal('mock'),
+        z.url(API_URL_MESSAGE).refine((url) => !/[?#]/.test(url), {
+          message:
+            'must not have a query string or #: the API functions append paths to it',
+        }),
+      ],
+      API_URL_MESSAGE,
+    )
+    .transform((value) => value.replace(/\/+$/, '')),
 
   // Unset turns error reporting off; see docs/template/error-reporting.md.
   // An empty value counts as unset: CI passes an empty string when the repo variable doesn't exist.

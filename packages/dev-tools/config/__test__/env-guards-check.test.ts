@@ -123,7 +123,7 @@ describe('checkEnvGuards', () => {
     ]);
   });
 
-  it('fails when MSW loads before the app starts', () => {
+  it('fails when a static import loads MSW', () => {
     const errors = check({
       'assets/index.js': `${GUARDED}import "./msw-browser.js";`,
       'assets/msw-browser.js': 'worker.postMessage("MOCKING_ENABLED");',
@@ -131,12 +131,12 @@ describe('checkEnvGuards', () => {
 
     expect(errors).toEqual([
       expect.stringContaining(
-        "MSW's code is in assets/msw-browser.js, which loads before the app starts",
+        "MSW's code is in assets/msw-browser.js, which the page loads without import()",
       ),
     ]);
   });
 
-  it('passes a build that loads MSW after the app', () => {
+  it('passes a build that loads MSW through import()', () => {
     const errors = check({
       'assets/index.js': `${GUARDED}import("./msw-browser.js");`,
       'assets/msw-browser.js': 'worker.postMessage("MOCKING_ENABLED");',
