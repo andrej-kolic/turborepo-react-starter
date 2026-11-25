@@ -5,11 +5,12 @@ CI fails when an app's production build grows past a size limit. `Verify: Build`
 ## Run it
 
 ```bash
-BUILD_PROFILE=features pnpm check:size                       # all three bundler apps, builds them first
-BUILD_PROFILE=features pnpm check:size --filter "$BUNDLER"   # one app
+pnpm check:size                           # the bare profile: all three bundler apps, builds them first
+pnpm check:size --filter "$BUNDLER"       # one app
+BUILD_PROFILE=features pnpm check:size    # the features profile
 ```
 
-CI runs it on both [build profiles](build-profiles.md), `bare` and `features`; set one locally too, so your `.env.local` doesn't change the build.
+CI runs it on both [build profiles](build-profiles.md), `bare` and `features`. Without `BUILD_PROFILE`, `pnpm check:size` uses `bare`, so your `.env.local` never changes the result.
 
 Over a limit, it fails and prints the excess:
 

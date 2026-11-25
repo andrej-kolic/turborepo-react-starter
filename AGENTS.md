@@ -81,9 +81,9 @@ See root `README.md` and `package.json` scripts. Typical loop:
 - Test: `pnpm test` (unit only — E2E is separate)
 - E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
-- Bundle size (builds first; CI runs it for all bundlers and both profiles): `BUILD_PROFILE=features pnpm check:size`
-- Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `BUILD_PROFILE=features pnpm check:env-guards`, see [`docs/template/env.md`](docs/template/env.md)
-- Page split (builds first; runs where env guards run): `pnpm check:page-split` fails when a page's component is in the scripts that load before the app starts
+- Bundle size (builds first; CI runs it for all bundlers and both profiles): `pnpm check:size` for the `bare` profile, `BUILD_PROFILE=features pnpm check:size` for `features`
+- Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `pnpm check:env-guards` for the `bare` profile, `BUILD_PROFILE=features pnpm check:env-guards` for `features`, see [`docs/template/env.md`](docs/template/env.md)
+- Page split (builds first; takes a profile and runs where env guards run): `pnpm check:page-split` fails when a page's component is in the scripts that load before the app starts
 - Format check: `pnpm check:format`
 - Unused files, dependencies and exports (knip): `pnpm check:unused`
 - Full quality gate: `pnpm quality-checks`

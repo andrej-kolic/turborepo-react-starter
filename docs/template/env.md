@@ -112,7 +112,7 @@ if (import.meta.env.PROD && import.meta.env.APP_REACT_SENTRY_DSN) { … }
 
 ## What CI checks
 
-Every workflow that builds through the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs `pnpm check:env-guards` on each app it builds; locally it builds every bundler app first, with the [build profile](build-profiles.md) you set (`BUILD_PROFILE=bare pnpm check:env-guards`). It checks:
+Every workflow that builds through the build action, [`.github/actions/build-project`](../../.github/actions/build-project/action.yaml), runs the Turbo task `check:env-guards` on each app it builds; locally `pnpm check:env-guards` builds every bundler app first, on the `bare` [build profile](build-profiles.md), or on `features` with `BUILD_PROFILE=features`. It checks:
 
 1. **The `if` itself**, with three test lines in [`packages/web/src/env-guards.ts`](../../packages/web/src/env-guards.ts): the build must keep the ones behind `PROD` and `APP_REACT_GUARD_ON`, which are set, and leave out the one behind `APP_REACT_GUARD_OFF`, which never is.
 2. **The whole module, for Sentry:** a build ships Sentry's code only with a DSN, and only in a file the app loads through `import()`. A `features` build must ship it.
