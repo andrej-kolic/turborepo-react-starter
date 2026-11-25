@@ -5,7 +5,7 @@
   "keywords": [],
   "author": "",
   "type": "module",
-  "license": "ISC",
+  "license": "MIT",
   "devPort": 8000,
   "previewPort": 8001,
   "scripts": {
