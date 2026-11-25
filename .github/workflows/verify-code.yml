@@ -5,7 +5,7 @@ name: 'Verify: Code'
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ env:
 
 jobs:
   code:
-    # Required by the "Protect develop and main" ruleset.
+    # Required by the "Protect main" ruleset.
     name: Static checks + unit tests
     timeout-minutes: 15
     runs-on: ubuntu-latest

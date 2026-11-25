@@ -14,7 +14,7 @@ A release is proposed once it is 3 days old. CI runs on each PR as on any other;
 
 ## Run it now
 
-Dependabot runs by itself when `.github/dependabot.yml` changes on `develop`. Otherwise, on GitHub open **Insights → Dependency graph → Dependabot**, click **Recent update jobs** next to `package.json`, then **Check for updates**.
+Dependabot runs by itself when `.github/dependabot.yml` changes on `main`. Otherwise, on GitHub open **Insights → Dependency graph → Dependabot**, click **Recent update jobs** next to `package.json`, then **Check for updates**.
 
 A failed run shows a red icon next to `package.json` there; its log is under the repository's **Actions** tab, in the **Dependabot Updates** workflow. If the log says `ERR_PNPM_UNSUPPORTED_ENGINE`, see [0016](decisions/0016-node-engines-floor.md).
 

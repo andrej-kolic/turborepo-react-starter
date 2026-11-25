@@ -11,7 +11,7 @@ Only `Build project` and `Build project (features)` blocked a merge; E2E, perf, 
 
 ## Decision
 
-- One workflow per claim: `Verify: Code`, `Verify: Commits`, `Verify: Build`, `Verify: Dev server`. The ruleset "Protect develop and main" requires one job from each; their names and how to require them: [`docs/template/bundle-size.md`](../bundle-size.md).
+- One workflow per claim: `Verify: Code`, `Verify: Commits`, `Verify: Build`, `Verify: Dev server`. The ruleset "Protect main" requires one job from each; their names and how to require them: [`docs/template/bundle-size.md`](../bundle-size.md).
 - Each "All … passed" job runs after the others with `always()` and fails unless every one succeeded. GitHub counts a skipped job as passed, "even if it is a required check" ([conditions](https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/using-conditions-to-control-job-execution)), so requiring the matrix jobs alone would let a skipped one through. Matrix job names can change without touching the ruleset.
 - Dev servers are checked with the `@smoke` Playwright test, not HTTP 200. It failed on all 18 broken runs in #174 (3 bundlers × dev server and preview, 3 kinds of break) and passed on the working app.
 - `Verify: Perf` runs weekly and by hand, not on PRs. LCP over 40 runs per bundler peaked at 892 ms against a 2500 ms budget. `Verify: Build` now opens every build in a browser, so perf is no longer the only check that does.

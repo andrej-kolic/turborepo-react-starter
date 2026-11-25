@@ -8,7 +8,7 @@ name: 'Verify: Build'
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -124,7 +124,7 @@ jobs:
           run-tests: 'false'
           check-size: 'false'
 
-  # Required by the "Protect develop and main" ruleset. GitHub counts a skipped job as passed,
+  # Required by the "Protect main" ruleset. GitHub counts a skipped job as passed,
   # so this runs even when a job above failed, and fails unless every one of them succeeded.
   all-passed:
     name: All builds passed

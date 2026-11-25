@@ -6,4 +6,4 @@ Report it privately through [GitHub's private reporting form](https://github.com
 
 ## Supported versions
 
-Only the latest commit on `develop` is supported. A project built from this starter takes fixes by applying them to its own copy.
+Only the latest commit on `main` is supported. A project built from this starter takes fixes by applying them to its own copy.

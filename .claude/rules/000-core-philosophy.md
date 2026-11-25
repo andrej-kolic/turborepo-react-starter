@@ -4,7 +4,7 @@ paths:
 ---
 # Engineering Philosophy
 
-Turborepo + pnpm monorepo, TypeScript strict. Branch: `develop`. Repo commands: `AGENTS.md`.
+Turborepo + pnpm monorepo, TypeScript strict. Branch: `main`. Repo commands: `AGENTS.md`.
 
 ## Before you write
 
