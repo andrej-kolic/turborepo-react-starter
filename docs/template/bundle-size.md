@@ -28,7 +28,7 @@ A failing check blocks a merge only when a ruleset requires it. Rulesets are rep
 1. Fill in **Ruleset Name**, for example `Protect develop and main`.
 2. Set **Enforcement status** to **Active**.
 3. Under **Target branches**, choose **Add target → Include by pattern** and add `develop`, then `main`.
-4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks** for each of `Code checks`, `Lint commit messages`, `All builds passed` and `All dev servers passed`. The size check fails `All builds passed`.
+4. Turn on **Require status checks to pass**, open **Show additional settings**, and choose **Add checks** for each of `Static checks + unit tests`, `Lint commit messages`, `All builds passed` and `All dev servers passed`. The size check fails `All builds passed`.
 5. Click **Create**.
 
 ## Limits
