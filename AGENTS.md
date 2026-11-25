@@ -67,7 +67,7 @@ Avoid root `pnpm dev` unless you need all bundlers + Storybook + commons watch a
 ## Validation map
 
 - While developing: browser snapshot / screenshot / validate (browser-tools)
-- CI regression: Playwright E2E on every bundler's preview build in verify-build.yml: the full suite on `DEFAULT_BUNDLER`, the `@smoke` test on the others (`BUNDLER` in `.env` locally)
+- CI regression: the full Playwright E2E suite on every bundler's preview build in verify-build.yml (`BUNDLER` in `.env` locally)
 - Multi-bundler boot: verify-dev.yml (every bundler's dev server, `@smoke` test)
 - Debug on failure: Playwright trace (+ optional browser-capture)
 

@@ -1,6 +1,6 @@
 # Every production build, checked and opened in a browser: 3 bundlers × 2 build profiles, plus Storybook.
-# Each app job builds once, checks env guards and bundle size, then runs Playwright on that build's preview:
-# the full suite on DEFAULT_BUNDLER, the @smoke test on the other two. Profiles: docs/template/build-profiles.md.
+# Each app job builds once, checks env guards and bundle size, then runs the full E2E suite on that build's preview.
+# Profiles: docs/template/build-profiles.md.
 # No Sentry DSN from the repo: features has its own fake one, and an empty value would override it.
 
 name: 'Verify: Build'
@@ -41,24 +41,8 @@ jobs:
           test -n "$version" || { echo "No @playwright/test version in the pnpm-workspace.yaml catalog"; exit 1; }
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
-  # Any other value matches no matrix bundler, so no job would run the full suite and the run would pass.
-  default-bundler:
-    name: Check DEFAULT_BUNDLER
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check DEFAULT_BUNDLER names a matrix bundler
-        env:
-          DEFAULT_BUNDLER: ${{ vars.DEFAULT_BUNDLER || 'web-vite' }}
-        run: |
-          case "$DEFAULT_BUNDLER" in
-            web-vite | web-rspack | web-esbuild) echo "DEFAULT_BUNDLER: $DEFAULT_BUNDLER" ;;
-            *) echo "::error::DEFAULT_BUNDLER \"$DEFAULT_BUNDLER\" is not web-vite, web-rspack or web-esbuild"; exit 1 ;;
-          esac
-
   app:
-    # The bundlers are written here, not read from DEFAULT_BUNDLER, so the job names never change.
-    name: Build (${{ matrix.bundler }}, ${{ matrix.profile }})
+    name: Build + E2E (${{ matrix.bundler }}, ${{ matrix.profile }})
     needs: playwright-version
     strategy:
       fail-fast: false
@@ -78,7 +62,6 @@ jobs:
     env:
       BUNDLER: ${{ matrix.bundler }}
       BUILD_PROFILE: ${{ matrix.profile }}
-      FULL_SUITE: ${{ matrix.bundler == (vars.DEFAULT_BUNDLER || 'web-vite') }}
 
     steps:
       - name: Checkout
@@ -98,13 +81,8 @@ jobs:
           run-tests: 'false'
 
       # Playwright starts the preview first (webServer in packages/e2e/playwright.config.ts).
-      - name: Run E2E tests (${{ env.FULL_SUITE == 'true' && 'full suite' || '@smoke' }})
-        run: |
-          if [ "$FULL_SUITE" = "true" ]; then
-            pnpm e2e
-          else
-            pnpm e2e --grep @smoke
-          fi
+      - name: Run E2E tests
+        run: pnpm e2e
 
       # Attempt in the name: a re-run of a failed job would otherwise hit a
       # name conflict, since artifact names are unique per workflow run.
@@ -146,7 +124,7 @@ jobs:
   # so this runs even when a job above failed, and fails unless every one of them succeeded.
   all-passed:
     name: All builds passed
-    needs: [default-bundler, playwright-version, app, storybook]
+    needs: [playwright-version, app, storybook]
     if: always()
     timeout-minutes: 5
     runs-on: ubuntu-latest

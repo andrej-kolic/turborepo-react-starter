@@ -23,7 +23,7 @@ env:
 jobs:
   code:
     # Required by the "Protect develop and main" ruleset.
-    name: Code checks
+    name: Static checks + unit tests
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -45,7 +45,7 @@ jobs:
       - name: Lint workflow files
         run: '"$RUNNER_TEMP/actionlint" -color'
 
-      - name: Code checks
+      - name: Static checks + unit tests
         uses: ./.github/actions/build-project
         with:
           run-build: 'false'

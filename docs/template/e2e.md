@@ -36,6 +36,8 @@ With `TARGET_URL`, E2E builds and starts nothing, and tests whatever runs there:
 2. Put page selectors and actions in a page class under `packages/e2e/pages/` (like `app.page.ts`).
 3. Write the spec in `packages/e2e/tests/`, using the `test` fixture from `packages/e2e/fixtures/app-target.ts`; `pnpm lint` fails on a test that imports `test` from Playwright instead, since that test could send to Sentry. A test that needs an optional feature, such as Sentry, gets `{ tag: '@features' }`, as `tests/web-vitals.spec.ts` does; it then runs only on the `features` build.
 
-## Choose the CI bundler
+## What CI runs
 
-Set the GitHub repo variable `DEFAULT_BUNDLER` to `web-vite`, `web-rspack` or `web-esbuild` (fallback `web-vite`). [`.github/workflows/verify-build.yml`](../../.github/workflows/verify-build.yml) runs the full suite on that bundler and the `@smoke` test on the other two, once per build profile, in the Playwright container that matches the catalog version, and uploads the report and traces on failure.
+[`.github/workflows/verify-build.yml`](../../.github/workflows/verify-build.yml) runs the full suite on every bundler, once per build profile, in jobs named `Build + E2E (<bundler>, <profile>)`. [`.github/workflows/verify-dev.yml`](../../.github/workflows/verify-dev.yml) runs the `@smoke` test on every bundler's dev server, in jobs named `E2E smoke test (<bundler>)`. Both use the Playwright container that matches the catalog version, and upload the report and traces on failure.
+
+The GitHub repo variable `DEFAULT_BUNDLER` (`web-vite`, `web-rspack` or `web-esbuild`) doesn't affect E2E: it picks the app that the deploy and trace workflows use by default.
