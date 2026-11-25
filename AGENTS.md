@@ -79,7 +79,7 @@ See root `README.md` and `package.json` scripts. Typical loop:
 
 - Lint: `pnpm lint`
 - Test: `pnpm test` (unit only — E2E is separate)
-- E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
+- E2E: `pnpm e2e` for the `bare` profile, `BUILD_PROFILE=features pnpm e2e` for `features`; both build and start the preview; `APP_REACT_API_URL=mock pnpm e2e` tests the mock inside the app (profiles: [`docs/template/build-profiles.md`](docs/template/build-profiles.md))
 - Build app (current `BUNDLER`): `pnpm build:app`
 - Bundle size (builds first; CI runs it for all bundlers and both profiles): `pnpm check:size` for the `bare` profile, `BUILD_PROFILE=features pnpm check:size` for `features`
 - Env guards (builds first; every workflow that builds through `.github/actions/build-project` runs it): `pnpm check:env-guards` for the `bare` profile, `BUILD_PROFILE=features pnpm check:env-guards` for `features`, see [`docs/template/env.md`](docs/template/env.md)

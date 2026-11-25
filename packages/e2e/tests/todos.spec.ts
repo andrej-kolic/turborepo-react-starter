@@ -1,4 +1,8 @@
+import { resetTodos } from '@repo/core/mocks/handlers';
+import { http, HttpResponse } from 'msw';
 import { expect, test } from '../fixtures/app-target';
+import { API_URL } from '../lib/api-url';
+import { AppPage } from '../pages/app.page';
 import { TodosPage } from '../pages/todos.page';
 
 const SAMPLES = ['Buy milk', 'Water the plants', 'Call the bank'];
@@ -9,6 +13,35 @@ test.describe('todo page', () => {
     await todos.goto();
 
     await expect(todos.heading).toHaveText('My todos');
+    await expect(todos.titles).toHaveText(SAMPLES);
+  });
+
+  test('shows no todos when the API has none', async ({ page }) => {
+    await resetTodos([]);
+    const todos = new TodosPage(page);
+    await todos.goto();
+
+    await expect(todos.newTodo).toBeVisible();
+    await expect(todos.titles).toHaveCount(0);
+  });
+
+  test('shows the route error screen when the API fails, and the todos on Try again', async ({
+    page,
+    network,
+  }) => {
+    network.use(
+      http.get(
+        `${API_URL}/todos`,
+        () => new HttpResponse(null, { status: 500 }),
+        { once: true },
+      ),
+    );
+    const appPage = new AppPage(page);
+    const todos = new TodosPage(page);
+    await todos.goto();
+    await expect(appPage.routeError).toContainText('Something went wrong');
+
+    await appPage.tryAgain();
     await expect(todos.titles).toHaveText(SAMPLES);
   });
 
