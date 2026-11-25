@@ -61,17 +61,16 @@ describe('rootOptions', () => {
     vi.stubEnv('APP_REACT_SENTRY_TRACES_SAMPLE_RATE', '0.25');
 
     await loadRootOptions();
+    await vi.dynamicImportSettled();
 
-    await vi.waitFor(() =>
-      expect(Sentry.init).toHaveBeenCalledWith({
-        dsn: DSN,
-        environment: 'staging',
-        release: 'turborepo-react-starter@1.2.3+abc1234',
-        integrations: [{ name: 'BrowserTracing' }],
-        tracesSampleRate: '0.25',
-        dataCollection: { userInfo: false },
-      }),
-    );
+    expect(Sentry.init).toHaveBeenCalledWith({
+      dsn: DSN,
+      environment: 'staging',
+      release: 'turborepo-react-starter@1.2.3+abc1234',
+      integrations: [{ name: 'BrowserTracing' }],
+      tracesSampleRate: '0.25',
+      dataCollection: { userInfo: false },
+    });
   });
 
   it('sendsNoUserInfo_whenProdAndDsnSet', async () => {
@@ -79,11 +78,10 @@ describe('rootOptions', () => {
     vi.stubEnv('APP_REACT_SENTRY_DSN', DSN);
 
     await loadRootOptions();
+    await vi.dynamicImportSettled();
 
-    await vi.waitFor(() =>
-      expect(Sentry.init).toHaveBeenCalledWith(
-        expect.objectContaining({ dataCollection: { userInfo: false } }),
-      ),
+    expect(Sentry.init).toHaveBeenCalledWith(
+      expect.objectContaining({ dataCollection: { userInfo: false } }),
     );
   });
 
@@ -92,13 +90,12 @@ describe('rootOptions', () => {
     vi.stubEnv('APP_REACT_SENTRY_DSN', DSN);
 
     await loadRootOptions();
+    await vi.dynamicImportSettled();
     // the router that loadRootOptions just loaded, after resetModules
     const { router } = await import('../router');
 
-    await vi.waitFor(() =>
-      expect(
-        Sentry.tanstackRouterBrowserTracingIntegration,
-      ).toHaveBeenCalledWith(router),
+    expect(Sentry.tanstackRouterBrowserTracingIntegration).toHaveBeenCalledWith(
+      router,
     );
   });
 
@@ -112,11 +109,10 @@ describe('rootOptions', () => {
 
       const rootOptions = await loadRootOptions();
       rootOptions[handler]?.(error, errorInfo);
+      await vi.dynamicImportSettled();
 
       expect(consoleError).toHaveBeenCalledWith(error);
-      await vi.waitFor(() =>
-        expect(reportError).toHaveBeenCalledWith(error, errorInfo),
-      );
+      expect(reportError).toHaveBeenCalledWith(error, errorInfo);
     },
   );
 
