@@ -107,6 +107,7 @@ Docs about the starter itself live in `docs/template/`. Put docs for the project
 | [`docs/template/core.md`](docs/template/core.md)                                                   | Add a feature to `@repo/core`: what may go in it, API, model, mock, store    |
 | [`docs/template/env.md`](docs/template/env.md)                                                     | Add an `APP_REACT_*` env variable; the build validates it                    |
 | [`docs/template/error-reporting.md`](docs/template/error-reporting.md)                             | Turn on Sentry error reporting: the DSN locally and in CI                    |
+| [`docs/template/deploy.md`](docs/template/deploy.md)                                               | Deploy to AWS or Netlify, from your machine or from GitHub                   |
 | [`docs/template/dependency-updates.md`](docs/template/dependency-updates.md)                       | Dependabot PRs: review them, run it now, turn on security updates            |
 | [`docs/template/component-validation-contract.md`](docs/template/component-validation-contract.md) | `data-testid` naming, scope and registry                                     |
 | [`docs/template/design-spec-validation.md`](docs/template/design-spec-validation.md)               | Agent design checks: snapshot, screenshot, `browser eval`                    |
@@ -132,4 +133,4 @@ The `concision`, `conversation-style`, `documentation`, `git`, `jsdoc`, `securit
 
 - **Lint** may report `no-console` warnings in web/ui; they are warnings, not errors.
 - **Chrome capture** (`pnpm chrome:debug`, port 9222) and `packages/browser-capture` are optional; not required for SPA dev.
-- **Deploy** (`pnpm deploy:aws`, `pnpm deploy:netlify`) needs cloud credentials and is out of scope for local UI work.
+- **Deploy** only when asked: it changes a live site. Commands, credentials and the GitHub workflows: [`docs/template/deploy.md`](docs/template/deploy.md).
