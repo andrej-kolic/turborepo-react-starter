@@ -27,7 +27,7 @@ Everything below works out of the box.
 - **AWS and Netlify deployment**\
   AWS (CloudFront, S3, HTTPS) and Netlify, deployed from GitHub or your machine. [Guide](docs/template/deploy.md)
 
-The full list, grouped by job: [all features](docs/template/features.md).
+See [all features](docs/template/features.md).
 
 ## Quick start
 
