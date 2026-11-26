@@ -49,7 +49,15 @@ Every production build writes source maps (`.map` files) without linking them fr
 
 The upload needs a Sentry auth token, org slug and project slug. Without all three (a fork), it skips the upload with a warning and still deletes the maps.
 
-1. Locally: `sentry-cli login` writes them to `~/.sentryclirc`; or set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT`.
+1. Locally: run `pnpm --filter @repo/dev-tools exec sentry-cli login --global`. It asks for an organization auth token, offering to open Sentry in the browser to create one, and saves only that token to `~/.sentryclirc`; without `--global` it saves it to `packages/dev-tools/.sentryclirc`, since `pnpm --filter` runs the command there. Then add the slugs to `~/.sentryclirc`:
+
+   ```ini
+   [defaults]
+   org=<org slug>
+   project=<project slug>
+   ```
+
+   Or set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` instead. `pnpm --filter @repo/dev-tools exec sentry-cli info` shows what it finds.
 
 2. In CI: a repository secret `SENTRY_AUTH_TOKEN` and repository variables `SENTRY_ORG` and `SENTRY_PROJECT`. Only the deploy workflows get them:
 

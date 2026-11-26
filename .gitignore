@@ -28,6 +28,9 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+# sentry-cli login without --global writes its token here
+.sentryclirc
+
 # turbo
 .turbo/
 
