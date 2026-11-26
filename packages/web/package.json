@@ -25,7 +25,7 @@
     "@repo/commons": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@sentry/react": "11.13.0",
+    "@sentry/react": "11.16.0",
     "@tanstack/react-router": "1.170.46",
     "react": "catalog:",
     "react-dom": "catalog:",
