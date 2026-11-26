@@ -1,6 +1,33 @@
 # Turborepo React starter
 
-Monorepo starter for frontend projects: one React app (`@repo/web`) served by three bundlers, with shared packages, browser tooling for agents, and Playwright E2E. Written in TypeScript (the two browser CLIs in JavaScript), built with pnpm and Turborepo, linted with oxlint and formatted with oxfmt.
+A monorepo starter for a React app with multi-bundler support, agent tooling, ready-made stack, integrated toolchain and deployment setup.
+
+## Why this starter
+
+Everything below works out of the box.
+
+- **Bundler-independent app**\
+  One app in `@repo/web`, wrapped by Vite, Rspack and esbuild. [Why](docs/template/decisions/0006-bundler-independent-app.md)
+- **Built for coding agents**\
+  Eyes on the running app in any environment: local, cloud, SSH or headless, with or without MCP; rules, skills and tools shared across agents. [Guide](.claude/skills/x-browser-validation/SKILL.md)
+- **Ready-made stack**\
+  React 19, TanStack Router, Zustand, Zod, MSW for a mocked API, Sentry. [What's inside](#whats-inside)
+- **Shared business logic**\
+  API calls, models and stores in `@repo/core`, reusable by mobile, CLI or MCP clients. [Guide](docs/template/core.md)
+- **Web UI library**\
+  Components and design tokens in `@repo/ui`, developed in Storybook and published to GitHub Pages. [Storybook](apps/ui-storybook)
+- **Integrated toolchain**\
+  pnpm and Turborepo with caching, TypeScript 7, oxlint and oxfmt, Vitest, Playwright, dev and preview servers for every bundler, commit hooks with commitlint, Knip and Dependabot.
+- **Type-safe validation**\
+  Zod-validated API, models and env; type-checked routes. [Env](docs/template/env.md) · [Routing](docs/template/routing.md)
+- **Opt-in features**\
+  Sentry error reporting and an MSW mocked API, with zero bundle cost until configured. [Sentry](docs/template/error-reporting.md) · [Mock](docs/template/env.md#the-mocked-api)
+- **CI quality gates**\
+  E2E tests, bundle size limits and dev server checks on every bundler; weekly performance check. [E2E](docs/template/e2e.md) · [Size](docs/template/bundle-size.md)
+- **AWS and Netlify deployment**\
+  AWS (CloudFront, S3, HTTPS) and Netlify, deployed from GitHub or your machine. [Guide](docs/template/deploy.md)
+
+See [all features](docs/template/features.md).
 
 ## Quick start
 
@@ -51,6 +78,7 @@ Every app builds for the `browserslist` query in the root `package.json`, `basel
 
 Docs about the starter itself live in `docs/template/`. The rest of `docs/` is free for the docs of the project you build from it.
 
+- [`docs/template/features.md`](docs/template/features.md): everything the starter does for you
 - [`docs/template/e2e.md`](docs/template/e2e.md): run and extend the E2E tests
 - [`docs/template/bundle-size.md`](docs/template/bundle-size.md): the bundle size check, how to block merges on it, and how to raise a limit
 - [`docs/template/error-reporting.md`](docs/template/error-reporting.md): turn on Sentry error reporting
