@@ -19,10 +19,10 @@ catalog:
   browserslist-to-esbuild: 2.1.1
   tsx: '4.23.15'
   serve: 14.2.8
-  '@turbo/gen': 2.11.11
+  '@turbo/gen': 2.11.13
   # turbo: only the root uses it, but `turbo gen` runs @turbo/gen at turbo's
   # own version, so the installed @turbo/gen types must match it.
-  turbo: 2.11.11
+  turbo: 2.11.13
 
   # Lint
   oxlint: 1.94.0
@@ -45,7 +45,7 @@ catalog:
   # @playwright/test: only e2e uses it, but it must match playwright-core, and CI reads the
   # Playwright container version from here (verify-build.yml, verify-dev.yml).
   '@playwright/test': 1.65.1
-  vitest: 5.1.0
+  vitest: 5.1.1
   jsdom: 31.0.1
   '@testing-library/dom': '10.4.2'
   '@testing-library/jest-dom': '7.0.1'
