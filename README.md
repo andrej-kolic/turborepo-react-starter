@@ -27,6 +27,8 @@ Everything below works out of the box.
 - **AWS and Netlify deployment**\
   AWS (CloudFront, S3, HTTPS) and Netlify, deployed from GitHub or your machine. [Guide](docs/template/deploy.md)
 
+The full list, grouped by job: [all features](docs/template/features.md).
+
 ## Quick start
 
 ```bash
@@ -76,6 +78,7 @@ Every app builds for the `browserslist` query in the root `package.json`, `basel
 
 Docs about the starter itself live in `docs/template/`. The rest of `docs/` is free for the docs of the project you build from it.
 
+- [`docs/template/features.md`](docs/template/features.md): everything the starter does for you
 - [`docs/template/e2e.md`](docs/template/e2e.md): run and extend the E2E tests
 - [`docs/template/bundle-size.md`](docs/template/bundle-size.md): the bundle size check, how to block merges on it, and how to raise a limit
 - [`docs/template/error-reporting.md`](docs/template/error-reporting.md): turn on Sentry error reporting
